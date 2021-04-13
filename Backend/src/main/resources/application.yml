@@ -1,0 +1,12 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: YOUR_GOOGLE_CLIENT_ID         #TODO GET AND ADD OWN ID
+            clientSecret: YOUR_GOOGLE_CLIENT_SECRET #TODO GET AND ADD OWN SECRET
+            scope:
+              - email
+              - profile
+          #TODO ADD MORE SOCIAL LOGIN OPTIONS
