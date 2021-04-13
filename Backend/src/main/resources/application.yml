@@ -4,8 +4,8 @@ spring:
       client:
         registration:
           google:
-            clientId: YOUR_GOOGLE_CLIENT_ID         #TODO GET AND ADD OWN ID
-            clientSecret: YOUR_GOOGLE_CLIENT_SECRET #TODO GET AND ADD OWN SECRET
+            clientId: 812128741361-er3ul9d19er539e7n22ahnv81tfiq4sk.apps.googleusercontent.com
+            clientSecret: pqtTESXJJa1SWiBzRV2vXfhg
             scope:
               - email
               - profile

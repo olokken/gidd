@@ -8,6 +8,7 @@ public class User {
     private String surname;
     private int phone_number;
     private int activity_level;
+    private Provider auth_provider;
 
     public User(int id, String email, String password, String firstName, String surname, int phoneNumber, int activityLevel){
         this.id = id;
@@ -20,4 +21,12 @@ public class User {
     }
 
     public User(){}
+
+    public Provider getProvider() {
+        return auth_provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.auth_provider = provider;
+    }
 }

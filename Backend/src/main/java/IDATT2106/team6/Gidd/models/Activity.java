@@ -7,7 +7,7 @@ public class Activity {
     private String title;
     private Timestamp time;
     private int category_id;
-    private boolean repeat;
+    private int repeat;
     private int user_id;
     private int capacity;
     private int group_id;
@@ -15,7 +15,7 @@ public class Activity {
     private int points;
     private byte[] image;
 
-    public Activity(int id, String title, Timestamp time, int categoryId, boolean repeat, int userId, int capacity, int groupId, String description, int points, byte[] image){
+    public Activity(int id, String title, Timestamp time, int categoryId, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image){
         this.id = id;
         this.title = title;
         this.time = time;
