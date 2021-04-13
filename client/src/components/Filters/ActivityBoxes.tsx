@@ -17,6 +17,8 @@ const ActivityBoxes = () => {
         Bading: false
       });
 
+
+
       const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setState({ ...state, [event.target.name]: event.target.checked });
         console.log(state); 
