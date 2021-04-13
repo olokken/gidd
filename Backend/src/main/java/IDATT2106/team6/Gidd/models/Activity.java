@@ -2,9 +2,7 @@ package IDATT2106.team6.Gidd.models;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -15,8 +13,11 @@ public class Activity {
     private String title;
     private Timestamp time;
     private int repeat;
+    @CascadeOnDelete
+    @ManyToOne(targetEntity = User.class)
     private int user_id;
     private int capacity;
+    //Ikke laget klasse. Lar den være for nå
     private int group_id;
     private String description;
     private byte[] image;
@@ -24,10 +25,13 @@ public class Activity {
     @CascadeOnDelete
     @ManyToMany(targetEntity = Tag.class)
     private List<Tag> tags;
-    private int latitude;
-    private int longitude;
+    @CascadeOnDelete
+    @ManyToMany(targetEntity = Equipment.class)
+    private List<Equipment> equipments;
+    private double latitude;
+    private double longitude;
 
-    public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image, List<Tag> tags, int latitude, int longitude){
+    public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image, List<Tag> tags, double latitude, double longitude, List<Equipment> equipments){
         this.id = id;
         this.title = title;
         this.time = time;
@@ -40,6 +44,7 @@ public class Activity {
         this.tags = tags;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.equipments = equipments;
     }
 
     public Activity(){}
@@ -84,11 +89,11 @@ public class Activity {
         return activity_level;
     }
 
-    public int getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public int getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 }
