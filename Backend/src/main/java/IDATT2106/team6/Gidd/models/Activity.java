@@ -6,7 +6,6 @@ public class Activity {
     private int id;
     private String title;
     private Timestamp time;
-    private int category_id;
     private int repeat;
     private int user_id;
     private int capacity;
@@ -16,11 +15,10 @@ public class Activity {
     private byte[] image;
     private ActivityLevel activity_level;
 
-    public Activity(int id, String title, Timestamp time, int categoryId, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image){
+    public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image){
         this.id = id;
         this.title = title;
         this.time = time;
-        this.category_id = categoryId;
         this.repeat = repeat;
         this.user_id = userId;
         this.capacity = capacity;
