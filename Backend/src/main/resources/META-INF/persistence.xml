@@ -9,9 +9,13 @@
         <class>IDATT2106.team6.Gidd.models.Tag</class>
         <class>IDATT2106.team6.Gidd.models.Equipment</class>
         <class>IDATT2106.team6.Gidd.models.Activity</class>
-        <class>IDATT2106.team6.Gidd.models.Message</class>
         <class>IDATT2106.team6.Gidd.models.User</class>
         <properties>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://mysql-ait.stud.idi.ntnu.no:3306/leag" />
+            <property name="javax.persistence.jdbc.user" value="leag_user1" />
+            <property name="javax.persistence.jdbc.password" value="f9KuqXlJ" />
+
             <property name="eclipselink.ddl-generation" value="create-tables" />
             <property name="eclipselink.ddl-generation.output-mode" value="database" />
             <!-- EclipseLink connectionpooling -->

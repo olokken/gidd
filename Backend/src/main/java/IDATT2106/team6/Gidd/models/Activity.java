@@ -12,7 +12,7 @@ public class Activity {
     private int id;
     private String title;
     private Timestamp time;
-    private int repeat;
+    private int daysToRepeat;
     @CascadeOnDelete
     @ManyToOne(targetEntity = User.class)
     private int user_id;
@@ -31,16 +31,17 @@ public class Activity {
     private double latitude;
     private double longitude;
 
-    public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image, List<Tag> tags, double latitude, double longitude, List<Equipment> equipments){
+    public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image, ActivityLevel activityLevel, List<Tag> tags, double latitude, double longitude, List<Equipment> equipments){
         this.id = id;
         this.title = title;
         this.time = time;
-        this.repeat = repeat;
+        this.daysToRepeat = repeat;
         this.user_id = userId;
         this.capacity = capacity;
         this.group_id = groupId;
         this.description = description;
         this.image = image;
+        this.activity_level = activityLevel;
         this.tags = tags;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -61,8 +62,8 @@ public class Activity {
         return time;
     }
 
-    public int getRepeat() {
-        return repeat;
+    public int getDaysToRepeat() {
+        return daysToRepeat;
     }
 
     public int getUser_id() {
