@@ -1,4 +1,4 @@
-import { AppBar, Button, Icon, Toolbar, Menu, MenuItem, makeStyles } from '@material-ui/core';
+import { AppBar, Button, Icon, Toolbar, Menu, MenuItem, makeStyles, ListItem } from '@material-ui/core';
 import styled from 'styled-components';
 import IconButton from '@material-ui/core/IconButton';
 import React, {useState} from 'react'; 
@@ -19,6 +19,7 @@ const useStyles = makeStyles({
             // this is just an example, you can use vw, etc.
             width: '500px',
             height: '1000px',
+            marginTop: '50px',
         }
     }
 });
@@ -46,6 +47,7 @@ const Navbar = () => {
 
     const handleOpenMenu = (e:any) => {
         setAnchorEl(e.currentTarget);
+        
     }
 
     const handleCloseMenu = (e:any) => {
@@ -92,9 +94,9 @@ const Navbar = () => {
             onClose={handleCloseMenu}
             className={classes.customWidth}
         >
-            <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
-            <MenuItem onClick={handleCloseMenu}>My account</MenuItem>
-            <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
+            <MenuItem onClick={handleCloseMenu}><ListItem>Profile</ListItem></MenuItem>
+            <MenuItem onClick={handleCloseMenu}><ListItem>Profile</ListItem></MenuItem>
+            <MenuItem onClick={handleCloseMenu}><ListItem>Profile</ListItem></MenuItem>
         </Menu>
     </div>
 
