@@ -2,6 +2,8 @@ image: devayansarkar/maven-node-openjdk
 
 client-build:
   stage: build
+  only:
+      - master
   script:
     - cd client
     - npm install
@@ -12,14 +14,17 @@ client-build:
 
 backend-build:
   stage: build
+  only:
+      - master
   script:
     - cd Backend
     - "mvn install -B"
 
 backend-test:
   stage: test
+  only:
+      - master
   script:
     - cd Backend
     - mvn test
   needs: ["backend-build"]
-
