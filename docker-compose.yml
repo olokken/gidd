@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: ./client
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"
+  api: 
+    build: 
+      context: ./Backend 
+      dockerfile: ./Dockerfile
+    ports:
+      -"5000:5000"
+
