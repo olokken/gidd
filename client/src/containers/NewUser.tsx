@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import NewUserCard from '../components/NewUserCard';
@@ -24,18 +24,88 @@ const NewUsernContainer = styled.div`
 
 const NewUser = () => {
   const history = useHistory();
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password1, setPassword1] = useState<string>('');
+  const [password2, setPassword2] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const equalPasswords: boolean = password1 === password2 ? true : false;
+  const [emailList, setEmailList] = useState(['haavard.tysland@lyse.net']);
 
-  const createUser = (username:string, password:string):boolean => {
-    console.log(username + password); 
-    history.push("/");  
-    return true;  
+
+  const emailCheck = (email: string) => {
+
+    if (emailList.indexOf(email) > -1) {
+      return false;
+    }
+    return true;
   }
 
-  return (
-    <NewUsernContainer>
-      <NewUserCard createUser = {createUser}></NewUserCard>
-    </NewUsernContainer>
-  );
-};
+  const createUser = (username: string, email: string, password: string): boolean => {
+    if (!emailCheck(email)) {
+      alert('Email er allerede opptatt')
+      return false;
+    }
+    else if (!equalPasswords && password1 !== '') {
+      alert('Passordene er ulike');
+      return false;
+    } else {
+        history.push('/');
+        console.log('New User Registered!\nUsername: ' + username + '\nE-mail: ' + email + '\nPassword: ' + password)
+        return true; 
+      }
+    }
 
-export default NewUser;
+
+    const handleClickShowPassword = () => {
+      if (showPassword) {
+        setShowPassword(false);
+      } else {
+        setShowPassword(true);
+      }
+    }
+
+    const onChangeEmail = (event: ChangeEvent<HTMLInputElement>) => {
+      const currentEmail: string = (event.target as HTMLInputElement).value
+      setEmail(currentEmail);
+    };
+
+    const onChangeUsername = (event: ChangeEvent<HTMLInputElement>) => {
+      setUsername((event.target as HTMLInputElement).value);
+    };
+
+    const onChangePassword1 = (event: ChangeEvent<HTMLInputElement>) => {
+      setPassword1((event.target as HTMLInputElement).value);
+    };
+    const onChangePassword2 = (event: ChangeEvent<HTMLInputElement>) => {
+      setPassword2((event.target as HTMLInputElement).value);
+    };
+
+
+
+    const onClick = () => {
+      if (equalPasswords) {
+        createUser(username, email, password1);
+      } else {
+        alert('Noe gikk galt');
+      }
+    };
+
+    return (
+      <NewUsernContainer>
+        <NewUserCard
+          createUser={createUser}
+          showPassword={showPassword}
+          handleClickShowPassword={handleClickShowPassword}
+          onChangeUsername={onChangeUsername}
+          onChangeEmail={onChangeEmail}
+          onChangePassword1={onChangePassword1}
+          onChangePassword2={onChangePassword2}
+          onClick={onClick}
+          equalPasswords={equalPasswords}
+        ></NewUserCard>
+      </NewUsernContainer>
+    );
+  };
+
+  export default NewUser;

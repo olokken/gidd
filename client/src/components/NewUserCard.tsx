@@ -15,50 +15,42 @@ const LoginCardContainer = styled.div`
 `;
 
 interface Props {
-  createUser: (username: string, password: string) => boolean;
+  createUser: (username: string,email:string, password: string) => boolean;
+  handleClickShowPassword: () => void;
+  showPassword:boolean;
+  onChangeUsername: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeEmail:(e: ChangeEvent<HTMLInputElement>) => void;
+  onChangePassword1: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangePassword2: (e: ChangeEvent<HTMLInputElement>) => void;
+  onClick: () => void;
+  equalPasswords:boolean;
+
 }
 
-const NewUserCard = ({ createUser }: Props) => {
-  const [username, setUsername] = useState('');
-  const [password1, setPassword1] = useState('');
-  const [password2, setPassword2] = useState('');
-
-  const onChangeUsername = (event: ChangeEvent<HTMLInputElement>) => {
-    setUsername((event.target as HTMLInputElement).value);
-  };
-
-  const onChangePassword1 = (event: ChangeEvent<HTMLInputElement>) => {
-    setPassword1((event.target as HTMLInputElement).value);
-  };
-  const onChangePassword2 = (event: ChangeEvent<HTMLInputElement>) => {
-    setPassword2((event.target as HTMLInputElement).value);
-  };
-
-  const onClick = () => {
-    if (passwordCheck) {
-      if (createUser(username, password1) === false) {
-        alert('Fyfaen Aleeks');
-      }
-    } else {
-      alert('Fyfaen Aleeks, passordene matcher ikke');
-    }
-  };
-
-  const passwordCheck: boolean = password1 === password2 ? true : false;
+const NewUserCard = ({ createUser, handleClickShowPassword, showPassword, onChangeUsername, onChangeEmail, onChangePassword1, onChangePassword2, onClick, equalPasswords }: Props) => {
 
   return (
     <LoginCardContainer>
-      <h2>LOG IN</h2>
+      <h2>Register a new user</h2>
       <form>
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
           label="Username"
+          color="secondary"
           variant="outlined"
           onChange={onChangeUsername}
         />
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
+          label="E-mail"
+          color="secondary"
+          variant="outlined"
+          onChange={onChangeEmail}
+        />
+        <TextField
+          style={{ width: '100%', marginBottom: 24 }}
           label="Password"
+          color="secondary"
           variant="outlined"
           type="password"
           onChange={onChangePassword1}
@@ -66,15 +58,16 @@ const NewUserCard = ({ createUser }: Props) => {
         <TextField
           style={{ width: '100%', marginBottom: 5 }}
           label="Password"
+          color="secondary"
           variant="outlined"
           type="password"
           onChange={onChangePassword2}
         />
-        {passwordCheck == false && <a>Passwords do not match</a>}
+        {equalPasswords == false && <a>Passwords do not match</a>}
         <Button
           style={{ width: '100%', height: '50px' }}
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={onClick}
         >
           CREATE NEW USER
