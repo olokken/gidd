@@ -1,0 +1,30 @@
+image: node:latestclient
+
+stages:
+  - build # Jobs placed in build-stage will run first
+  - test # Jobs placed in tets-stage will run after build-jobs
+
+install:
+  stage: build
+  script:
+    - cd client
+    - npm install
+  # Keep node_modules-folder for the following stages:
+  paths:
+    - client/node_modules
+
+test:
+  stage: test # Job test will run in parallel with the job prettier
+  script:
+    - apt-get update
+    - cd client
+    - npm test
+  paths:
+    - client/node_modules
+
+prettier:
+  stage: test # Job prettier will run in parallel with the job test
+  script:
+    - npm install --global prettier
+    - prettier --check client
+
