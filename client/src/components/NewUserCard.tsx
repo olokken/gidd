@@ -15,6 +15,7 @@ const LoginCardContainer = styled.div`
   border-radius: 8px;
 `;
 
+
 interface Props {
   onChangeUsername: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeEmail:(e: ChangeEvent<HTMLInputElement>) => void;

@@ -1,3 +1,4 @@
+import { ContactSupportOutlined } from '@material-ui/icons';
 import React, { ChangeEvent, useState } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
@@ -32,6 +33,11 @@ const NewUser = () => {
   const [emailList, setEmailList] = useState(['haavard.tysland@lyse.net']);
   const correctEmailFormat = email.indexOf('@') > -1 ? true : false;
 
+  interface User {
+    username:string,
+    email:string,
+    password:string
+  }
 
   const emailCheck = (email: string) => {
     if (emailList.indexOf(email) > -1) {
@@ -42,14 +48,20 @@ const NewUser = () => {
 
   const createUser = (username: string, email: string, password: string): boolean => {
     if (!emailCheck(email)) {
+      alert("E-mail er allerede registrert")
       return false;
     }
     else if (!equalPasswords && password1 !== '') {
       alert('Passordene er ulike');
       return false;
     } else {
+        const newUser:User = {
+          username: username,
+          email: email,
+          password: password
+        }
+        console.log(newUser)
         history.push('/');
-        console.log('New User Registered!\nUsername: ' + username + '\nE-mail: ' + email + '\nPassword: ' + password)
         return true; 
       }
     }
