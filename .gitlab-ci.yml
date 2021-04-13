@@ -12,7 +12,7 @@ install:
   # Keep node_modules-folder for the following stages:
   artifacts:
     paths:
-      - server/node_modules
+      - client/node_modules
 
 test:
   stage: test # Job test will run in parallel with the job prettier
