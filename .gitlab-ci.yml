@@ -1,10 +1,4 @@
-image: node:latest
-
-stages:
-  - build # Jobs placed in build-stage will run first
-  - test # Jobs placed in tets-stage will run after build-jobs
-
-install:
+client-build:
   stage: build
   script:
     - cd client
@@ -14,16 +8,16 @@ install:
     paths:
       - client/node_modules
 
-test:
-  stage: test # Job test will run in parallel with the job prettier
+backend-build:
+  stage: build
   script:
-    - apt-get update
-    - cd client
-    - npm test
+    - cd Backend
+    - "mvn install -B"
 
-prettier:
-  stage: test # Job prettier will run in parallel with the job test
+backend-test:
+  stage: test
   script:
-    - npm install --global prettier
-    - prettier --check client
+    - cd Backend
+    - mvn test
+  needs: ["backend-build"]
 
