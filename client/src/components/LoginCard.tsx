@@ -4,10 +4,22 @@ import styled from 'styled-components';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl/FormControl';
-import clsx from 'clsx';
+import { createMuiTheme } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#757ce8',
+      main: '#3f50b5',
+      dark: '#002884',
+      contrastText: '#fff',
+    },
+    secondary: {
+      main: '#f44336',
+      contrastText: '#000',
+    },
+  },
+});
 
 
 
@@ -49,31 +61,34 @@ const LoginCard = ({
   return (
     <LoginCardContainer>
       <h2>LOG IN</h2>
-        <TextField
-          style={{ width: '100%', marginBottom: 24 }}
-          label="Username"
-          onChange={onChangeUsername}
-          variant="outlined"
-          onKeyDown={onKeyDown}
-        />
-        <TextField
-          label="Password"
-          variant="outlined"
-          style={{ width: '100%', marginBottom: 24 }}
-          type={!showPassword ? "password" : "text"}
-          onChange={onChangePassword}
-          onKeyDown={onKeyDown}
-          InputProps = {{ endAdornment: <InputAdornment position="end">
-          <IconButton onClick={handleClickShowPassword} >
-            {showPassword ? <Visibility /> : <VisibilityOff />}
-          </IconButton>
+      <TextField
+        style={{ width: '100%', marginBottom: 24 }}
+        label="Username"
+        color="secondary"
+        onChange={onChangeUsername}
+        variant="outlined"
+        onKeyDown={onKeyDown}
+      />
+      <TextField
+        label="Password"
+        variant="outlined"
+        color = "secondary"
+        style={{ width: '100%', marginBottom: 24 }}
+        type={!showPassword ? "password" : "text"}
+        onChange={onChangePassword}
+        onKeyDown={onKeyDown}
+        InputProps={{
+          endAdornment: <InputAdornment position="end">
+            <IconButton onClick={handleClickShowPassword} >
+              {showPassword ? <Visibility /> : <VisibilityOff />}
+            </IconButton>
           </InputAdornment>
-          }}
-          />
+        }}
+      />
       <Button
         style={{ width: '100%', height: '50px' }}
         variant="contained"
-        color="secondary"
+        color="primary"
         onClick={onLogin}
       >
         LOG IN
@@ -81,7 +96,7 @@ const LoginCard = ({
       <Button
         style={{ width: '100%', marginTop: '15px', height: '50px' }}
         variant="contained"
-        color="secondary"
+        color="primary"
         onClick={onNewUser}
       >
         CREATE NEW USER

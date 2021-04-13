@@ -38,7 +38,7 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const onLogin = () => {
-        if (checkPassword()) {
+        if (!checkPassword()) {
             history.push('/HomePage');
         } else {
             alert("Vennligst fyll ut alt")
