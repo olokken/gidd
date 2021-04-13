@@ -2,7 +2,8 @@ import React, { ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
 import LoginCard from '../components/LoginCard';
 import { useHistory } from 'react-router-dom';
-import image from '../assets/GIDD.png'; 
+import image from '../assets/GIDD.png';
+
 
 const LoginContainer = styled.div`
     width: 100%;
@@ -29,25 +30,48 @@ const StyledLogo = styled.img`
     margin-right:70px; 
 `;
 
+
 const Login = () => {
     const history = useHistory();
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const onLogin = () => {
-        history.push('/HomePage');
+        if (checkPassword()) {
+            history.push('/HomePage');
+        } else {
+            alert("Vennligst fyll ut alt")
+        }
     };
 
+    const checkPassword = () => {
+        if (username !== '' && password !== '') {
+            return false;
+        }
+        return true;
+        //TODO legge flere sjekker
+    }
+    
+    const handleClickShowPassword = () => {
+        if(showPassword){
+            setShowPassword(false);
+        } else {
+            setShowPassword(true);
+        }
+    }
     const onNewUser = () => {
         history.push('/newUser');
     };
 
     const onChangeUsername = (event: ChangeEvent<HTMLInputElement>) => {
-        setUsername((event.target as HTMLInputElement).value);
+        const currentUsername: string = (event.target as HTMLInputElement).value
+        setUsername(currentUsername);
     };
 
     const onChangePassword = (event: ChangeEvent<HTMLInputElement>) => {
-        setPassword((event.target as HTMLInputElement).value);
+        const currentPassword: string = (event.target as HTMLInputElement).value
+        setPassword(currentPassword);
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
@@ -65,6 +89,8 @@ const Login = () => {
                 onChangePassword={onChangePassword}
                 onKeyDown={onKeyDown}
                 onNewUser={onNewUser}
+                handleClickShowPassword={handleClickShowPassword}
+                showPassword={showPassword}
             ></LoginCard>
         </LoginContainer>
     );
