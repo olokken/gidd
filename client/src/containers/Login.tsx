@@ -4,6 +4,7 @@ import LoginCard from '../components/LoginCard';
 import { useHistory } from 'react-router-dom';
 import image from '../assets/GIDD.png'; 
 
+
 const LoginContainer = styled.div`
     width: 100%;
     height: 100vh;
@@ -35,7 +36,7 @@ const Login = () => {
     const [password, setPassword] = useState<string>('');
 
     const onLogin = () => {
-        history.push('/HomePage');
+        history.push('/Activities');
     };
 
     const onNewUser = () => {
