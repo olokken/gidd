@@ -1,6 +1,7 @@
-import React, { ChangeEvent, useState } from 'react';
-import { TextField, Button } from '@material-ui/core';
+import React, { ChangeEvent} from 'react';
+import { TextField, Button, colors } from '@material-ui/core';
 import styled from 'styled-components';
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 const LoginCardContainer = styled.div`
   width: 30rem;
@@ -15,19 +16,16 @@ const LoginCardContainer = styled.div`
 `;
 
 interface Props {
-  createUser: (username: string,email:string, password: string) => boolean;
-  handleClickShowPassword: () => void;
-  showPassword:boolean;
   onChangeUsername: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeEmail:(e: ChangeEvent<HTMLInputElement>) => void;
   onChangePassword1: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangePassword2: (e: ChangeEvent<HTMLInputElement>) => void;
   onClick: () => void;
   equalPasswords:boolean;
-
+  correctEmailFormat:boolean;
 }
 
-const NewUserCard = ({ createUser, handleClickShowPassword, showPassword, onChangeUsername, onChangeEmail, onChangePassword1, onChangePassword2, onClick, equalPasswords }: Props) => {
+const NewUserCard = ({onChangeUsername, onChangeEmail, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat }: Props) => {
 
   return (
     <LoginCardContainer>
@@ -40,12 +38,22 @@ const NewUserCard = ({ createUser, handleClickShowPassword, showPassword, onChan
           variant="outlined"
           onChange={onChangeUsername}
         />
+        
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
           label="E-mail"
           color="secondary"
           variant="outlined"
           onChange={onChangeEmail}
+          InputProps={{
+            endAdornment:
+             <InputAdornment position="end" style= {{
+                fontSize:'10px',
+                color:'red'
+             }}>
+              {correctEmailFormat === false && <a>Email must include a @</a>}
+              </InputAdornment>
+          }}
         />
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
@@ -63,7 +71,7 @@ const NewUserCard = ({ createUser, handleClickShowPassword, showPassword, onChan
           type="password"
           onChange={onChangePassword2}
         />
-        {equalPasswords == false && <a>Passwords do not match</a>}
+        {equalPasswords === false && <a>Passwords do not match</a>}
         <Button
           style={{ width: '100%', height: '50px' }}
           variant="contained"

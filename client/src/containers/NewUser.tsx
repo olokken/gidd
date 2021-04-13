@@ -28,13 +28,12 @@ const NewUser = () => {
   const [email, setEmail] = useState<string>('');
   const [password1, setPassword1] = useState<string>('');
   const [password2, setPassword2] = useState<string>('');
-  const [showPassword, setShowPassword] = useState<boolean>(false);
   const equalPasswords: boolean = password1 === password2 ? true : false;
   const [emailList, setEmailList] = useState(['haavard.tysland@lyse.net']);
+  const correctEmailFormat = email.indexOf('@') > -1 ? true : false;
 
 
   const emailCheck = (email: string) => {
-
     if (emailList.indexOf(email) > -1) {
       return false;
     }
@@ -43,7 +42,6 @@ const NewUser = () => {
 
   const createUser = (username: string, email: string, password: string): boolean => {
     if (!emailCheck(email)) {
-      alert('Email er allerede opptatt')
       return false;
     }
     else if (!equalPasswords && password1 !== '') {
@@ -53,15 +51,6 @@ const NewUser = () => {
         history.push('/');
         console.log('New User Registered!\nUsername: ' + username + '\nE-mail: ' + email + '\nPassword: ' + password)
         return true; 
-      }
-    }
-
-
-    const handleClickShowPassword = () => {
-      if (showPassword) {
-        setShowPassword(false);
-      } else {
-        setShowPassword(true);
       }
     }
 
@@ -94,15 +83,13 @@ const NewUser = () => {
     return (
       <NewUsernContainer>
         <NewUserCard
-          createUser={createUser}
-          showPassword={showPassword}
-          handleClickShowPassword={handleClickShowPassword}
           onChangeUsername={onChangeUsername}
           onChangeEmail={onChangeEmail}
           onChangePassword1={onChangePassword1}
           onChangePassword2={onChangePassword2}
           onClick={onClick}
           equalPasswords={equalPasswords}
+          correctEmailFormat={correctEmailFormat}
         ></NewUserCard>
       </NewUsernContainer>
     );
