@@ -14,6 +14,7 @@ public class Activity {
     private String description;
     private int points;
     private byte[] image;
+    private ActivityLevel activity_level;
 
     public Activity(int id, String title, Timestamp time, int categoryId, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image){
         this.id = id;

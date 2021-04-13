@@ -7,10 +7,10 @@ public class User {
     private String first_name;
     private String surname;
     private int phone_number;
-    private int activity_level;
+    private ActivityLevel activity_level;
     private Provider auth_provider;
 
-    public User(int id, String email, String password, String firstName, String surname, int phoneNumber, int activityLevel){
+    public User(int id, String email, String password, String firstName, String surname, int phoneNumber, ActivityLevel activityLevel){
         this.id = id;
         this.email = email;
         this.password = password;
