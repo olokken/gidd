@@ -1,21 +1,32 @@
-import { AppBar, Button, Icon, Toolbar, Menu, MenuItem } from '@material-ui/core';
+import { AppBar, Button, Icon, Toolbar, Menu, MenuItem, makeStyles } from '@material-ui/core';
 import styled from 'styled-components';
 import IconButton from '@material-ui/core/IconButton';
-import React, {MouseEvent, useState, } from 'react'; 
+import React, {useState} from 'react'; 
 import { useHistory } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import ChatIcon from '@material-ui/icons/Chat';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import {  } from '@material-ui/core';
 
 const StyledNotificationMenu = styled.div`
     
 `;
 
+const useStyles = makeStyles({
+    customWidth: {
+        '& div': {
+            // this is just an example, you can use vw, etc.
+            width: '500px',
+            height: '1000px',
+        }
+    }
+});
 
 const Navbar = () => {
     const history = useHistory(); 
     const [anchorEl, setAnchorEl] = useState(null);
+    const classes = useStyles();
 
     const changeToMap = () => {
         history.push('/Map');
@@ -71,11 +82,15 @@ const Navbar = () => {
             </Toolbar>
         </AppBar>
         <Menu
+        style={{
+                width:"200px",
+                    }}
             id="dropdownNotifications"
             anchorEl={anchorEl}
             keepMounted
             open={Boolean(anchorEl)}
             onClose={handleCloseMenu}
+            className={classes.customWidth}
         >
             <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
             <MenuItem onClick={handleCloseMenu}>My account</MenuItem>
