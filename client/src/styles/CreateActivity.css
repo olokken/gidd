@@ -1,0 +1,14 @@
+.createactivity {
+    margin-top: 100px;
+    padding: 20px;
+}
+
+.createactivity__row {
+    display: flex;
+    padding: 20px;
+    margin: 20px;
+}
+
+.createactivity__row__item {
+    margin-right: 20px;
+}
