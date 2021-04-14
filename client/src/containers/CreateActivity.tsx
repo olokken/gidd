@@ -1,21 +1,7 @@
 import { TextField, Button, withStyles } from '@material-ui/core';
 import React, { useState, ChangeEvent } from 'react';
-import styled from 'styled-components';
-import calenderPic from '../assets/calender.png';
 import '../styles/CreateActivity.css';
-import Calendar from 'react-calendar';
 import axios from '../axios.jsx';
-
-const StyledDiv = styled.div`
-    margin-top: 100px;
-    margin-left: 20px;
-    padding: 20px;
-`;
-
-const StyledRow = styled.div`
-    display: flex;
-    margin: 20px;
-`;
 
 const StyledButton = withStyles({
     root: {
@@ -37,7 +23,12 @@ interface Activity {
     desc: string;
     date: Date;
     address: string;
-    equipment: string[];
+    equipmentList: Equipment[];
+}
+
+interface Equipment {
+    id: number;
+    description: string;
 }
 
 const url = '/activity';
@@ -47,7 +38,9 @@ const CreateActivity: React.FC = () => {
     const [desc, setDesc] = useState('');
     const [date, setDate] = useState<Date>(new Date());
     const [address, setAddress] = useState('');
-    const [equipment, setEquipment] = useState([]);
+    const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
+    const [equipmentDesc, setEquipmentDesc] = useState('');
+    const [counter, setCounter] = useState<number>(0);
 
     const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle((event.target as HTMLInputElement).value);
@@ -67,44 +60,61 @@ const CreateActivity: React.FC = () => {
         console.log(date);
     };
 
+    const onChangeEqipmentDesc = (
+        event: ChangeEvent<HTMLInputElement>
+    ): void => {
+        setEquipmentDesc((event.target as HTMLInputElement).value);
+    };
+
+    const addEquipment = (): boolean => {
+        if (equipmentDesc.length > 0 && equipmentDesc.charAt(0) !== ' ') {
+            const equipment: Equipment = {
+                id: counter,
+                description: equipmentDesc,
+            };
+            equipmentList.push(equipment);
+            setCounter(counter + 1);
+            setEquipmentDesc('');
+            return true;
+        } else {
+            console.log('Could not add equipment. Not a valid description');
+            setEquipmentDesc('');
+            return false;
+        }
+    };
+
     const createActivity = () => {
         const activity: Activity = {
             title: title,
             desc: desc,
             date: date,
             address: address,
-            equipment: equipment,
+            equipmentList: equipmentList,
         };
         console.log(activity);
         setTitle('');
         setDesc('');
         setDate(new Date());
         setAddress('');
-        setEquipment([]);
+        setEquipmentList([]);
 
         axios.post(url, activity);
     };
 
     return (
-        <div className="createactivity">
-            <h1 className="header">Opprett Aktivitet</h1>
-            <div className="createactivity__row">
-                <h2 className="createactivity__row__item">Tittel</h2>
+        <div className="grid-container">
+            <div className="header">
+                <h1>Legg til aktivitet</h1>
+            </div>
+            <div className="first-col-item second-row-item">
+                <h2>Tittel</h2>
                 <TextField
                     value={title}
                     onChange={onChangeTitle}
                     variant="outlined"
                 />
             </div>
-            <div className="createactivity__row">
-                <h2 className="createactivity__row__item">Beskrivelse</h2>
-                <TextField
-                    value={desc}
-                    onChange={onChangeDesc}
-                    variant="outlined"
-                />
-            </div>
-            <div className="createactivity__row">
+            <div className="second-col-item second-row-item">
                 <h2 className="createactivity__row__item">Tidspunkt</h2>
                 <TextField
                     label="Dato"
@@ -117,20 +127,47 @@ const CreateActivity: React.FC = () => {
                     variant="outlined"
                 />
             </div>
-            <div className="createactivity__row">
-                <h2 className="createactivity__row__item">Address</h2>
+            <div className="first-col-item third-row-item ">
+                <h2>Beskrivelse</h2>
+                <TextField
+                    className="desc-textfield"
+                    value={desc}
+                    onChange={onChangeDesc}
+                    variant="outlined"
+                    rows={4}
+                    multiline
+                />
+            </div>
+            <div className="third-col-item second-row-item">
+                <h2>Address</h2>
                 <TextField
                     value={address}
                     onChange={onChangeAddress}
                     variant="outlined"
                 />
             </div>
-            <div className="createactivity__row">
-                <h2 className="createactivity__row__item">Utstyr</h2>
-                <TextField variant="outlined" />
-                <StyledButton>Legg Til</StyledButton>
+            <div className="first-col-item fourth-row-item equipment">
+                <h2>Utstyr</h2>
+                <TextField
+                    value={equipmentDesc}
+                    variant="outlined"
+                    onChange={onChangeEqipmentDesc}
+                />
+                <StyledButton onClick={addEquipment}>Legg Til</StyledButton>
             </div>
-            <StyledButton onClick={createActivity}>Opprett</StyledButton>
+            <div className="second-col-item fourth-row-item">
+                <h2>Liste</h2>
+                <ul>
+                    {equipmentList.map((equipment) => (
+                        <li key={equipment.id}>{equipment.description}</li>
+                    ))}
+                </ul>
+            </div>
+            <div className="bottom-left">
+                <StyledButton onClick={createActivity}>
+                    Opprett Aktivitet
+                </StyledButton>
+            </div>
         </div>
     );
 };
