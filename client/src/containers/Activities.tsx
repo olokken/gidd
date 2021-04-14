@@ -4,14 +4,13 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import { TextField, Button } from '@material-ui/core';
+import ActivityPopup from '../components/CreateActivity/ActivityPopup';
+import ActivityForm from '../components/CreateActivity/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/Filters/SideFilter';
 import SortMenu from '../components/Sorting/SortMenu';
-import AddBox from '@material-ui/icons/AddBox';
 import Activity, { ActivityList } from '../interfaces/Activity';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
-import ActivityCard from '../components/ActivityComponents/ActivityCard';
 import AddButton from '../components/AddButton';
 
 //Endringer kan forekomme her
@@ -30,18 +29,19 @@ const AddAndSort = styled.div`
 const View = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content:center; 
+    justify-content: center;
     width: 75%;
     margin-left: 3rem;
     margin-top: 10px;
-    margin-right:3rem; 
+    margin-right: 3rem;
 `;
 
 const Activities = () => {
     const [activities, setActivities] = useState<Activity[]>([]);
+    const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     const onClickAddButton = () => {
-        console.log('Trykket på addbutton');
+        setOpenPopup(!openPopup);
     };
 
     useEffect(() => {
@@ -57,6 +57,16 @@ const Activities = () => {
                 <AddAndSort>
                     <SortMenu></SortMenu>
                     <AddButton onClick={onClickAddButton}></AddButton>
+                    <ActivityPopup
+                        title="Legg til aktivitet"
+                        openPopup={openPopup}
+                        setOpenPopup={setOpenPopup}
+                    >
+                        <ActivityForm
+                            openPopup={openPopup}
+                            setOpenPopup={setOpenPopup}
+                        />
+                    </ActivityPopup>
                 </AddAndSort>
                 <ActivityGrid activities={activities}></ActivityGrid>
             </View>
