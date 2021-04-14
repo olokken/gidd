@@ -22,8 +22,8 @@ public abstract class GiddRepo {
         input.close();
 
         newProperties.put("javax.persistence.jdbc.url", "jdbc:mysql://mysql.stud.iie.ntnu.no:3306/" + prop.getProperty("URL"));
-        newProperties.put("javax.persistence.jdbc.user", prop.getProperty("USERNAME"));
-        newProperties.put("javax.persistence.jdbc.password", prop.getProperty("PASSWORD"));
+        newProperties.put("javax.persistence.jdbc.user", prop.getProperty("spring.datasource.username"));
+        newProperties.put("javax.persistence.jdbc.password", prop.getProperty("spring.datasource.password"));
 
         emf = javax.persistence.Persistence.createEntityManagerFactory("DatabasePU", newProperties);
     }
