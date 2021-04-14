@@ -4,6 +4,17 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
 import java.util.List;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+
+
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.persistence.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 
 @Entity
 public class User {
@@ -25,19 +36,63 @@ public class User {
     @CascadeOnDelete
     @OneToMany(mappedBy = "User")
     private List<ActivityUser> activities;
+    private String salt;
 
     //Konstrutøren må tilpasses
     public User(int id, String email, String password, String firstName, String surname, int phoneNumber, ActivityLevel activityLevel, int points, List<Activity> activities){
         this.userId = id;
         this.email = email;
-        this.password = password;
         this.firstName = firstName;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
         this.activityLevel = activityLevel;
         this.points = points;
         //this.activities = activities;
+
+        //generates random salt
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+
+        //convert password to char arra
+        char[] passwordChars = password.toCharArray();
+        //password hashed with salt
+        byte[] hashedBytes = hashPassword(passwordChars, salt);
+
+        //convert hashed password to string to store in datbase
+        String hashedString = Hex.encodeHexString(hashedBytes);
+        //convert byte to string
+        this.salt = org.apache.commons.codec.binary.Base64.encodeBase64String(salt);
+        this.password = hashedString;
     }
+
+    private byte[] hashPassword(final char[] password, final byte[] salt) {
+        //high iterations slows down algorithm
+        int iterations = 10000;
+        int keyLength = 512;
+
+        try {
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+            //encodes password
+            PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, keyLength);
+            SecretKey key = skf.generateSecret(spec);
+            return key.getEncoded();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    boolean verifyPassword(String testPassword) {
+        //the password that is to be tested
+        if (testPassword == null) return false;
+        char[] passwordChars = testPassword.toCharArray();
+        byte[] saltBytes = Base64.decodeBase64(salt);
+        byte[] hashedBytes = hashPassword(passwordChars, saltBytes);
+        String hashedString = Hex.encodeHexString(hashedBytes);
+        return (hashedString.equals(password));
+    }
+
+
 
     public User(){}
 
