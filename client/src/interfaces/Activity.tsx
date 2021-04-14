@@ -23,7 +23,7 @@ export function ActivityList(): Activity[] {
         owner: 'Ole',
         capacity: 10,
         maxCapacity: 20,
-        description: 'Her skal vi kose oss',
+        description: 'Her skal vi kose oss og ae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim',
         level: 'Middels',
     };
     const akt2: Activity = {
@@ -83,7 +83,7 @@ export function ActivityList(): Activity[] {
         owner: 'Håvard',
         capacity: 10,
         maxCapacity: 20,
-        description: 'Her skal vi kjede oss masse masse mye',
+        description: 'Her skal vi kjede oss masse masse mye ',
         level: 'Høy',
     };
 
