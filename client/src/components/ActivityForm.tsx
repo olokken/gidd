@@ -1,6 +1,6 @@
-import { TextField, Button, withStyles } from '@material-ui/core';
+import { TextField, Button, withStyles, Typography } from '@material-ui/core';
 import React, { useState, ChangeEvent } from 'react';
-import '../styles/CreateActivity.css';
+import '../styles/ActivityForm.css';
 import axios from '../axios.jsx';
 
 const StyledButton = withStyles({
@@ -31,16 +31,24 @@ interface Equipment {
     description: string;
 }
 
+//TODO change the url
 const url = '/activity';
 
-const CreateActivity: React.FC = () => {
+interface Props {
+    openPopup: boolean;
+    setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const CreateActivity = ({ openPopup, setOpenPopup }: Props) => {
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
     const [date, setDate] = useState<Date>(new Date());
+    const [dateDisplay, setDateDisplay] = useState<string>('');
     const [address, setAddress] = useState('');
     const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
     const [equipmentDesc, setEquipmentDesc] = useState('');
     const [counter, setCounter] = useState<number>(0);
+    const [reset, setReset] = useState<boolean>(false);
 
     const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle((event.target as HTMLInputElement).value);
@@ -56,8 +64,8 @@ const CreateActivity: React.FC = () => {
 
     const onChangeDate = (event: ChangeEvent<HTMLInputElement>): void => {
         const strDate: string = (event.target as HTMLInputElement).value;
+        setDateDisplay(strDate);
         setDate(new Date(strDate));
-        console.log(date);
     };
 
     const onChangeEqipmentDesc = (
@@ -66,21 +74,24 @@ const CreateActivity: React.FC = () => {
         setEquipmentDesc((event.target as HTMLInputElement).value);
     };
 
-    const addEquipment = (): boolean => {
-        if (equipmentDesc.length > 0 && equipmentDesc.charAt(0) !== ' ') {
-            const equipment: Equipment = {
-                id: counter,
-                description: equipmentDesc,
-            };
-            equipmentList.push(equipment);
-            setCounter(counter + 1);
-            setEquipmentDesc('');
-            return true;
-        } else {
-            console.log('Could not add equipment. Not a valid description');
-            setEquipmentDesc('');
-            return false;
+    const addEquipment = (event: React.KeyboardEvent): boolean => {
+        if (event.key === 'Enter') {
+            if (equipmentDesc.length > 0 && equipmentDesc.charAt(0) !== ' ') {
+                const equipment: Equipment = {
+                    id: counter,
+                    description: equipmentDesc,
+                };
+                equipmentList.push(equipment);
+                setCounter(counter + 1);
+                setEquipmentDesc('\n');
+                setReset(false);
+                return true;
+            } else {
+                console.log('Could not add equipment. Not a valid description');
+                setEquipmentDesc('');
+            }
         }
+        return false;
     };
 
     const createActivity = () => {
@@ -92,45 +103,64 @@ const CreateActivity: React.FC = () => {
             equipmentList: equipmentList,
         };
         console.log(activity);
+
+        handleReset();
+        //TODO: Post this to backend.
+        axios.post(url, activity);
+        //.then
+        setOpenPopup(!openPopup);
+    };
+
+    const handleReset = () => {
+        setReset(true);
         setTitle('');
         setDesc('');
-        setDate(new Date());
         setAddress('');
+        setDate(new Date());
+        setDateDisplay('');
+        setEquipmentDesc('');
         setEquipmentList([]);
-
-        axios.post(url, activity);
+        setCounter(0);
     };
 
     return (
-        <div className="grid-container">
-            <div className="header">
-                <h1>Legg til aktivitet</h1>
-            </div>
-            <div className="first-col-item second-row-item">
-                <h2>Tittel</h2>
+        <div className="activityform">
+            <div>
                 <TextField
+                    className="textfield"
+                    label="Tittel"
                     value={title}
                     onChange={onChangeTitle}
                     variant="outlined"
                 />
             </div>
-            <div className="second-col-item second-row-item">
-                <h2 className="createactivity__row__item">Tidspunkt</h2>
+            <div>
+                <TextField
+                    label="Adresse"
+                    value={address}
+                    onChange={onChangeAddress}
+                    variant="outlined"
+                    className="textfield"
+                />
+            </div>
+            <div>
                 <TextField
                     label="Dato"
                     type="datetime-local"
-                    defaultValue={new Date()}
+                    defaultValue={dateDisplay}
+                    value={dateDisplay}
                     InputLabelProps={{
                         shrink: true,
                     }}
                     onChange={onChangeDate}
                     variant="outlined"
+                    className="textfield"
                 />
             </div>
-            <div className="first-col-item third-row-item ">
-                <h2>Beskrivelse</h2>
+            <div>
                 <TextField
-                    className="desc-textfield"
+                    className="description"
+                    label="Beskrivelse"
                     value={desc}
                     onChange={onChangeDesc}
                     variant="outlined"
@@ -138,34 +168,27 @@ const CreateActivity: React.FC = () => {
                     multiline
                 />
             </div>
-            <div className="second-col-item third-row-item">
-                <h2>Address</h2>
-                <TextField
-                    value={address}
-                    onChange={onChangeAddress}
-                    variant="outlined"
-                />
-            </div>
-            <div className="first-col-item fourth-row-item equipment">
-                <h2>Utstyr</h2>
-                <TextField
-                    value={equipmentDesc}
-                    variant="outlined"
-                    onChange={onChangeEqipmentDesc}
-                />
-                <StyledButton onClick={addEquipment}>Legg Til</StyledButton>
-            </div>
-            <div className="second-col-item fourth-row-item">
-                <h2>Liste</h2>
-                <ul>
-                    {equipmentList.map((equipment) => (
+            <TextField
+                className="textfield"
+                label="Utstyr"
+                value={equipmentDesc}
+                variant="outlined"
+                onChange={onChangeEqipmentDesc}
+                onKeyPress={addEquipment}
+            />
+            <h2>Utstyrsliste</h2>
+            <ul>
+                {reset === false &&
+                    equipmentList.map((equipment) => (
                         <li key={equipment.id}>{equipment.description}</li>
                     ))}
-                </ul>
-            </div>
-            <div className="bottom-left">
-                <StyledButton onClick={createActivity}>
+            </ul>
+            <div className="buttons">
+                <StyledButton className="button" onClick={createActivity}>
                     Opprett Aktivitet
+                </StyledButton>
+                <StyledButton className="button" onClick={handleReset}>
+                    Reset
                 </StyledButton>
             </div>
         </div>
