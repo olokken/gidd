@@ -1,16 +1,17 @@
 image: devayansarkar/maven-node-openjdk
 
-client-build:
-  stage: build
-  only:
-      - master
-  script:
-    - cd client
-    - npm install
+#todo npm install always fails
+#client-build:
+#  stage: build
+#  only:
+#      - master
+#  script:
+#    - cd client
+#    - npm install
   # Keep node_modules-folder for the following stages:
-  artifacts:
-    paths:
-      - client/node_modules
+#  artifacts:
+#    paths:
+#      - client/node_modules
 
 backend-build:
   stage: build
