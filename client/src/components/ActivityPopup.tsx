@@ -1,5 +1,4 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import Controls from './controls/Controls';
 import {
     Dialog,
     DialogTitle,
