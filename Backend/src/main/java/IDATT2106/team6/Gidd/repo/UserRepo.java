@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 @Repository
 public class UserRepo extends GiddRepo {
@@ -113,5 +114,20 @@ public class UserRepo extends GiddRepo {
 
         assert allUsers != null;
         return new ArrayList<>(allUsers);
+    }
+
+    public User findUserByEmail(String email){
+        EntityManager em = getEm();
+
+        try{
+            TypedQuery q = em.createQuery("SELECT a FROM User a WHERE a.email = ?1", User.class);
+            q.setParameter(1, email);
+            return (User)q.getSingleResult();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }finally {
+            em.close();
+        }
     }
 }
