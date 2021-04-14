@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Switch } from 'react-router';
-import Navbar from './components/NavBar';
+import Navbar from './components/NavBar/NavBar';
 import Activities from './containers/Activities';
 import Login from './containers/Login';
 import Map from './containers/Map';
