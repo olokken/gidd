@@ -16,9 +16,6 @@ interface Props {
 }
 
 const ActivityGrid = ({ activities }: Props) => {
-    useEffect(() => {
-        console.log(activities.length/36 + 1); 
-    }, []); 
     return (
         <Container>
             <h2>Tilgjengelige Aktiviteter</h2>
@@ -27,9 +24,9 @@ const ActivityGrid = ({ activities }: Props) => {
                 cols={3}
                 style={{ display: 'flex', justifyContent: 'center' }}
             >
-                {activities.map((act) => (
+                {activities.map((act, index) => (
                     <ActivityCard
-                        key={act.ID}
+                        key={index}
                         ID={act.ID}
                         title={act.title}
                         time={act.time}
@@ -43,7 +40,7 @@ const ActivityGrid = ({ activities }: Props) => {
             </GridList>
             <Pageination
                 style={{ justifyContent: 'center', display: 'flex' }}
-                count={activities.length/36}
+                count={Math.ceil(activities.length / 36)}
                 size="large"
             />
         </Container>

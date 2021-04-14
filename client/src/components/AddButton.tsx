@@ -9,7 +9,7 @@ const AddButton = ({ onClick }: Props) => {
     return (
         <Button onClick={onClick} variant="contained" color="primary">
             Legg til ny aktivitet
-            <AddBox style={{ marginLeft: '8px' }}></AddBox>
+            <AddBox style={{ marginLeft: '8px'}}></AddBox>
         </Button>
     );
 };
