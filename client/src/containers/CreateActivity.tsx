@@ -138,7 +138,7 @@ const CreateActivity: React.FC = () => {
                     multiline
                 />
             </div>
-            <div className="third-col-item second-row-item">
+            <div className="second-col-item third-row-item">
                 <h2>Address</h2>
                 <TextField
                     value={address}
