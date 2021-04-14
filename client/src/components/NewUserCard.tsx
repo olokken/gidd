@@ -50,7 +50,7 @@ const NewUserCard = ({onChangeUsername, onChangeEmail, onChangePassword1, onChan
             endAdornment:
              <InputAdornment position="end" style= {{
                 fontSize:'10px',
-                color:'red'
+                color:'#f44336'
              }}>
               {correctEmailFormat === false && <a>Email must include a @</a>}
               </InputAdornment>

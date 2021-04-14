@@ -30,12 +30,24 @@ const StyledLogo = styled.img`
     margin-right:70px; 
 `;
 
+interface User {
+    username:string,
+    email:string,
+    userID:string,
+    name:string,
+    picture:string
+}
 
 const Login = () => {
     const history = useHistory();
     const [username, setUsername] = useState<string>('');
+    const [userID, setUserID] = useState<string>('');
+    const [name, setName] = useState<string>('');
+    const [picture, setPicture] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [user, setUser] = useState<User>();
+
 
     const onLogin = () => {
         if (!checkPassword()) {
@@ -52,14 +64,15 @@ const Login = () => {
         return true;
         //TODO legge flere sjekker
     }
-    
+
     const handleClickShowPassword = () => {
-        if(showPassword){
+        if (showPassword) {
             setShowPassword(false);
         } else {
             setShowPassword(true);
         }
     }
+
     const onNewUser = () => {
         history.push('/newUser');
     };
@@ -80,6 +93,27 @@ const Login = () => {
         }
     };
 
+
+    const responseGoogle = (response: any) => {
+        console.log( response.profileObj);
+        setUsername(response.profileObj.email);
+        setUserID(response.profileObj.id);
+        setName(response.profileObj.name);
+        setPicture(response.profileObj.picture);
+      }
+
+      const responseFacebook =  async(response:any) => {
+        console.log(response)
+        //setEmail(answer.email)
+        //setUserID(answer.userID)
+        //setName(answer.name)
+        //setPicture(answer.picture.data.url)
+    }
+
+    const componentClicked  = () => {
+        console.log('clicked')
+    }
+
     return (
         <LoginContainer>
             <StyledLogo src={image}></StyledLogo>
@@ -91,6 +125,9 @@ const Login = () => {
                 onNewUser={onNewUser}
                 handleClickShowPassword={handleClickShowPassword}
                 showPassword={showPassword}
+                responseGoogle={responseGoogle}
+                responseFacebook={responseFacebook}
+                componentClicked={componentClicked}
             ></LoginCard>
         </LoginContainer>
     );

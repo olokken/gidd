@@ -4,22 +4,11 @@ import styled from 'styled-components';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
-import { createMuiTheme } from '@material-ui/core/styles';
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      light: '#757ce8',
-      main: '#3f50b5',
-      dark: '#002884',
-      contrastText: '#fff',
-    },
-    secondary: {
-      main: '#f44336',
-      contrastText: '#000',
-    },
-  },
-});
+import Facebook from './Facebook'
+import Google from './Google'
+import GoogleLogin from 'react-google-login';
+import GoogleButton from 'react-google-button';
+import FacebookLogin, { ReactFacebookLoginInfo } from 'react-facebook-login';
 
 
 
@@ -36,6 +25,22 @@ const LoginCardContainer = styled.div`
   border-radius: 8px;
 `;
 
+
+const FacebookContainer = styled.div`
+  width: 85%;
+`;
+
+const GoogleContainer = styled.div`
+`;
+
+const SocialMediaContainer = styled.div`
+  width: 90%;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows:auto;
+  margin-top:15px;
+`
+
 interface Props {
   onLogin: () => void;
   onNewUser: () => void;
@@ -44,6 +49,9 @@ interface Props {
   onKeyDown: (e: any) => void;
   handleClickShowPassword: () => void;
   showPassword: boolean;
+  responseGoogle: (response:any) => void;
+  responseFacebook: (response:any) => void;
+  componentClicked: (data:any) => void;
 }
 
 
@@ -56,7 +64,10 @@ const LoginCard = ({
   onChangePassword,
   onKeyDown,
   handleClickShowPassword,
-  showPassword
+  showPassword,
+  responseGoogle,
+  responseFacebook,
+  componentClicked
 }: Props) => {
   return (
     <LoginCardContainer>
@@ -72,7 +83,7 @@ const LoginCard = ({
       <TextField
         label="Password"
         variant="outlined"
-        color = "secondary"
+        color="secondary"
         style={{ width: '100%', marginBottom: 24 }}
         type={!showPassword ? "password" : "text"}
         onChange={onChangePassword}
@@ -101,6 +112,25 @@ const LoginCard = ({
       >
         CREATE NEW USER
       </Button>
+      <SocialMediaContainer>
+        <FacebookContainer><FacebookLogin
+        appId="124734739639594"
+        autoLoad={true}
+        fields="name,email,picture"
+        onClick={componentClicked}
+        callback={responseFacebook} /></FacebookContainer>
+        <GoogleContainer>
+                <GoogleLogin
+                    clientId='829161936578-7u42ghop2aqmgs3e4n98907euik21jrt.apps.googleusercontent.com'
+                    buttonText='Login with Google'
+                    //fields="name,email,picture"
+                    onSuccess={responseGoogle}
+                    onFailure={responseGoogle}
+                    cookiePolicy={'single_host_origin'}
+                    isSignedIn={true}               
+                />
+            </GoogleContainer>     
+        </SocialMediaContainer>
     </LoginCardContainer>
   );
 };
