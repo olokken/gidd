@@ -17,6 +17,10 @@ public class ActivityRepo extends GiddRepo {
         connect();
     }
 
+    public void doNothing(){
+        System.out.println("haha i did something");
+    }
+
     public EntityManager getEm(){
         return super.emf.createEntityManager();
     }
@@ -28,6 +32,8 @@ public class ActivityRepo extends GiddRepo {
 
     public boolean addActivity(Activity activity){
         EntityManager em = getEm();
+
+        System.out.println(activity);
 
         try {
             em.getTransaction().begin();

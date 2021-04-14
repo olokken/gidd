@@ -124,4 +124,9 @@ public class Activity {
     public Timestamp getTimeCreated() {
         return timeCreated;
     }
+
+    @Override
+    public String toString() {
+        return "userid: " + getUserId();
+    }
 }
