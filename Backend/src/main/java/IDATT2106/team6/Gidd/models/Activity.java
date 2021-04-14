@@ -39,8 +39,12 @@ public class Activity {
     @CascadeOnDelete
     @OneToMany(mappedBy = "Activity")
     private List<ActivityUser> registeredParticipants;
+    @Column(name = "time_created")
+    private Timestamp timeCreated;
 
-    public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity, int groupId, String description, byte[] image, ActivityLevel activityLevel, List<Tag> tags, double latitude, double longitude){
+    public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity,
+                    int groupId, String description, byte[] image, ActivityLevel activityLevel,
+                    List<Tag> tags, double latitude, double longitude, Timestamp timeCreated){
         this.activityId = id;
         this.title = title;
         this.time = time;
@@ -56,6 +60,7 @@ public class Activity {
         this.longitude = longitude;
         this.equipments = new ArrayList<>();
         this.registeredParticipants = new ArrayList<>();
+        this.timeCreated = timeCreated;
     }
 
     public Activity(){}
@@ -114,5 +119,9 @@ public class Activity {
 
     public List<ActivityUser> getRegisteredParticipants() {
         return registeredParticipants;
+    }
+
+    public Timestamp getTimeCreated() {
+        return timeCreated;
     }
 }
