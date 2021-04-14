@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-
+import java.util.ArrayList;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -39,19 +39,31 @@ public class User {
     private List<ActivityUser> activities;
     private String salt;
 
+<<<<<<< HEAD
     public User(int id, String email, String password, String firstName, String surname, int phoneNumber, ActivityLevel activityLevel, int points, Provider provider){
+=======
+    //Konstrutøren må tilpasses
+    public User(int id, String email, String password,
+                String firstName, String surname,
+                int phoneNumber, ActivityLevel activityLevel){
+>>>>>>> 88848c5 (login/register service + controller waiting for repo)
         this.userId = id;
         this.email = email;
         this.firstName = firstName;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
         this.activityLevel = activityLevel;
+<<<<<<< HEAD
         this.points = points;
 <<<<<<< HEAD
         this.authProvider = provider;
         this.activities = new ArrayList<ActivityUser>();
 =======
         //this.activities = activities;
+=======
+        this.points = 0;
+        this.activities = new ArrayList<ActivityUser>();
+>>>>>>> 88848c5 (login/register service + controller waiting for repo)
 
         //generates random salt
         SecureRandom random = new SecureRandom();
@@ -87,7 +99,7 @@ public class User {
         }
     }
 
-    boolean verifyPassword(String testPassword) {
+    public boolean verifyPassword(String testPassword) {
         //the password that is to be tested
         if (testPassword == null) return false;
         char[] passwordChars = testPassword.toCharArray();
@@ -177,4 +189,20 @@ public class User {
         this.authProvider = authProvider;
     }
 
+    @java.lang.Override
+    public java.lang.String toString() {
+        return "User{" +
+            "userId=" + userId +
+            ", email=" + email +
+            ", password=" + password +
+            ", firstName=" + firstName +
+            ", surname=" + surname +
+            ", phoneNumber=" + phoneNumber +
+            ", activityLevel=" + activityLevel +
+            ", points=" + points +
+            ", authProvider=" + authProvider +
+            ", activities=" + activities +
+            ", salt=" + salt +
+            '}';
+    }
 }
