@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,6 +19,7 @@ public class Equipment {
     public Equipment(int equipmentId, String description){
         this.equipmentId = equipmentId;
         this.description = description;
+        this.activities = new ArrayList<>();
     }
 
     public Equipment(){}
@@ -28,6 +30,10 @@ public class Equipment {
 
     public String getDescription() {
         return description;
+    }
+
+    public List<ActivityEquipment> getActivities() {
+        return activities;
     }
 
     public void setEquipmentId(int equipmentId) {

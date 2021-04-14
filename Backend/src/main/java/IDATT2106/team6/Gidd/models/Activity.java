@@ -4,6 +4,7 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -39,8 +40,7 @@ public class Activity {
     @OneToMany(mappedBy = "Activity")
     private List<ActivityUser> registeredParticipants;
 
-    //Kontruktør må fikses i forhold til hva man trenger
-    public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image, ActivityLevel activityLevel, List<Tag> tags, double latitude, double longitude, List<Equipment> equipments){
+    public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity, int groupId, String description, byte[] image, ActivityLevel activityLevel, List<Tag> tags, double latitude, double longitude){
         this.activityId = id;
         this.title = title;
         this.time = time;
@@ -54,6 +54,8 @@ public class Activity {
         this.tags = tags;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.equipments = new ArrayList<>();
+        this.registeredParticipants = new ArrayList<>();
     }
 
     public Activity(){}
@@ -104,5 +106,13 @@ public class Activity {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    public List<ActivityEquipment> getEquipments() {
+        return equipments;
+    }
+
+    public List<ActivityUser> getRegisteredParticipants() {
+        return registeredParticipants;
     }
 }

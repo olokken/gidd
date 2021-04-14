@@ -3,6 +3,7 @@ package IDATT2106.team6.Gidd.models;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,8 +27,7 @@ public class User {
     @OneToMany(mappedBy = "User")
     private List<ActivityUser> activities;
 
-    //Konstrutøren må tilpasses
-    public User(int id, String email, String password, String firstName, String surname, int phoneNumber, ActivityLevel activityLevel, int points, List<Activity> activities){
+    public User(int id, String email, String password, String firstName, String surname, int phoneNumber, ActivityLevel activityLevel, int points, Provider provider){
         this.userId = id;
         this.email = email;
         this.password = password;
@@ -36,7 +36,8 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.activityLevel = activityLevel;
         this.points = points;
-        //this.activities = activities;
+        this.authProvider = provider;
+        this.activities = new ArrayList<ActivityUser>();
     }
 
     public User(){}
