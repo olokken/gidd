@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public abstract class GiddRepo {
-    private static EntityManagerFactory emf;
+    protected static EntityManagerFactory emf;
 
     public void connect() throws IOException {
         Properties prop = new Properties();

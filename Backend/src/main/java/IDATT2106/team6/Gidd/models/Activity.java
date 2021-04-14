@@ -4,6 +4,7 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,7 @@ public class Activity {
     @CascadeOnDelete
     @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_id")
-    private int userId;
+    private User user;
     private int capacity;
     //Ikke laget klasse. Lar den være for nå
     @Column(name = "group_id")
@@ -38,14 +39,17 @@ public class Activity {
     @CascadeOnDelete
     @OneToMany(mappedBy = "Activity")
     private List<ActivityUser> registeredParticipants;
+    @Column(name = "time_created")
+    private Timestamp timeCreated;
 
-    //Kontruktør må fikses i forhold til hva man trenger
-    public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image, ActivityLevel activityLevel, List<Tag> tags, double latitude, double longitude, List<Equipment> equipments){
+    public Activity(int id, String title, Timestamp time, int repeat, User user, int capacity,
+                    int groupId, String description, byte[] image, ActivityLevel activityLevel,
+                    List<Tag> tags, double latitude, double longitude, Timestamp timeCreated){
         this.activityId = id;
         this.title = title;
         this.time = time;
         this.daysToRepeat = repeat;
-        this.userId = userId;
+        this.user = user;
         this.capacity = capacity;
         this.groupId = groupId;
         this.description = description;
@@ -54,6 +58,9 @@ public class Activity {
         this.tags = tags;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.equipments = new ArrayList<>();
+        this.registeredParticipants = new ArrayList<>();
+        this.timeCreated = timeCreated;
     }
 
     public Activity(){}
@@ -74,8 +81,8 @@ public class Activity {
         return daysToRepeat;
     }
 
-    public int getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     public int getCapacity() {
@@ -88,6 +95,10 @@ public class Activity {
 
     public String getDescription() {
         return description;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
     }
 
     public byte[] getImage() {
@@ -104,5 +115,17 @@ public class Activity {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    public List<ActivityEquipment> getEquipments() {
+        return equipments;
+    }
+
+    public List<ActivityUser> getRegisteredParticipants() {
+        return registeredParticipants;
+    }
+
+    public Timestamp getTimeCreated() {
+        return timeCreated;
     }
 }
