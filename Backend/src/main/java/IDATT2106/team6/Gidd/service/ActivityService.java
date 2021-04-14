@@ -3,6 +3,7 @@ package IDATT2106.team6.Gidd.service;
 import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.ActivityLevel;
 import IDATT2106.team6.Gidd.models.Tag;
+import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.repo.ActivityRepo;
 import IDATT2106.team6.Gidd.repo.GiddRepo;
 import java.sql.Timestamp;
@@ -20,25 +21,22 @@ public class ActivityService {
         repo.doNothing();
     }
 
-    public void addActivity(/*int id, */String title, Timestamp time, int repeat, int userId,
+        public void addActivity(int id, String title, Timestamp time, int repeat, User userId,
                                         int capacity, int groupId, String description, byte[] image,
                                         ActivityLevel activityLevel, List<Tag> tags,
                                         double latitude, double longitude) {
         Date today = new Date();
+        Timestamp currentTime = new Timestamp(today.getTime());
 
         Activity newActivity =
-            new Activity(getRandomID(), title, time, repeat, userId,
+            new Activity(id, title, time, repeat, userId,
                 capacity, groupId, description, image, activityLevel, tags,
-                latitude, longitude, new Timestamp(today.getTime()));
+                latitude, longitude, currentTime);
 
         repo.addActivity(newActivity);
     }
 
     public void testNewActivity(Activity object){
         repo.addActivity(object);
-    }
-
-    private int getRandomID() {
-        return 1;
     }
 }

@@ -13,4 +13,8 @@ public class UserService {
     public void testNewUser(User user){
         repo.addUser(user);
     }
+
+    public User getUser(int userId){
+        return repo.findUser(userId);
+    }
 }

@@ -33,8 +33,6 @@ public class ActivityRepo extends GiddRepo {
     public boolean addActivity(Activity activity){
         EntityManager em = getEm();
 
-        System.out.println(activity);
-
         try {
             em.getTransaction().begin();
             em.persist(activity);
