@@ -12,6 +12,7 @@ import AddBox from '@material-ui/icons/AddBox';
 import Activity, { ActivityList } from '../interfaces/Activity';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
 import ActivityCard from '../components/ActivityComponents/ActivityCard';
+import AddButton from '../components/AddButton';
 
 //Endringer kan forekomme her
 
@@ -29,12 +30,19 @@ const AddAndSort = styled.div`
 const View = styled.div`
     display: flex;
     flex-direction: column;
+    justify-content:center; 
     width: 75%;
-    margin-left: 2rem;
+    margin-left: 3rem;
+    margin-top: 10px;
+    margin-right:3rem; 
 `;
 
 const Activities = () => {
     const [activities, setActivities] = useState<Activity[]>([]);
+
+    const onClickAddButton = () => {
+        console.log('Trykket på addbutton');
+    };
 
     useEffect(() => {
         const Liste = ActivityList();
@@ -42,24 +50,13 @@ const Activities = () => {
         setActivities(Liste);
     }, []);
 
-    const onClick = () => {
-        console.log(activities);
-    };
-
     return (
         <Container>
             <SideFilter></SideFilter>
             <View>
                 <AddAndSort>
                     <SortMenu></SortMenu>
-                    <AddBox
-                        onClick={onClick}
-                        style={{
-                            width: '3rem',
-                            height: '3rem',
-                            marginTop: '0.5rem',
-                        }}
-                    ></AddBox>
+                    <AddButton onClick={onClickAddButton}></AddButton>
                 </AddAndSort>
                 <ActivityGrid activities={activities}></ActivityGrid>
             </View>

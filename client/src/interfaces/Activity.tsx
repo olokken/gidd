@@ -87,5 +87,5 @@ export function ActivityList(): Activity[] {
         level: 'Høy',
     };
 
-    return [akt1, akt2, akt3, akt4, akt5, akt6, akt7];
+    return [akt1, akt2, akt3, akt4, akt5, akt6, akt7, akt1, akt2, akt3, akt4, akt5, akt6, akt7,akt1, akt2, akt3, akt4, akt5, akt6, akt7,akt1, akt2, akt3, akt4, akt5, akt6, akt7,akt1, akt2, akt3, akt4, akt5, akt6, akt7,akt1, akt2, akt3, akt4, akt5, akt6, akt7];
 }
