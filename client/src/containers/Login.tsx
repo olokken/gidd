@@ -40,7 +40,7 @@ interface User {
 
 const Login = () => {
     const history = useHistory();
-    const [username, setUsername] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
     const [userID, setUserID] = useState<string>('');
     const [name, setName] = useState<string>('');
     const [picture, setPicture] = useState<string>('');
@@ -58,7 +58,7 @@ const Login = () => {
     };
 
     const checkPassword = () => {
-        if (username !== '' && password !== '') {
+        if (email !== '' && password !== '') {
             return false;
         }
         return true;
@@ -77,9 +77,9 @@ const Login = () => {
         history.push('/newUser');
     };
 
-    const onChangeUsername = (event: ChangeEvent<HTMLInputElement>) => {
-        const currentUsername: string = (event.target as HTMLInputElement).value
-        setUsername(currentUsername);
+    const onChangeEmail = (event: ChangeEvent<HTMLInputElement>) => {
+        const currentEmail: string = (event.target as HTMLInputElement).value
+        setEmail(currentEmail);
     };
 
     const onChangePassword = (event: ChangeEvent<HTMLInputElement>) => {
@@ -96,7 +96,7 @@ const Login = () => {
 
     const responseGoogle = (response: any) => {
         console.log( response.profileObj);
-        setUsername(response.profileObj.email);
+        setEmail(response.profileObj.email);
         setUserID(response.profileObj.id);
         setName(response.profileObj.name);
         setPicture(response.profileObj.picture);
@@ -119,7 +119,7 @@ const Login = () => {
             <StyledLogo src={image}></StyledLogo>
             <LoginCard
                 onLogin={onLogin}
-                onChangeUsername={onChangeUsername}
+                onChangeEmail={onChangeEmail}
                 onChangePassword={onChangePassword}
                 onKeyDown={onKeyDown}
                 onNewUser={onNewUser}

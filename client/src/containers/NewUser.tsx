@@ -25,7 +25,7 @@ const NewUsernContainer = styled.div`
 
 const NewUser = () => {
   const history = useHistory();
-  const [username, setUsername] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password1, setPassword1] = useState<string>('');
   const [password2, setPassword2] = useState<string>('');
@@ -62,6 +62,7 @@ const NewUser = () => {
         }
         console.log(newUser)
         history.push('/');
+        alert('Du er registrert og kan nå logge inn')
         return true; 
       }
     }
@@ -71,8 +72,8 @@ const NewUser = () => {
       setEmail(currentEmail);
     };
 
-    const onChangeUsername = (event: ChangeEvent<HTMLInputElement>) => {
-      setUsername((event.target as HTMLInputElement).value);
+    const onChangeName = (event: ChangeEvent<HTMLInputElement>) => {
+      setName((event.target as HTMLInputElement).value);
     };
 
     const onChangePassword1 = (event: ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +87,7 @@ const NewUser = () => {
 
     const onClick = () => {
       if (equalPasswords) {
-        createUser(username, email, password1);
+        createUser(name, email, password1);
       } else {
         alert('Noe gikk galt');
       }
@@ -95,7 +96,7 @@ const NewUser = () => {
     return (
       <NewUsernContainer>
         <NewUserCard
-          onChangeUsername={onChangeUsername}
+          onChangeName={onChangeName}
           onChangeEmail={onChangeEmail}
           onChangePassword1={onChangePassword1}
           onChangePassword2={onChangePassword2}

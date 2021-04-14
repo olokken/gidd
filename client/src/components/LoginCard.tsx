@@ -44,7 +44,7 @@ const SocialMediaContainer = styled.div`
 interface Props {
   onLogin: () => void;
   onNewUser: () => void;
-  onChangeUsername: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeEmail: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangePassword: (e: ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: any) => void;
   handleClickShowPassword: () => void;
@@ -60,7 +60,7 @@ interface Props {
 const LoginCard = ({
   onLogin,
   onNewUser,
-  onChangeUsername,
+  onChangeEmail,
   onChangePassword,
   onKeyDown,
   handleClickShowPassword,
@@ -74,9 +74,9 @@ const LoginCard = ({
       <h2>LOG IN</h2>
       <TextField
         style={{ width: '100%', marginBottom: 24 }}
-        label="Username"
+        label="E-mail"
         color="secondary"
-        onChange={onChangeUsername}
+        onChange={onChangeEmail}
         variant="outlined"
         onKeyDown={onKeyDown}
       />
@@ -126,7 +126,6 @@ const LoginCard = ({
                     //fields="name,email,picture"
                     onSuccess={responseGoogle}
                     onFailure={responseGoogle}
-                    cookiePolicy={'single_host_origin'}
                     isSignedIn={true}               
                 />
             </GoogleContainer>     

@@ -17,7 +17,7 @@ const LoginCardContainer = styled.div`
 
 
 interface Props {
-  onChangeUsername: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeName: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeEmail:(e: ChangeEvent<HTMLInputElement>) => void;
   onChangePassword1: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangePassword2: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -26,7 +26,7 @@ interface Props {
   correctEmailFormat:boolean;
 }
 
-const NewUserCard = ({onChangeUsername, onChangeEmail, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat }: Props) => {
+const NewUserCard = ({onChangeName, onChangeEmail, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat }: Props) => {
 
   return (
     <LoginCardContainer>
@@ -34,10 +34,10 @@ const NewUserCard = ({onChangeUsername, onChangeEmail, onChangePassword1, onChan
       <form>
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
-          label="Username"
+          label="Full name"
           color="secondary"
           variant="outlined"
-          onChange={onChangeUsername}
+          onChange={onChangeName}
         />
         
         <TextField
