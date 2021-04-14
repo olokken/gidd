@@ -2,43 +2,47 @@ package IDATT2106.team6.Gidd.models;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
 public class User {
     @Id
-    private int id;
+    @Column(name = "user_id")
+    private int userId;
     private String email;
     private String password;
-    private String first_name;
+    @Column(name = "first_name")
+    private String firstName;
     private String surname;
-    private int phone_number;
-    private ActivityLevel activity_level;
+    @Column(name = "phone_number")
+    private int phoneNumber;
+    @Column(name = "activity_level")
+    private ActivityLevel activityLevel;
     private int points;
-    private Provider auth_provider;
+    @Column(name = "auth_provider")
+    private Provider authProvider;
     @CascadeOnDelete
-    @ManyToMany(targetEntity = Activity.class)
-    private List<Activity> activities;
+    @OneToMany(mappedBy = "User")
+    private List<ActivityUser> activities;
 
+    //Konstrutøren må tilpasses
     public User(int id, String email, String password, String firstName, String surname, int phoneNumber, ActivityLevel activityLevel, int points, List<Activity> activities){
-        this.id = id;
+        this.userId = id;
         this.email = email;
         this.password = password;
-        this.first_name = firstName;
+        this.firstName = firstName;
         this.surname = surname;
-        this.phone_number = phoneNumber;
-        this.activity_level = activityLevel;
+        this.phoneNumber = phoneNumber;
+        this.activityLevel = activityLevel;
         this.points = points;
-        this.activities = activities;
+        //this.activities = activities;
     }
 
     public User(){}
 
-    public int getId() {
-        return id;
+    public int getUserId() {
+        return userId;
     }
 
     public String getEmail() {
@@ -49,36 +53,36 @@ public class User {
         return password;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
     public String getSurname() {
         return surname;
     }
 
-    public int getPhone_number() {
-        return phone_number;
+    public int getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public ActivityLevel getActivity_level() {
-        return activity_level;
+    public ActivityLevel getActivityLevel() {
+        return activityLevel;
     }
 
     public int getPoints() {
         return points;
     }
 
-    public Provider getAuth_provider() {
-        return auth_provider;
+    public Provider getAuthProvider() {
+        return authProvider;
     }
 
-    public List<Activity> getActivities() {
+    public List<ActivityUser> getActivities() {
         return activities;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.userId = id;
     }
 
     public void setEmail(String email) {
@@ -89,31 +93,28 @@ public class User {
         this.password = password;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public void setSurname(String surname) {
         this.surname = surname;
     }
 
-    public void setPhone_number(int phone_number) {
-        this.phone_number = phone_number;
+    public void setPhoneNumber(int phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public void setActivity_level(ActivityLevel activity_level) {
-        this.activity_level = activity_level;
+    public void setActivityLevel(ActivityLevel activityLevel) {
+        this.activityLevel = activityLevel;
     }
 
     public void setPoints(int points) {
         this.points = points;
     }
 
-    public void setAuth_provider(Provider auth_provider) {
-        this.auth_provider = auth_provider;
+    public void setAuthProvider(Provider authProvider) {
+        this.authProvider = authProvider;
     }
 
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
-    }
 }

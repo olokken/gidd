@@ -9,49 +9,57 @@ import java.util.List;
 @Entity
 public class Activity {
     @Id
-    private int id;
+    @Column(name = "activity_id")
+    private int activityId;
     private String title;
     private Timestamp time;
+    @Column(name = "days_to_repeat")
     private int daysToRepeat;
     @CascadeOnDelete
     @ManyToOne(targetEntity = User.class)
-    private int user_id;
+    @JoinColumn(name = "user_id")
+    private int userId;
     private int capacity;
     //Ikke laget klasse. Lar den være for nå
-    private int group_id;
+    @Column(name = "group_id")
+    private int groupId;
     private String description;
     private byte[] image;
-    private ActivityLevel activity_level;
+    @Column(name = "activity_level")
+    private ActivityLevel activityLevel;
     @CascadeOnDelete
     @ManyToMany(targetEntity = Tag.class)
     private List<Tag> tags;
     @CascadeOnDelete
-    @ManyToMany(targetEntity = Equipment.class)
-    private List<Equipment> equipments;
+    @OneToMany(mappedBy = "Activity")
+    private List<ActivityEquipment> equipments;
     private double latitude;
     private double longitude;
+    @CascadeOnDelete
+    @OneToMany(mappedBy = "Activity")
+    private List<ActivityUser> registeredParticipants;
 
+    //Kontruktør må fikses i forhold til hva man trenger
     public Activity(int id, String title, Timestamp time, int repeat, int userId, int capacity, int groupId, String description, int points, byte[] image, ActivityLevel activityLevel, List<Tag> tags, double latitude, double longitude, List<Equipment> equipments){
-        this.id = id;
+        this.activityId = id;
         this.title = title;
         this.time = time;
         this.daysToRepeat = repeat;
-        this.user_id = userId;
+        this.userId = userId;
         this.capacity = capacity;
-        this.group_id = groupId;
+        this.groupId = groupId;
         this.description = description;
         this.image = image;
-        this.activity_level = activityLevel;
+        this.activityLevel = activityLevel;
         this.tags = tags;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.equipments = equipments;
     }
 
     public Activity(){}
 
-    public int getId() {
-        return id;
+    public int getActivityId() {
+        return activityId;
     }
 
     public String getTitle() {
@@ -66,16 +74,16 @@ public class Activity {
         return daysToRepeat;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
     public int getCapacity() {
         return capacity;
     }
 
-    public int getGroup_id() {
-        return group_id;
+    public int getGroupId() {
+        return groupId;
     }
 
     public String getDescription() {
@@ -86,8 +94,8 @@ public class Activity {
         return image;
     }
 
-    public ActivityLevel getActivity_level() {
-        return activity_level;
+    public ActivityLevel getActivityLevel() {
+        return activityLevel;
     }
 
     public double getLatitude() {
