@@ -1,4 +1,5 @@
-image: devayansarkar/maven-node-openjdk
+#no free docker hmm
+#image: devayansarkar/maven-node-openjdk
 
 #todo npm install always fails
 #client-build:
@@ -13,19 +14,19 @@ image: devayansarkar/maven-node-openjdk
 #    paths:
 #      - client/node_modules
 
-backend-build:
-  stage: build
-  only:
-      - master
-  script:
-    - cd Backend
-    - "mvn install -B"
+#backend-build:
+ # stage: build
+  #only:
+  #    - master
+  #script:
+   # - cd Backend
+    #- "mvn install -B"
 
-backend-test:
-  stage: test
-  only:
-      - master
-  script:
-    - cd Backend
-    - mvn test
-  needs: ["backend-build"]
+#backend-test:
+ # stage: test
+ # only:
+ #     - master
+ # script:
+  #  - cd Backend
+   # - mvn test
+  #needs: ["backend-build"]
