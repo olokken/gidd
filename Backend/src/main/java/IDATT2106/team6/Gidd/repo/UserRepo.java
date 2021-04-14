@@ -43,7 +43,7 @@ public class UserRepo extends GiddRepo {
         }
     }
 
-    public boolean update(User user){
+    public boolean updateUser(User user){
         EntityManager em = getEm();
 
         try{
@@ -98,7 +98,7 @@ public class UserRepo extends GiddRepo {
         }
     }
 
-    public ArrayList<User> getAllTags(){
+    public ArrayList<User> getAllUsers(){
         EntityManager em = getEm();
         List<User> allUsers = null;
 
