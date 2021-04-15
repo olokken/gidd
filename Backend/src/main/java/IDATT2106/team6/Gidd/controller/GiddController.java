@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.RequestEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -77,25 +77,70 @@ public class GiddController {
             activityUsers.addAll(a.getRegisteredParticipants());
         }
 
-        while(activityUsers.contains(id)){
-            id = getRandomID();
+        ArrayList<Integer> ids = new ArrayList<>();
+
+        for(ActivityUser au : activityUsers){
+            ids.add(au.getId());
         }
 
-        userService.addUserToActivity(id, activity, user, time);
-        activityService.addUserToActivity(id, activity, user, time);
+        while(ids.contains(id)){
+            id = getRandomID();
+        }
+        HttpHeaders header = new HttpHeaders();
+
+
+        if(userService.addUserToActivity(id, activity, user, time)){
+            if(activityService.addUserToActivity(id, activity, user, time)){
+                header.add("Status", "200 OK");
+                header.add("Content-Type", "application/json; charset=UTF-8");
+
+                return ResponseEntity
+                        .ok()
+                        .headers(header)
+                        .body("Added to activity");
+            }
+            userService.removeActivity(id, user);
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body("Something is wrong with the activity");
+        }
+        header.add("Status", "400 BAD REQUEST");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
         return ResponseEntity
-                .created(URI.create(String.format("/bytt/%d", id)))
-                .body("Added to event");
+                .badRequest()
+                .headers(header)
+                .body("Something is wrong with the user");
+
     }
 
     @GetMapping(value = "/testGetAllActivitiesForUser", consumes = "application/json", produces = "application/json")
     public ResponseEntity getAllActivitiesForUser(@RequestBody HashMap<String, Object> map){
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
 
+        HttpHeaders header = new HttpHeaders();
+
+        if(user == null){
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body("Something is wrong with the user");
+        }
+
         List<ActivityUser> activityUser = user.getActivities();
 
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
         return ResponseEntity
-                .created(URI.create(String.format("/activities/%d", user.getUserId())))
+                .ok()
+                .headers(header)
                 .body(activityUser.toString());
     }
 
@@ -104,15 +149,55 @@ public class GiddController {
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         Activity activity = activityService.findActivity(Integer.parseInt(map.get("activityId").toString()));
 
+        HttpHeaders header = new HttpHeaders();
+
+        if(user == null){
+            header.add("Status", "400 REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body("Something is wrong with the user");
+        }
+
+        if(activity == null){
+            header.add("Status", "400 REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body("Something is wrong with the activity");
+        }
+
         int activityUserId = userService.getActivityUser(activity, user);
 
         ActivityUser activityUser = userService.getActivityUserById(activityUserId);
-        userService.deleteConnection(activityUser);
-        userService.removeActivity(activityUserId, user);
-        activityService.removeUserFromActivity(activityUserId, activity);
+        if(activityUser == null){
+            header.add("Status", "400 REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
 
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body("The user is not registered to the activity");
+        }
+        if(!userService.deleteConnection(activityUser) || !userService.removeActivity(activityUserId, user) || !activityService.removeUserFromActivity(activityUserId, activity)){
+            header.add("Status", "400 REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body("Something wrong happened when trying to delete");
+        }
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
         return ResponseEntity
-                .created(URI.create(String.format("/removed/%d", user.getUserId())))
+                .ok()
+                .headers(header)
                 .body("lol");
     }
 
