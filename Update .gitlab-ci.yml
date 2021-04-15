@@ -1,0 +1,10 @@
+deploy:
+  script:
+    - mkdir ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - touch ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa # Required permission by ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - ssh app@ec2-13-51-158-235.eu-north-1.compute.amazonaws.com ./runjava.sh
+  only:
+    - backend-dev
