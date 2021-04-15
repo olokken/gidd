@@ -54,6 +54,8 @@ public class ActivityRepo extends GiddRepo {
     public boolean updateActivity(Activity activity){
         EntityManager em = getEm();
 
+        System.out.println(activity);
+
         try {
             em.getTransaction().begin();
             em.merge(activity);
@@ -76,6 +78,7 @@ public class ActivityRepo extends GiddRepo {
             activity = em.find(Activity.class, activityId);
         }catch (Exception e){
             e.printStackTrace();
+            return null;
         }finally {
             em.close();
         }

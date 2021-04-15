@@ -1,5 +1,6 @@
 package IDATT2106.team6.Gidd.models;
 
+import java.util.Arrays;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
@@ -69,71 +70,154 @@ public class Activity {
         return activityId;
     }
 
+    public void setActivityId(int activityId) {
+        this.activityId = activityId;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Timestamp getTime() {
         return time;
     }
 
+    public void setTime(Timestamp time) {
+        this.time = time;
+    }
+
     public int getDaysToRepeat() {
         return daysToRepeat;
+    }
+
+    public void setDaysToRepeat(int daysToRepeat) {
+        this.daysToRepeat = daysToRepeat;
     }
 
     public User getUser() {
         return user;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public int getCapacity() {
         return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 
     public int getGroupId() {
         return groupId;
     }
 
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public List<Tag> getTags() {
-        return tags;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public byte[] getImage() {
         return image;
     }
 
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
     public ActivityLevel getActivityLevel() {
         return activityLevel;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public void setActivityLevel(ActivityLevel activityLevel) {
+        this.activityLevel = activityLevel;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 
     public List<ActivityEquipment> getEquipments() {
         return equipments;
     }
 
-    public List<ActivityUser> getRegisteredParticipants() {
-        return registeredParticipants;
+    public void setEquipments(List<ActivityEquipment> equipments) {
+        this.equipments = equipments;
     }
 
-    public Timestamp getTimeCreated() {
-        return timeCreated;
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public List<ActivityUser> getRegisteredParticipants() {
+        return registeredParticipants;
     }
 
     public void addParticipant(ActivityUser user){
         this.registeredParticipants.add(user);
     }
 
-    public void setRegisteredParticipants(List<ActivityUser> registeredParticipants) {
+    public void setRegisteredParticipants(
+        List<ActivityUser> registeredParticipants) {
         this.registeredParticipants = registeredParticipants;
+    }
+
+    public Timestamp getTimeCreated() {
+        return timeCreated;
+    }
+
+    public void setTimeCreated(Timestamp timeCreated) {
+        this.timeCreated = timeCreated;
+    }
+
+    @Override
+    public String toString() {
+        return "Activity{" +
+            "activityId=" + activityId +
+            ", title='" + title + '\'' +
+            ", time=" + time +
+            ", daysToRepeat=" + daysToRepeat +
+            ", user=" + user +
+            ", capacity=" + capacity +
+            ", groupId=" + groupId +
+            ", description='" + description + '\'' +
+            ", image=" + Arrays.toString(image) +
+            ", activityLevel=" + activityLevel +
+            ", tags=" + tags +
+            ", equipments=" + equipments +
+            ", latitude=" + latitude +
+            ", longitude=" + longitude +
+            ", registeredParticipants=" + registeredParticipants +
+            ", timeCreated=" + timeCreated +
+            '}';
     }
 }

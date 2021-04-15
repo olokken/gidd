@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import IDATT2106.team6.Gidd.models.Tag;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -72,6 +74,22 @@ public class TagRepo extends GiddRepo {
             em.close();
         }
         return tag;
+    }
+
+    public Tag findTag(String tagName){
+        EntityManager em = getEm();
+        Tag tag;
+
+        try{
+            TypedQuery q = em.createQuery("SELECT a FROM Tag a WHERE a.description = ?1", Tag.class);
+            q.setParameter(1, tagName);
+            return (Tag) q.getSingleResult();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }finally {
+            em.close();
+        }
     }
 
     public boolean deleteTag(int tagId){
