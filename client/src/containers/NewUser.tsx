@@ -5,6 +5,7 @@ import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import NewUserCard from '../components/NewUserCard';
 import { UserContext } from '../components/UserContext';
+import User from '../interfaces/User'
 
 const NewUsernContainer = styled.div`
   width: 100%;
@@ -36,12 +37,6 @@ const NewUser = () => {
   const correctEmailFormat = email.indexOf('@') > -1 ? true : false;
   const {setUser} = useContext(UserContext)
 
-  interface User {
-    username:string,
-    email:string,
-    password:string
-  }
-
   const emailCheck = (email: string) => {
     if (emailList.indexOf(email) > -1) {
       return false;
@@ -49,7 +44,7 @@ const NewUser = () => {
     return true;
   }
 
-  const createUser = (username: string, email: string, password: string): boolean => {
+  const createUser = (name: string, email: string, password: string): boolean => {
     if (!emailCheck(email)) {
       alert("E-mail er allerede registrert")
       return false;
@@ -59,9 +54,11 @@ const NewUser = () => {
       return false;
     } else {
         const newUser:User = {
-          username: username,
+          name: name,
+          userID: '',
           email: email,
-          password: password
+          password: password,
+          picture: ''
         }
         console.log(newUser)
         setUser(newUser)

@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import image from '../assets/GIDD.png';
 import { UserContext } from '../components/UserContext';
 import { useContext } from 'react';
-import { useEffect } from 'react';
+import User from '../interfaces/User'
 
 
 const LoginContainer = styled.div`
@@ -33,13 +33,6 @@ const StyledLogo = styled.img`
     margin-right:70px; 
 `;
 
-interface User {
-    username:string,
-    email:string,
-    userID:string,
-    name:string,
-    picture:string
-}
 
 const Login = () => {
     const history = useHistory();
@@ -62,10 +55,20 @@ const Login = () => {
         }
     };
 
+    const onLoginSoMe = async() => {
+        history.push('/HomePage')
+    }
+
     const login = async () => {
+        const newUser:User = {
+            name:name,
+            userID:userID,
+            email:email,
+            picture:picture,
+            password:password
+        }
         return {
-            email: email,
-            name: name
+            newUser
         }
     }
     const checkPassword = () => {
@@ -105,25 +108,36 @@ const Login = () => {
     };
 
 
-    const responseGoogle = (response: any) => {
-        console.log( response.profileObj);
-        setEmail(response.profileObj.email);
-        setUserID(response.profileObj.id);
-        setName(response.profileObj.name);
-        setPicture(response.profileObj.picture);
+    const responseGoogle = (response:any) => {
+        const answer = response;
+        console.log(answer)
+        console.log('fått svar')
+        const newUser:User = {
+            name:response.profileObj.name,
+            userID: '',
+            email:response.profileObj.email,
+            picture:response.profileObj.picture,
+            password:''
+        }
+        setUser(newUser)
+        onLoginSoMe();
       }
 
-      const responseFacebook = async(response:any) => {
+      const responseFacebook = (response:any) => {
         console.log(response)
-        const answer = await response
-        setEmail(response.email)
-        //setUserID(answer.userID)
-        //setName(answer.name)
-        //setPicture(answer.picture.data.url)
+        const newUser:User = {
+            name:response.name,
+            userID: '',
+            email:response.email,
+            picture:response.picture,
+            password:''
+        }
+        setUser(newUser)
+        onLoginSoMe();
     }
 
-    const componentClicked  = () => {
-        console.log('clicked')
+    const componentClicked  = async() => {
+        console.log('gh')
     }
 
     return (
