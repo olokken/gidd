@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ActivityPopup = ({ title, openPopup, setOpenPopup, children }: Props) => {
+const Popup = ({ title, openPopup, setOpenPopup, children }: Props) => {
     const classes = useStyles();
     return (
         <Dialog
@@ -59,4 +59,4 @@ const ActivityPopup = ({ title, openPopup, setOpenPopup, children }: Props) => {
     );
 };
 
-export default ActivityPopup;
+export default Popup;
