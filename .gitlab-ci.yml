@@ -42,7 +42,7 @@ deploy:
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - apt-get update
     - apt-get install --assume-yes rsync
-    - rsync --archive --delete --exclude='.git' --exclude='target' Backend/ app@13.51.169.174:app
+    - rsync --archive --delete --exclude='.git' --exclude='Backend/target' --exclude='client' . app@13.51.169.174:app
     - ssh app@13.51.169.174 systemctl --user restart app
   only:
     - backend-dev
