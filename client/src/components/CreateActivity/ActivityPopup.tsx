@@ -10,7 +10,7 @@ import {
 
 interface Props {
     title?: string;
-    children?: React.ReactNode;
+    children?: any;
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -50,7 +50,7 @@ const ActivityPopup = ({ title, openPopup, setOpenPopup, children }: Props) => {
                             setOpenPopup(!openPopup);
                         }}
                     >
-                        ×
+                        X
                     </Button>
                 </div>
             </DialogTitle>
