@@ -39,17 +39,20 @@ public class User {
     private List<ActivityUser> activities;
     private String salt;
 
-    public User(int id, String email, String password, String firstName, String surname, int phoneNumber, ActivityLevel activityLevel, int points, Provider provider){
+
+    //Konstrutøren må tilpasses
+    public User(int id, String email, String password,
+                String firstName, String surname,
+                int phoneNumber, ActivityLevel activityLevel, Provider provider){
         this.userId = id;
         this.email = email;
         this.firstName = firstName;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
         this.activityLevel = activityLevel;
-        this.points = points;
         this.authProvider = provider;
         this.activities = new ArrayList<ActivityUser>();
-        //this.activities = activities;
+        this.points = 0;
 
         //generates random salt
         SecureRandom random = new SecureRandom();
