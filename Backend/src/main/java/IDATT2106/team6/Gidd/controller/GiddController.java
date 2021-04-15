@@ -70,6 +70,7 @@ public class GiddController {
     private int getRandomID(){
         Random rand = new Random();
         return rand.nextInt();
+    }
     @PostMapping("/user")
     public ResponseEntity registerUser(@RequestBody HashMap<String, String> map){
 

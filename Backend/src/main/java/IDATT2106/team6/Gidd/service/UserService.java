@@ -10,21 +10,12 @@ import java.util.Random;
 @Service
 public class UserService {
     @Autowired
-    UserRepo repo;
-
-    public void testNewUser(User user){
-        repo.addUser(user);
-    }
-
-    public User getUser(int userId){
-        return repo.findUser(userId);
-    }
-    @Autowired
     private UserRepo repo;
 
     public void testNewUser(User user){
         repo.addUser(user);
     }
+
 
     public User getUser(int userId){
         return repo.findUser(userId);
@@ -39,7 +30,7 @@ public class UserService {
 	    //todo generate random number from 0 to maxint
 	    Random rand = new Random();
 		int id = rand.nextInt();
-		User newUser = new User(id > 0 ? id : -id, email, password, firstname, surname, phoneNumber, activityLevel);
+		User newUser = new User(id > 0 ? id : -id, email, password, firstname, surname, phoneNumber, activityLevel, null);
 		//todo call repo to register this new user
 		return newUser;
     }
