@@ -58,6 +58,4 @@ public class GiddController {
         body.put("id", "invalid password");
 		return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);	
     }
-
-    
 }
