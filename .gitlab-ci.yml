@@ -1,0 +1,32 @@
+#no free docker hmm
+#image: devayansarkar/maven-node-openjdk
+
+#todo npm install always fails
+#client-build:
+#  stage: build
+#  only:
+#      - master
+#  script:
+#    - cd client
+#    - npm install
+  # Keep node_modules-folder for the following stages:
+#  artifacts:
+#    paths:
+#      - client/node_modules
+
+#backend-build:
+ # stage: build
+  #only:
+  #    - master
+  #script:
+   # - cd Backend
+    #- "mvn install -B"
+
+#backend-test:
+ # stage: test
+ # only:
+ #     - master
+ # script:
+  #  - cd Backend
+   # - mvn test
+  #needs: ["backend-build"]
