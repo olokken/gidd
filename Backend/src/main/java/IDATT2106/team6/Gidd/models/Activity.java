@@ -69,6 +69,10 @@ public class Activity {
         return activityId;
     }
 
+    public void setActivityId(int activityId) {
+        this.activityId = activityId;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -127,5 +131,9 @@ public class Activity {
 
     public Timestamp getTimeCreated() {
         return timeCreated;
+    }
+
+    public void setTimeCreated(Timestamp timeCreated) {
+        this.timeCreated = timeCreated;
     }
 }

@@ -9,6 +9,7 @@ import IDATT2106.team6.Gidd.repo.GiddRepo;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import javax.management.BadAttributeValueExpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +22,10 @@ public class ActivityService {
         repo.doNothing();
     }
 
-        public void addActivity(int id, String title, Timestamp time, int repeat, User userId,
-                                        int capacity, int groupId, String description, byte[] image,
-                                        ActivityLevel activityLevel, List<Tag> tags,
-                                        double latitude, double longitude) {
+    public void addActivity(int id, String title, Timestamp time, int repeat, User userId,
+                            int capacity, int groupId, String description, byte[] image,
+                            ActivityLevel activityLevel, List<Tag> tags,
+                            double latitude, double longitude) {
         Date today = new Date();
         Timestamp currentTime = new Timestamp(today.getTime());
 
@@ -36,7 +37,19 @@ public class ActivityService {
         repo.addActivity(newActivity);
     }
 
+    public boolean addActivity(Activity activity) {
+        Date now = new Date();
+        Timestamp currentTime = new Timestamp(now.getTime());
+        activity.setTimeCreated(currentTime);
+
+        return repo.addActivity(activity);
+    }
+
     public void testNewActivity(Activity object){
         repo.addActivity(object);
+    }
+
+    public Activity testGetActivity(int id) {
+        return repo.findActivity(id);
     }
 }

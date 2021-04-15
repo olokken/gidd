@@ -1,16 +1,22 @@
 package IDATT2106.team6.Gidd.controller;
 
+import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.ActivityLevel;
 import IDATT2106.team6.Gidd.models.Tag;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.ActivityService;
 import IDATT2106.team6.Gidd.service.EquipmentService;
+import IDATT2106.team6.Gidd.service.TagService;
 import IDATT2106.team6.Gidd.service.UserService;
 import java.net.URI;
 import java.sql.Timestamp;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import javax.management.BadAttributeValueExpException;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,42 +32,103 @@ public class GiddController {
     private EquipmentService equipmentService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private TagService tagService;
 
     @GetMapping("/hello")
-    public ResponseEntity home(){
+    public ResponseEntity home() {
         activityService.doNothing();
         return ResponseEntity
             .ok()
             .body("hi");
     }
 
-    @PostMapping(value = "/testNewUser", consumes = "application/json", produces = "application/json")
-    public ResponseEntity newUserTest(@RequestBody User object){
-        userService.testNewUser(object);
+    @PostMapping(value = "/activity", consumes = "application/json", produces = "application/json")
+    public ResponseEntity newActivity(@RequestBody Map<String, String> map) {
+        int newId;
+        try{
+            //TODO Check that the user exists
+            User user = userService.getUser(Integer.parseInt(map.get("userId")));
+            newId = getRandomID();
+            String title = map.get("title").trim();
+            Timestamp newTime = Timestamp.valueOf(map.get("time"));
+            int repeat = Integer.parseInt(map.get("repeat"));
+            int capacity = Integer.parseInt(map.get("capacity"));
+            int groupId = Integer.parseInt(map.get("groupId"));
+            String description = map.get("description");
+            byte[] image = binaryToByte(map.get("image"));
+            ActivityLevel activityLevel = ActivityLevel.valueOf(map.get("activityLevel"));
+            List<Tag> tags = splitTags(map.get("tags"));
+            double latitude = Double.parseDouble(map.get("latitude"));
+            double longitude = Double.parseDouble(map.get("longitude"));
+
+            Activity newActivity = new Activity(newId,
+                title, newTime, repeat, user,
+                capacity, groupId, description, image,
+                activityLevel, tags, latitude, longitude, null);
+
+            newActivityValidId(newActivity);
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                .badRequest()
+                .body(e.getStackTrace());
+        }
+
         return ResponseEntity
-            .created(URI.create("/user/id"))
-            .body("hihi");
-    }
-
-    @PostMapping(value = "/testNewActivity", consumes = "application/json", produces = "application/json")
-    public ResponseEntity newActivityTest(@RequestBody HashMap<String, Object> map){
-        Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
-
-        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
-        int newId = getRandomID();
-
-        //TODO Verify that user-input is valid
-        activityService.addActivity(    newId,
-            map.get("title").toString(), newTime, (int) map.get("repeat"), user,
-            (int) map.get("capacity"), (int) map.get("groupId"), map.get("description").toString(), (byte[])map.get("image"),
-            ActivityLevel.valueOf(map.get("activityLevel").toString()), (List<Tag>)map.get("tags"), (Double) map.get("latitude"), (Double) map.get("longitude"));
-        return ResponseEntity
+            //TODO Return correct newId
             .created(URI.create(String.format("/activity/%d", newId)))
-            .body("Insert ResponseBody here");
+            .body("Woohoo,");
     }
 
-    private int getRandomID(){
+
+    private void newActivityValidId(Activity activity) {
+        boolean created;
+        do{
+            activity.setActivityId(getRandomID());
+            created = activityService.addActivity(activity);
+        }
+        while(!created);
+    }
+
+    private int getRandomID() {
         Random rand = new Random();
         return rand.nextInt();
     }
+
+    private int toInt(Object o) throws Exception {
+        return 0;
+    }
+
+    private List<Tag> splitTags(String tagString) {
+        ArrayList<String> tagNames = new ArrayList<>(Arrays.asList(tagString.split(",")));
+        ArrayList<Tag> tags = new ArrayList<>();
+        for (String name:
+             tagNames) {
+            Tag tag = tagService.getTag(name);
+
+            if(tag==null){
+                tag = new Tag(-1, name);
+                tagService.addTag(tag);
+            }
+
+            tags.add(tag);
+        }
+
+        return tags;
+    }
+
+    private byte[] binaryToByte(String bin) {
+        List<Byte> list = new ArrayList<>();
+
+        for(String str : bin.split("(?<=\\G.{8})")) {
+            list.add(Byte.parseByte(str, 2));
+        }
+
+        Byte[] bytes = list.toArray(new Byte[list.size()]);
+        return ArrayUtils.toPrimitive(bytes);
+    }
+
 }
+

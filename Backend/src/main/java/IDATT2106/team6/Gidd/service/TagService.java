@@ -10,6 +10,10 @@ public class TagService {
     @Autowired
     private TagRepo repo;
 
+    public void addTag(Tag tag) {
+        repo.addTag(tag);
+    }
+
     public Tag getTag(int id){
         return repo.findTag(id);
     }
