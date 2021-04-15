@@ -35,6 +35,7 @@ image: ubuntu:latest
 
 deploy:
   script:
+    - apt-get update -y && apt-get install openssh-client -y
     - mkdir ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
     - touch ~/.ssh/id_rsa
