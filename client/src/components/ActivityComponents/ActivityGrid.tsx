@@ -16,31 +16,53 @@ interface Props {
 }
 
 const ActivityGrid = ({ activities }: Props) => {
+    const [page, setPage] = useState<number>(0);
+    const [currentActivities, setCurrentActivities] = useState<Activity[]>(activities);
+
+    useEffect(() => {
+        setPage(1); 
+    }, [])
+
+    useEffect(() => {
+        const startIndex = (page - 1) * 24; 
+        const endIndex = page*24; 
+        setCurrentActivities(activities.slice(startIndex, endIndex)); 
+    }, [page]); 
+
+    const renderActivities = currentActivities.map((act, index) => {
+        return (
+            <ActivityCard
+                key={index}
+                ID={act.ID}
+                title={act.title}
+                time={act.time}
+                owner={act.owner}
+                capacity={act.capacity}
+                maxCapacity={act.maxCapacity}
+                description={act.description}
+                level={act.level}
+            ></ActivityCard>
+        );
+    });
+
+    const onPageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value);
+    };
+
     return (
         <Container>
             <h2>Tilgjengelige Aktiviteter</h2>
             <GridList
                 cellHeight={160}
                 cols={3}
-                style={{ display: 'flex', justifyContent: 'center' }}
+                style={{ display: 'flex', justifyContent:'center' }}
             >
-                {activities.map((act, index) => (
-                    <ActivityCard
-                        key={index}
-                        ID={act.ID}
-                        title={act.title}
-                        time={act.time}
-                        owner={act.owner}
-                        capacity={act.capacity}
-                        maxCapacity={act.maxCapacity}
-                        description={act.description}
-                        level={act.level}
-                    ></ActivityCard>
-                ))}
+                {renderActivities}
             </GridList>
             <Pageination
                 style={{ justifyContent: 'center', display: 'flex' }}
-                count={Math.ceil(activities.length / 36)}
+                onChange={onPageChange}
+                count={Math.ceil(activities.length / 24)}
                 size="large"
             />
         </Container>
