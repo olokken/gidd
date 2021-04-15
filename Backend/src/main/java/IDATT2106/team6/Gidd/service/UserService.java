@@ -31,17 +31,17 @@ public class UserService {
 		return getUser(email).verifyPassword(password);
 	}
 
-    public boolean registerUser(String email, String password, String firstname, String surname,
+    public User registerUser(String email, String password, String firstname, String surname,
 	    int phoneNumber, ActivityLevel activityLevel){
 	    //todo generate random number from 0 to maxint
 	    Random rand = new Random();
 		int id = rand.nextInt();
 		User newUser = new User(id > 0 ? id : -id, email, password, firstname, surname, phoneNumber, activityLevel);
 		//todo call repo to register this new user
-		return true;
+		return newUser;
     }
 
-	private User getUser(String email){
+	public User getUser(String email){
 		//todo call repo here
 		return null;	
 	}
