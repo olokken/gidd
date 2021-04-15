@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import javax.management.BadAttributeValueExpException;
+import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,9 +48,11 @@ public class GiddController {
     public ResponseEntity newActivity(@RequestBody Map<String, String> map) {
         int newId;
         try{
-            //TODO Check that the user exists
             User user = userService.getUser(Integer.parseInt(map.get("userId")));
-            newId = getRandomID();
+            if(user==null){
+                throw new InvalidAttributesException("User does not exist");
+            }
+            newId = 0;
             String title = map.get("title").trim();
             Timestamp newTime = Timestamp.valueOf(map.get("time"));
             int repeat = Integer.parseInt(map.get("repeat"));
@@ -57,7 +60,7 @@ public class GiddController {
             int groupId = Integer.parseInt(map.get("groupId"));
             String description = map.get("description");
             byte[] image = binaryToByte(map.get("image"));
-            ActivityLevel activityLevel = ActivityLevel.valueOf(map.get("activityLevel"));
+            ActivityLevel activityLevel = ActivityLevel.valueOf(map.get("activityLevel").toUpperCase());
             List<Tag> tags = splitTags(map.get("tags"));
             double latitude = Double.parseDouble(map.get("latitude"));
             double longitude = Double.parseDouble(map.get("longitude"));
@@ -67,8 +70,13 @@ public class GiddController {
                 capacity, groupId, description, image,
                 activityLevel, tags, latitude, longitude, null);
 
-            newActivityValidId(newActivity);
+            newId = newActivityValidId(newActivity);
 
+        } catch (InvalidAttributesException e) {
+            System.out.println("An activity failed to be created. Invalid userID received.");
+            return ResponseEntity
+                .badRequest()
+                .body("An invalid userID was received.");
         } catch(Exception e) {
             e.printStackTrace();
             return ResponseEntity
@@ -77,19 +85,22 @@ public class GiddController {
         }
 
         return ResponseEntity
-            //TODO Return correct newId
             .created(URI.create(String.format("/activity/%d", newId)))
             .body("Woohoo,");
     }
 
 
-    private void newActivityValidId(Activity activity) {
+    private int newActivityValidId(Activity activity) {
         boolean created;
+        int endId;
         do{
-            activity.setActivityId(getRandomID());
+            endId = getRandomID();
+            activity.setActivityId(endId);
             created = activityService.addActivity(activity);
         }
         while(!created);
+
+        return endId;
     }
 
     private int getRandomID() {
@@ -97,9 +108,6 @@ public class GiddController {
         return rand.nextInt();
     }
 
-    private int toInt(Object o) throws Exception {
-        return 0;
-    }
 
     private List<Tag> splitTags(String tagString) {
         ArrayList<String> tagNames = new ArrayList<>(Arrays.asList(tagString.split(",")));
