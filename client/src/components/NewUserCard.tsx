@@ -1,11 +1,11 @@
-import React, { ChangeEvent} from 'react';
+import React, { ChangeEvent } from 'react';
 import { TextField, Button, colors } from '@material-ui/core';
 import styled from 'styled-components';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
-const LoginCardContainer = styled.div`
+const RegisterContainer = styled.div`
   width: 30rem;
-  height: 28rem;
+  height: 40rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,29 +17,38 @@ const LoginCardContainer = styled.div`
 
 
 interface Props {
-  onChangeName: (e: ChangeEvent<HTMLInputElement>) => void;
-  onChangeEmail:(e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeFirstName: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeSurname: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeEmail: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeNumber: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangePassword1: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangePassword2: (e: ChangeEvent<HTMLInputElement>) => void;
   onClick: () => void;
-  equalPasswords:boolean;
-  correctEmailFormat:boolean;
+  equalPasswords: boolean;
+  correctEmailFormat: boolean;
+  email: string;
 }
 
-const NewUserCard = ({onChangeName, onChangeEmail, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat }: Props) => {
+const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email }: Props) => {
 
   return (
-    <LoginCardContainer>
+    <RegisterContainer>
       <h2>Register a new user</h2>
       <form>
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
-          label="Full name"
+          label="First name"
           color="secondary"
           variant="outlined"
-          onChange={onChangeName}
+          onChange={onChangeFirstName}
         />
-        
+        <TextField
+          style={{ width: '100%', marginBottom: 24 }}
+          label="Surname"
+          color="secondary"
+          variant="outlined"
+          onChange={onChangeSurname}
+        />
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
           label="E-mail"
@@ -48,13 +57,20 @@ const NewUserCard = ({onChangeName, onChangeEmail, onChangePassword1, onChangePa
           onChange={onChangeEmail}
           InputProps={{
             endAdornment:
-             <InputAdornment position="end" style= {{
-                fontSize:'10px',
-                color:'#f44336'
-             }}>
-              {correctEmailFormat === false && <a>Email must include a @</a>}
+              <InputAdornment position="end" style={{
+                fontSize: '10px',
+                color: '#f44336'
+              }}>
+                {email !== '' && correctEmailFormat === false && <a>Email must include a @</a>}
               </InputAdornment>
           }}
+        />
+        <TextField
+          style={{ width: '100%', marginBottom: 24 }}
+          label="Telephone"
+          color="secondary"
+          variant="outlined"
+          onChange={onChangeNumber}
         />
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
@@ -82,7 +98,7 @@ const NewUserCard = ({onChangeName, onChangeEmail, onChangePassword1, onChangePa
           CREATE NEW USER
         </Button>
       </form>
-    </LoginCardContainer>
+    </RegisterContainer>
   );
 };
 

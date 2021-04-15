@@ -13,7 +13,7 @@ const HomePage = () => {
     const {user} = useContext(UserContext)
     return (
         <Container>
-            <h1></h1>
+            <p>{{user}}</p>
         </Container>
     );
 };

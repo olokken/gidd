@@ -1,5 +1,6 @@
 export default interface User {
-    name:string,
+    firstName:string,
+    surname:string,
     userID: string,
     email:string,
     picture:string,
