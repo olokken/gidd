@@ -1,17 +1,16 @@
-import React, { ChangeEvent, KeyboardEventHandler } from 'react';
-import { TextField, Button } from '@material-ui/core';
+import React from 'react';
 import styled from 'styled-components';
+import MapComponent from '../components/MapComponents/MapComponent';
 
 const Container = styled.div`
     display: flex;
     justify-content: center;
-    margin-top: 100px;
 `;
 
 const Map = () => {
     return (
         <Container>
-            <h1>Dette er kartet</h1>
+            <MapComponent></MapComponent>
         </Container>
     );
 };
