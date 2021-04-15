@@ -2,6 +2,9 @@
     padding: 20px;
 }
 
+.activityform.div {
+    margin: 4px;
+}
 .description {
     width: 30vh;
     height: 120px;

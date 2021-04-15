@@ -17,17 +17,19 @@ interface Props {
 
 const ActivityGrid = ({ activities }: Props) => {
     const [page, setPage] = useState<number>(0);
-    const [currentActivities, setCurrentActivities] = useState<Activity[]>(activities);
+    const [currentActivities, setCurrentActivities] = useState<Activity[]>(
+        activities
+    );
 
     useEffect(() => {
-        setPage(1); 
-    }, [])
+        setPage(1);
+    }, []);
 
     useEffect(() => {
-        const startIndex = (page - 1) * 24; 
-        const endIndex = page*24; 
-        setCurrentActivities(activities.slice(startIndex, endIndex)); 
-    }, [page]); 
+        const startIndex = (page - 1) * 24;
+        const endIndex = page * 24;
+        setCurrentActivities(activities.slice(startIndex, endIndex));
+    }, [page]);
 
     const renderActivities = currentActivities.map((act, index) => {
         return (
@@ -55,7 +57,7 @@ const ActivityGrid = ({ activities }: Props) => {
             <GridList
                 cellHeight={160}
                 cols={3}
-                style={{ display: 'flex', justifyContent:'center' }}
+                style={{ display: 'flex', justifyContent: 'center' }}
             >
                 {renderActivities}
             </GridList>
