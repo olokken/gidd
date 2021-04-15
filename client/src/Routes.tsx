@@ -5,6 +5,7 @@ import Activities from './containers/Activities';
 import Login from './containers/Login';
 import Map from './containers/Map';
 import NewUser from './containers/NewUser';
+import Footer from './components/Footer'
 
 export default (
     <Switch>
@@ -14,6 +15,7 @@ export default (
             <Navbar></Navbar>
             <Route exact path="/Activities" component={Activities} />
             <Route exact path="/Map" component={Map} />
+            <Footer></Footer>
         </div>
     </Switch>
 );

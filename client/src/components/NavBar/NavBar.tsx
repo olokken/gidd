@@ -248,45 +248,33 @@ const Navbar = () => {
   const displayDesktop = () => {
     return (
       <Toolbar style={{display:"flex", justifyContent:"space-between"}}>
-                <img onClick={changeToHomePage} src={logo}
-                    style={{
-                        width:"50px", 
-                        margin:"3px",
-                        cursor:"pointer"
-                    }} />
-                <Button onClick={changeToHomePage}> <DirectionsRunIcon/>Aktiviteter</Button>
-                <Button onClick={changeToMap}><MapIcon/>Kart</Button>
-                <Button onClick={changeToCalender}> <CalendarTodayIcon/>Kalender</Button>
-                <Button onClick={changeToGroupsAndFriends} ><PeopleIcon/>Grupper og venner</Button>
-                <Button onClick={changeToLeaderboard}><EmojiEventsIcon/>Leaderboard</Button>
-                <div>
-                    <IconButton  onClick={changeToChat}>
-                       <ChatIcon/>
-                    </IconButton>
-                    <IconButton aria-controls="dropdownNotifications" aria-haspopup="true" 
-                        onClick={handleOpenMenu}>
-                        <NotificationsIcon/>
-                    </IconButton>
-                    <IconButton aria-controls="dropdownProfile" aria-haspopup="true" 
-                    onClick={handleOpenProfileMenu}>   
-                        <AccountBoxIcon/>
-                    </IconButton>
-                </div>
-            </Toolbar>
+            <img onClick={changeToHomePage} src={logo}
+                style={{
+                width:"50px", 
+                margin:"3px", 
+                cursor:"pointer"}} 
+            />
+            <Button onClick={changeToHomePage}> <DirectionsRunIcon/>Aktiviteter</Button>
+            <Button onClick={changeToMap}><MapIcon/>Kart</Button>
+            <Button onClick={changeToCalender}> <CalendarTodayIcon/>Kalender</Button>
+            <Button onClick={changeToGroupsAndFriends} ><PeopleIcon/>Grupper og venner</Button>
+            <Button onClick={changeToLeaderboard}><EmojiEventsIcon/>Leaderboard</Button>
+            <div>
+                <IconButton  onClick={changeToChat}>
+                    <ChatIcon/>
+                </IconButton>
+                <IconButton aria-controls="dropdownNotifications" aria-haspopup="true" 
+                       onClick={handleOpenMenu}>
+                    <NotificationsIcon/>
+                </IconButton>
+                <IconButton aria-controls="dropdownProfile" aria-haspopup="true" 
+                 onClick={handleOpenProfileMenu}>   
+                    <AccountBoxIcon/>
+                </IconButton>
+            </div>
+        </Toolbar>
     );
   };
-    /* til senere
-    {MenuItems.map((item,index) =>{
-              return(
-                <StyledMenuItem>
-                    <div style={{whiteSpace: 'normal',display: 'block'}}>
-                        <p>{item.text}</p> 
-                        <b>{item.title}</b>
-                    </div>
-                </StyledMenuItem>
-              )
-        })}
-        */
 
     return(
         <div>
