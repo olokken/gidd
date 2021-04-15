@@ -21,10 +21,16 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
+@CrossOrigin
 @Controller
 public class GiddController {
     @Autowired
@@ -72,6 +78,7 @@ public class GiddController {
 
             newId = newActivityValidId(newActivity);
 
+            //TODO Format ResponseEntities in accordance to project standard
         } catch (InvalidAttributesException e) {
             System.out.println("An activity failed to be created. Invalid userID received.");
             return ResponseEntity
@@ -86,9 +93,8 @@ public class GiddController {
 
         return ResponseEntity
             .created(URI.create(String.format("/activity/%d", newId)))
-            .body("Woohoo,");
+            .body("Woohoo");
     }
-
 
     private int newActivityValidId(Activity activity) {
         boolean created;

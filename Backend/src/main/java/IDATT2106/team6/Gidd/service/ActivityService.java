@@ -22,6 +22,16 @@ public class ActivityService {
         repo.doNothing();
     }
 
+
+    public boolean addActivity(Activity activity) {
+        Date now = new Date();
+        Timestamp currentTime = new Timestamp(now.getTime());
+        activity.setTimeCreated(currentTime);
+
+        return repo.addActivity(activity);
+    }
+
+    //Use addActivity(Activity) when you can, as it is easier to work with
     public void addActivity(int id, String title, Timestamp time, int repeat, User userId,
                             int capacity, int groupId, String description, byte[] image,
                             ActivityLevel activityLevel, List<Tag> tags,
@@ -37,13 +47,6 @@ public class ActivityService {
         repo.addActivity(newActivity);
     }
 
-    public boolean addActivity(Activity activity) {
-        Date now = new Date();
-        Timestamp currentTime = new Timestamp(now.getTime());
-        activity.setTimeCreated(currentTime);
-
-        return repo.addActivity(activity);
-    }
 
     public void testNewActivity(Activity object){
         repo.addActivity(object);
