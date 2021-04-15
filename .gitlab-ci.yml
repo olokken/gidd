@@ -30,3 +30,18 @@
   #  - cd Backend
    # - mvn test
   #needs: ["backend-build"]
+
+
+deploy:
+  script:
+    - mkdir ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - touch ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa # Required permission by ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - apt-get update
+    - apt-get install --assume-yes rsync
+    - rsync --archive --delete --exclude='.git' --exclude='target' Backend/ app@13.51.169.174:app
+    - ssh app@13.51.169.174 systemctl --user restart app
+  only:
+    - backend-dev
