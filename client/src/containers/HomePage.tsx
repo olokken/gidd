@@ -3,7 +3,7 @@ import { TextField, Button } from '@material-ui/core';
 import styled from 'styled-components';
 import Popup from '../components/Popup';
 import ActivityForm from '../components/ActivityForm';
-import MyUser, { IUser } from '../components/MyUser';
+import MyUser from '../components/MyUser';
 
 const Container = styled.div`
     display: flex;
@@ -14,14 +14,6 @@ const Container = styled.div`
 const HomePage = () => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     const [openUser, setOpenUser] = useState<boolean>(false);
-    const [user, setUser] = useState<IUser>({
-        id: 0,
-        userName: '',
-        password: '',
-        email: '',
-        poeng: 0,
-        phone: '',
-    });
 
     return (
         <Container>
@@ -43,11 +35,7 @@ const HomePage = () => {
                 openPopup={openUser}
                 setOpenPopup={setOpenUser}
             >
-                <MyUser
-                    user={user}
-                    openUser={openUser}
-                    setOpenUser={setOpenUser}
-                />
+                <MyUser />
             </Popup>
         </Container>
     );
