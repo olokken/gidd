@@ -64,4 +64,8 @@ public class UserService {
     public boolean deleteConnection(ActivityUser activityUser){
         return this.repo.deleteConnection(activityUser);
     }
+
+    public boolean deleteUser(int userId){
+        return repo.deleteUser(user_id);
+    }
 }
