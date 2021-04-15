@@ -1,7 +1,11 @@
-import React from 'react';
+import { ContactSupportOutlined } from '@material-ui/icons';
+import React, { ChangeEvent, useState } from 'react';
+import { useContext } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import NewUserCard from '../components/NewUserCard';
+import { UserContext } from '../components/UserContext';
+import User from '../interfaces/User'
 
 const NewUsernContainer = styled.div`
   width: 100%;
@@ -24,18 +28,85 @@ const NewUsernContainer = styled.div`
 
 const NewUser = () => {
   const history = useHistory();
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password1, setPassword1] = useState<string>('');
+  const [password2, setPassword2] = useState<string>('');
+  const equalPasswords: boolean = password1 === password2 ? true : false;
+  const [emailList, setEmailList] = useState(['haavard.tysland@lyse.net']);
+  const correctEmailFormat = email.indexOf('@') > -1 ? true : false;
+  const {setUser} = useContext(UserContext)
 
-  const createUser = (username:string, password:string):boolean => {
-    console.log(username + password); 
-    history.push("/");  
-    return true;  
+  const emailCheck = (email: string) => {
+    if (emailList.indexOf(email) > -1) {
+      return false;
+    }
+    return true;
   }
 
-  return (
-    <NewUsernContainer>
-      <NewUserCard createUser = {createUser}></NewUserCard>
-    </NewUsernContainer>
-  );
-};
+  const createUser = (name: string, email: string, password: string): boolean => {
+    if (!emailCheck(email)) {
+      alert("E-mail er allerede registrert")
+      return false;
+    }
+    else if (!equalPasswords && password1 !== '') {
+      alert('Passordene er ulike');
+      return false;
+    } else {
+        const newUser:User = {
+          name: name,
+          userID: '',
+          email: email,
+          password: password,
+          picture: ''
+        }
+        console.log(newUser)
+        setUser(newUser)
+        history.push('/HomePage');
+        alert('Du er registrert og logget inn')
+        return true; 
+      }
+    }
 
-export default NewUser;
+    const onChangeEmail = (event: ChangeEvent<HTMLInputElement>) => {
+      const currentEmail: string = (event.target as HTMLInputElement).value
+      setEmail(currentEmail);
+    };
+
+    const onChangeName = (event: ChangeEvent<HTMLInputElement>) => {
+      setName((event.target as HTMLInputElement).value);
+    };
+
+    const onChangePassword1 = (event: ChangeEvent<HTMLInputElement>) => {
+      setPassword1((event.target as HTMLInputElement).value);
+    };
+    const onChangePassword2 = (event: ChangeEvent<HTMLInputElement>) => {
+      setPassword2((event.target as HTMLInputElement).value);
+    };
+
+
+
+    const onClick = () => {
+      if (equalPasswords) {
+        createUser(name, email, password1);
+      } else {
+        alert('Noe gikk galt');
+      }
+    };
+
+    return (
+      <NewUsernContainer>
+        <NewUserCard
+          onChangeName={onChangeName}
+          onChangeEmail={onChangeEmail}
+          onChangePassword1={onChangePassword1}
+          onChangePassword2={onChangePassword2}
+          onClick={onClick}
+          equalPasswords={equalPasswords}
+          correctEmailFormat={correctEmailFormat}
+        ></NewUserCard>
+      </NewUsernContainer>
+    );
+  };
+
+  export default NewUser;
