@@ -13,7 +13,7 @@ const Map = () => {
     const {user} = useContext(UserContext);
     return (
         <Container>
-            <h1>{JSON.stringify(user)}</h1>
+            <h1></h1>
         </Container>
     );
 };

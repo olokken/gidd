@@ -5,8 +5,7 @@ import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import NewUserCard from '../components/NewUserCard';
 import { UserContext } from '../components/UserContext';
-import User from '../interfaces/User'
-import axios from 'axios'
+import axios from '../Axios'
 
 const NewUsernContainer = styled.div`
   width: 100%;
@@ -33,12 +32,13 @@ const NewUser = () => {
   const [surname, setSurname] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [number, setNumber] = useState<string>('');
+  const [activityLevel, setActivityLevel] = useState<string>('');
   const [password1, setPassword1] = useState<string>('');
   const [password2, setPassword2] = useState<string>('');
   const equalPasswords: boolean = password1 === password2 ? true : false;
-  const [emailList, setEmailList] = useState(['']);
+  const [emailList, setEmailList] = useState<string[]>([]);
   const correctEmailFormat = email.indexOf('@') > -1 ? true : false;
-  const { setUser } = useContext(UserContext)
+  const { user, setUser } = useContext(UserContext)
 
   const emailCheck = (email: string) => {
     if (emailList.indexOf(email) > -1) {
@@ -56,33 +56,22 @@ const NewUser = () => {
       alert('Passordene er ulike');
       return false;
     } else {
-      const newUser: User = {
-        firstName: firstName,
-        surname:surname,
-        userID: '',
-        email: email,
-        password: password,
-        picture: ''
-      }
-      setUser(newUser)
-      axios.post('http://13.53.122.65:8080/user', {
-        data: {
+      axios.post('/user', {
           "email": email,
           "password": password,
           "firstName": firstName,
           "surname": surname,
           "phoneNumber": number,
-          "activityLevel": "LOW"
+          "activityLevel": activityLevel.toUpperCase()
         },
-        //headers: { "Access-Control-Allow-Origin": "*" },
-      }).then((response) => {
-        console.log(JSON.stringify(response))
+        ).then((response) => {
+        console.log(JSON.stringify(response.data.id))
+        setUser(response.data.id)
+        history.push('/Activites');
       }).catch((error) => {
         // handle this error
         console.log('error: '+ error.message);
     })
-
-      //history.push('/HomePage');
       return true;
     }
   }
@@ -103,6 +92,11 @@ const NewUser = () => {
   const onChangeNumber = (event: ChangeEvent<HTMLInputElement>) => {
     setNumber((event.target as HTMLInputElement).value);
   };
+
+  const onChangeActivityLevel = (event: ChangeEvent<HTMLInputElement>) => {
+    setActivityLevel((event.target as HTMLInputElement).value);
+  };
+
 
   const onChangePassword1 = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword1((event.target as HTMLInputElement).value);
@@ -126,6 +120,8 @@ const NewUser = () => {
       <NewUserCard
         onChangeFirstName={onChangeFirstName}
         onChangeSurname={onChangeSurname}
+        onChangeActivityLevel={onChangeActivityLevel}
+        activityLevel={activityLevel}
         onChangeEmail={onChangeEmail}
         onChangeNumber={onChangeNumber}
         onChangePassword1={onChangePassword1}

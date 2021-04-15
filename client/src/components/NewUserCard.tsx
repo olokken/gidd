@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react';
-import { TextField, Button, colors } from '@material-ui/core';
+import { TextField, Button, MenuItem } from '@material-ui/core';
 import styled from 'styled-components';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
@@ -19,6 +19,8 @@ const RegisterContainer = styled.div`
 interface Props {
   onChangeFirstName: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeSurname: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChangeActivityLevel: (e: ChangeEvent<HTMLInputElement>) => void;
+  activityLevel:string;
   onChangeEmail: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeNumber: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangePassword1: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -29,8 +31,9 @@ interface Props {
   email: string;
 }
 
-const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email }: Props) => {
 
+const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel, activityLevel, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email }: Props) => {
+  const activityLevels:string[] = ['Low', 'Medium', 'High']
   return (
     <RegisterContainer>
       <h2>Register a new user</h2>
@@ -65,6 +68,21 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeEmail, onChan
               </InputAdornment>
           }}
         />
+          <TextField
+          style = {{width: '100%', marginBottom: 24}}
+          select
+          color = 'secondary'
+          label="Select your activity level"
+          value= {activityLevel}
+          onChange={onChangeActivityLevel}
+          variant="outlined"
+        >
+          {activityLevels.map((option, index) => (
+            <MenuItem key={index} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
           label="Telephone"

@@ -6,7 +6,7 @@ import image from '../assets/GIDD.png';
 import { UserContext } from '../components/UserContext';
 import { useContext } from 'react';
 import User from '../interfaces/User'
-import axios from 'axios'
+import axios from '../Axios'
 
 
 
@@ -52,14 +52,14 @@ const Login = () => {
         if (!checkPassword() || email !== '') {
             const user = await login()
             setUser(user)
-            axios.post('http://13.53.122.65:8080/login', {
-                data: {
+            axios.post('/login', {
                     "email": email,
                     "password": password,
-                },
-                headers: { "Access-Control-Allow-Origin": "*" },
-            }).then((response) => {
-                console.log(JSON.stringify(response))
+                }
+            ).then((response) => {
+                console.log(JSON.stringify(response.data.id))
+                setUser(response.data.id)
+                history.push('/Activities')
             }).catch((error) => {
                 // handle this error
                 console.log('error: ' + error.message);
@@ -127,13 +127,10 @@ const Login = () => {
     const responseGoogle = (response: any) => {
         const answer = response;
         console.log(answer)
-        console.log('fått svar')
-        
-        const name:string[] = response.profileObj.name.split(' ')
-        
+        console.log('fått svar')        
         const newUser: User = {
-            firstName: name[0],
-            surname: name[1],
+            firstName: response.profileObj.givenName,
+            surname: response.profileObj.familyName,
             userID: '',
             email: response.profileObj.email,
             picture: response.profileObj.picture,
@@ -141,6 +138,10 @@ const Login = () => {
         }
         setUser(newUser)
         onLoginSoMe();
+    }
+
+    const failureGoogle = (response:any) => {
+        console.log(response)
     }
 
     const responseFacebook = (response: any) => {
@@ -159,7 +160,7 @@ const Login = () => {
     }
 
     const componentClicked = async () => {
-        console.log('gh')
+        console.log()
     }
 
     return (
@@ -174,6 +175,7 @@ const Login = () => {
                 handleClickShowPassword={handleClickShowPassword}
                 showPassword={showPassword}
                 responseGoogle={responseGoogle}
+                failureGoogle={failureGoogle}
                 responseFacebook={responseFacebook}
                 componentClicked={componentClicked}
             ></LoginCard>
