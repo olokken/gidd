@@ -1,8 +1,10 @@
 import { ContactSupportOutlined } from '@material-ui/icons';
 import React, { ChangeEvent, useState } from 'react';
+import { useContext } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import NewUserCard from '../components/NewUserCard';
+import { UserContext } from '../components/UserContext';
 
 const NewUsernContainer = styled.div`
   width: 100%;
@@ -32,6 +34,7 @@ const NewUser = () => {
   const equalPasswords: boolean = password1 === password2 ? true : false;
   const [emailList, setEmailList] = useState(['haavard.tysland@lyse.net']);
   const correctEmailFormat = email.indexOf('@') > -1 ? true : false;
+  const {setUser} = useContext(UserContext)
 
   interface User {
     username:string,
@@ -61,8 +64,9 @@ const NewUser = () => {
           password: password
         }
         console.log(newUser)
-        history.push('/');
-        alert('Du er registrert og kan nå logge inn')
+        setUser(newUser)
+        history.push('/HomePage');
+        alert('Du er registrert og logget inn')
         return true; 
       }
     }

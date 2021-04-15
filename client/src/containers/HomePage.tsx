@@ -1,6 +1,7 @@
 import React, { ChangeEvent, KeyboardEventHandler } from 'react';
-import { TextField, Button } from '@material-ui/core';
 import styled from 'styled-components';
+import { UserContext } from '../components/UserContext';
+import { useContext } from 'react';
 
 const Container = styled.div`
     display: flex;
@@ -9,9 +10,10 @@ const Container = styled.div`
 `;
 
 const HomePage = () => {
+    const {user} = useContext(UserContext)
     return (
         <Container>
-            <h1>Dette er hjemmesiden</h1>
+            <h1>{JSON.stringify(user)}</h1>
         </Container>
     );
 };

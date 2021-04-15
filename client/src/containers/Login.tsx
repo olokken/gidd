@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import LoginCard from '../components/LoginCard';
 import { useHistory } from 'react-router-dom';
 import image from '../assets/GIDD.png';
+import { UserContext } from '../components/UserContext';
+import { useContext } from 'react';
+import { useEffect } from 'react';
 
 
 const LoginContainer = styled.div`
@@ -46,17 +49,25 @@ const Login = () => {
     const [picture, setPicture] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    const [user, setUser] = useState<User>();
+    const {user, setUser} = useContext(UserContext)
 
-
-    const onLogin = () => {
-        if (!checkPassword()) {
+    
+    const onLogin = async() => {
+        if (!checkPassword() || email !== '') {
+            const user = await login()
+            setUser(user)
             history.push('/HomePage');
         } else {
             alert("Vennligst fyll ut alt")
         }
     };
 
+    const login = async () => {
+        return {
+            email: email,
+            name: name
+        }
+    }
     const checkPassword = () => {
         if (email !== '' && password !== '') {
             return false;
@@ -102,9 +113,10 @@ const Login = () => {
         setPicture(response.profileObj.picture);
       }
 
-      const responseFacebook =  async(response:any) => {
+      const responseFacebook = async(response:any) => {
         console.log(response)
-        //setEmail(answer.email)
+        const answer = await response
+        setEmail(response.email)
         //setUserID(answer.userID)
         //setName(answer.name)
         //setPicture(answer.picture.data.url)

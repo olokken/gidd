@@ -4,8 +4,6 @@ import styled from 'styled-components';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
-import Facebook from './Facebook'
-import Google from './Google'
 import GoogleLogin from 'react-google-login';
 import GoogleButton from 'react-google-button';
 import FacebookLogin, { ReactFacebookLoginInfo } from 'react-facebook-login';
@@ -49,9 +47,9 @@ interface Props {
   onKeyDown: (e: any) => void;
   handleClickShowPassword: () => void;
   showPassword: boolean;
-  responseGoogle: (response:any) => void;
-  responseFacebook: (response:any) => void;
-  componentClicked: (data:any) => void;
+  responseGoogle: (response: any) => void;
+  responseFacebook: (response: any) => void;
+  componentClicked: (data: any) => void;
 }
 
 
@@ -113,23 +111,24 @@ const LoginCard = ({
         CREATE NEW USER
       </Button>
       <SocialMediaContainer>
-        <FacebookContainer><FacebookLogin
-        appId="124734739639594"
-        autoLoad={true}
-        fields="name,email,picture"
-        onClick={componentClicked}
-        callback={responseFacebook} /></FacebookContainer>
+        <FacebookContainer>
+          <FacebookLogin
+            appId="124734739639594"
+            autoLoad={true}
+            fields="name,email,picture"
+            onClick={componentClicked}
+            callback={responseFacebook} /></FacebookContainer>
         <GoogleContainer>
-                <GoogleLogin
-                    clientId='829161936578-7u42ghop2aqmgs3e4n98907euik21jrt.apps.googleusercontent.com'
-                    buttonText='Login with Google'
-                    //fields="name,email,picture"
-                    onSuccess={responseGoogle}
-                    onFailure={responseGoogle}
-                    isSignedIn={true}               
-                />
-            </GoogleContainer>     
-        </SocialMediaContainer>
+          <GoogleLogin
+            clientId='829161936578-7u42ghop2aqmgs3e4n98907euik21jrt.apps.googleusercontent.com'
+            buttonText='Login with Google'
+            //fields="name,email,picture"
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy='none'
+          />
+        </GoogleContainer>
+      </SocialMediaContainer>
     </LoginCardContainer>
   );
 };
