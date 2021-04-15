@@ -12,13 +12,15 @@ import java.net.URI;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import javax.management.BadAttributeValueExpException;
 import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,9 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @CrossOrigin
 @Controller
@@ -51,30 +51,17 @@ public class GiddController {
     }
 
     @PostMapping(value = "/activity", consumes = "application/json", produces = "application/json")
-    public ResponseEntity newActivity(@RequestBody Map<String, String> map) {
+    public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
         int newId;
+        HttpHeaders headers = new HttpHeaders();
         try{
-            User user = userService.getUser(Integer.parseInt(map.get("userId")));
+            User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
             if(user==null){
                 throw new InvalidAttributesException("User does not exist");
             }
             newId = 0;
-            String title = map.get("title").trim();
-            Timestamp newTime = Timestamp.valueOf(map.get("time"));
-            int repeat = Integer.parseInt(map.get("repeat"));
-            int capacity = Integer.parseInt(map.get("capacity"));
-            int groupId = Integer.parseInt(map.get("groupId"));
-            String description = map.get("description");
-            byte[] image = binaryToByte(map.get("image"));
-            ActivityLevel activityLevel = ActivityLevel.valueOf(map.get("activityLevel").toUpperCase());
-            List<Tag> tags = splitTags(map.get("tags"));
-            double latitude = Double.parseDouble(map.get("latitude"));
-            double longitude = Double.parseDouble(map.get("longitude"));
 
-            Activity newActivity = new Activity(newId,
-                title, newTime, repeat, user,
-                capacity, groupId, description, image,
-                activityLevel, tags, latitude, longitude, null);
+            Activity newActivity = mapToActivity(map, newId, user);
 
             newId = newActivityValidId(newActivity);
 
@@ -83,6 +70,7 @@ public class GiddController {
             System.out.println("An activity failed to be created. Invalid userID received.");
             return ResponseEntity
                 .badRequest()
+                .headers(headers)
                 .body("An invalid userID was received.");
         } catch(Exception e) {
             e.printStackTrace();
@@ -94,6 +82,40 @@ public class GiddController {
         return ResponseEntity
             .created(URI.create(String.format("/activity/%d", newId)))
             .body("Woohoo");
+    }
+
+    @PutMapping(value="/activity/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity editActivity(@RequestBody Map<String, Object> map, @PathVariable("id") int actId){
+        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+        Activity activity = activityService.testGetActivity(actId);
+        HttpHeaders headers = new HttpHeaders();
+        System.out.println(activity);
+        if(activity==null || user == null){
+            return ResponseEntity
+                .badRequest()
+                .headers(headers)
+                .body("didnt work sad");
+        }
+
+        activity.setTitle(map.get("title").toString());
+        activity.setTime(Timestamp.valueOf(map.get("time").toString()));
+        activity.setTitle(map.get("title").toString());
+        activity.setDescription(map.get("description").toString());
+        activity.setCapacity(Integer.parseInt(map.get("capacity").toString()));
+        activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
+
+        boolean edited = activityService.editActivity(activity);
+        if(!edited){
+            return ResponseEntity
+                .badRequest()
+                .headers(headers)
+                .body("didnt work here either sad");
+        }
+
+        return ResponseEntity
+            .ok()
+            .headers(headers)
+            .body("woohooo worked!!");
     }
 
     private int newActivityValidId(Activity activity) {
@@ -144,5 +166,23 @@ public class GiddController {
         return ArrayUtils.toPrimitive(bytes);
     }
 
+    private Activity mapToActivity(Map<String, Object> map, int actId, User user){
+        String title = map.get("title").toString().trim();
+        Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
+        int repeat = Integer.parseInt(map.get("repeat").toString());
+        int capacity = Integer.parseInt(map.get("capacity").toString());
+        int groupId = Integer.parseInt(map.get("groupId").toString());
+        String description = map.get("description").toString();
+        byte[] image = binaryToByte(map.get("image").toString());
+        ActivityLevel activityLevel = ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
+        List<Tag> tags = splitTags(map.get("tags").toString());
+        double latitude = Double.parseDouble(map.get("latitude").toString());
+        double longitude = Double.parseDouble(map.get("longitude").toString());
+
+        return new Activity(actId,
+            title, newTime, repeat, user,
+            capacity, groupId, description, image,
+            activityLevel, tags, latitude, longitude, null);
+    }
 }
 

@@ -24,8 +24,7 @@ public class ActivityService {
 
 
     public boolean addActivity(Activity activity) {
-        Date now = new Date();
-        Timestamp currentTime = new Timestamp(now.getTime());
+        Timestamp currentTime = new Timestamp(new Date().getTime());
         activity.setTimeCreated(currentTime);
 
         return repo.addActivity(activity);
@@ -47,6 +46,9 @@ public class ActivityService {
         repo.addActivity(newActivity);
     }
 
+    public boolean editActivity(Activity activity){
+        return repo.updateActivity(activity);
+    }
 
     public void testNewActivity(Activity object){
         repo.addActivity(object);
