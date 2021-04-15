@@ -26,6 +26,9 @@ public class UserService {
     }
 
 	public boolean login(String email, String password){
+		System.out.println("email: " + email);
+		System.out.println("password " + password);
+	
 		return getUser(email).verifyPassword(password);
 	}
 
@@ -42,7 +45,7 @@ public class UserService {
 
 	public User getUser(String email){
 		//todo call repo here
-		return null;
+		return repo.findUserByEmail(email);
 	}
 
     public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
@@ -66,6 +69,6 @@ public class UserService {
     }
 
     public boolean deleteUser(int userId){
-        return repo.deleteUser(user_id);
+        return repo.deleteUser(userId);
     }
 }

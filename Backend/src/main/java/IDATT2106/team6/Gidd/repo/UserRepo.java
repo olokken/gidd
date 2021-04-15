@@ -209,8 +209,10 @@ public class UserRepo extends GiddRepo {
         try{
             TypedQuery q = em.createQuery("SELECT a FROM User a WHERE a.email = ?1", User.class);
             q.setParameter(1, email);
+	    System.out.println("found single result");
             return (User)q.getSingleResult();
         }catch (Exception e){
+	   System.out.println("found no result"); 
             e.printStackTrace();
             return null;
         }finally {

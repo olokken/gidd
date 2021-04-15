@@ -99,18 +99,20 @@ public class GiddController {
                 .headers(header)
                 .body(formatJson(body)); 
 		}
-        header.add("Status", "400 BAD REQUEST")
+        header.add("Status", "400 BAD REQUEST");
 
         return ResponseEntity.ok()
-            .headers(header); 
+            .headers(header).body(formatJson(body)); 
 }
 
     @PostMapping("/login")
-    public ResponseEntity loginUser(@RequestBody HashMap<String, String> map){
+    public ResponseEntity loginUser(@RequestBody HashMap<String, Object> map){
+	    System.out.println("map is : " + map.toString());
 		boolean result = userService.login(map.get("email").toString(), map.get("password").toString());
         Map<String, String> body = new HashMap<>();
+        HttpHeaders header = new HttpHeaders();
         if(result){
-            body.put("id", String.valueOf(userService.getUser(map.get("email")).getUserId()));
+            body.put("id", String.valueOf(userService.getUser(map.get("email").toString()).getUserId()));
             header.add("Status", "200 OK");
             return ResponseEntity.ok()
                 .headers(header)
@@ -118,7 +120,7 @@ public class GiddController {
         }
         header.add("Status", "403 Forbidden");
         return ResponseEntity.ok()
-            .headers(header); 
+            .headers(header).body(formatJson(body)); 
     }
     private String formatJson(Map values){
         String result = "{";
@@ -139,7 +141,7 @@ public class GiddController {
             it.remove(); // avoids a ConcurrentModificationException
         }
         //remove trailing comma
-        return result.substring(0, result.length() - 2) + "}";
+        return result.substring(0, result.length() - (result.length() > 1 ? 2 : 0)) + "}";
     }
 
     @DeleteMapping("user/{id}")
