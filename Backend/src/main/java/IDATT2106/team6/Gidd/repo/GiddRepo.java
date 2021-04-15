@@ -21,10 +21,10 @@ public abstract class GiddRepo {
         assert input != null;
         input.close();
 
-        newProperties.put("javax.persistence.jdbc.url", "jdbc:mysql://mysql.stud.iie.ntnu.no:3306/" + prop.getProperty("URL"));
-        newProperties.put("javax.persistence.jdbc.user", prop.getProperty("spring.datasource.username"));
-        newProperties.put("javax.persistence.jdbc.password", prop.getProperty("spring.datasource.password"));
-
+        String jdbcUrl = "jdbc:mysql://" + prop.getProperty("RDSHOSTNAME") + ":" + prop.getProperty("RDSPORT") + "/" + prop.getProperty("RDSDBNAME");
+        newProperties.put("javax.persistence.jdbc.url", jdbcUrl);
+        newProperties.put("javax.persistence.jdbc.user", prop.getProperty("RDSUSERNAME"));
+        newProperties.put("javax.persistence.jdbc.password", prop.getProperty("RDSPASSWORD"));
         emf = javax.persistence.Persistence.createEntityManagerFactory("DatabasePU", newProperties);
     }
 
