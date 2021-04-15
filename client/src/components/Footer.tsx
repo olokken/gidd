@@ -4,7 +4,7 @@ import { AppBar, Button, Icon, Toolbar, MenuItem, makeStyles, ListItem, Drawer, 
 
 const StyledTextArea = styled.textarea`
     resize: none;
-    border-radius: 10   px;
+    border-radius: 10px;
 `;
 
 const Footer = () => {
