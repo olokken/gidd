@@ -28,6 +28,8 @@ const MyUser: React.FC = () => {
     //const [phone, setPhone] = useState<string>('');
     const [password1, setPassword1] = useState<string>('');
     const [password2, setPassword2] = useState<string>('');
+    const [showEditPass, setShowEditPass] = useState<boolean>(false);
+    const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
 
     const checkInput = (input: string): boolean => {
         if (input.length > 0 && input.charAt(0) !== ' ') {
@@ -146,21 +148,27 @@ const MyUser: React.FC = () => {
             {/* TODO mulighet for å endre aktivitetsnivå*/}
             <div>
                 <TextField
-                    type="password"
+                    type={showEditPass ? 'text' : 'password'}
                     label="Endre passord"
                     variant="outlined"
                     onChange={onChangePassword1}
                 />
-                <VisibilityIcon className="password-icon" />
+                <VisibilityIcon
+                    className="password-icon"
+                    onClick={() => setShowEditPass(!showEditPass)}
+                />
             </div>
             <div>
                 <TextField
-                    type="password"
+                    type={showConfirmPass ? 'text' : 'password'}
                     label="Bekreft passord"
                     variant="outlined"
                     onChange={onChangePassword2}
                 />
-                <VisibilityIcon className="password-icon" />
+                <VisibilityIcon
+                    className="password-icon"
+                    onClick={() => setShowConfirmPass(!showConfirmPass)}
+                />
                 <div></div>
                 <StyledButton onClick={onClickChangePassword}>
                     Oppdater
