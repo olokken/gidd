@@ -84,9 +84,6 @@ public class TagRepo extends GiddRepo {
             TypedQuery q = em.createQuery("SELECT a FROM Tag a WHERE a.description = ?1", Tag.class);
             q.setParameter(1, tagName);
             return (Tag) q.getSingleResult();
-        }catch (NoResultException e){
-            System.out.println("No tag was found with description \'" + tagName + "\'");
-            return null;
         }catch (Exception e){
             e.printStackTrace();
             return null;
