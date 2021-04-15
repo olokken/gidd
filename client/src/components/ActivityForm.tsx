@@ -1,7 +1,7 @@
 import { TextField, Button, withStyles, Typography } from '@material-ui/core';
 import React, { useState, ChangeEvent } from 'react';
 import '../styles/ActivityForm.css';
-import axios from '../axios.jsx';
+import axios from '../Axios.jsx';
 
 const StyledButton = withStyles({
     root: {
