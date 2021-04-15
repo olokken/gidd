@@ -8,6 +8,7 @@ import { useContext } from 'react';
 import User from '../interfaces/User'
 
 
+
 const LoginContainer = styled.div`
     width: 100%;
     height: 100vh;
@@ -43,7 +44,7 @@ const Login = () => {
     const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const {user, setUser} = useContext(UserContext)
-
+  
     
     const onLogin = async() => {
         if (!checkPassword() || email !== '') {

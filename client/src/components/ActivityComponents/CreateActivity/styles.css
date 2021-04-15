@@ -1,0 +1,25 @@
+.activityform {
+    padding: 20px;
+}
+
+.activityform.div {
+    margin: 4px;
+}
+.description {
+    width: 30vh;
+    height: 120px;
+    width: 50vh;
+}
+
+.textfield {
+    width: 50vh;
+}
+
+.buttons {
+    display: flex;
+    width: 50vh;
+}
+
+.button {
+    width: 50%;
+}
