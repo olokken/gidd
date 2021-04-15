@@ -52,4 +52,8 @@ public class ActivityService {
     public void testNewActivity(Activity object){
         repo.addActivity(object);
     }
+
+    public boolean removeUserFromActivity(int activityUser, Activity activity){
+        return this.repo.removeUserFromActivity(activityUser, activity);
+    }
 }

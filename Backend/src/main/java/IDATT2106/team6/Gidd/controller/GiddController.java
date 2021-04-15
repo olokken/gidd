@@ -9,8 +9,10 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,6 +68,8 @@ public class GiddController {
 
         int id = getRandomID();
 
+        //Kalle insert-metode helt til den blir true
+
         ArrayList<ActivityUser> activityUsers = new ArrayList<>();
         ArrayList<Activity> activities = activityService.getAllActivities();
 
@@ -82,6 +86,34 @@ public class GiddController {
         return ResponseEntity
                 .created(URI.create(String.format("/bytt/%d", id)))
                 .body("Added to event");
+    }
+
+    @GetMapping(value = "/testGetAllActivitiesForUser", consumes = "application/json", produces = "application/json")
+    public ResponseEntity getAllActivitiesForUser(@RequestBody HashMap<String, Object> map){
+        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+
+        List<ActivityUser> activityUser = user.getActivities();
+
+        return ResponseEntity
+                .created(URI.create(String.format("/activities/%d", user.getUserId())))
+                .body(activityUser.toString());
+    }
+
+    @DeleteMapping(value = "/testDeleteActivitiesToUser", consumes = "application/json", produces = "application/json")
+    public ResponseEntity deleteActivitiesToUser(@RequestBody HashMap<String, Object> map){
+        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+        Activity activity = activityService.findActivity(Integer.parseInt(map.get("activityId").toString()));
+
+        int activityUserId = userService.getActivityUser(activity, user);
+
+        ActivityUser activityUser = userService.getActivityUserById(activityUserId);
+        userService.deleteConnection(activityUser);
+        userService.removeActivity(activityUserId, user);
+        activityService.removeUserFromActivity(activityUserId, activity);
+
+        return ResponseEntity
+                .created(URI.create(String.format("/removed/%d", user.getUserId())))
+                .body("lol");
     }
 
     private int getRandomID(){

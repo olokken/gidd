@@ -8,11 +8,17 @@ import java.sql.Timestamp;
 public class ActivityUser {
     @Id
     private int id;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "activityId")
+    @ManyToOne(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinColumn(name = "activity_id")
     private Activity activity;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId")
+    @ManyToOne(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinColumn(name = "user_id")
     private User user;
     private Timestamp reserved;
 
@@ -23,5 +29,9 @@ public class ActivityUser {
         this.activity = activity;
         this.user = user;
         this.reserved = reserved;
+    }
+
+    public int getId() {
+        return id;
     }
 }

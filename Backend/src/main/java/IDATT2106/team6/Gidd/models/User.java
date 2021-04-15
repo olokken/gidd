@@ -24,7 +24,7 @@ public class User {
     @Column(name = "auth_provider")
     private Provider authProvider;
     @CascadeOnDelete
-    @OneToMany(mappedBy = "User")
+    @OneToMany(mappedBy = "User", fetch = FetchType.EAGER)
     private List<ActivityUser> activities;
 
     public User(int id, String email, String password, String firstName, String surname, int phoneNumber, ActivityLevel activityLevel, int points, Provider provider){
@@ -122,4 +122,7 @@ public class User {
         this.activities.add(activityUser);
     }
 
+    public void setActivities(List<ActivityUser> activities) {
+        this.activities = activities;
+    }
 }

@@ -1,6 +1,8 @@
 package IDATT2106.team6.Gidd.repo;
 
+import java.awt.desktop.QuitEvent;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +118,70 @@ public class UserRepo extends GiddRepo {
         }catch (Exception e){
             e.printStackTrace();
             em.getTransaction().rollback();
+            return false;
+        }
+    }
+
+    public Integer getActivityUserId(int activityId, int userId){
+        EntityManager em = getEm();
+
+        try{
+            Query q = em.createNativeQuery("SELECT ID FROM ACTIVITY_USER WHERE activity_id = ?1 AND user_id = ?2")
+                    .setParameter(1, activityId)
+                    .setParameter(2, userId);
+
+            return (Integer)q.getSingleResult();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean removeActivity(int activityUserId, User user){
+        EntityManager em = getEm();
+
+        try{
+            for(ActivityUser as : user.getActivities()){
+                if(as.getId() == activityUserId){
+                    user.getActivities().remove(as);
+                    break;
+                }
+            }
+            em.getTransaction().begin();
+            em.merge(user);
+            em.flush();
+            em.getTransaction().commit();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public ActivityUser getActivityUserById(int activityUserId){
+        EntityManager em = getEm();
+
+        try{
+            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY_USER WHERE ID = ?1", ActivityUser.class)
+                    .setParameter(1, activityUserId);
+            return (ActivityUser)q.getSingleResult();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean deleteConnection(ActivityUser activityUser){
+        EntityManager em = getEm();
+
+        try{
+            em.getTransaction().begin();
+            ActivityUser temporaryActivityUser = em.merge(activityUser);
+            em.remove(temporaryActivityUser);
+            em.getTransaction().commit();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
             return false;
         }
     }

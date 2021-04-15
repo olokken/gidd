@@ -124,6 +124,27 @@ public class ActivityRepo extends GiddRepo {
         }
     }
 
+    public boolean removeUserFromActivity(int activityUserId, Activity activity){
+        EntityManager em = getEm();
+
+        try{
+            for(ActivityUser as : activity.getRegisteredParticipants()){
+                if(as.getId() == activityUserId){
+                    activity.getRegisteredParticipants().remove(as);
+                    break;
+                }
+            }
+            em.getTransaction().begin();
+            em.merge(activity);
+            em.flush();
+            em.getTransaction().commit();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public ArrayList<Activity> getAllActivities(){
         EntityManager em = getEm();
         List<Activity> allActivities = null;
