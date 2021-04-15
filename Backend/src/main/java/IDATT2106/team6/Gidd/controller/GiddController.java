@@ -7,7 +7,6 @@ import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.service.ActivityService;
 
-import java.net.http.HttpHeaders;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -82,16 +82,12 @@ public class GiddController {
 	//todo return result of registering new user
 
         Map<String, String> body = new HashMap<>();
-<<<<<<< Updated upstream
-
-=======
         HttpHeaders header = new HttpHeaders();
         header.add("Access-Control-Allow-Origin", "*");
         header.add("Status", "200 OK");
 
         header.add("Content-Type", "application/json; charset=UTF-8");
         
->>>>>>> Stashed changes
 		if(result != null){
             body.put("id", String.valueOf(result.getUserId()));
 			return new ResponseEntity<>(body, HttpStatus.CREATED); 
