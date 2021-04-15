@@ -1,10 +1,14 @@
 package IDATT2106.team6.Gidd.repo;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import IDATT2106.team6.Gidd.models.Activity;
+import IDATT2106.team6.Gidd.models.ActivityUser;
+import IDATT2106.team6.Gidd.models.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -99,6 +103,45 @@ public class ActivityRepo extends GiddRepo {
             return false;
         }finally {
             em.close();
+        }
+    }
+
+    public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
+        ActivityUser activityUser = new ActivityUser(id, activity, user, time);
+        activity.addParticipant(activityUser);
+
+        EntityManager em = getEm();
+
+        try{
+            em.getTransaction().begin();
+            em.merge(activity);
+            em.getTransaction().commit();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            em.getTransaction().rollback();
+            return false;
+        }
+    }
+
+    public boolean removeUserFromActivity(int activityUserId, Activity activity){
+        EntityManager em = getEm();
+
+        try{
+            for(ActivityUser as : activity.getRegisteredParticipants()){
+                if(as.getId() == activityUserId){
+                    activity.getRegisteredParticipants().remove(as);
+                    break;
+                }
+            }
+            em.getTransaction().begin();
+            em.merge(activity);
+            em.flush();
+            em.getTransaction().commit();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
         }
     }
 

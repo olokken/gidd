@@ -128,4 +128,12 @@ public class Activity {
     public Timestamp getTimeCreated() {
         return timeCreated;
     }
+
+    public void addParticipant(ActivityUser user){
+        this.registeredParticipants.add(user);
+    }
+
+    public void setRegisteredParticipants(List<ActivityUser> registeredParticipants) {
+        this.registeredParticipants = registeredParticipants;
+    }
 }
