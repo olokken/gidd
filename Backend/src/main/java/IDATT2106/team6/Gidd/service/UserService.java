@@ -26,9 +26,6 @@ public class UserService {
     }
 
 	public boolean login(String email, String password){
-		System.out.println("email: " + email);
-		System.out.println("password " + password);
-	
 		return getUser(email).verifyPassword(password);
 	}
 
@@ -40,11 +37,11 @@ public class UserService {
 		User newUser = new User(id > 0 ? id : -id, email, password, firstname, surname, phoneNumber, activityLevel, null);
 		//todo call repo to register this new user
         boolean result = repo.addUser(newUser);
-		return newUser;
+        if(result) return newUser;
+        return null;
     }
 
 	public User getUser(String email){
-		//todo call repo here
 		return repo.findUserByEmail(email);
 	}
 
