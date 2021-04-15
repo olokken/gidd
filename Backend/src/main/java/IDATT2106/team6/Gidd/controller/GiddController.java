@@ -83,7 +83,6 @@ public class GiddController {
             map.get("surname").toString(),
             Integer.parseInt(map.get("phoneNumber").toString()),
             ActivityLevel.valueOf(map.get("activityLevel").toString()));
-	//todo return result of registering new user
 
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
@@ -103,14 +102,13 @@ public class GiddController {
 
         return ResponseEntity.ok()
             .headers(header).body(formatJson(body)); 
-}
+    }
 
     @PostMapping("/login")
-    public ResponseEntity loginUser(@RequestBody HashMap<String, Object> map){
-	    System.out.println("map is : " + map.toString());
+    public ResponseEntity loginUser(@RequestBody HashMap<String, String> map){
+        HttpHeaders header = new HttpHeaders();
 		boolean result = userService.login(map.get("email").toString(), map.get("password").toString());
         Map<String, String> body = new HashMap<>();
-        HttpHeaders header = new HttpHeaders();
         if(result){
             body.put("id", String.valueOf(userService.getUser(map.get("email").toString()).getUserId()));
             header.add("Status", "200 OK");
@@ -146,7 +144,17 @@ public class GiddController {
 
     @DeleteMapping("user/{id}")
     public ResponseEntity deleteUser(@PathVariable Integer id){
-        userService.deleteUser(id);
-        return null;
+        HttpHeaders header = new HttpHeaders();
+        boolean result = userService.deleteUser(id);
+        Map<String, String> body = new HashMap<>();
+
+        if(result){
+            header.add("Status", "200 OK");
+            return ResponseEntity.ok()
+                .headers(header).body(formatJson(body)); 
+        }
+        header.add("Status", "400 BAD REQUEST");
+        return ResponseEntity.ok()
+            .headers(header).body(formatJson(body)); 
     }
 }
