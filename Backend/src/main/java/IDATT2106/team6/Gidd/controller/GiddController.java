@@ -1,16 +1,13 @@
 package IDATT2106.team6.Gidd.controller;
 
-import IDATT2106.team6.Gidd.models.ActivityLevel;
-import IDATT2106.team6.Gidd.models.Tag;
-import IDATT2106.team6.Gidd.models.User;
+import IDATT2106.team6.Gidd.models.*;
 import IDATT2106.team6.Gidd.service.ActivityService;
 import IDATT2106.team6.Gidd.service.EquipmentService;
 import IDATT2106.team6.Gidd.service.UserService;
 import java.net.URI;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -58,6 +55,33 @@ public class GiddController {
         return ResponseEntity
             .created(URI.create(String.format("/activity/%d", newId)))
             .body("Insert ResponseBody here");
+    }
+
+    @PostMapping(value = "/testAddNewActivityForUser", consumes = "application/json", produces = "application/json")
+    public ResponseEntity addNewActivityForUser(@RequestBody HashMap<String, Object> map){
+        Timestamp time = new Timestamp(new Date().getTime());
+
+        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+        Activity activity = activityService.findActivity(Integer.parseInt(map.get("activityId").toString()));
+
+        int id = getRandomID();
+
+        ArrayList<ActivityUser> activityUsers = new ArrayList<>();
+        ArrayList<Activity> activities = activityService.getAllActivities();
+
+        for(Activity a : activities){
+            activityUsers.addAll(a.getRegisteredParticipants());
+        }
+
+        while(activityUsers.contains(id)){
+            id = getRandomID();
+        }
+
+        userService.addUserToActivity(id, activity, user, time);
+        activityService.addUserToActivity(id, activity, user, time);
+        return ResponseEntity
+                .created(URI.create(String.format("/bytt/%d", id)))
+                .body("Added to event");
     }
 
     private int getRandomID(){

@@ -7,6 +7,7 @@ import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.repo.ActivityRepo;
 import IDATT2106.team6.Gidd.repo.GiddRepo;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,18 @@ public class ActivityService {
                 latitude, longitude, currentTime);
 
         repo.addActivity(newActivity);
+    }
+
+    public Activity findActivity(int activityId){
+        return this.repo.findActivity(activityId);
+    }
+
+    public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
+        return this.repo.addUserToActivity(id, activity, user, time);
+    }
+
+    public ArrayList<Activity> getAllActivities(){
+        return this.repo.getAllActivities();
     }
 
     public void testNewActivity(Activity object){

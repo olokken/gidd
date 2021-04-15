@@ -118,4 +118,8 @@ public class User {
         this.authProvider = authProvider;
     }
 
+    public void addActivity(ActivityUser activityUser){
+        this.activities.add(activityUser);
+    }
+
 }

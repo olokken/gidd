@@ -17,4 +17,11 @@ public class ActivityUser {
     private Timestamp reserved;
 
     public ActivityUser(){}
+
+    public ActivityUser(int id, Activity activity, User user, Timestamp reserved){
+        this.id = id;
+        this.activity = activity;
+        this.user = user;
+        this.reserved = reserved;
+    }
 }
