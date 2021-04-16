@@ -39,6 +39,7 @@ public class ActivityUser {
         return activity;
     }
 
+<<<<<<< HEAD
     public Timestamp getReserved() {
         return reserved;
     }
@@ -57,5 +58,13 @@ public class ActivityUser {
 
     public void setUser(User user) {
         this.user = user;
+=======
+    public User getUser(){
+        return user;
+    }
+
+    public Timestamp getTimestamp(){
+        return reserved;
+>>>>>>> 1b33c8a (activity service method for signed up users)
     }
 }

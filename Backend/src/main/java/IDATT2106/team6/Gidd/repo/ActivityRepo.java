@@ -5,6 +5,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.ActivityEquipment;
@@ -193,6 +197,34 @@ public class ActivityRepo extends GiddRepo {
         }finally {
             em.close();
         }
+    }
+
+    public List<User> getUsersFromActivity(int activityId){
+        Activity foundActivity = findActivity(activityId);
+        if(foundActivity != null) {
+            List<ActivityUser> activityUsers = foundActivity.getRegisteredParticipants();
+            Collections.sort(activityUsers, new Comparator<ActivityUser>(){
+                public int compare(ActivityUser a1, ActivityUser a2){
+                    return a1.getTimestamp().compareTo(a2.getTimestamp());
+                }
+            });
+            return activityUsers.stream().map(a -> a.getUser()).collect(Collectors.toList());
+            //hva vil vi gjøre
+            //metoden i controller henter alle sammen som er påmeldt
+            //tilby metoder i controller som gir venteliste?
+            // /activity/{id}/waiting
+            // todo til mandag:
+            // lag en metode som henter ut KUN de som er på venteliste
+            // tilby et endpoint til klienten som henter ut kun de som er i ventelisten
+            // klient kan da hente ut alle som er påmeldt, og sjekke hvem som er i ventelisten
+            // enhetstester :) og test at endpoint funker
+        }
+        return new ArrayList<User>();
+    }
+
+    public List<User> getWaitingList(int activityId){
+        //todo ingebrigt fyller ut denne på mandag
+        return new ArrayList<User>();
     }
 
     public ArrayList<Activity> getAllActivities(){
