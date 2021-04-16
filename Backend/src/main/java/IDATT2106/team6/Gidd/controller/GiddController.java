@@ -8,6 +8,7 @@ import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.service.ActivityService;
 
+import IDATT2106.team6.Gidd.util.TokenRequired;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +54,16 @@ public class GiddController {
             .ok()
             .body("hi");
     }
+
+    @ResponseBody
+    @GetMapping("/hello2")
+    @TokenRequired
+    public Map<String, Object> testAOPAnnotation() {
+        Map<String,Object> map = new LinkedHashMap<>();
+        map.put("result", "Aloha");
+        return map;
+    }
+
     @PostMapping(value = "/activity", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
         int newId;
