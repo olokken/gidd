@@ -21,7 +21,8 @@ const theme = createMuiTheme({
 
 function App() {
     const [user, setUser] = useState<User>({
-        name: '',
+        firstName: '',
+        surname: '',
         userID: '',
         email: '',
         picture: '',

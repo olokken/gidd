@@ -19,7 +19,10 @@ const useStyles = makeStyles((theme) => ({
     dialogWrapper: {
         padding: theme.spacing(2),
         position: 'absolute',
+        justifyContent: 'center',
         top: theme.spacing(5),
+        maxHeight: 'auto',
+        marginTop: '-20px'
     },
     dialogTitle: {
         paddingRight: '0px',

@@ -1,7 +1,8 @@
-import { TextField, Button, withStyles, Typography } from '@material-ui/core';
+import { TextField, Button, withStyles, Typography, MenuItem } from '@material-ui/core';
 import React, { useState, ChangeEvent } from 'react';
 import './styles.css';
 import axios from '../../../Axios';
+import MapIcon from '@material-ui/icons/Map';
 
 const StyledButton = withStyles({
     root: {
@@ -124,80 +125,165 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     };
 
     return (
-        <div className="activityform">
-            <div>
+        <div className="activityform" style={{display:'flex', justifyContent:'center'}}>
+            <div id="left">
+                <div>
+                    <TextField
+                        style={{padding:"5px"}}
+                        className="textfield"
+                        label="Tittel"
+                        value={title}
+                        onChange={onChangeTitle}
+                        variant="outlined"
+                    />
+                </div>
+                <div>
+                    <TextField
+                        style={{padding:"5px"}}
+                        label="Adresse"
+                        value={address}
+                        onChange={onChangeAddress}
+                        variant="outlined"
+                        className="textfield"
+                    />
+                </div>
+                <div>
+                    <TextField
+                        style={{padding:"5px"}}
+                        label="Dato"
+                        type="datetime-local"
+                        defaultValue={dateDisplay}
+                        value={dateDisplay}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        onChange={onChangeDate}
+                        variant="outlined"
+                        className="textfield"
+                    />
+                </div>
+                <div>
+                    <TextField
+                        style={{padding:"5px"}}
+                        className="description"
+                        label="Beskrivelse"
+                        value={desc}
+                        onChange={onChangeDesc}
+                        variant="outlined"
+                        rows={4}
+                        multiline
+                    />
+                </div>
                 <TextField
-                    className="textfield"
-                    label="Tittel"
-                    value={title}
-                    onChange={onChangeTitle}
-                    variant="outlined"
-                />
-            </div>
-            <div>
-                <TextField
-                    label="Adresse"
-                    value={address}
-                    onChange={onChangeAddress}
-                    variant="outlined"
-                    className="textfield"
-                />
-            </div>
-            <div>
-                <TextField
-                    label="Dato"
-                    type="datetime-local"
-                    defaultValue={dateDisplay}
-                    value={dateDisplay}
+                    style={{padding:"5px"}}
+                    type="file"
+                    label="Bilde"
+                    /*value={Picture}
+                    onChange={onChangePicture}*/
                     InputLabelProps={{
-                        shrink: true,
-                    }}
-                    onChange={onChangeDate}
+                            shrink: true,
+                        }}
                     variant="outlined"
                     className="textfield"
                 />
             </div>
-            <div>
+            <div id="middle">
                 <TextField
-                    className="description"
-                    label="Beskrivelse"
-                    value={desc}
-                    onChange={onChangeDesc}
+                    style={{padding:"5px"}}
+                    label="Tags"
+                    /*onChange={onChangeTags}
+                    value={tags}*/
                     variant="outlined"
-                    rows={4}
-                    multiline
+                    className="textfield"
                 />
+                <div style={{paddingRight:"5px", paddingLeft:"5px"}}>
+                    <h2>Tags</h2>
+                    <ul style={{borderRadius: '5px', border:'solid lightgrey 1px' ,width:"auto", height:'110px', overflow:'auto'}}>
+                        {reset === false &&
+                            equipmentList.map((equipment) => (
+                                <li key={equipment.id}>{equipment.description}</li>
+                            ))}
+                    </ul>
+                </div>
+                <div style={{padding:"5px", display:"flex"}}>
+                    <div style={{padding:"5px"}}>
+                        <TextField
+                            style={{ width:"110px"}}
+                            id="select" 
+                            label="Aktivitetgrad" 
+                            
+                            /*onChange={onChangeActivityLevel}
+                            value={ActivityLevel}*/
+                            variant="outlined"
+                            className="textfield"
+                            select>
+                            <MenuItem value="High">High</MenuItem>
+                            <MenuItem value="Medium">Medium</MenuItem>
+                            <MenuItem value="Low">Low</MenuItem>
+                        </TextField>
+                    </div>
+                    <TextField
+                        style={{padding:"5px", width:"auto"}}
+                        label="Plasser"
+                        type="number"
+                         InputLabelProps={{
+                            shrink: true,
+                        }}
+                        /*value={address}*/
+                        //onChange={onChangeCapacity}
+                        variant="outlined"
+                        className="textfield"
+                    />
+                    
+                    
+                    <TextField
+                    style={{padding:"5px", width:"auto"}}
+                    type="number"
+                    label="Gjentakinger"
+                     InputLabelProps={{
+                            shrink: true,
+                        }}
+                    /*value={address}*/
+                    variant="outlined"
+                    //onChange={onChangeRepeat}
+                    className="textfield"
+                    />
+                    
+                </div>
             </div>
-            <TextField
-                className="textfield"
-                label="Utstyr"
-                value={equipmentDesc}
-                variant="outlined"
-                onChange={onChangeEqipmentDesc}
-                onKeyPress={addEquipment}
-            />
-            <h2>Utstyrsliste</h2>
-            <ul>
-                {reset === false &&
-                    equipmentList.map((equipment) => (
-                        <li key={equipment.id}>{equipment.description}</li>
-                    ))}
-            </ul>
-            <div className="buttons">
-                <StyledButton
-                    style={{ marginRight: '4px' }}
-                    className="button"
-                    onClick={createActivity}
-                >
-                    Opprett Aktivitet
-                </StyledButton>
-                <StyledButton
-                    style={{ marginLeft: '4px' }}
-                    className="button"
-                    onClick={handleReset}
-                >
-                    Reset
-                </StyledButton>
+            <div id="right">
+                <TextField
+                    style={{padding:"5px"}}
+                    className="textfield"
+                    label="Utstyr"
+                    value={equipmentDesc}
+                    variant="outlined"
+                    onChange={onChangeEqipmentDesc}
+                    onKeyPress={addEquipment}
+                />
+                <h2>Utstyrsliste</h2>
+                <ul style={{borderRadius: '5px', border:'solid lightgrey 1px' ,width:"auto", height:'110px', overflow:'auto'}}>
+                    {reset === false &&
+                        equipmentList.map((equipment) => (
+                            <li key={equipment.id}>{equipment.description}</li>
+                        ))}
+                </ul>
+                <div className="buttons">
+                    <StyledButton
+                        style={{ marginRight: '4px' }}
+                        className="button"
+                        onClick={createActivity}
+                    >
+                        Opprett Aktivitet
+                    </StyledButton>
+                    <StyledButton
+                        style={{ marginLeft: '4px' }}
+                        className="button"
+                        onClick={handleReset}
+                    >
+                        Reset
+                    </StyledButton>
+                </div>
             </div>
         </div>
     );

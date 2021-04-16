@@ -16,20 +16,14 @@ interface Props {
 }
 
 const ActivityGrid = ({ activities }: Props) => {
-    const [page, setPage] = useState<number>(0);
-    const [currentActivities, setCurrentActivities] = useState<Activity[]>(
-        activities
-    );
-
-    useEffect(() => {
-        setPage(1);
-    }, []);
+    const [page, setPage] = useState<number>(1);
+    const [currentActivities, setCurrentActivities] = useState<Activity[]>(activities);
 
     useEffect(() => {
         const startIndex = (page - 1) * 24;
         const endIndex = page * 24;
         setCurrentActivities(activities.slice(startIndex, endIndex));
-    }, [page]);
+    }, [page, activities]);
 
     const renderActivities = currentActivities.map((act, index) => {
         return (
