@@ -38,6 +38,11 @@ public class SecurityServiceImpl implements SecurityService{
         }
     }
 
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+
     @Override
     public String createToken(String subject, long ttlMillis) {
         if (ttlMillis <= 0 ) {

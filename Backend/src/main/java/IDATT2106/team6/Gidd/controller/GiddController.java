@@ -60,6 +60,17 @@ public class GiddController {
     }
 
     @ResponseBody
+    @TokenRequired
+    @GetMapping(value="/tokenTestAOP")
+    public Map<String,Object> tokenTestAOP(@RequestParam(value="userid") String userid){
+        Map<String,Object> map = new LinkedHashMap<>();
+        map.put("result", "worked?!");
+        return map;
+    }
+    //TODO finn ut hvordan man returnerer exception og error message
+    //      evt se https://stackoverflow.com/questions/33801468/how-let-spring-security-response-unauthorizedhttp-401-code-if-requesting-uri-w
+
+    @ResponseBody
     @RequestMapping("/security/generate/token")
     public Map<String,Object> generateToken(@RequestParam(value="subject") String subject) {
         String token = securityService.createToken(subject, (2 * 1000 * 60));
