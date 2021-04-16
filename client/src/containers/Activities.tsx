@@ -65,6 +65,8 @@ const Activities = () => {
                         title="Legg til aktivitet"
                         openPopup={openPopup}
                         setOpenPopup={setOpenPopup}
+                        maxWidth="lg"
+                        fullWidth={true}
                     >
                         <ActivityForm
                             openPopup={openPopup}
