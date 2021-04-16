@@ -6,7 +6,7 @@ import Login from './containers/Login';
 import Map from './containers/Map';
 import NewUser from './containers/NewUser';
 import Footer from './components/Footer'
-import Calender from './containers/Calendar'
+import Calender from './containers/Calender'
 
 export default (
     <Switch>
@@ -16,7 +16,7 @@ export default (
             <Navbar></Navbar>
             <Route exact path="/Activities" component={Activities} />
             <Route exact path="/Map" component={Map} />
-            <Route exact path="/Calendar" component={Calender}/>
+            <Route exact path="/Calender" component={Calender}/>
             <Footer></Footer>
         </div>
     </Switch>
