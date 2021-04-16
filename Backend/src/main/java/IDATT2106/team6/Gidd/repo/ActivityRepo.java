@@ -187,7 +187,7 @@ public class ActivityRepo extends GiddRepo {
         List<Activity> allActivities = null;
 
         try {
-            Query q = em.createNativeQuery("SELECT * FROM Activity", Activity.class);
+            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY", Activity.class);
             allActivities = q.getResultList();
         }catch (Exception e){
             e.printStackTrace();
