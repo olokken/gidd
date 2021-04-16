@@ -47,6 +47,7 @@ interface Props {
   handleClickShowPassword: () => void;
   showPassword: boolean;
   responseGoogle: (response: any) => void;
+  failureGoogle: (response:any) => void;
   responseFacebook: (response: any) => void;
   componentClicked: (data: any) => void;
 }
@@ -63,6 +64,7 @@ const LoginCard = ({
   handleClickShowPassword,
   showPassword,
   responseGoogle,
+  failureGoogle,
   responseFacebook,
   componentClicked
 }: Props) => {
@@ -113,7 +115,7 @@ const LoginCard = ({
         <FacebookContainer>
           <FacebookLogin
             appId="124734739639594"
-            autoLoad={true}
+            autoLoad={false}
             fields="name,email,picture"
             onClick={componentClicked}
             callback={responseFacebook} /></FacebookContainer>
@@ -122,9 +124,9 @@ const LoginCard = ({
             clientId='829161936578-7u42ghop2aqmgs3e4n98907euik21jrt.apps.googleusercontent.com'
             buttonText='Login with Google'
             //fields="name,email,picture"
+            autoLoad={false}
             onSuccess={responseGoogle}
-            onFailure={responseGoogle}
-            cookiePolicy='none'
+            onFailure={failureGoogle}
           />
         </GoogleContainer>
       </SocialMediaContainer>
