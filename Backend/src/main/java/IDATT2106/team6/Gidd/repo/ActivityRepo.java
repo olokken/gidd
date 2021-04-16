@@ -156,7 +156,7 @@ public class ActivityRepo extends GiddRepo {
         EntityManager em = getEm();
 
         try{
-            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY WHERE title LIKE ?1")
+            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY WHERE title LIKE ?1", Activity.class)
                     .setParameter(1, "%" + title + "%");
             return q.getResultList();
         }catch (Exception e){
@@ -171,7 +171,7 @@ public class ActivityRepo extends GiddRepo {
         EntityManager em = getEm();
 
         try{
-            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY WHERE activity_level = ?1")
+            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY WHERE activity_level = ?1", Activity.class)
                     .setParameter(1, activityLevel);
             return q.getResultList();
         }catch (Exception e){

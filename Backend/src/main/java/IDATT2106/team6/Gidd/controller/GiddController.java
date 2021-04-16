@@ -602,12 +602,26 @@ public class GiddController {
 
         HttpHeaders header = new HttpHeaders();
 
+        Map<String, String> body = new HashMap<>();
+
+        StringBuilder sb = new StringBuilder();
+
+        for(Activity a : activities){
+            sb.append(a.getActivityId());
+            sb.append(",");
+        }
+
+        if(!activities.isEmpty()) {
+            sb.delete(sb.length() - 1, sb.length());
+        }
+
+        body.put("activityIds", sb.toString());
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(activities);
+                .body(formatJson(body));
     }
 
     @PostMapping(value = "testing", consumes = "application/json", produces = "application/json")
