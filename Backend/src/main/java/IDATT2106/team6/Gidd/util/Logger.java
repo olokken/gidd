@@ -28,7 +28,7 @@ public class Logger {
         try{
             fw = new FileWriter(log, StandardCharsets.UTF_8, true);
             bw = new BufferedWriter(fw);
-            
+
             String output = java.time.LocalDateTime.now().toString() + " " + className + " " + msg;
             if(print){
                 System.out.println(output);
