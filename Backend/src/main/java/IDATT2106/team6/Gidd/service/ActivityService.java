@@ -24,10 +24,9 @@ public class ActivityService {
 
 
     public boolean addActivity(Activity activity) {
-        log.info("adding new Activity: " + activity.toString());
         Timestamp currentTime = new Timestamp(new Date().getTime());
         activity.setTimeCreated(currentTime);
-
+        log.info("adding new Activity: " + activity.toString());
         return repo.addActivity(activity);
     }
 
@@ -38,24 +37,26 @@ public class ActivityService {
                             double latitude, double longitude) {
         Date today = new Date();
         Timestamp currentTime = new Timestamp(today.getTime());
-
         Activity newActivity =
             new Activity(id, title, time, repeat, userId,
                 capacity, groupId, description, image, activityLevel, tags,
                 latitude, longitude, currentTime);
-
+        log.info("adding new activity: " + newActivity.toString());
         repo.addActivity(newActivity);
     }
 
     public Activity findActivity(int activityId){
+        log.info("finding activity with id " + activityId);
         return this.repo.findActivity(activityId);
     }
 
     public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
+        log.info("adding user " + id + " to activity " + activity.toString());
         return this.repo.addUserToActivity(id, activity, user, time);
     }
 
     public ArrayList<Activity> getAllActivities(){
+        log.info("getting all activities");
         return this.repo.getAllActivities();
     }
 
@@ -64,10 +65,12 @@ public class ActivityService {
     }
 
     public boolean removeUserFromActivity(int activityUser, Activity activity){
+        log.info("removing user " + activityUser + " from activity " + activity.toString());
         return this.repo.removeUserFromActivity(activityUser, activity);
     }
 
     public boolean editActivity(Activity activity){
+        log.info("editing activity " + activity.toString());
         return repo.updateActivity(activity);
     }
 

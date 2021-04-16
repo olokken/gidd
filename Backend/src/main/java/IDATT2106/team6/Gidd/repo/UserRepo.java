@@ -10,6 +10,7 @@ import java.util.List;
 import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.ActivityUser;
 import IDATT2106.team6.Gidd.models.User;
+import IDATT2106.team6.Gidd.util.*;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -18,7 +19,7 @@ import javax.persistence.TypedQuery;
 
 @Repository
 public class UserRepo extends GiddRepo {
-
+    private Logger log = new Logger(UserRepo.class.toString());
     public UserRepo() throws IOException{
         connect();
     }
@@ -33,15 +34,17 @@ public class UserRepo extends GiddRepo {
     }
 
     public boolean addUser(User user){
+        log.info("adding user " + user.toString());
         EntityManager em = getEm();
 
         try{
             em.getTransaction().begin();
             em.persist(user);
             em.getTransaction().commit();
+            log.info("added user successfully " + user.toString());
             return true;
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("adding user " + user.toString() + "failed due to " + e.getMessage());
             em.getTransaction().rollback();
             return false;
         }finally {
@@ -50,15 +53,17 @@ public class UserRepo extends GiddRepo {
     }
 
     public boolean updateUser(User user){
+        log.info("updating user " + user.toString());
         EntityManager em = getEm();
 
         try{
             em.getTransaction().begin();
             em.merge(user);
             em.getTransaction().commit();
+            log.info("successfully updated user " + user.toString());
             return true;
         }catch(Exception e){
-            e.printStackTrace();
+            log.error("updating user: " + user.toString() + " failed due to " + e.getMessage());;
             em.getTransaction().rollback();
             return false;
         }finally {
@@ -67,37 +72,43 @@ public class UserRepo extends GiddRepo {
     }
 
     public User findUser(int userId){
+        log.info("finding user " + userId );
         EntityManager em = getEm();
         User user = null;
 
         try {
             user = em.find(User.class, userId);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("finding user " + userId + " failed due to " + e.getMessage());
         }finally {
             em.close();
         }
+        log.info("returning found user " + user.toString());
         return user;
     }
 
     public boolean deleteUser(int userId){
+        log.info("deleting user with id: " + userId);
         EntityManager em = getEm();
 
         try{
             User user = findUser(userId);
 
             if(user != null){
+                log.info("found user " + userId +  " to be deleted");
                 em.getTransaction().begin();
                 User temporaryUser = em.merge(user);
                 em.remove(temporaryUser);
                 em.getTransaction().commit();
+                log.info("user " + userId + " deleted successfully");
                 return true;
             }else {
+                log.info("user to be deleted " + userId + " not found");
                 em.getTransaction().rollback();
                 return false;
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("deleting user " + userId + " failed due to " + e.getMessage());
             return false;
         }finally {
             em.close();
@@ -107,16 +118,18 @@ public class UserRepo extends GiddRepo {
     public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
         ActivityUser activityUser = new ActivityUser(id, activity, user, time);
         user.addActivity(activityUser);
-
+        log.info("adding user " + id + " to activity " + activity.toString());
         EntityManager em = getEm();
 
         try{
             em.getTransaction().begin();
             em.merge(user);
             em.getTransaction().commit();
+            log.info("added user " + id + " successfully to activity " + activity.toString());
             return true;
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("adding user " + id + " to activity " + activity.toString() + " failed due to " + e.getMessage());
+            
             em.getTransaction().rollback();
             return false;
         }
@@ -124,7 +137,7 @@ public class UserRepo extends GiddRepo {
 
     public Integer getActivityUserId(int activityId, int userId){
         EntityManager em = getEm();
-
+        log.info(" getting connection id betweedn activity and user "+ activityId + " , " + userId);
         try{
             Query q = em.createNativeQuery("SELECT ID FROM ACTIVITY_USER WHERE activity_id = ?1 AND user_id = ?2")
                     .setParameter(1, activityId)
@@ -132,14 +145,14 @@ public class UserRepo extends GiddRepo {
 
             return (Integer)q.getSingleResult();
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("getting connection between " + activityId + " and " + userId + " failed due to" + e.getMessage());
             return null;
         }
     }
 
     public boolean removeActivity(int activityUserId, User user){
         EntityManager em = getEm();
-
+        //todo log
         try{
             for(ActivityUser as : user.getActivities()){
                 if(as.getId() == activityUserId){
@@ -159,6 +172,7 @@ public class UserRepo extends GiddRepo {
     }
 
     public ActivityUser getActivityUserById(int activityUserId){
+        log.info("getting connection between user and activity " + activityUserId);
         EntityManager em = getEm();
 
         try{
@@ -166,12 +180,13 @@ public class UserRepo extends GiddRepo {
                     .setParameter(1, activityUserId);
             return (ActivityUser)q.getSingleResult();
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("finding connection " + activityUserId + " failed due to " + e.getMessage());
             return null;
         }
     }
 
     public boolean deleteConnection(ActivityUser activityUser){
+        log.info("deleting connection " + activityUser);
         EntityManager em = getEm();
 
         try{
@@ -181,12 +196,13 @@ public class UserRepo extends GiddRepo {
             em.getTransaction().commit();
             return true;
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("deleting connection " + activityUser + " failed due to " + e.getMessage());
             return false;
         }
     }
 
     public ArrayList<User> getAllUsers(){
+        log.info("getting all users");
         EntityManager em = getEm();
         List<User> allUsers = null;
 
@@ -194,7 +210,7 @@ public class UserRepo extends GiddRepo {
             Query q = em.createQuery("SELECT a FROM User a");
             allUsers = q.getResultList();
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("getting all users failed due to " + e.getMessage())
         }finally {
             em.close();
         }
@@ -205,15 +221,14 @@ public class UserRepo extends GiddRepo {
 
     public User findUserByEmail(String email){
         EntityManager em = getEm();
-
+        log.info("finding user by email " + email);
         try{
             TypedQuery q = em.createQuery("SELECT a FROM User a WHERE a.email = ?1", User.class);
             q.setParameter(1, email);
-	    System.out.println("found single result");
+	    log.info("found single result with email: " + email);
             return (User)q.getSingleResult();
         }catch (Exception e){
-	   System.out.println("found no result"); 
-            e.printStackTrace();
+            log.error("finding user with email " + email + " failed due to " + e.getMessage());
             return null;
         }finally {
             em.close();
