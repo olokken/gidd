@@ -19,7 +19,7 @@ export function ActivityList(): Activity[] {
     const akt1: Activity = {
         ID: 1,
         title: 'Tittel 1',
-        time: new Date('2000-12-22'),
+        time: new Date('2021-04-15'),
         owner: 'Ole',
         capacity: 10,
         maxCapacity: 20,
@@ -87,5 +87,5 @@ export function ActivityList(): Activity[] {
         level: 'Høy',
     };
 
-    return [akt1, akt2, akt3, akt4, akt5, akt6, akt7, akt1, akt2, akt3, akt4, akt5, akt6, akt7,akt1, akt2, akt3, akt4, akt5, akt6, akt7,akt1, akt2, akt3, akt4, akt5, akt6, akt7,akt1, akt2, akt3, akt4, akt5, akt6, akt7,akt1, akt2, akt3, akt4, akt5, akt6, akt7];
+    return [akt1, akt2, akt3, akt4, akt5, akt6, akt7];
 }
