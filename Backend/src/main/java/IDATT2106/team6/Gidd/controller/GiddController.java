@@ -504,6 +504,9 @@ public class GiddController {
 
     @PostMapping("/user")
     public ResponseEntity registerUser(@RequestBody HashMap<String, Object> map){
+        //      TODO Error handling
+        //      Make sure the user's email isn't already registered
+        //      Return Exception to user
         log.info("recieved postmapping to /user: " + map.toString());
         User result = userService.registerUser(
             getRandomID(),
