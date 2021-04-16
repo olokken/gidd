@@ -32,6 +32,7 @@ public class UserService {
 		int id = rand.nextInt();
 		User newUser = new User(id > 0 ? id : -id, email, password, firstname, surname, phoneNumber, activityLevel, null);
 		//todo call repo to register this new user
+        boolean result = repo.addUser(newUser);
 		return newUser;
     }
 
