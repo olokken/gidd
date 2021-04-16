@@ -124,6 +124,8 @@ public class ActivityRepo extends GiddRepo {
             e.printStackTrace();
             em.getTransaction().rollback();
             return false;
+        }finally {
+            em.close();
         }
     }
 
@@ -145,6 +147,38 @@ public class ActivityRepo extends GiddRepo {
         }catch (Exception e){
             e.printStackTrace();
             return false;
+        }finally {
+            em.close();
+        }
+    }
+
+    public List<Activity> findActivitiesBasedOnTitle(String title){
+        EntityManager em = getEm();
+
+        try{
+            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY WHERE title LIKE ?1")
+                    .setParameter(1, "%" + title + "%");
+            return q.getResultList();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }finally {
+            em.close();
+        }
+    }
+
+    public List<Activity> findActivityByActivityLevel(int activityLevel){
+        EntityManager em = getEm();
+
+        try{
+            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY WHERE activity_level = ?1")
+                    .setParameter(1, activityLevel);
+            return q.getResultList();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }finally {
+            em.close();
         }
     }
 
@@ -153,7 +187,7 @@ public class ActivityRepo extends GiddRepo {
         List<Activity> allActivities = null;
 
         try {
-            Query q = em.createQuery("SELECT a FROM Activity a");
+            Query q = em.createNativeQuery("SELECT * FROM Activity", Activity.class);
             allActivities = q.getResultList();
         }catch (Exception e){
             e.printStackTrace();

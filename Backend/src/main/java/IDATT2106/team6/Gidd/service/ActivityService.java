@@ -72,4 +72,12 @@ public class ActivityService {
     public Activity testGetActivity(int id) {
         return repo.findActivity(id);
     }
+
+    public List<Activity> searchForActivityByTitle(String title){
+        return repo.findActivitiesBasedOnTitle(title);
+    }
+
+    public List<Activity> filterByActivityLevel(int activityLevel){
+        return repo.findActivityByActivityLevel(activityLevel);
+    }
 }

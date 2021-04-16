@@ -112,7 +112,7 @@ public class GiddController {
             .body("Insert ResponseBody here");
     }
 
-    @PostMapping(value = "/testAddNewActivityForUser", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/user/{userId}/activity", consumes = "application/json", produces = "application/json")
     public ResponseEntity addNewActivityForUser(@RequestBody HashMap<String, Object> map){
         Timestamp time = new Timestamp(new Date().getTime());
 
@@ -210,9 +210,9 @@ public class GiddController {
 
     }
 
-    @GetMapping(value = "/testGetAllActivitiesForUser", consumes = "application/json", produces = "application/json")
-    public ResponseEntity getAllActivitiesForUser(@RequestBody HashMap<String, Object> map){
-        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+    @GetMapping(value = "/user/{userId}/activity", produces = "application/json")
+    public ResponseEntity getAllActivitiesForUser(@PathVariable Integer userId){
+        User user = userService.getUser(userId);
 
         HttpHeaders header = new HttpHeaders();
 
@@ -270,7 +270,7 @@ public class GiddController {
                 .body("woohooo worked!!");
     }
 
-    @DeleteMapping(value = "/testDeleteActivitiesToUser/{userId}/{activityId}", produces = "application/json")
+    @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivitiesToUser(@PathVariable Integer userId, @PathVariable Integer activityId){
         User user = userService.getUser(userId);
         Activity activity = activityService.findActivity(activityId);
@@ -496,5 +496,38 @@ public class GiddController {
             title, newTime, repeat, user,
             capacity, groupId, description, image,
             activityLevel, tags, latitude, longitude, null);
+    }
+
+    @GetMapping(value = "/activity")
+    public ResponseEntity search(@RequestParam(value="searchWord", required = false) String searchValue, @RequestParam(value = "activityLevel", required = false) Integer activityLevel){
+        List<Activity> activities;
+        if(searchValue == null){
+            activities = activityService.filterByActivityLevel(activityLevel);
+        }else {
+            activities = activityService.searchForActivityByTitle(searchValue);
+        }
+
+        HttpHeaders header = new HttpHeaders();
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(activities);
+    }
+
+    @PostMapping(value = "testing", consumes = "application/json", produces = "application/json")
+    public ResponseEntity registerEquipment(@RequestBody HashMap<String, Object> map){
+        equipmentService.registerEquipment(map.get("description").toString().toLowerCase());
+
+        HttpHeaders header = new HttpHeaders();
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body("lol");
     }
 }
