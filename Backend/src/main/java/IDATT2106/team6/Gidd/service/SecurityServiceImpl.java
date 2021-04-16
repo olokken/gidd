@@ -1,6 +1,7 @@
 package IDATT2106.team6.Gidd.service;
 
 import IDATT2106.team6.Gidd.util.Logger;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -51,7 +52,15 @@ public class SecurityServiceImpl implements SecurityService{
             .signWith(signatureAlgorithm, signingKey);
         long nowMillis = System.currentTimeMillis();
         builder.setExpiration(new Date(nowMillis + ttlMillis));
+        log.info("JWT Token created for subject ["+subject+"]");
     return builder.compact();
     }
 
+    @Override
+    public String getSubject(String token) {
+        Claims claims = Jwts.parser()
+            .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
+            .parseClaimsJws(token).getBody();
+        return claims.getSubject();
+    }
 }

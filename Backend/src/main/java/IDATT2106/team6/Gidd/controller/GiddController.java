@@ -50,7 +50,8 @@ public class GiddController {
     @Autowired
     private SecurityService securityService;
 
-    @GetMapping("/hello")
+    @GetMapping("/aop/test")
+    @TokenRequired
     public ResponseEntity home(){
         activityService.doNothing();
         return ResponseEntity
@@ -64,6 +65,16 @@ public class GiddController {
         String token = securityService.createToken(subject, (2 * 1000 * 60));
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("result", token);
+        //TODO Return JSON
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping("/security/get/subject")
+    public Map<String, Object> getSubject(@RequestParam(value="token") String token) {
+        String subject = securityService.getSubject(token);
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("result", subject);
         return map;
     }
 
