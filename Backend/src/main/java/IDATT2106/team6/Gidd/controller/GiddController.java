@@ -106,18 +106,18 @@ public class GiddController {
     @PostMapping(value = "/testNewActivity", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivityTest(@RequestBody HashMap<String, Object> map){
         Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
-
+        HashMap<String, String> body = new HashMap<>();
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         int newId = getRandomID();
 
         //TODO Verify that user-input is valid
-        activityService.addActivity(    newId,
+        activityService.addActivity(newId,
             map.get("title").toString(), newTime, (int) map.get("repeat"), user,
             (int) map.get("capacity"), (int) map.get("groupId"), map.get("description").toString(), (byte[])map.get("image"),
             ActivityLevel.valueOf(map.get("activityLevel").toString()), (List<Tag>)map.get("tags"), (Double) map.get("latitude"), (Double) map.get("longitude"));
         return ResponseEntity
             .created(URI.create(String.format("/activity/%d", newId)))
-            .body("Insert ResponseBody here").body(formatJson(body));
+            .body(formatJson(body));
     }
 
     @PostMapping(value = "/testAddNewActivityForUser", consumes = "application/json", produces = "application/json")
@@ -290,7 +290,7 @@ public class GiddController {
         Activity activity = activityService.findActivity(activityId);
 
         HttpHeaders header = new HttpHeaders();
-
+        HashMap<String, String> body = new HashMap<>();
         if(user == null){
             header.add("Status", "400 REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -352,7 +352,8 @@ public class GiddController {
 
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
-       
+        return ResponseEntity
+            .ok().headers(header).body(formatJson(body));
     }
 
     @PostMapping("/user")
