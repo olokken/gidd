@@ -21,44 +21,49 @@ const FeedbackForm = () => {
       <div>
           <div style={{padding:"10px"}}>
               <form onSubmit={sendEmail}>
-                  <div style={{padding:"10px"}}>
-                      <TextField  label="Navn"
-                        variant="outlined"
-                        rows={1}
-                        multiline  
-                        type="text"
-                        name="name" />
-                  </div>
-                  <div style={{padding:"10px"}}>
-                      <TextField  label="Email"
-                        variant="outlined"
-                        rows={1}
-                        multiline  
-                        type="email" 
-                        placeholder="Email" 
-                        name="email"/>
-                  </div>
-                  <div style={{padding:"10px"}}>
-                      <TextField 
-                        label="Emne"
-                        variant="outlined"
-                        rows={1}
-                        multiline 
-                        type="text" 
-                        name="subject"/>
-                  </div>
-                  
-                  <div style={{padding:"10px"}}>
-                      <TextField 
-                        label="Din melding"
-                        variant="outlined"
-                        multiline
-                        type="text"
-                        rows={8} 
-                        name="message"></TextField>
-                  </div>
-                  <div>
-                      <input type="submit" value="send message" placeholder="melding"/>
+                  <div id="main" style={{display:"flex"}} >
+                    <div id="left">
+                        <div style={{padding:"10px"}}>
+                            <TextField  label="Navn"
+                                variant="outlined"
+                                rows={1}
+                                multiline  
+                                type="text"
+                                name="name" />
+                        </div>
+                        <div style={{padding:"10px"}}>
+                            <TextField  label="Email"
+                                variant="outlined"
+                                rows={1}
+                                multiline  
+                                type="email" 
+                                placeholder="Email" 
+                                name="email"/>
+                        </div>
+                        <div style={{padding:"10px"}}>
+                            <TextField 
+                                label="Emne"
+                                variant="outlined"
+                                rows={1}
+                                multiline 
+                                type="text" 
+                                name="subject"/>
+                        </div>
+                    </div>
+                    <div id="right">
+                        <div style={{padding:"10px"}}>
+                            <TextField 
+                                label="Din melding"
+                                variant="outlined"
+                                multiline
+                                type="text"
+                                rows={8} 
+                                name="message"></TextField>
+                        </div>
+                        <div>
+                            <input type="submit" value="send message" placeholder="melding"/>
+                        </div>
+                    </div>
                   </div>
               </form>
           </div>
