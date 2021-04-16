@@ -308,7 +308,54 @@ public class GiddController {
         return ResponseEntity
                 .ok()
                 .headers(headers).body(formatJson(body));
-}
+    }
+
+    @PutMapping(value = "/user/{id}")
+    public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id){
+        log.info("recieved a put mapping for user with id: " + id + " and map " + map.toString());
+        HttpHeaders header = new HttpHeaders();
+        Map<String, String> body = new HashMap<>();
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        if(!validateStringMap(map)){
+            log.error("returning error about null/blank fields in user put mapping " + map.toString());
+            body.put("error", "one or more json-fields is null/blank");
+            return ResponseEntity.badRequest().body(formatJson(body));
+        }
+
+        try {
+            Integer.parseInt(map.get("phoneNumber").toString());
+        } catch (NumberFormatException e) {
+            log.error("phone number cannot be parsed to number " + map.toString());
+            body.put("error", "phone number is not numeric");
+            return ResponseEntity.badRequest().body(formatJson(body));
+        }
+        
+        boolean result = userService.updateUser(
+            id,
+            map.get("email").toString(),
+            map.get("password").toString(),
+            map.get("firstName").toString(),
+            map.get("surname").toString(),
+            Integer.parseInt(map.get("phoneNumber").toString()),
+            ActivityLevel.valueOf(map.get("activityLevel").toString()));
+            
+        log.info("edited user " + map.toString());
+        if(result){
+            log.info("created user");
+            header.add("Status", "201 CREATED");
+
+            body.put("id", String.valueOf(id));
+
+            return ResponseEntity.ok()
+                .headers(header)
+                .body(formatJson(body));
+        }
+        log.error("User could not be edited, are you sure the user exists");
+        header.add("Status", "400 BAD REQUEST");
+        body.put("error", "could not edit user are you sure the user exists?");
+        return ResponseEntity.badRequest().body(formatJson(body));
+    }
 
     @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivityToUser(@PathVariable Integer userId, @PathVariable Integer activityId){
@@ -506,8 +553,8 @@ public class GiddController {
 
     private int getRandomID() {
 		log.info("creating new random id");
-        Random rand = new Random();
-        return rand.nextInt();
+        int id = new Random().nextInt();
+        return ( id > 0 ? id : -id);
     }
 
     private List<Tag> splitTags(String tagString) {
@@ -656,5 +703,19 @@ public class GiddController {
     private void registerEquipment(String description){
         log.debug("Registering " + description + " to equipment");
         equipmentService.registerEquipment(description.toLowerCase());
+    }
+
+    private boolean validateStringMap(Map<String, Object> map){
+        log.info("validating map values of " + map.toString());
+        Iterator it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, String> pair = (Map.Entry)it.next();
+            if(pair.getValue().isBlank() || pair.getValue() == null){
+                log.error(pair.getKey() + " : " + pair.getValue() + " could not be validated");
+                return false;
+            } 
+        }
+        log.info("map: " + map.toString() + " validated");
+        return true;
     }
 }
