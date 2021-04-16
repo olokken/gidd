@@ -13,6 +13,8 @@ interface Props {
     children?: React.ReactNode;
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
+    fullWidth?: boolean;
+    maxWidth?: false | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | undefined;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -22,19 +24,27 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         top: theme.spacing(5),
         maxHeight: 'auto',
-        marginTop: '-20px'
+        marginTop: '-20px',
     },
     dialogTitle: {
         paddingRight: '0px',
     },
 }));
 
-const Popup = ({ title, openPopup, setOpenPopup, children }: Props) => {
+const Popup = ({
+    title,
+    openPopup,
+    setOpenPopup,
+    children,
+    fullWidth,
+    maxWidth,
+}: Props) => {
     const classes = useStyles();
     return (
         <Dialog
             open={openPopup}
-            maxWidth="md"
+            maxWidth={maxWidth}
+            fullWidth={fullWidth}
             classes={{ paper: classes.dialogWrapper }}
         >
             <DialogTitle className={classes.dialogTitle}>

@@ -2,6 +2,11 @@ import { TextField, Button, withStyles, Typography } from '@material-ui/core';
 import React, { useState, ChangeEvent } from 'react';
 import '../styles/ActivityForm.css';
 import axios from '../Axios.jsx';
+import Equipment from '../interfaces/Equipment';
+import DefaultCenter from '../interfaces/DefaultCenter';
+import MapComponent from './MapComponents/MapComponent';
+import { Marker } from 'react-google-maps';
+import GeoSuggest from './MapComponents/GeoSuggest';
 
 const StyledButton = withStyles({
     root: {
@@ -26,11 +31,6 @@ interface Activity {
     equipmentList: Equipment[];
 }
 
-interface Equipment {
-    id: number;
-    description: string;
-}
-
 //TODO change the url
 const url = '/activity';
 
@@ -49,6 +49,9 @@ const CreateActivity = ({ openPopup, setOpenPopup }: Props) => {
     const [equipmentDesc, setEquipmentDesc] = useState('');
     const [counter, setCounter] = useState<number>(0);
     const [reset, setReset] = useState<boolean>(false);
+
+    //Show map settings
+    const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>();
 
     const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle((event.target as HTMLInputElement).value);
@@ -156,6 +159,14 @@ const CreateActivity = ({ openPopup, setOpenPopup }: Props) => {
                     variant="outlined"
                     className="textfield"
                 />
+                <div style={{ justifyContent: 'center' }}>
+                    {/*
+                    <MapComponent defaultCenter={{ lat: 50, lng: 50 }}>
+                        <Marker position={{ lat: 25, lng: 25 }}></Marker>
+                    </MapComponent>
+                    */}
+                    <GeoSuggest></GeoSuggest>
+                </div>
             </div>
             <div>
                 <TextField
