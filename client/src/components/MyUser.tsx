@@ -1,10 +1,9 @@
-import { runInThisContext } from 'node:vm';
 import React, { ChangeEvent, useState, useContext, useEffect } from 'react';
 import { Typography, TextField, Button, withStyles } from '@material-ui/core';
 import '../styles/MyUser.css';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import { UserContext } from './UserContext';
-import { MailRounded } from '@material-ui/icons';
 import axios from '../Axios';
 import { useHistory } from 'react-router-dom';
 import Popup from './Popup';
@@ -29,13 +28,13 @@ const MyUser: React.FC = () => {
     const { user, setUser } = useContext(UserContext);
     const [firstName, setFirstName] = useState<string>('');
     const [surname, setSurname] = useState<string>('');
-    const [mail, setMail] = useState<string>('');
-    //const [phone, setPhone] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
     const [password1, setPassword1] = useState<string>('');
     const [password2, setPassword2] = useState<string>('');
     const [showEditPass, setShowEditPass] = useState<boolean>(false);
     const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
     const [openPopup, setOpenPopup] = useState<boolean>(false);
+    const [noMatchPass, setNoMatchPass] = useState<boolean>(false);
 
     const checkInput = (input: string): boolean => {
         if (input.length > 0 && input.charAt(0) !== ' ') {
@@ -56,86 +55,53 @@ const MyUser: React.FC = () => {
 
     const onChangeMail = (event: ChangeEvent<HTMLInputElement>) => {
         const input: string = (event.target as HTMLInputElement).value;
-        setMail(input);
+        setEmail(input);
     };
 
     const onChangePassword1 = (event: ChangeEvent<HTMLInputElement>) => {
+        setNoMatchPass(false);
         const input: string = (event.target as HTMLInputElement).value;
         setPassword1(input);
     };
 
     const onChangePassword2 = (event: ChangeEvent<HTMLInputElement>) => {
+        setNoMatchPass(false);
         const input: string = (event.target as HTMLInputElement).value;
         setPassword2(input);
     };
 
-    /*
-    const onClickChangeName = (): boolean => {
-        if (checkInput(name)) {
-            setUser({ ...user, name: name });
-            //TODO: axios.post current user.
-            return true;
-        } else {
-            console.log('Could not change password');
-            return false;
-        }
-    };
-
-    
-
-    const onClickChangeMail = (): boolean => {
-        if (checkInput(mail)) {
-            console.log(user);
-            setUser({ ...user, email: mail });
-            console.log(user);
-            ('');
-            return true;
-        } else {
-            return false;
-        }
-    };
-    */
-
-    /*
-    const onChangePhone = (event: ChangeEvent<HTMLInputElement>) => {
-        const input: string = (event.target as HTMLInputElement).value;
-        setPhone(input);
-    };
-
-    const onClickChangePhone = (): boolean => {
-        if (checkInput(phone)) {
-            setPhone({ ...user, phone: phone });
-            return true;
-        } else {
-            return false;
-        }
-    };
-    */
-
-    /*
-    const onClickChangePassword = (): boolean => {
-        if (password1 === password2) {
-            if (password1.length > 0 && password1.charAt(0) !== ' ') {
-                setUser({ ...user, password: password1 });
-                return true;
-            }
-        }
-        return false;
-    };
-   */
-
+    //TODO post to axios in order to change user for each variable that is changed.
     const onClickUpdateUser = () => {
-        let isUpdated: boolean = false;
         if (checkInput(firstName)) {
-            setUser({ ...user, firstName: firstName });
+            axios
+                .put(`/user/${user.ID}`, {
+                    firstName: user.firstName,
+                })
+                .then((response) => {
+                    JSON.stringify(response);
+                    //setUser({ ...user, firstName: response.result.data});
+                })
+                .catch((error) =>
+                    console.log('Could not change username: ' + error.message)
+                );
+            setFirstName('');
         }
         if (checkInput(surname)) {
             setUser({ ...user, surname: surname });
+            setSurname('');
         }
-        if (checkInput(mail)) {
-            setUser({ ...user, email: mail });
+        if (checkInput(email)) {
+            setUser({ ...user, email: email });
+            setEmail('');
         }
         if (password1 === password2) {
+            if (checkInput(password1)) {
+                setUser({ ...user, password: password1 });
+                setPassword1('');
+                setPassword2('');
+            }
+        } else {
+            setNoMatchPass(true);
         }
     };
 
@@ -158,58 +124,93 @@ const MyUser: React.FC = () => {
     return (
         <div>
             <Typography component="h2">
-                Navn: `${user.firstName} ${user.surname}`
+                Navn: {user.firstName} {user.surname}
             </Typography>
-            <Typography component="h2">Navn: {user.name}</Typography>
             <Typography component="h2">Email: {user.email}</Typography>
-            {/*<Typography component="h2">Telefon: {user.phone}</Typography>*/}
             <Typography component="h2">Poeng: {user.poeng}</Typography>
             <Typography component="h2">Passord: {user.password}</Typography>
             <div>
                 <TextField
-                    label="Endre navn"
+                    style={{ width: '22rem' }}
+                    label="Endre fornavn"
                     variant="outlined"
-                    onChange={onChangeName}
+                    onChange={onChangeFirstName}
+                    value={firstName}
                 />
             </div>
             <div>
                 <TextField
+                    style={{ width: '22rem' }}
+                    label="Endre etternavn"
+                    variant="outlined"
+                    onChange={onChangeSurname}
+                    value={surname}
+                ></TextField>
+            </div>
+            <div>
+                <TextField
+                    style={{ width: '22rem' }}
                     label="Endre mail"
                     variant="outlined"
                     onChange={onChangeMail}
+                    value={email}
                 />
             </div>
             {/* TODO mulighet for å endre aktivitetsnivå*/}
             <div>
                 <TextField
+                    style={{ width: '22rem' }}
                     type={showEditPass ? 'text' : 'password'}
                     label="Endre passord"
                     variant="outlined"
                     onChange={onChangePassword1}
+                    value={password1}
                 />
-                <VisibilityIcon
-                    className="password-icon"
-                    onClick={() => setShowEditPass(!showEditPass)}
-                />
+                {showEditPass ? (
+                    <VisibilityIcon
+                        className="password-icon"
+                        onClick={() => setShowEditPass(!showEditPass)}
+                    />
+                ) : (
+                    <VisibilityOffIcon
+                        className="password-icon"
+                        onClick={() => setShowEditPass(!showEditPass)}
+                    />
+                )}
             </div>
             <div>
                 <TextField
+                    style={{ width: '22rem' }}
                     type={showConfirmPass ? 'text' : 'password'}
                     label="Bekreft passord"
                     variant="outlined"
                     onChange={onChangePassword2}
+                    value={password2}
                 />
-                <VisibilityIcon
-                    className="password-icon"
-                    onClick={() => setShowConfirmPass(!showConfirmPass)}
-                />
-                <div></div>
-                <StyledButton onClick={onClickUpdateUser}>
+                {showConfirmPass ? (
+                    <VisibilityIcon
+                        className="password-icon"
+                        onClick={() => setShowConfirmPass(!showConfirmPass)}
+                    />
+                ) : (
+                    <VisibilityOffIcon
+                        className="password-icon"
+                        onClick={() => setShowConfirmPass(!showConfirmPass)}
+                    />
+                )}
+            </div>
+            <div>{noMatchPass && <h5>The passwords are not mathing!</h5>}</div>
+            <div style={{ display: 'flex' }}>
+                <StyledButton
+                    style={{ width: '11rem' }}
+                    onClick={onClickUpdateUser}
+                >
                     Oppdater bruker
                 </StyledButton>
-            </div>
-            <div>
-                <StyledButton onClick={() => setOpenPopup(!openPopup)}>
+                <StyledButton
+                    style={{ width: '11rem' }}
+                    onClick={() => setOpenPopup(!openPopup)}
+                >
                     Slett bruker
                 </StyledButton>
                 <Popup
@@ -223,7 +224,9 @@ const MyUser: React.FC = () => {
                         >
                             Yes
                         </StyledButton>
-                        <StyledButton>No</StyledButton>
+                        <StyledButton onClick={() => setOpenPopup(!openPopup)}>
+                            No
+                        </StyledButton>
                     </div>
                 </Popup>
             </div>

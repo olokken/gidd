@@ -33,7 +33,7 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <BrowserRouter>
-                <UserContext.Provider value={{ user, setUser }}>
+                <UserContext.Provider value={value}>
                     <div className="App">{Routes}</div>
                 </UserContext.Provider>
             </BrowserRouter>
