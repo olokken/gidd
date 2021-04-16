@@ -11,20 +11,16 @@ import IDATT2106.team6.Gidd.service.ActivityService;
 import java.util.HashMap;
 import java.util.Map;
 
-import IDATT2106.team6.Gidd.models.ActivityLevel;
 import IDATT2106.team6.Gidd.service.EquipmentService;
 import IDATT2106.team6.Gidd.service.TagService;
-import IDATT2106.team6.Gidd.service.UserService;
+
 import java.net.URI;
 import java.sql.Timestamp;
 import java.util.*;
 import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.coyote.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,7 +29,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.LoggerFactory;
 import IDATT2106.team6.Gidd.util.*;
 
 @CrossOrigin
@@ -95,33 +90,9 @@ public class GiddController {
                 .body("Woohoo");
     }
 
-    @PostMapping(value = "/testNewUser", consumes = "application/json", produces = "application/json")
-    public ResponseEntity newUserTest(@RequestBody User object){
-        userService.testNewUser(object);
-        return ResponseEntity
-            .created(URI.create("/user/id"))
-            .body("hihi");
-    }
-
-    @PostMapping(value = "/testNewActivity", consumes = "application/json", produces = "application/json")
-    public ResponseEntity newActivityTest(@RequestBody HashMap<String, Object> map){
-        Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
-        HashMap<String, String> body = new HashMap<>();
-        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
-        int newId = getRandomID();
-
-        //TODO Verify that user-input is valid
-        activityService.addActivity(newId,
-            map.get("title").toString(), newTime, (int) map.get("repeat"), user,
-            (int) map.get("capacity"), (int) map.get("groupId"), map.get("description").toString(), (byte[])map.get("image"),
-            ActivityLevel.valueOf(map.get("activityLevel").toString()), (List<Tag>)map.get("tags"), (Double) map.get("latitude"), (Double) map.get("longitude"));
-        return ResponseEntity
-            .created(URI.create(String.format("/activity/%d", newId)))
-            .body(formatJson(body));
-    }
-
     @PostMapping(value = "/user/{userId}/activity", consumes = "application/json", produces = "application/json")
     public ResponseEntity registerUserToActivity(@RequestBody HashMap<String, Object> map){
+        log.debug("Received PostMapping to '/user/{userId}/activity with userId" + Integer.parseInt(map.get("userId").toString()) + " and activityId " + Integer.parseInt(map.get("activityId").toString()));
         Timestamp time = new Timestamp(new Date().getTime());
 
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
@@ -130,6 +101,7 @@ public class GiddController {
         HttpHeaders header = new HttpHeaders();
 
         if(user == null){
+            log.error("User is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -144,6 +116,7 @@ public class GiddController {
         }
 
         if(activity == null){
+            log.error("Activity is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -166,12 +139,13 @@ public class GiddController {
         }
 
         if(activityIds.contains(activity.getActivityId())){
+            log.error("The user is already registered to the activity");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
             Map<String, String> body = new HashMap<>();
 
-            body.put("error", "The user is already registered at the activity");
+            body.put("error", "The user is already registered to the activity");
 
             return ResponseEntity
                     .badRequest()
@@ -190,6 +164,7 @@ public class GiddController {
             activityUsers.addAll(a.getRegisteredParticipants());
         }
 
+        log.debug("Generating random id...");
         ArrayList<Integer> ids = new ArrayList<>();
 
         for(ActivityUser au : activityUsers){
@@ -203,6 +178,7 @@ public class GiddController {
 
         if(userService.addUserToActivity(id, activity, user, time)){
             if(activityService.addUserToActivity(id, activity, user, time)){
+                log.debug("The registration was successful");
                 header.add("Status", "200 OK");
                 header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -216,6 +192,7 @@ public class GiddController {
                         .headers(header)
                         .body(formatJson(body));
             }
+            log.error("Something wrong happened when trying to register the user to the activity");
             userService.removeActivity(id, user);
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -229,6 +206,7 @@ public class GiddController {
                     .headers(header)
                     .body(formatJson(body));
         }
+        log.error("Something wrong happened when trying to register the activity to the user");
         header.add("Status", "400 BAD REQUEST");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -243,11 +221,13 @@ public class GiddController {
 
     @GetMapping(value = "/user/{userId}/activity", produces = "application/json")
     public ResponseEntity getAllActivitiesForUser(@PathVariable Integer userId){
+        log.debug("Received GetMapping to '/user/{userId}/activity' with userId " + userId);
         User user = userService.getUser(userId);
 
         HttpHeaders header = new HttpHeaders();
 
         if(user == null){
+            log.error("The user is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -260,6 +240,7 @@ public class GiddController {
                     .body(formatJson(body));
         }
 
+        log.debug("Getting all activities " + user.toString() + " is registered to");
         List<ActivityUser> activityUser = user.getActivities();
 
         header.add("Status", "200 OK");
@@ -278,6 +259,8 @@ public class GiddController {
             sb.delete(sb.length() - 1, sb.length());
         }
 
+        log.debug("Returning activities");
+
         body.put("activityIds", sb.toString());
         return ResponseEntity
                 .ok()
@@ -290,7 +273,7 @@ public class GiddController {
         log.info("recieved putmapping to /activity/{id}");
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         log.debug("User with id recieved " + user.toString());
-        Activity activity = activityService.testGetActivity(actId);
+        Activity activity = activityService.getActivity(actId);
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>(); 
         headers.add("Content-Type", "application/json; charset=UTF-8");
@@ -329,11 +312,13 @@ public class GiddController {
 
     @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivityToUser(@PathVariable Integer userId, @PathVariable Integer activityId){
+        log.debug("Received DeleteMapping to /user/{userId}/activity/{activityId} with userId being " + userId + " and activityId being " + activityId);
         User user = userService.getUser(userId);
         Activity activity = activityService.findActivity(activityId);
 
         HttpHeaders header = new HttpHeaders();
         if(user == null){
+            log.error("User is null");
             header.add("Status", "400 REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -348,6 +333,7 @@ public class GiddController {
         }
 
         if(activity == null){
+            log.error("Activity is null");
             header.add("Status", "400 REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -368,6 +354,7 @@ public class GiddController {
         }
 
         if(!activitiesIds.contains(activityId)){
+            log.error("There is no connection between user and activity");
             header.add("Status", "400 REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -384,6 +371,7 @@ public class GiddController {
 
         ActivityUser activityUser = userService.getActivityUserById(activityUserId);
         if(activityUser == null){
+            log.error("There is no connection between user and activity");
             header.add("Status", "400 REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -396,6 +384,7 @@ public class GiddController {
                     .body(formatJson(body));
         }
         if(!userService.deleteConnection(activityUser) || !userService.removeActivity(activityUserId, user) || !activityService.removeUserFromActivity(activityUserId, activity)){
+            log.error("An error happened during the deletion");
             header.add("Status", "400 REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -408,6 +397,7 @@ public class GiddController {
                     .body(formatJson(body));
         }
 
+        log.debug("The deletion was successful");
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -415,7 +405,9 @@ public class GiddController {
         body.put("userId", String.valueOf(user.getUserId()));
         body.put("activityId", String.valueOf(activity.getActivityId()));
         return ResponseEntity
-            .ok().headers(header).body(formatJson(body));
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
     }
 
     @PostMapping("/user")
@@ -594,11 +586,18 @@ public class GiddController {
 
     @GetMapping(value = "/activity")
     public ResponseEntity search(@RequestParam(value="searchWord", required = false) String searchValue, @RequestParam(value = "activityLevel", required = false) Integer activityLevel){
+        log.debug("Received GetMapping to '/activity' with Query Params");
         List<Activity> activities;
         if(searchValue == null){
+            log.debug("Searching for activity level to activity");
+            log.debug("Activity level is " + activityLevel);
             activities = activityService.filterByActivityLevel(activityLevel);
+            log.debug("Activities with activity level " + activityLevel + " is " + activities.toString());
         }else {
+            log.debug("Searching for title to activity");
+            log.debug("Search word is " + searchValue);
             activities = activityService.searchForActivityByTitle(searchValue);
+            log.debug("Activities with title " + searchValue + " is " + activities.toString());
         }
 
         HttpHeaders header = new HttpHeaders();
@@ -619,6 +618,7 @@ public class GiddController {
         body.put("activityIds", sb.toString());
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
+        log.debug("Returning activities");
         return ResponseEntity
                 .ok()
                 .headers(header)
@@ -626,10 +626,12 @@ public class GiddController {
     }
 
     private boolean registerEquipmentToActivity(int activityId, String equipment){
+        log.debug("Registering " + equipment + " to activity with activity id " + activityId);
         String[] equipmentDescription = equipment.split(",");
 
         ArrayList<Equipment> equipments = new ArrayList<>();
 
+        log.debug("Checking if the equipment already is registered in the database");
         for (String s : equipmentDescription) {
             if (equipmentService.getEquipmentByDescription(s.trim()) == null) {
                 registerEquipment(s.trim());
@@ -637,18 +639,22 @@ public class GiddController {
             equipments.add(equipmentService.getEquipmentByDescription(s.trim()));
         }
 
-        Activity activity = activityService.testGetActivity(activityId);
+        Activity activity = activityService.getActivity(activityId);
 
+        log.debug("Adding " + equipments.toString() + " to " + activity.toString());
         for(Equipment e : equipments) {
             ActivityEquipment activityEquipment = new ActivityEquipment(activity, e);
             if(activityService.addEquipmentToActivity(activity, activityEquipment)){
+                log.error("The registration failed");
                 return false;
             }
         }
+        log.debug("The registration was successful");
         return true;
     }
 
     private void registerEquipment(String description){
+        log.debug("Registering " + description + " to equipment");
         equipmentService.registerEquipment(description.toLowerCase());
     }
 }

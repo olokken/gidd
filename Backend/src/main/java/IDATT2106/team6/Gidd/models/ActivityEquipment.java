@@ -22,4 +22,32 @@ public class ActivityEquipment {
         this.activity = activity;
         this.equipment = equipment;
     }
+
+    public Activity getActivity() {
+        return activity;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Equipment getEquipment() {
+        return equipment;
+    }
+
+    public int getBringerId() {
+        return bringerId;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
+    public void setBringerId(int bringerId) {
+        this.bringerId = bringerId;
+    }
+
+    public void setEquipment(Equipment equipment) {
+        this.equipment = equipment;
+    }
 }

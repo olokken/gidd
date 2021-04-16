@@ -126,22 +126,23 @@ public class EquipmentRepo extends GiddRepo {
     }
 
     public Equipment findEquipmentByDescription(String description){
+        log.debug("Finding equipment based on the description: " + description);
         EntityManager em = getEm();
 
         try{
             Query q = em.createNativeQuery("SELECT * FROM EQUIPMENT WHERE DESCRIPTION = ?1", Equipment.class)
-                    .setParameter(1, description);
-
+                    .setParameter(1, description);;
             return (Equipment) q.getSingleResult();
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Finding equipment based on description failed due to " + e.getMessage());
             return null;
         }finally {
             em.close();
         }
     }
 
-    public boolean addEquipmentToActivity(Equipment equipment, ActivityEquipment activityEquipment){
+    public boolean addActivityToEquipment(Equipment equipment, ActivityEquipment activityEquipment){
+        log.debug("Adding activity connection " + activityEquipment.toString() + " to equipment " + equipment.toString());
         EntityManager em = getEm();
 
         try{
@@ -151,8 +152,11 @@ public class EquipmentRepo extends GiddRepo {
             em.getTransaction().commit();
             return true;
         }catch (Exception e){
+            log.error("Adding the connection failed due to " + e.getMessage());
             e.printStackTrace();
             return false;
+        }finally {
+            em.close();
         }
     }
 }

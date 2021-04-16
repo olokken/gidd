@@ -38,4 +38,24 @@ public class ActivityUser {
     public Activity getActivity() {
         return activity;
     }
+
+    public Timestamp getReserved() {
+        return reserved;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
+    public void setReserved(Timestamp reserved) {
+        this.reserved = reserved;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

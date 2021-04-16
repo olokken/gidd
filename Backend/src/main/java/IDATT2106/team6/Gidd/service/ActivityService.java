@@ -71,19 +71,23 @@ public class ActivityService {
         return repo.updateActivity(activity);
     }
 
-    public Activity testGetActivity(int id) {
+    public Activity getActivity(int id) {
+        log.info("Getting activity with activityId " + id);
         return repo.findActivity(id);
     }
 
     public List<Activity> searchForActivityByTitle(String title){
+        log.info("Searching for activity with title " + title);
         return repo.findActivitiesBasedOnTitle(title);
     }
 
     public List<Activity> filterByActivityLevel(int activityLevel){
+        log.info("Filtering activities wit activity level " + activityLevel);
         return repo.findActivityByActivityLevel(activityLevel);
     }
 
     public boolean addEquipmentToActivity(Activity activity, ActivityEquipment activityEquipment){
+        log.info("Adding equipment connection" + activityEquipment.toString() + " to activity" + activity.toString());
         return repo.addEquipmentToActivity(activity, activityEquipment);
     }
 }

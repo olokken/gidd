@@ -184,4 +184,12 @@ public class User {
     public void setActivities(List<ActivityUser> activities) {
         this.activities = activities;
     }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
 }

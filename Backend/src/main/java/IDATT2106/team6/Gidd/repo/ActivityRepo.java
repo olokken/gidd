@@ -214,6 +214,7 @@ public class ActivityRepo extends GiddRepo {
     }
 
     public boolean addEquipmentToActivity(Activity activity, ActivityEquipment activityEquipment){
+        log.debug("Adding equipment connection " + activityEquipment.toString() + " to activity " + activity.toString());
         EntityManager em = getEm();
 
         try{
@@ -223,8 +224,10 @@ public class ActivityRepo extends GiddRepo {
             em.getTransaction().commit();
             return true;
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Adding equipment failed due " + e.getMessage());
             return false;
+        }finally {
+            em.close();
         }
     }
 }

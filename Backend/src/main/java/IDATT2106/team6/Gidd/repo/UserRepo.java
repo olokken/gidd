@@ -132,6 +132,8 @@ public class UserRepo extends GiddRepo {
             
             em.getTransaction().rollback();
             return false;
+        }finally {
+            em.close();
         }
     }
 
@@ -147,13 +149,14 @@ public class UserRepo extends GiddRepo {
         }catch (Exception e){
             log.error("getting connection between " + activityId + " and " + userId + " failed due to" + e.getMessage());
             return null;
+        }finally {
+            em.close();
         }
     }
 
     public boolean removeActivity(int activityUserId, User user){
         EntityManager em = getEm();
         log.info("deleting registration of user " + user.toString() + " to activity " + activityUserId);
-        //todo log
         try{
             for(ActivityUser as : user.getActivities()){
                 if(as.getId() == activityUserId){
@@ -169,6 +172,8 @@ public class UserRepo extends GiddRepo {
         }catch (Exception e){
             log.error("deleting registration of user " + user.toString() + " to activity " + activityUserId + " failed due to " + e.getMessage() );
             return false;
+        }finally {
+            em.close();
         }
     }
 
@@ -183,6 +188,8 @@ public class UserRepo extends GiddRepo {
         }catch (Exception e){
             log.error("finding connection " + activityUserId + " failed due to " + e.getMessage());
             return null;
+        }finally {
+            em.close();
         }
     }
 
@@ -199,6 +206,8 @@ public class UserRepo extends GiddRepo {
         }catch (Exception e){
             log.error("deleting connection " + activityUser.toString() + " failed due to "+ e.getMessage());
             return false;
+        }finally {
+            em.close();
         }
     }
 

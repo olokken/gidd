@@ -44,4 +44,8 @@ public class Equipment {
     public void addActivityToEquipment(ActivityEquipment activityEquipment){
         this.activities.add(activityEquipment);
     }
+
+    public void setActivities(List<ActivityEquipment> activities) {
+        this.activities = activities;
+    }
 }
