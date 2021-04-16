@@ -33,6 +33,13 @@ public class UserService {
 		return getUser(email).verifyPassword(password);
 	}
 
+    public boolean updateUser(int id, String email, String password, String firstname, String surname,
+    int phoneNumber, ActivityLevel activityLevel){
+		User newUser = new User(id, email, password, firstname, surname, phoneNumber, activityLevel, null);
+        log.info("updating user: " + newUser.toString());
+        return repo.updateUser(newUser);
+    }
+
     public User registerUser(int id, String email, String password, String firstname, String surname,
 	    int phoneNumber, ActivityLevel activityLevel){
 
