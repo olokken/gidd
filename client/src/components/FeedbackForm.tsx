@@ -30,7 +30,7 @@ const FeedbackForm = () => {
                         name="name" />
                   </div>
                   <div style={{padding:"10px"}}>
-                      <TextField  label="Emne"
+                      <TextField  label="Email"
                         variant="outlined"
                         rows={1}
                         multiline  
@@ -47,6 +47,7 @@ const FeedbackForm = () => {
                         type="text" 
                         name="subject"/>
                   </div>
+                  
                   <div style={{padding:"10px"}}>
                       <TextField 
                         label="Din melding"

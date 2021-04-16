@@ -1,4 +1,4 @@
-import { TextField, Button, withStyles, Typography } from '@material-ui/core';
+import { TextField, Button, withStyles, Typography, MenuItem } from '@material-ui/core';
 import React, { useState, ChangeEvent } from 'react';
 import './styles.css';
 import axios from '../../../Axios';
@@ -174,6 +174,82 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                         multiline
                     />
                 </div>
+                <TextField
+                    style={{padding:"5px"}}
+                    type="file"
+                    label="Bilde"
+                    /*value={Picture}
+                    onChange={onChangePicture}*/
+                    InputLabelProps={{
+                            shrink: true,
+                        }}
+                    variant="outlined"
+                    className="textfield"
+                />
+            </div>
+            <div id="middle">
+                <TextField
+                    style={{padding:"5px"}}
+                    label="Tags"
+                    /*onChange={onChangeTags}
+                    value={tags}*/
+                    variant="outlined"
+                    className="textfield"
+                />
+                <div style={{paddingRight:"5px", paddingLeft:"5px"}}>
+                    <h2>Tags</h2>
+                    <ul style={{borderRadius: '5px', border:'solid lightgrey 1px' ,width:"auto", height:'110px', overflow:'auto'}}>
+                        {reset === false &&
+                            equipmentList.map((equipment) => (
+                                <li key={equipment.id}>{equipment.description}</li>
+                            ))}
+                    </ul>
+                </div>
+                <div style={{padding:"5px", display:"flex"}}>
+                    <div style={{padding:"5px"}}>
+                        <TextField
+                            style={{ width:"110px"}}
+                            id="select" 
+                            label="Aktivitetgrad" 
+                            
+                            /*onChange={onChangeActivityLevel}
+                            value={ActivityLevel}*/
+                            variant="outlined"
+                            className="textfield"
+                            select>
+                            <MenuItem value="High">High</MenuItem>
+                            <MenuItem value="Medium">Medium</MenuItem>
+                            <MenuItem value="Low">Low</MenuItem>
+                        </TextField>
+                    </div>
+                    <TextField
+                        style={{padding:"5px", width:"auto"}}
+                        label="Plasser"
+                        type="number"
+                         InputLabelProps={{
+                            shrink: true,
+                        }}
+                        /*value={address}*/
+                        //onChange={onChangeCapacity}
+                        variant="outlined"
+                        className="textfield"
+                    />
+                    
+                    
+                    <TextField
+                    style={{padding:"5px", width:"auto"}}
+                    type="number"
+                    label="Gjentakinger"
+                     InputLabelProps={{
+                            shrink: true,
+                        }}
+                    /*value={address}*/
+                    variant="outlined"
+                    //onChange={onChangeRepeat}
+                    className="textfield"
+                    />
+                    
+                </div>
             </div>
             <div id="right">
                 <TextField
@@ -209,20 +285,6 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     </StyledButton>
                 </div>
             </div>
-            <div>
-                <TextField
-                    style={{padding:"5px"}}
-                    type="file"
-                    label="Bilde"
-                    /*value={address}*/
-                    InputLabelProps={{
-                            shrink: true,
-                        }}
-                    onChange={onChangeAddress}
-                    variant="outlined"
-                    className="textfield"
-                />
-                </div>
         </div>
     );
 };
