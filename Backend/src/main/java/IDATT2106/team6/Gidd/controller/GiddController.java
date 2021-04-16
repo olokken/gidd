@@ -422,6 +422,7 @@ public class GiddController {
     public ResponseEntity registerUser(@RequestBody HashMap<String, Object> map){
         log.info("recieved postmapping to /user: " + map.toString());
         User result = userService.registerUser(
+            getRandomID(),
             map.get("email").toString(),
             map.get("password").toString(),
             map.get("firstName").toString(),
@@ -433,7 +434,7 @@ public class GiddController {
         HttpHeaders header = new HttpHeaders();
         
         header.add("Content-Type", "application/json; charset=UTF-8");
-
+        log.info("created user " + result.toString());
 		if(result != null){
             log.info("created user");
             header.add("Status", "201 CREATED");
