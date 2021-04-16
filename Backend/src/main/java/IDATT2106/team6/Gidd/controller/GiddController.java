@@ -79,26 +79,15 @@ public class GiddController {
             log.error("InvalidattributesException, invalid userID recieved " + e.getMessage());
             body.put("error", e.getMessage());
             return ResponseEntity
-<<<<<<< HEAD
-                    .badRequest()
-                    .headers(headers)
-                    .body("An invalid userID was received.");
-=======
                 .badRequest()
                 .headers(headers)
                 .body(formatJson(body));
->>>>>>> f03d22f (logging controller)
         } catch(Exception e) {
             body.put("error", "unknown error: " + e.getMessage());
             log.error("unexplained error caught " + e.getMessage());
             return ResponseEntity
-<<<<<<< HEAD
-                    .badRequest()
-                    .body(e.getStackTrace());
-=======
                 .badRequest()
                 .body(formatJson(body));
->>>>>>> f03d22f (logging controller)
         }
         log.info("Activity created successfully");
         return ResponseEntity
@@ -128,8 +117,7 @@ public class GiddController {
             ActivityLevel.valueOf(map.get("activityLevel").toString()), (List<Tag>)map.get("tags"), (Double) map.get("latitude"), (Double) map.get("longitude"));
         return ResponseEntity
             .created(URI.create(String.format("/activity/%d", newId)))
-<<<<<<< HEAD
-            .body("Insert ResponseBody here");
+            .body("Insert ResponseBody here").body(formatJson(body));
     }
 
     @PostMapping(value = "/testAddNewActivityForUser", consumes = "application/json", produces = "application/json")
@@ -227,10 +215,6 @@ public class GiddController {
                 .badRequest()
                 .headers(header)
                 .body("Something is wrong with the user");
-
-=======
-            .body(formatJson(body));
->>>>>>> f03d22f (logging controller)
     }
 
     @GetMapping(value = "/testGetAllActivitiesForUser", consumes = "application/json", produces = "application/json")
@@ -274,15 +258,9 @@ public class GiddController {
             log.debug("Activity: " + (activity == null));
             log.debug("User: " + (user==null));
             return ResponseEntity
-<<<<<<< HEAD
-                    .badRequest()
-                    .headers(headers)
-                    .body("didnt work sad");
-=======
                 .badRequest()
                 .headers(headers)
                 .body(formatJson(body));
->>>>>>> f03d22f (logging controller)
         }
 
         activity.setTitle(map.get("title").toString());
@@ -303,10 +281,8 @@ public class GiddController {
 
         return ResponseEntity
                 .ok()
-                .headers(headers)
-<<<<<<< HEAD
-                .body("woohooo worked!!");
-    }
+                .headers(headers).body(formatJson(body));
+}
 
     @DeleteMapping(value = "/testDeleteActivitiesToUser/{userId}/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivitiesToUser(@PathVariable Integer userId, @PathVariable Integer activityId){
@@ -376,25 +352,9 @@ public class GiddController {
 
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
-        return ResponseEntity
-                .ok()
-                .headers(header)
-                .body("It work");
-=======
-                .body(formatJson(body));
-        }
-        log.info("activity is changed, returning success");
-        return ResponseEntity
-            .ok()
-            .headers(headers)
-            .body(formatJson(body));
->>>>>>> f03d22f (logging controller)
+       
     }
 
-    private int getRandomID(){
-        Random rand = new Random();
-        return rand.nextInt();
-    }
     @PostMapping("/user")
     public ResponseEntity registerUser(@RequestBody HashMap<String, Object> map){
         log.info("recieved postmapping to /user: " + map.toString());
@@ -488,15 +448,12 @@ public class GiddController {
         return endId;
     }
 
-<<<<<<< HEAD
-=======
     private int getRandomID() {
 		log.info("creating new random id");
         Random rand = new Random();
         return rand.nextInt();
     }
 
->>>>>>> f03d22f (logging controller)
     private List<Tag> splitTags(String tagString) {
 		log.info("splitting tags");
         ArrayList<String> tagNames = new ArrayList<>(Arrays.asList(tagString.split(",")));
