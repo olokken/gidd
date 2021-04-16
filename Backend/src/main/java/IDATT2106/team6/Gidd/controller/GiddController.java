@@ -5,6 +5,7 @@ import IDATT2106.team6.Gidd.models.ActivityLevel;
 import IDATT2106.team6.Gidd.models.Tag;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.models.Activity;
+import IDATT2106.team6.Gidd.service.SecurityService;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.service.ActivityService;
 
@@ -46,6 +47,8 @@ public class GiddController {
     private UserService userService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private SecurityService securityService;
 
     @GetMapping("/hello")
     public ResponseEntity home(){
@@ -53,6 +56,15 @@ public class GiddController {
         return ResponseEntity
             .ok()
             .body("hi");
+    }
+
+    @ResponseBody
+    @RequestMapping("/security/generate/token")
+    public Map<String,Object> generateToken(@RequestParam(value="subject") String subject) {
+        String token = securityService.createToken(subject, (2 * 1000 * 60));
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("result", token);
+        return map;
     }
 
     @ResponseBody

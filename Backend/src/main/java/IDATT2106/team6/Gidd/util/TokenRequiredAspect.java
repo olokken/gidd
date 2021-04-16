@@ -7,13 +7,16 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class TokenRequiredAspect {
+
+    private Logger log = new Logger(TokenRequiredAspect.class.toString());
+
     @Before("execution (* IDATT2106.team6.Gidd.controller.GiddController.home() ) ")
     public void tokenRequiredWithoutAnnotation() throws Throwable {
-        System.out.println("Before tokenRequiredWithExecution");
+        log.info("Before tokenRequiredWithExecution");
     }
 
     @Before("@annotation(tokenRequired)")
     public void tokenRequiredWithAnnotation(TokenRequired tokenRequired) throws Throwable {
-        System.out.println("Before tokenRequiredWithAnnotation");
+        log.info("Before tokenRequiredWithAnnotation");
     }
 }
