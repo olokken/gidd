@@ -5,7 +5,6 @@ import IDATT2106.team6.Gidd.models.ActivityLevel;
 import IDATT2106.team6.Gidd.models.Tag;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.repo.ActivityRepo;
-import IDATT2106.team6.Gidd.repo.GiddRepo;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,10 +21,19 @@ public class ActivityService {
         repo.doNothing();
     }
 
-        public void addActivity(int id, String title, Timestamp time, int repeat, User userId,
-                                        int capacity, int groupId, String description, byte[] image,
-                                        ActivityLevel activityLevel, List<Tag> tags,
-                                        double latitude, double longitude) {
+
+    public boolean addActivity(Activity activity) {
+        Timestamp currentTime = new Timestamp(new Date().getTime());
+        activity.setTimeCreated(currentTime);
+
+        return repo.addActivity(activity);
+    }
+
+    //Use addActivity(Activity) when you can, as it is easier to work with
+    public void addActivity(int id, String title, Timestamp time, int repeat, User userId,
+                            int capacity, int groupId, String description, byte[] image,
+                            ActivityLevel activityLevel, List<Tag> tags,
+                            double latitude, double longitude) {
         Date today = new Date();
         Timestamp currentTime = new Timestamp(today.getTime());
 
@@ -55,5 +63,13 @@ public class ActivityService {
 
     public boolean removeUserFromActivity(int activityUser, Activity activity){
         return this.repo.removeUserFromActivity(activityUser, activity);
+    }
+
+    public boolean editActivity(Activity activity){
+        return repo.updateActivity(activity);
+    }
+
+    public Activity testGetActivity(int id) {
+        return repo.findActivity(id);
     }
 }

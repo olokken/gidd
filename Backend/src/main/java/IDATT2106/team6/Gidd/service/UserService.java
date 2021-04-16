@@ -37,12 +37,12 @@ public class UserService {
 		User newUser = new User(id > 0 ? id : -id, email, password, firstname, surname, phoneNumber, activityLevel, null);
 		//todo call repo to register this new user
         boolean result = repo.addUser(newUser);
-		return newUser;
+        if(result) return newUser;
+        return null;
     }
 
 	public User getUser(String email){
-		//todo call repo here
-		return null;
+		return repo.findUserByEmail(email);
 	}
 
     public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
@@ -63,5 +63,9 @@ public class UserService {
 
     public boolean deleteConnection(ActivityUser activityUser){
         return this.repo.deleteConnection(activityUser);
+    }
+
+    public boolean deleteUser(int userId){
+        return repo.deleteUser(userId);
     }
 }
