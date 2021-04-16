@@ -78,7 +78,7 @@ const ActivityGrid = ({ activities }: Props) => {
                 {renderActivities}
             </GridList>
             <Popup
-                title="hei hva skjer"
+                title={activity.title}
                 openPopup={openPopup}
                 setOpenPopup={setOpenPopup}
             >
