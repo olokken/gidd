@@ -10,7 +10,7 @@ import {
 
 interface Props {
     title?: string;
-    children?: any;
+    children?: React.ReactNode;
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }

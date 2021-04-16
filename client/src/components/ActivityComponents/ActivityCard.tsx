@@ -45,17 +45,7 @@ const ActivityCard = ({
                         openPopup={openPopup}
                         setOpenPopup={setOpenPopup}
                     >
-                  <ActivityInformation 
-                        ID={ID}
-                        title={title}
-                        time={time}
-                        owner={owner}
-                        capacity={capacity}
-                        maxCapacity={maxCapacity}
-                        description={description}
-                        level={level}
-                  >
-                    </ActivityInformation>  
+                  <ActivityInformation></ActivityInformation>  
             </ActivityPopup>
             <CardInformation>
                 <CardMedia
