@@ -6,6 +6,8 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import { UserContext } from './UserContext';
 import { MailRounded } from '@material-ui/icons';
 import axios from '../Axios';
+import { useHistory } from 'react-router-dom';
+import Popup from './Popup';
 
 const StyledButton = withStyles({
     root: {
@@ -23,6 +25,7 @@ const StyledButton = withStyles({
 })(Button);
 
 const MyUser: React.FC = () => {
+    const history = useHistory();
     const { user, setUser } = useContext(UserContext);
     const [name, setName] = useState<string>('');
     const [mail, setMail] = useState<string>('');
@@ -31,6 +34,7 @@ const MyUser: React.FC = () => {
     const [password2, setPassword2] = useState<string>('');
     const [showEditPass, setShowEditPass] = useState<boolean>(false);
     const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
+    const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     const checkInput = (input: string): boolean => {
         if (input.length > 0 && input.charAt(0) !== ' ') {
@@ -108,13 +112,15 @@ const MyUser: React.FC = () => {
     };
 
     const onClickDeleteUser = (id: string) => {
-        console.log(id);
         //axios#delete(url[, config])
         const url = `user/${id}`;
         axios
             .delete(url)
             .then((response) => {
                 console.log(JSON.stringify(response));
+                setUser(response.data);
+                console.log(user);
+                history.push('/');
             })
             .catch((error) => {
                 console.log('Could not delete user: ' + error.message);
@@ -190,9 +196,23 @@ const MyUser: React.FC = () => {
                 </StyledButton>
             </div>
             <div>
-                <StyledButton onClick={() => onClickDeleteUser('1871698377')}>
+                <StyledButton onClick={() => setOpenPopup(!openPopup)}>
                     Delete User
                 </StyledButton>
+                <Popup
+                    title="Er du sikkert på at du vil slette brukeren?"
+                    openPopup={openPopup}
+                    setOpenPopup={setOpenPopup}
+                >
+                    <div>
+                        <StyledButton
+                            onClick={() => onClickDeleteUser(user.ID)}
+                        >
+                            Yes
+                        </StyledButton>
+                        <StyledButton>No</StyledButton>
+                    </div>
+                </Popup>
             </div>
         </div>
     );
