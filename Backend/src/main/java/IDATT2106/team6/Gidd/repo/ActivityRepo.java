@@ -109,7 +109,6 @@ public class ActivityRepo extends GiddRepo {
             }
         }catch (Exception e){
             log.info("deleting activity: " + activityId + " failed due to " + e.getMessage());
-            e.printStackTrace();
             return false;
         }finally {
             em.close();
@@ -158,7 +157,6 @@ public class ActivityRepo extends GiddRepo {
             return true;
         }catch (Exception e){
             log.error("removing user " + activityUserId + " from activity " + activity.toString() + " failed due to " + e.getMessage());
-            e.printStackTrace();
             return false;
         }finally {
             em.close();
@@ -167,13 +165,13 @@ public class ActivityRepo extends GiddRepo {
 
     public List<Activity> findActivitiesBasedOnTitle(String title){
         EntityManager em = getEm();
-
+        log.info("finding activities with title " + title);
         try{
             Query q = em.createNativeQuery("SELECT * FROM ACTIVITY WHERE title LIKE ?1", Activity.class)
                     .setParameter(1, "%" + title + "%");
             return q.getResultList();
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("finding activities with title " + title + " failed due to " + e.getMessage());
             return null;
         }finally {
             em.close();
@@ -182,13 +180,14 @@ public class ActivityRepo extends GiddRepo {
 
     public List<Activity> findActivityByActivityLevel(int activityLevel){
         EntityManager em = getEm();
+        log.info("finding activities by activity level " + activityLevel);
 
         try{
             Query q = em.createNativeQuery("SELECT * FROM ACTIVITY WHERE activity_level = ?1", Activity.class)
                     .setParameter(1, activityLevel);
             return q.getResultList();
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("finding activities by activity level " + activityLevel + " failed due to " + e.getMessage());
             return null;
         }finally {
             em.close();
@@ -205,7 +204,6 @@ public class ActivityRepo extends GiddRepo {
             allActivities = q.getResultList();
         }catch (Exception e){
             log.error("getting all activites failed due to " + e.getMessage());
-            e.printStackTrace();
         }finally {
             em.close();
         }

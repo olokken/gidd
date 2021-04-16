@@ -152,6 +152,7 @@ public class UserRepo extends GiddRepo {
 
     public boolean removeActivity(int activityUserId, User user){
         EntityManager em = getEm();
+        log.info("deleting registration of user " + user.toString() + " to activity " + activityUserId);
         //todo log
         try{
             for(ActivityUser as : user.getActivities()){
@@ -166,7 +167,7 @@ public class UserRepo extends GiddRepo {
             em.getTransaction().commit();
             return true;
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("deleting registration of user " + user.toString() + " to activity " + activityUserId + " failed due to " + e.getMessage() );
             return false;
         }
     }
