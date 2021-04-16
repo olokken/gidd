@@ -40,4 +40,8 @@ public class Equipment {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public void addActivityToEquipment(ActivityEquipment activityEquipment){
+        this.activities.add(activityEquipment);
+    }
 }

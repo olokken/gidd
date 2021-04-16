@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import IDATT2106.team6.Gidd.models.Activity;
+import IDATT2106.team6.Gidd.models.ActivityEquipment;
 import IDATT2106.team6.Gidd.models.Equipment;
 import org.springframework.stereotype.Repository;
 
@@ -98,12 +100,14 @@ public class EquipmentRepo extends GiddRepo {
         }
     }
 
+
+
     public ArrayList<Equipment> getAllEquipment(){
         EntityManager em = getEm();
         List<Equipment> allEquipment = null;
 
         try {
-            Query q = em.createQuery("SELECT a FROM Equipment a");
+            Query q = em.createNativeQuery("SELECT * FROM EQUIPMENT", Equipment.class);
             allEquipment = q.getResultList();
         }catch (Exception e){
             e.printStackTrace();
@@ -113,5 +117,36 @@ public class EquipmentRepo extends GiddRepo {
 
         assert allEquipment != null;
         return new ArrayList<>(allEquipment);
+    }
+
+    public Equipment findEquipmentByDescription(String description){
+        EntityManager em = getEm();
+
+        try{
+            Query q = em.createNativeQuery("SELECT * FROM EQUIPMENT WHERE DESCRIPTION = ?1", Equipment.class)
+                    .setParameter(1, description);
+
+            return (Equipment) q.getSingleResult();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }finally {
+            em.close();
+        }
+    }
+
+    public boolean addEquipmentToActivity(Equipment equipment, ActivityEquipment activityEquipment){
+        EntityManager em = getEm();
+
+        try{
+            equipment.addActivityToEquipment(activityEquipment);
+            em.getTransaction().begin();
+            em.merge(equipment);
+            em.getTransaction().commit();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 }

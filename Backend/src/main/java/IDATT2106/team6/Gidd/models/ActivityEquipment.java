@@ -6,6 +6,7 @@ import javax.persistence.*;
 @Table(name = "ACTIVITY_EQUIPMENT")
 public class ActivityEquipment {
     @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "activityId")
@@ -17,4 +18,8 @@ public class ActivityEquipment {
 
     public ActivityEquipment(){}
 
+    public ActivityEquipment(Activity activity, Equipment equipment){
+        this.activity = activity;
+        this.equipment = equipment;
+    }
 }

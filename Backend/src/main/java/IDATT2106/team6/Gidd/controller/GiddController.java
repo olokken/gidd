@@ -624,17 +624,30 @@ public class GiddController {
                 .body(formatJson(body));
     }
 
-    @PostMapping(value = "testing", consumes = "application/json", produces = "application/json")
-    public ResponseEntity registerEquipment(@RequestBody HashMap<String, Object> map){
-        equipmentService.registerEquipment(map.get("description").toString().toLowerCase());
+    private boolean registerEquipmentToActivity(int activityId, String equipment){
+        String[] equipmentDescription = equipment.split(",");
 
-        HttpHeaders header = new HttpHeaders();
+        ArrayList<Equipment> equipments = new ArrayList<>();
 
-        header.add("Status", "200 OK");
-        header.add("Content-Type", "application/json; charset=UTF-8");
-        return ResponseEntity
-                .ok()
-                .headers(header)
-                .body("lol");
+        for (String s : equipmentDescription) {
+            if (equipmentService.getEquipmentByDescription(s.trim()) == null) {
+                registerEquipment(s.trim());
+            }
+            equipments.add(equipmentService.getEquipmentByDescription(s.trim()));
+        }
+
+        Activity activity = activityService.testGetActivity(activityId);
+
+        for(Equipment e : equipments) {
+            ActivityEquipment activityEquipment = new ActivityEquipment(activity, e);
+            if(activityService.addEquipmentToActivity(activity, activityEquipment)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void registerEquipment(String description){
+        equipmentService.registerEquipment(description.toLowerCase());
     }
 }

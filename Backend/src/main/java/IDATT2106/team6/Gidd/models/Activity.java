@@ -199,6 +199,10 @@ public class Activity {
         this.timeCreated = timeCreated;
     }
 
+    public void addEquipment(ActivityEquipment activityEquipment){
+        this.equipments.add(activityEquipment);
+    }
+
     @Override
     public String toString() {
         return "Activity{" +

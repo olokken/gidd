@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import IDATT2106.team6.Gidd.models.Activity;
+import IDATT2106.team6.Gidd.models.ActivityEquipment;
 import IDATT2106.team6.Gidd.models.ActivityUser;
 import IDATT2106.team6.Gidd.models.User;
 import org.springframework.stereotype.Repository;
@@ -197,5 +198,20 @@ public class ActivityRepo extends GiddRepo {
 
         assert allActivities != null;
         return new ArrayList<>(allActivities);
+    }
+
+    public boolean addEquipmentToActivity(Activity activity, ActivityEquipment activityEquipment){
+        EntityManager em = getEm();
+
+        try{
+            activity.addEquipment(activityEquipment);
+            em.getTransaction().begin();
+            em.merge(activity);
+            em.getTransaction().commit();
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 }

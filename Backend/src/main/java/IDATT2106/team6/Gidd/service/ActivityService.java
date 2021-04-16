@@ -1,9 +1,6 @@
 package IDATT2106.team6.Gidd.service;
 
-import IDATT2106.team6.Gidd.models.Activity;
-import IDATT2106.team6.Gidd.models.ActivityLevel;
-import IDATT2106.team6.Gidd.models.Tag;
-import IDATT2106.team6.Gidd.models.User;
+import IDATT2106.team6.Gidd.models.*;
 import IDATT2106.team6.Gidd.repo.ActivityRepo;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -81,5 +78,9 @@ public class ActivityService {
 
     public List<Activity> filterByActivityLevel(int activityLevel){
         return repo.findActivityByActivityLevel(activityLevel);
+    }
+
+    public boolean addEquipmentToActivity(Activity activity, ActivityEquipment activityEquipment){
+        return repo.addEquipmentToActivity(activity, activityEquipment);
     }
 }
