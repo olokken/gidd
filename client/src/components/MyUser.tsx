@@ -5,6 +5,7 @@ import '../styles/MyUser.css';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { UserContext } from './UserContext';
 import { MailRounded } from '@material-ui/icons';
+import axios from '../Axios';
 
 const StyledButton = withStyles({
     root: {
@@ -106,6 +107,20 @@ const MyUser: React.FC = () => {
         return false;
     };
 
+    const onClickDeleteUser = (id: string) => {
+        console.log(id);
+        //axios#delete(url[, config])
+        const url = `user/${id}`;
+        axios
+            .delete(url)
+            .then((response) => {
+                console.log(JSON.stringify(response));
+            })
+            .catch((error) => {
+                console.log('Could not delete user: ' + error.message);
+            });
+    };
+
     return (
         <div>
             <Typography component="h2">Navn: {user.name}</Typography>
@@ -172,6 +187,11 @@ const MyUser: React.FC = () => {
                 <div></div>
                 <StyledButton onClick={onClickChangePassword}>
                     Oppdater
+                </StyledButton>
+            </div>
+            <div>
+                <StyledButton onClick={() => onClickDeleteUser('1871698377')}>
+                    Delete User
                 </StyledButton>
             </div>
         </div>
