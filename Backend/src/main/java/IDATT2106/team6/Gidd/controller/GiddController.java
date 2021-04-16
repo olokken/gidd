@@ -537,7 +537,7 @@ public class GiddController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity loginUser(@RequestBody HashMap<String, String> map){
+    public ResponseEntity loginUser(@RequestBody Map<String, Object> map){
         log.info("recieved postmapping to /login " + map.toString());
         HttpHeaders header = new HttpHeaders();
 		boolean result = userService.login(map.get("email").toString(), map.get("password").toString());
