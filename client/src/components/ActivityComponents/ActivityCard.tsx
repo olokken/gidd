@@ -24,7 +24,7 @@ const TitleArea = styled.div`
     flex: 1;
     padding: 15px;
     color: white;
-    background-color: #3f51b5;
+    background-color: #f44336;
 `;
 
 interface Props {
@@ -83,7 +83,7 @@ const ActivityCard = ({
                                 size="small"
                                 label={comparison}
                                 style={{
-                                    backgroundColor: '#8c98d8',
+                                    backgroundColor: '#ffa6a0',
                                     borderBlockEndWidth: '0px',
                                     color: 'white',
                                 }}
@@ -93,7 +93,7 @@ const ActivityCard = ({
                                 size="small"
                                 label={activity.level}
                                 style={{
-                                    backgroundColor: '#8c98d8',
+                                    backgroundColor: '#ffa6a0',
                                     borderBlockEndWidth: '0px',
                                     color: 'white',
                                 }}

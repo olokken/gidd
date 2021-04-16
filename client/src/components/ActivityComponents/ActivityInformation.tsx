@@ -1,6 +1,5 @@
 import { makeStyles, createStyles, Theme, Grid, Typography, Paper, Avatar, Card, CardContent, Tooltip, Chip, CardMedia, Button } from '@material-ui/core';
 import React from 'react';
-import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
 import hiking from '../../assets/hiking.jpg';
 import map from '../../assets/map.jpg';
@@ -14,26 +13,34 @@ const useStyles = makeStyles((theme: Theme) =>
     titlearea: {
         /*margin: `${theme.spacing(1)}px auto`,
         padding: theme.spacing(2),*/
-        backgroundColor: 'black',
+        flex: 1,
+        backgroundColor: '#f44336',
         color: 'white',
-      },
+    },
     publisher: {
-        backgroundColor: 'lightgray'
-        },
+        flex: 1,
+        backgroundColor: '#f3dbdb'
+    },
     joinButton:{
         float: 'right',
-        margin: '4px',
+        margin: '15px',
         backgroundColor: 'white',
         '&:hover': {
-            background: 'gray',
+            background: '#ffa6a0',
          },
-    }
+    },
+    supplyList:{
+        backgroundColor: 'white',
+        marginRight: '10px',
+        borderRadius: '10px'
+    },
   }),
 );
 
 
 const ActivityInformation = ({ activity }: Props) => {
     const classes = useStyles();
+    const eventTime = new String(activity.time);
     return (
     <div
     >       
@@ -48,7 +55,9 @@ const ActivityInformation = ({ activity }: Props) => {
                 </Grid>
             </Grid>
             <div className={classes.titlearea}>
-                    <Grid item 
+                <Grid container wrap="nowrap" spacing={2}>
+                    <Grid item
+                        xs={8} 
                         style={{padding: '15px'}}>
                         <Typography
                             gutterBottom
@@ -56,9 +65,13 @@ const ActivityInformation = ({ activity }: Props) => {
                             component="h3"
                         >
                             {activity.title}
-                        <Button className={classes.joinButton}>Meld deg på</Button>
                         </Typography>
                     </Grid>
+                    <Grid item
+                        xs={4}>
+                            <Button className={classes.joinButton}>Meld deg på</Button>
+                    </Grid>
+                </Grid>
             </div>
             <div className={classes.publisher}>
                 <Grid container wrap="nowrap" spacing={2}>
@@ -74,6 +87,7 @@ const ActivityInformation = ({ activity }: Props) => {
                     <Grid item>
                         <Typography><b>Kapasitet:</b> {activity.capacity} / {activity.maxCapacity}</Typography>
                         <Typography><b>Vanskligheitsgrad:</b> {activity.level}</Typography>
+                        <Typography><b>Tidspunkt: </b>{eventTime}</Typography>
                     </Grid>
                 </Grid>
                 <Typography
@@ -107,6 +121,33 @@ const ActivityInformation = ({ activity }: Props) => {
                         />
                     </Grid>
                 </Grid>
+                <br/>
+                <div className={classes.publisher}>
+                    <Grid container wrap="nowrap" spacing={2}>
+                        <Grid item xs={4}
+                            style={{padding: '15px'}}>
+                            <Typography>
+                                Nødvendig utstyr:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={8}>
+                            <div className={classes.supplyList}>
+                                <Chip
+                                            variant="outlined" // her må man hente utstyr frå det som er registrert og plassere dei inn
+                                            size="small"
+                                            label='fotball'
+                                            style={{
+                                                backgroundColor: '#f44336',
+                                                borderBlockEndWidth: '0px',
+                                                color: 'white',
+                                                padding: '10px',
+                                                margin: '10px'
+                                            }}
+                                        />
+                            </div>
+                        </Grid>
+                    </Grid>
+                </div>
                 <br></br>
                 <Grid>
                 <div className={classes.titlearea}>
@@ -130,30 +171,6 @@ const ActivityInformation = ({ activity }: Props) => {
                         />
                     </Grid>
                 </Grid>
-                <div className={classes.titlearea}>
-                    <Grid item 
-                        style={{padding: '15px'}}>
-                        <Typography
-                            gutterBottom
-                            variant="h6"
-                            component="h3"
-                        >
-                            Nødvendig utstyr:
-                        </Typography>
-                    </Grid>
-                </div>
-                    <Grid item>
-                    <Chip
-                                variant="outlined" // her må man hente utstyr frå det som er registrert og plassere dei inn
-                                size="small"
-                                label='fotball'
-                                style={{
-                                    backgroundColor: 'black',
-                                    borderBlockEndWidth: '0px',
-                                    color: 'white',
-                                }}
-                            />
-                    </Grid>
     </div>
     );
 };

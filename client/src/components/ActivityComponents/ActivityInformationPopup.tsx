@@ -16,6 +16,18 @@ interface Props {
 }
 
 const useStyles = makeStyles((theme) => ({
+    '@global': {
+      '*::-webkit-scrollbar': {
+          width: '0.4em'
+      },
+      '*::-webkit-scrollbar-track': {
+        '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+      },
+      '*::-webkit-scrollbar-thumb': {
+        backgroundColor: '#000000',
+        outline: '1px solid #302929'
+      }
+    },
     dialogWrapper: {
         padding: theme.spacing(2),
         position: 'absolute',
@@ -33,10 +45,11 @@ const ActivityInformationPopup = ({ openPopup, setOpenPopup, children }: Props) 
             open={openPopup}
             fullWidth={true}
             maxWidth="sm"
-        >
+            style={{
+              padding: '0px'
+            }}>
             <DialogTitle className={classes.dialogTitle}>
                 <div style={{ display: 'flex', float: 'right' }}>
-                    {/* The typography and button component will be shown in a single line*/}
                     <Button
                         color="secondary"
                         onClick={() => {
