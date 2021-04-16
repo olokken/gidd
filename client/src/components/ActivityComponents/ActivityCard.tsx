@@ -11,9 +11,7 @@ import {
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
-import Popup from '../Popup';
-import ActivityInformation from './ActivityInformation';
-import ActivityPopup from './CreateActivity/ActivityPopup';
+import hiking from '../../assets/hiking.jpg';
 
 const CardInformation = styled.div`
     height: 100%;
@@ -23,7 +21,8 @@ const CardInformation = styled.div`
     }
 `;
 const TitleArea = styled.div`
-    padding-left: 15px;
+    flex: 1;
+    padding: 15px;
     color: white;
     background-color: #3f51b5;
 `;
@@ -55,16 +54,21 @@ const ActivityCard = ({
             onClick={onClickActivity}
             style={{ minWidth: '200px', maxWidth: '31%', margin: '5px' }}
         >
+            
             <CardInformation>
-                <CardMedia
-                    component="img"
-                    alt={'Image related to the activity' + activity.title}
-                    height="140"
-                    image={require('../../assets/GIDD.png')}
-                />
+            <Grid>
+                <Grid item>
+                    <CardMedia
+                        component="img"
+                        alt={'Image related to the activity' + activity.title}
+                        height="140"
+                        image={hiking} // hente bildet frå aktiviteta
+                    />
+                </Grid>
+            </Grid>
                 <TitleArea>
                     <Grid container wrap="nowrap" spacing={2}>
-                        <Grid item>
+                        <Grid item xs={8}>
                             <Typography
                                 gutterBottom
                                 variant="h5"
@@ -73,7 +77,7 @@ const ActivityCard = ({
                                 {activity.title}
                             </Typography>
                         </Grid>
-                        <Grid item>
+                        <Grid item xs={4}>
                             <Chip
                                 variant="outlined"
                                 size="small"

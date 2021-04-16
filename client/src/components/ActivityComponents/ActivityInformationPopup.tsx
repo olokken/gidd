@@ -1,69 +1,55 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import {
-    Modal,
+    Dialog,
+    DialogTitle,
+    DialogContent,
     makeStyles,
-    Theme, 
-    createStyles,
-    Backdrop,
-    Fade
+    Typography,
+    Button,
 } from '@material-ui/core';
 
+interface Props {
+    title?: string;
+    children?: React.ReactNode;
+    openPopup: boolean;
+    setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    modal: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+const useStyles = makeStyles((theme) => ({
+    dialogWrapper: {
+        padding: theme.spacing(2),
+        position: 'absolute',
+        top: theme.spacing(5),
     },
-    paper: {
-      backgroundColor: theme.palette.background.paper,
-      border: '2px solid #000',
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
+    dialogTitle: {
+        
     },
-  }),
-);
+}));
 
-const ActivityInformationPopup = () => {
+const ActivityInformationPopup = ({ openPopup, setOpenPopup, children }: Props) => {
     const classes = useStyles();
-    const [open, setOpen] = React.useState(false);
-  
-    const handleOpen = () => {
-      setOpen(true);
-    };
-  
-    const handleClose = () => {
-      setOpen(false);
-    };
-  
     return (
-      <div>
-        <button type="button" onClick={handleOpen}>
-          react-transition-group
-        </button>
-        <Modal
-          aria-labelledby="transition-modal-title"
-          aria-describedby="transition-modal-description"
-          className={classes.modal}
-          open={open}
-          onClose={handleClose}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
+        <Dialog
+            open={openPopup}
+            fullWidth={true}
+            maxWidth="sm"
         >
-          <Fade in={open}>
-            <div className={classes.paper}>
-              <h2 id="transition-modal-title">Transition modal</h2>
-              <p id="transition-modal-description">react-transition-group animates me.</p>
-            </div>
-          </Fade>
-        </Modal>
-      </div>
+            <DialogTitle className={classes.dialogTitle}>
+                <div style={{ display: 'flex', float: 'right' }}>
+                    {/* The typography and button component will be shown in a single line*/}
+                    <Button
+                        color="secondary"
+                        onClick={() => {
+                            setOpenPopup(!openPopup);
+                        }}
+                    >
+                        ×
+                    </Button>
+                </div>
+            </DialogTitle>
+            <DialogContent>{children}</DialogContent>
+        </Dialog>
     );
-  };
+};
 
 export default ActivityInformationPopup;

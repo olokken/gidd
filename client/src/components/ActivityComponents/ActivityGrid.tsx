@@ -6,6 +6,7 @@ import Activity from '../../interfaces/Activity';
 import Popup from '../Popup';
 import ActivityCard from './ActivityCard';
 import ActivityInformation from './ActivityInformation';
+import ActivityInformationPopup from './ActivityInformationPopup';
 
 const Container = styled.div`
     display: flex;
@@ -77,13 +78,12 @@ const ActivityGrid = ({ activities }: Props) => {
             >
                 {renderActivities}
             </GridList>
-            <Popup
-                title={activity.title}
+            <ActivityInformationPopup
                 openPopup={openPopup}
                 setOpenPopup={setOpenPopup}
             >
                 <ActivityInformation activity={activity} />
-            </Popup>
+            </ActivityInformationPopup>
             <Pageination
                 style={{ justifyContent: 'center', display: 'flex' }}
                 onChange={onPageChange}
