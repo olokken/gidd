@@ -27,7 +27,8 @@ const StyledButton = withStyles({
 const MyUser: React.FC = () => {
     const history = useHistory();
     const { user, setUser } = useContext(UserContext);
-    const [name, setName] = useState<string>('');
+    const [firstName, setFirstName] = useState<string>('');
+    const [surname, setSurname] = useState<string>('');
     const [mail, setMail] = useState<string>('');
     //const [phone, setPhone] = useState<string>('');
     const [password1, setPassword1] = useState<string>('');
@@ -43,11 +44,32 @@ const MyUser: React.FC = () => {
             return false;
         }
     };
-    const onChangeName = (event: ChangeEvent<HTMLInputElement>) => {
+    const onChangeFirstName = (event: ChangeEvent<HTMLInputElement>) => {
         const input: string = (event.target as HTMLInputElement).value;
-        setName(input);
+        setFirstName(input);
     };
 
+    const onChangeSurname = (event: ChangeEvent<HTMLInputElement>) => {
+        const input: string = (event.target as HTMLInputElement).value;
+        setSurname(input);
+    };
+
+    const onChangeMail = (event: ChangeEvent<HTMLInputElement>) => {
+        const input: string = (event.target as HTMLInputElement).value;
+        setMail(input);
+    };
+
+    const onChangePassword1 = (event: ChangeEvent<HTMLInputElement>) => {
+        const input: string = (event.target as HTMLInputElement).value;
+        setPassword1(input);
+    };
+
+    const onChangePassword2 = (event: ChangeEvent<HTMLInputElement>) => {
+        const input: string = (event.target as HTMLInputElement).value;
+        setPassword2(input);
+    };
+
+    /*
     const onClickChangeName = (): boolean => {
         if (checkInput(name)) {
             setUser({ ...user, name: name });
@@ -59,10 +81,7 @@ const MyUser: React.FC = () => {
         }
     };
 
-    const onChangeMail = (event: ChangeEvent<HTMLInputElement>) => {
-        const input: string = (event.target as HTMLInputElement).value;
-        setMail(input);
-    };
+    
 
     const onClickChangeMail = (): boolean => {
         if (checkInput(mail)) {
@@ -75,6 +94,7 @@ const MyUser: React.FC = () => {
             return false;
         }
     };
+    */
 
     /*
     const onChangePhone = (event: ChangeEvent<HTMLInputElement>) => {
@@ -92,15 +112,7 @@ const MyUser: React.FC = () => {
     };
     */
 
-    const onChangePassword1 = (event: ChangeEvent<HTMLInputElement>) => {
-        const input: string = (event.target as HTMLInputElement).value;
-        setPassword1(input);
-    };
-
-    const onChangePassword2 = (event: ChangeEvent<HTMLInputElement>) => {
-        const input: string = (event.target as HTMLInputElement).value;
-        setPassword2(input);
-    };
+    /*
     const onClickChangePassword = (): boolean => {
         if (password1 === password2) {
             if (password1.length > 0 && password1.charAt(0) !== ' ') {
@@ -109,6 +121,22 @@ const MyUser: React.FC = () => {
             }
         }
         return false;
+    };
+   */
+
+    const onClickUpdateUser = () => {
+        let isUpdated: boolean = false;
+        if (checkInput(firstName)) {
+            setUser({ ...user, firstName: firstName });
+        }
+        if (checkInput(surname)) {
+            setUser({ ...user, surname: surname });
+        }
+        if (checkInput(mail)) {
+            setUser({ ...user, email: mail });
+        }
+        if (password1 === password2) {
+        }
     };
 
     const onClickDeleteUser = (id: string) => {
@@ -129,6 +157,9 @@ const MyUser: React.FC = () => {
 
     return (
         <div>
+            <Typography component="h2">
+                Navn: `${user.firstName} ${user.surname}`
+            </Typography>
             <Typography component="h2">Navn: {user.name}</Typography>
             <Typography component="h2">Email: {user.email}</Typography>
             {/*<Typography component="h2">Telefon: {user.phone}</Typography>*/}
@@ -140,9 +171,6 @@ const MyUser: React.FC = () => {
                     variant="outlined"
                     onChange={onChangeName}
                 />
-                <StyledButton onClick={onClickChangeName}>
-                    Oppdater
-                </StyledButton>
             </div>
             <div>
                 <TextField
@@ -150,22 +178,7 @@ const MyUser: React.FC = () => {
                     variant="outlined"
                     onChange={onChangeMail}
                 />
-                <StyledButton onClick={onClickChangeMail}>
-                    Oppdater
-                </StyledButton>
             </div>
-            {/*
-            <div>
-                <TextField
-                    label="Endre telefon"
-                    variant="outlined"
-                    onChange={onChangePhone}
-                />
-                <StyledButton onClick={onClickChangePhone}>
-                    Oppdater
-                </StyledButton>
-            </div>
-            */}
             {/* TODO mulighet for å endre aktivitetsnivå*/}
             <div>
                 <TextField
@@ -191,13 +204,13 @@ const MyUser: React.FC = () => {
                     onClick={() => setShowConfirmPass(!showConfirmPass)}
                 />
                 <div></div>
-                <StyledButton onClick={onClickChangePassword}>
-                    Oppdater
+                <StyledButton onClick={onClickUpdateUser}>
+                    Oppdater bruker
                 </StyledButton>
             </div>
             <div>
                 <StyledButton onClick={() => setOpenPopup(!openPopup)}>
-                    Delete User
+                    Slett bruker
                 </StyledButton>
                 <Popup
                     title="Er du sikkert på at du vil slette brukeren?"
