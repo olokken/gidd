@@ -50,7 +50,7 @@ const ActivityPopup = ({ title, openPopup, setOpenPopup, children }: Props) => {
                             setOpenPopup(!openPopup);
                         }}
                     >
-                        ×
+                        X
                     </Button>
                 </div>
             </DialogTitle>

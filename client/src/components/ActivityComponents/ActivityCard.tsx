@@ -1,7 +1,9 @@
-import { Card, CardActionArea, CardMedia, CardContent, Typography, Grid, Avatar, Tooltip, Chip } from '@material-ui/core';
-import React from 'react';
+import { Card,  CardMedia, CardContent, Typography, Grid, Avatar, Tooltip, Chip } from '@material-ui/core';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
+import ActivityInformation from './ActivityInformation';
+import ActivityPopup from './CreateActivity/ActivityPopup';
 
 const CardInformation = styled.div`
     height: 100%;
@@ -15,6 +17,7 @@ const TitleArea = styled.div`
     color: white;
     background-color: #3f51b5;
 `;
+
 
 const ActivityCard = ({
     ID,
@@ -30,8 +33,20 @@ const ActivityCard = ({
     const fullCapacity = new String(maxCapacity);
     const comparison = new String(participants + "/" + fullCapacity);
     const eventTime = new String(time);
+    const [openPopup, setOpenPopup] = useState<boolean>(false);
+
+    const onClickActivity = () => {
+        setOpenPopup(!openPopup);
+    }
     return (
-        <Card style={{minWidth: '200px', maxWidth: '31%', margin: '5px'}}>
+        <Card onClick={onClickActivity} style={{minWidth: '200px', maxWidth: '31%', margin: '5px'}}>
+            <ActivityPopup
+                        title={title}
+                        openPopup={openPopup}
+                        setOpenPopup={setOpenPopup}
+                    >
+                  <ActivityInformation></ActivityInformation>  
+            </ActivityPopup>
             <CardInformation>
                 <CardMedia
                 component="img"
@@ -71,6 +86,7 @@ const ActivityCard = ({
                 </CardContent>
             </CardInformation>
         </Card>
+        
     );
 };
 

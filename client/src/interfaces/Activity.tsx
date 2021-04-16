@@ -18,7 +18,7 @@ export default interface Activity {
 export function ActivityList(): Activity[] {
     const akt1: Activity = {
         ID: 1,
-        title: 'Tittel 1',
+        title: 'Dette er en litt lengre tittel for å se hvordan layaouten reagerer',
         time: new Date('2000-12-22'),
         owner: 'Ole',
         capacity: 10,
