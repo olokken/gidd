@@ -34,26 +34,31 @@ const ActivityGrid = ({ activities }: Props) => {
         setCurrentActivities(activities.slice(startIndex, endIndex));
     }, [page]);
 
+    const [activity, setActivity] = useState<Activity>({
+        ID: 0,
+        title: '',
+        time: new Date(),
+        //repeat: number;
+        //userID: number;
+        owner: '',
+        capacity: 0,
+        maxCapacity: 0,
+        //groupId: number;
+        description: '',
+        level: '',
+        //latitude: number;
+        //longitude: number;
+        //picture: any;
+    });
+
     const renderActivities = currentActivities.map((act, index: number) => {
-        /*
-        const activity: Activity = {
-            key: index,
-            ID: act.ID,
-            title: act.title,
-            time: act.time,
-            owner: act.owner,
-            capacity: act.capacity,
-            maxCapacity: act.maxCapacity,
-            description: act.description,
-            level: act.level,
-        };
-        */
         return (
             <ActivityCard
                 key={index}
                 activity={act}
                 openPopup={openPopup}
                 setOpenPopup={setOpenPopup}
+                setActivity={setActivity}
             ></ActivityCard>
         );
     });
@@ -77,7 +82,7 @@ const ActivityGrid = ({ activities }: Props) => {
                 openPopup={openPopup}
                 setOpenPopup={setOpenPopup}
             >
-                <ActivityInformation />
+                <ActivityInformation activity={activity} />
             </Popup>
             <Pageination
                 style={{ justifyContent: 'center', display: 'flex' }}

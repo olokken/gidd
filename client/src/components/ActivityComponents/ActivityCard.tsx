@@ -32,9 +32,15 @@ interface Props {
     activity: Activity;
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
+    setActivity: React.Dispatch<React.SetStateAction<Activity>>;
 }
 
-const ActivityCard = ({ activity, openPopup, setOpenPopup }: Props) => {
+const ActivityCard = ({
+    activity,
+    openPopup,
+    setOpenPopup,
+    setActivity,
+}: Props) => {
     const participants = new String(activity.capacity);
     const fullCapacity = new String(activity.maxCapacity);
     const comparison = new String(participants + '/' + fullCapacity);
@@ -42,21 +48,13 @@ const ActivityCard = ({ activity, openPopup, setOpenPopup }: Props) => {
 
     const onClickActivity = () => {
         setOpenPopup(!openPopup);
+        setActivity(activity);
     };
     return (
         <Card
             onClick={onClickActivity}
             style={{ minWidth: '200px', maxWidth: '31%', margin: '5px' }}
         >
-            {/*
-            <ActivityPopup
-                title={title}
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
-            >
-                <ActivityInformation />
-            </ActivityPopup>
-            */}
             <CardInformation>
                 <CardMedia
                     component="img"

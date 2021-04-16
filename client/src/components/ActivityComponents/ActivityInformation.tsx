@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Activity from '../../interfaces/Activity';
 /*interface Props {
     ID: number;
     title: string;
@@ -11,7 +12,11 @@ import styled from 'styled-components';
     level: string;
 }
 { ID, title, time, owner, capacity, maxCapacity,description, level }: Props*/
-const ActivityInformation = () => {
+
+interface Props {
+    activity: Activity;
+}
+const ActivityInformation = ({ activity }: Props) => {
     /*const participants = new String(capacity);
     const fullCapacity = new String(maxCapacity);
     const comparison = new String(participants + "/" + fullCapacity);
@@ -31,8 +36,10 @@ const ActivityInformation = () => {
     `;
     return (
         <ImageDiv>
-            <h1>hei</h1>
+            <h1>{activity.title}</h1>
+            <h1>{activity.description}</h1>
             <h2>hva skjer ole</h2>
+            <h3>sadfdsf</h3>
         </ImageDiv>
     );
 };
