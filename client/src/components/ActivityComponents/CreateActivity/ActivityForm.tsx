@@ -2,6 +2,7 @@ import { TextField, Button, withStyles, Typography } from '@material-ui/core';
 import React, { useState, ChangeEvent } from 'react';
 import './styles.css';
 import axios from '../../../Axios';
+import MapIcon from '@material-ui/icons/Map';
 
 const StyledButton = withStyles({
     root: {
@@ -124,81 +125,104 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     };
 
     return (
-        <div className="activityform">
-            <div>
+        <div className="activityform" style={{display:'flex', justifyContent:'center'}}>
+            <div id="left">
+                <div>
+                    <TextField
+                        style={{padding:"5px"}}
+                        className="textfield"
+                        label="Tittel"
+                        value={title}
+                        onChange={onChangeTitle}
+                        variant="outlined"
+                    />
+                </div>
+                <div>
+                    <TextField
+                        style={{padding:"5px"}}
+                        label="Adresse"
+                        value={address}
+                        onChange={onChangeAddress}
+                        variant="outlined"
+                        className="textfield"
+                    />
+                </div>
+                <div>
+                    <TextField
+                        style={{padding:"5px"}}
+                        label="Dato"
+                        type="datetime-local"
+                        defaultValue={dateDisplay}
+                        value={dateDisplay}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        onChange={onChangeDate}
+                        variant="outlined"
+                        className="textfield"
+                    />
+                </div>
+                <div>
+                    <TextField
+                        style={{padding:"5px"}}
+                        className="description"
+                        label="Beskrivelse"
+                        value={desc}
+                        onChange={onChangeDesc}
+                        variant="outlined"
+                        rows={4}
+                        multiline
+                    />
+                </div>
+            </div>
+            <div id="right">
                 <TextField
+                    style={{padding:"5px"}}
                     className="textfield"
-                    label="Tittel"
-                    value={title}
-                    onChange={onChangeTitle}
+                    label="Utstyr"
+                    value={equipmentDesc}
                     variant="outlined"
+                    onChange={onChangeEqipmentDesc}
+                    onKeyPress={addEquipment}
                 />
+                <h2>Utstyrsliste</h2>
+                <ul style={{borderRadius: '5px', border:'solid lightgrey 1px' ,width:"auto", height:'110px', overflow:'auto'}}>
+                    {reset === false &&
+                        equipmentList.map((equipment) => (
+                            <li key={equipment.id}>{equipment.description}</li>
+                        ))}
+                </ul>
+                <div className="buttons">
+                    <StyledButton
+                        style={{ marginRight: '4px' }}
+                        className="button"
+                        onClick={createActivity}
+                    >
+                        Opprett Aktivitet
+                    </StyledButton>
+                    <StyledButton
+                        style={{ marginLeft: '4px' }}
+                        className="button"
+                        onClick={handleReset}
+                    >
+                        Reset
+                    </StyledButton>
+                </div>
             </div>
             <div>
                 <TextField
-                    label="Adresse"
-                    value={address}
+                    style={{padding:"5px"}}
+                    type="file"
+                    label="Bilde"
+                    /*value={address}*/
+                    InputLabelProps={{
+                            shrink: true,
+                        }}
                     onChange={onChangeAddress}
                     variant="outlined"
                     className="textfield"
                 />
-            </div>
-            <div>
-                <TextField
-                    label="Dato"
-                    type="datetime-local"
-                    defaultValue={dateDisplay}
-                    value={dateDisplay}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    onChange={onChangeDate}
-                    variant="outlined"
-                    className="textfield"
-                />
-            </div>
-            <div>
-                <TextField
-                    className="description"
-                    label="Beskrivelse"
-                    value={desc}
-                    onChange={onChangeDesc}
-                    variant="outlined"
-                    rows={4}
-                    multiline
-                />
-            </div>
-            <TextField
-                className="textfield"
-                label="Utstyr"
-                value={equipmentDesc}
-                variant="outlined"
-                onChange={onChangeEqipmentDesc}
-                onKeyPress={addEquipment}
-            />
-            <h2>Utstyrsliste</h2>
-            <ul>
-                {reset === false &&
-                    equipmentList.map((equipment) => (
-                        <li key={equipment.id}>{equipment.description}</li>
-                    ))}
-            </ul>
-            <div className="buttons">
-                <StyledButton
-                    style={{ marginRight: '4px' }}
-                    className="button"
-                    onClick={createActivity}
-                >
-                    Opprett Aktivitet
-                </StyledButton>
-                <StyledButton
-                    style={{ marginLeft: '4px' }}
-                    className="button"
-                    onClick={handleReset}
-                >
-                    Reset
-                </StyledButton>
-            </div>
+                </div>
         </div>
     );
 };

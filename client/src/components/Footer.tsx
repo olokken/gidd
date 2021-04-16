@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import styled from 'styled-components';
 import logo from '../assets/logo.png';
 import { AppBar, Button, Icon, Toolbar, MenuItem, makeStyles, ListItem, Drawer, TextField, TextareaAutosize } from '@material-ui/core';
+import FeedbackForm from './FeedbackForm';
+import Popup from '../components/Popup';
 
 
 const StyledTextArea = styled.textarea`
@@ -38,8 +40,8 @@ const StyledUl = styled.ul`
 `;
 
 const Footer = () => {
-
-     const [state, setState] = useState({
+    const [openPopup, setOpenPopup] = useState<boolean>(false);
+    const [state, setState] = useState({
     mobileView: false
   })
 const { mobileView } = state;
@@ -59,7 +61,14 @@ const { mobileView } = state;
              <StyledContainer>
                      <StyledRow>
                         <StyledCol>
-                            <Button style={{color:"white"}}>Kontakt GIDD</Button>
+                            <Button onClick={() => setOpenPopup(!openPopup)} style={{color:"white"}}>Kontakt GIDD</Button>
+                            <Popup
+                                title="Send oss en mail"
+                                openPopup={openPopup}
+                                setOpenPopup={setOpenPopup}
+                            >
+                                <FeedbackForm  />
+                            </Popup>
                             <Button style={{color:"white"}}>Om GIDD</Button>
                             <Button style={{color:"white"}}>Team 6</Button>
                         </StyledCol>
@@ -92,11 +101,18 @@ const { mobileView } = state;
                         </StyledCol>
                         <StyledCol>
                             <StyledUl>
-                                <li ><Button style={{color:"white"}}>Kontakt GIDD</Button></li>
+                                <li ><Button onClick={() => setOpenPopup(!openPopup)} style={{color:"white"}}>Kontakt GIDD</Button></li>
                                 <li ><Button style={{color:"white"}}>Om GIDD</Button></li>
                                 <li ><Button style={{color:"white"}}>Team 6</Button></li>
                             </StyledUl>
                         </StyledCol>
+                         <Popup
+                            title="Send oss en mail"
+                            openPopup={openPopup}
+                            setOpenPopup={setOpenPopup}
+                            >
+                        <FeedbackForm  />
+                        </Popup>
                         <StyledCol>
                             <StyledUl>
                                 <li>GIDD har ikke ansvar for eksterne nettsider</li>
