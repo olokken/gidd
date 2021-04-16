@@ -4,7 +4,6 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import ActivityPopup from '../components/ActivityComponents/CreateActivity/ActivityPopup';
 import ActivityForm from '../components/ActivityComponents/CreateActivity/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/Filters/SideFilter';
@@ -12,7 +11,7 @@ import SortMenu from '../components/Sorting/SortMenu';
 import Activity, { ActivityList } from '../interfaces/Activity';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
 import AddButton from '../components/AddButton';
-import Popup from '../components/Popup';
+import Popup from '../components/Popup'
 
 //Endringer kan forekomme her
 
@@ -25,6 +24,10 @@ const Container = styled.div`
 const AddAndSort = styled.div`
     display: flex;
     justify-content: space-between;
+
+    @media only screen and (max-width: 951px) {
+        flex-direction: column-reverse;
+  }
 `;
 
 const View = styled.div`

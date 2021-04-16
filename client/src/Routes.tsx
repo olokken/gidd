@@ -5,7 +5,7 @@ import Activities from './containers/Activities';
 import Login from './containers/Login';
 import Map from './containers/Map';
 import NewUser from './containers/NewUser';
-import Footer from './components/Footer'
+import Footer from './components/Footer/Footer'
 
 export default (
     <Switch>

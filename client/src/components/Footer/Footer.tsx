@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import styled from 'styled-components';
-import logo from '../assets/logo.png';
+import logo from '../../assets/logo.png';
 import { AppBar, Button, Icon, Toolbar, MenuItem, makeStyles, ListItem, Drawer, TextField, TextareaAutosize } from '@material-ui/core';
 import FeedbackForm from './FeedbackForm';
-import Popup from '../components/Popup';
+import Popup from '../Popup';
+import Omoss from "./Omoss";
 
 
 const StyledTextArea = styled.textarea`
@@ -41,6 +42,7 @@ const StyledUl = styled.ul`
 
 const Footer = () => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
+    const [openPopup2, setOpenPopup2] = useState<boolean>(false);
     const [state, setState] = useState({
     mobileView: false
   })
@@ -69,7 +71,14 @@ const { mobileView } = state;
                             >
                                 <FeedbackForm  />
                             </Popup>
-                            <Button style={{color:"white"}}>Om GIDD</Button>
+                            <Button onClick={() => setOpenPopup2(!openPopup2)} style={{color:"white"}}>Om GIDD</Button>
+                            <Popup
+                                title="Om oss"
+                                openPopup={openPopup2}
+                                setOpenPopup={setOpenPopup2}
+                            >
+                                <Omoss/>
+                            </Popup>
                             <Button style={{color:"white"}}>Team 6</Button>
                         </StyledCol>
                     
@@ -102,7 +111,7 @@ const { mobileView } = state;
                         <StyledCol>
                             <StyledUl>
                                 <li ><Button onClick={() => setOpenPopup(!openPopup)} style={{color:"white"}}>Kontakt GIDD</Button></li>
-                                <li ><Button style={{color:"white"}}>Om GIDD</Button></li>
+                                <li ><Button onClick={() => setOpenPopup2(!openPopup2)} style={{color:"white"}}>Om GIDD</Button></li>
                                 <li ><Button style={{color:"white"}}>Team 6</Button></li>
                             </StyledUl>
                         </StyledCol>
@@ -113,22 +122,29 @@ const { mobileView } = state;
                             >
                         <FeedbackForm  />
                         </Popup>
+                        <Popup
+                            title="Om oss"
+                            openPopup={openPopup2}
+                            setOpenPopup={setOpenPopup2}
+                            >
+                            <Omoss/>
+                        </Popup>
+                        
                         <StyledCol>
                             <StyledUl>
                                 <li>GIDD har ikke ansvar for eksterne nettsider</li>
                                 <li>som det lenkes til. Kopiering av materiale fra GIDD for</li>
                                 <li>burk av annet sted er ikke tilatt uten avtale.</li>
-                                <li> <img src={logo} style={{
-                                    width:"50px", 
-                                    margin: "10px",
-                                    cursor:"pointer"}} /></li>
-
                             </StyledUl>
                         </StyledCol>
                      </StyledRow>
 
                      <hr />
                      <StyledRow>
+                         <img src={logo} style={{
+                                    width:"40px", 
+                                    margin: "10px"}} 
+                            />
                          <p>&copy;{new Date().getFullYear} GIDD | Personvernerklæring og informasjonskapsler (cookies) </p>
                      </StyledRow>
                  </StyledContainer>

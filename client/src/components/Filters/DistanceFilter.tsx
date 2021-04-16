@@ -24,7 +24,7 @@ const DistanceFilter = () => {
             <h3>Avstand i km</h3>
             <Inputs>
                 <Slider
-                    style={{ marginRight: '10px' }}
+                    style={{minWidth:"80px", marginRight: '10px' }}
                     defaultValue={100}
                     aria-labelledby="discrete-slider"
                     valueLabelDisplay="auto"
@@ -34,7 +34,7 @@ const DistanceFilter = () => {
                     onChange={handleChange}
                 />
                 <TextField
-                    style={{ width: '4rem' }}
+                    style={{minWidth:"45px", width: '4rem' }}
                     value={value}
                     type="number"
                     onChange={changeValue}

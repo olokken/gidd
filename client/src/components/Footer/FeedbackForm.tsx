@@ -2,9 +2,10 @@ import React from 'react';
 import emailjs from 'emailjs-com';
 import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
+import { InputLabel, Button } from '@material-ui/core';
 
 const FeedbackForm = () => {
-
+    
     function sendEmail (e:any){
          e.preventDefault();
 
@@ -57,11 +58,15 @@ const FeedbackForm = () => {
                                 variant="outlined"
                                 multiline
                                 type="text"
-                                rows={8} 
+                                rows={6} 
                                 name="message"></TextField>
                         </div>
                         <div>
-                            <input type="submit" value="send message" placeholder="melding"/>
+                            <Button 
+                                style={{backgroundColor:"red", marginLeft:"10px", width:"205px"}}
+                                type="submit" 
+                                >Send melding
+                            </Button>
                         </div>
                     </div>
                   </div>
