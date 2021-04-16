@@ -61,8 +61,8 @@ const Login = () => {
                 setUser(response.data.id)
                 history.push('/Activities')
             }).catch((error) => {
-                // handle this error
                 console.log('error: ' + error.message);
+                alert('Email eller passord er feil')
             })
             history.push('/HomePage');
         } else {
@@ -71,8 +71,23 @@ const Login = () => {
     };
 
     const onLoginSoMe = async () => {
-        history.push('/HomePage')
-    }
+        //TODO fix første login og registrering med backend
+        axios.post('/user', {
+            "email": email,
+            "password": password,
+            "firstName": firstName,
+            "surname": surname,
+            "phoneNumber": '',
+            "activityLevel": ''
+          },
+          ).then((response) => {
+          console.log(JSON.stringify(response.data.id))
+          setUser(response.data.id)
+          history.push('/Activites');
+        }).catch((error) => {
+          // handle this error
+          console.log('error: '+ error.message);
+      })    }
 
     const login = async () => {
         const newUser: User = {
