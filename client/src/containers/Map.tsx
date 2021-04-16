@@ -12,7 +12,7 @@ const Container = styled.div`
 
 const Map = () => {
     const [activities, setActivities] = useState<Activity[]>();
-    const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>(); 
+    const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>();
 
     const getCoordinates = () => {
         fetch(
@@ -25,14 +25,14 @@ const Map = () => {
                     const longitude: number = data.longitude;
                     console.log(latitude + ', ' + longitude);
                     setDefaultCenter({ lat: latitude, lng: longitude });
-                } else{
-                    setDefaultCenter({lat:50, lng:50}); 
+                } else {
+                    setDefaultCenter({ lat: 50, lng: 50 });
                 }
             });
     };
 
     useEffect(() => {
-        getCoordinates(); 
+        getCoordinates();
     }, []);
 
     useEffect(() => {
@@ -46,9 +46,11 @@ const Map = () => {
 
     return (
         <Container>
-            {defaultCenter && <MapComponent defaultCenter={defaultCenter}>
-                <Marker position={{lat:25, lng:25}}></Marker>
-            </MapComponent>}
+            {defaultCenter && (
+                <MapComponent defaultCenter={defaultCenter}>
+                    <Marker position={{ lat: 25, lng: 25 }}></Marker>
+                </MapComponent>
+            )}
             <GeoSuggest></GeoSuggest>
         </Container>
     );

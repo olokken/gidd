@@ -15,14 +15,15 @@ const Map = withGoogleMap<{ defaultCenter: DefaultCenter }>((props) => (
 ));
 
 interface Props {
-    defaultCenter:DefaultCenter; 
-    children?:React.ReactChild; 
+    defaultCenter: DefaultCenter;
+    children?: React.ReactChild;
+    width?: string;
+    height?: string;
 }
-const MapComponent = ({defaultCenter, children}: Props) => {
-
+const MapComponent = ({ defaultCenter, children, width, height }: Props) => {
     const WrappedMap = Map;
     return (
-        <div style={{ width: '100vw', height: '90vh' }}>
+        <div style={{ width: width, height: height }}>
             <WrappedMap
                 defaultCenter={defaultCenter}
                 containerElement={<div style={{ height: '100%' }} />}
