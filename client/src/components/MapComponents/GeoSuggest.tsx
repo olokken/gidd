@@ -1,23 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Geosuggest, { Suggest } from 'react-geosuggest';
-import Coordinates from '../../interfaces/DefaultCenter';
+import DefaultCenter from '../../interfaces/DefaultCenter';
 import './GeoSuggest.css';
 
-const GeoSuggest = () => {
-    const [coordinates, setCoordinates] = useState<Coordinates>({
-        lat: 0,
-        lng: 0,
-    });
+interface Props {
+    onLocationChange: (location: DefaultCenter) => void;
+}
 
+const GeoSuggest = ({ onLocationChange }: Props) => {
+    const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>();
+    
     const onSuggestSelect = (place: Suggest) => {
         if (place) {
             console.log(place.location.lat + ', ' + place.location.lng);
-            setCoordinates({
+            setDefaultCenter({
                 lat: place.location.lat,
                 lng: place.location.lng,
             });
         }
     };
+
+    useEffect(() => {
+        if (defaultCenter) {
+            onLocationChange(defaultCenter);
+        }
+    }, [defaultCenter]);
 
     return (
         <Geosuggest

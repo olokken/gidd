@@ -5,6 +5,7 @@ import Activity from '../interfaces/Activity';
 import { Marker } from 'react-google-maps';
 import GeoSuggest from '../components/MapComponents/GeoSuggest';
 import DefaultCenter from '../interfaces/DefaultCenter';
+import { Button } from '@material-ui/core';
 
 const Container = styled.div`
     justify-content: center;
@@ -12,7 +13,7 @@ const Container = styled.div`
 
 const Map = () => {
     const [activities, setActivities] = useState<Activity[]>();
-    const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>(); 
+    const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>();
 
     const getCoordinates = () => {
         fetch(
@@ -25,18 +26,14 @@ const Map = () => {
                     const longitude: number = data.longitude;
                     console.log(latitude + ', ' + longitude);
                     setDefaultCenter({ lat: latitude, lng: longitude });
-                } else{
-                    setDefaultCenter({lat:50, lng:50}); 
+                } else {
+                    setDefaultCenter({ lat: 50, lng: 50 });
                 }
             });
     };
 
     useEffect(() => {
-        getCoordinates(); 
-    }, []);
-
-    useEffect(() => {
-        //Hente ut alle aktivitetene og setActivities
+        getCoordinates();
     }, []);
 
     const renderMarkers = activities?.map((act, index) => {
@@ -46,10 +43,14 @@ const Map = () => {
 
     return (
         <Container>
-            {defaultCenter && <MapComponent defaultCenter={defaultCenter}>
-                <Marker position={{lat:25, lng:25}}></Marker>
-            </MapComponent>}
-            <GeoSuggest></GeoSuggest>
+            {defaultCenter && (
+                <MapComponent defaultCenter={defaultCenter}>
+                    <Marker position={defaultCenter}></Marker>
+                </MapComponent>
+            )}
+            <GeoSuggest
+                onLocationChange={(location) => setDefaultCenter(location)}
+            ></GeoSuggest>
         </Container>
     );
 };
