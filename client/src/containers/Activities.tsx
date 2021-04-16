@@ -4,7 +4,6 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import ActivityPopup from '../components/ActivityComponents/CreateActivity/ActivityPopup';
 import ActivityForm from '../components/ActivityComponents/CreateActivity/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/Filters/SideFilter';
