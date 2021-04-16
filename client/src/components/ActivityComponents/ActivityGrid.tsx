@@ -3,7 +3,9 @@ import Pageination from '@material-ui/lab/Pagination';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
+import Popup from '../Popup';
 import ActivityCard from './ActivityCard';
+import ActivityInformation from './ActivityInformation';
 
 const Container = styled.div`
     display: flex;
@@ -16,6 +18,7 @@ interface Props {
 }
 
 const ActivityGrid = ({ activities }: Props) => {
+    const [openPopup, setOpenPopup] = useState<boolean>(false);
     const [page, setPage] = useState<number>(0);
     const [currentActivities, setCurrentActivities] = useState<Activity[]>(
         activities
@@ -31,18 +34,26 @@ const ActivityGrid = ({ activities }: Props) => {
         setCurrentActivities(activities.slice(startIndex, endIndex));
     }, [page]);
 
-    const renderActivities = currentActivities.map((act, index) => {
+    const renderActivities = currentActivities.map((act, index: number) => {
+        /*
+        const activity: Activity = {
+            key: index,
+            ID: act.ID,
+            title: act.title,
+            time: act.time,
+            owner: act.owner,
+            capacity: act.capacity,
+            maxCapacity: act.maxCapacity,
+            description: act.description,
+            level: act.level,
+        };
+        */
         return (
             <ActivityCard
                 key={index}
-                ID={act.ID}
-                title={act.title}
-                time={act.time}
-                owner={act.owner}
-                capacity={act.capacity}
-                maxCapacity={act.maxCapacity}
-                description={act.description}
-                level={act.level}
+                activity={act}
+                openPopup={openPopup}
+                setOpenPopup={setOpenPopup}
             ></ActivityCard>
         );
     });
@@ -61,6 +72,13 @@ const ActivityGrid = ({ activities }: Props) => {
             >
                 {renderActivities}
             </GridList>
+            <Popup
+                title="hei hva skjer"
+                openPopup={openPopup}
+                setOpenPopup={setOpenPopup}
+            >
+                <ActivityInformation />
+            </Popup>
             <Pageination
                 style={{ justifyContent: 'center', display: 'flex' }}
                 onChange={onPageChange}

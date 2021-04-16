@@ -21,7 +21,7 @@ const ActivityInformation = () => {
     `;
     const ImageDiv = styled.div`
         background-color: blue;
-        height: '700px'
+        height: '700px';
     `;
     const MapDiv = styled.div`
         background-color: green;
@@ -29,10 +29,12 @@ const ActivityInformation = () => {
     const WeatherDiv = styled.div`
         background-color: lightskyblue;
     `;
-    return(
-        <ImageDiv></ImageDiv>
-        
-    )
-}
+    return (
+        <ImageDiv>
+            <h1>hei</h1>
+            <h2>hva skjer ole</h2>
+        </ImageDiv>
+    );
+};
 
 export default ActivityInformation;
