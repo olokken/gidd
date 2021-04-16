@@ -11,11 +11,12 @@ import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import IDATT2106.team6.Gidd.util.*;
 @Service
 public class ActivityService {
+    private Logger log = new Logger(ActivityService.class.toString());
     @Autowired
-    ActivityRepo repo;
+    private ActivityRepo repo;
 
     public void doNothing(){
         repo.doNothing();
@@ -23,6 +24,7 @@ public class ActivityService {
 
 
     public boolean addActivity(Activity activity) {
+        log.info("adding new Activity: " + activity.toString());
         Timestamp currentTime = new Timestamp(new Date().getTime());
         activity.setTimeCreated(currentTime);
 

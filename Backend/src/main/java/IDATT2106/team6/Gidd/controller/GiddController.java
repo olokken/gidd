@@ -33,10 +33,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.LoggerFactory;
+import IDATT2106.team6.Gidd.util.*;
 
 @CrossOrigin
 @Controller
 public class GiddController {
+    private Logger log = new Logger(GiddController.class.toString());
     @Autowired
     private ActivityService activityService;
     @Autowired
@@ -55,33 +58,38 @@ public class GiddController {
     }
     @PostMapping(value = "/activity", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
+        log.debug("Recieved new activity: " + map.toString());
         int newId;
         HttpHeaders headers = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>(); 
+        headers.add("Content-Type", "application/json; charset=UTF-8");
         try{
             User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
             if(user==null){
+                log.error("User is null, throwing exception");
                 throw new InvalidAttributesException("User does not exist");
             }
             newId = 0;
 
             Activity newActivity = mapToActivity(map, newId, user);
-
+            log.debug("Created new activity: " + newActivity.toString());
             newId = newActivityValidId(newActivity);
-
-            //TODO Format ResponseEntities in accordance to project standard
+            log.debug("new activity id: " + newId);
         } catch (InvalidAttributesException e) {
-            System.out.println("An activity failed to be created. Invalid userID received.");
+            log.error("InvalidattributesException, invalid userID recieved " + e.getMessage());
+            body.put("error", e.getMessage());
             return ResponseEntity
-                    .badRequest()
-                    .headers(headers)
-                    .body("An invalid userID was received.");
+                .badRequest()
+                .headers(headers)
+                .body(formatJson(body));
         } catch(Exception e) {
-            e.printStackTrace();
+            body.put("error", "unknown error: " + e.getMessage());
+            log.error("unexplained error caught " + e.getMessage());
             return ResponseEntity
-                    .badRequest()
-                    .body(e.getStackTrace());
+                .badRequest()
+                .body(formatJson(body));
         }
-
+        log.info("Activity created successfully");
         return ResponseEntity
                 .created(URI.create(String.format("/activity/%d", newId)))
                 .body("Woohoo");
@@ -98,18 +106,18 @@ public class GiddController {
     @PostMapping(value = "/testNewActivity", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivityTest(@RequestBody HashMap<String, Object> map){
         Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
-
+        HashMap<String, String> body = new HashMap<>();
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         int newId = getRandomID();
 
         //TODO Verify that user-input is valid
-        activityService.addActivity(    newId,
+        activityService.addActivity(newId,
             map.get("title").toString(), newTime, (int) map.get("repeat"), user,
             (int) map.get("capacity"), (int) map.get("groupId"), map.get("description").toString(), (byte[])map.get("image"),
             ActivityLevel.valueOf(map.get("activityLevel").toString()), (List<Tag>)map.get("tags"), (Double) map.get("latitude"), (Double) map.get("longitude"));
         return ResponseEntity
             .created(URI.create(String.format("/activity/%d", newId)))
-            .body("Insert ResponseBody here");
+            .body(formatJson(body));
     }
 
     @PostMapping(value = "/user/{userId}/activity", consumes = "application/json", produces = "application/json")
@@ -207,7 +215,6 @@ public class GiddController {
                 .badRequest()
                 .headers(header)
                 .body("Something is wrong with the user");
-
     }
 
     @GetMapping(value = "/user/{userId}/activity", produces = "application/json")
@@ -237,17 +244,23 @@ public class GiddController {
     }
     @PutMapping(value="/activity/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity editActivity(@RequestBody Map<String, Object> map, @PathVariable("id") int actId){
+        log.info("recieved putmapping to /activity/{id}");
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+        log.debug("User with id recieved " + user.toString());
         Activity activity = activityService.testGetActivity(actId);
         HttpHeaders headers = new HttpHeaders();
-        System.out.println(activity);
+        HashMap<String, String> body = new HashMap<>(); 
+        headers.add("Content-Type", "application/json; charset=UTF-8");
+        log.info("old activity " + activity.toString());
         if(activity==null || user == null){
-            System.out.println("Activity: " + (activity == null));
-            System.out.println("User: " + (user==null));
+            body.put("error", "user or activity is null");
+            log.error("activity or user is null, returning error");
+            log.debug("Activity: " + (activity == null));
+            log.debug("User: " + (user==null));
             return ResponseEntity
-                    .badRequest()
-                    .headers(headers)
-                    .body("didnt work sad");
+                .badRequest()
+                .headers(headers)
+                .body(formatJson(body));
         }
 
         activity.setTitle(map.get("title").toString());
@@ -255,9 +268,11 @@ public class GiddController {
         activity.setDescription(map.get("description").toString());
         activity.setCapacity(Integer.parseInt(map.get("capacity").toString()));
         activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
-
+        log.info("new activity: " + activity.toString());
         boolean edited = activityService.editActivity(activity);
         if(!edited){
+            body.put("error", "activity was not edited");
+            log.info("activity is not edited returning error");
             return ResponseEntity
                     .badRequest()
                     .headers(headers)
@@ -266,9 +281,8 @@ public class GiddController {
 
         return ResponseEntity
                 .ok()
-                .headers(headers)
-                .body("woohooo worked!!");
-    }
+                .headers(headers).body(formatJson(body));
+}
 
     @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivitiesToUser(@PathVariable Integer userId, @PathVariable Integer activityId){
@@ -276,7 +290,7 @@ public class GiddController {
         Activity activity = activityService.findActivity(activityId);
 
         HttpHeaders header = new HttpHeaders();
-
+        HashMap<String, String> body = new HashMap<>();
         if(user == null){
             header.add("Status", "400 REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -339,18 +353,12 @@ public class GiddController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body("It work");
+            .ok().headers(header).body(formatJson(body));
     }
 
-    private int getRandomID(){
-        Random rand = new Random();
-        return rand.nextInt();
-    }
     @PostMapping("/user")
     public ResponseEntity registerUser(@RequestBody HashMap<String, Object> map){
-
+        log.info("recieved postmapping to /user: " + map.toString());
         User result = userService.registerUser(
             map.get("email").toString(),
             map.get("password").toString(),
@@ -358,13 +366,14 @@ public class GiddController {
             map.get("surname").toString(),
             Integer.parseInt(map.get("phoneNumber").toString()),
             ActivityLevel.valueOf(map.get("activityLevel").toString()));
-
+        log.info("created user: " + result.toString());
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
-
+        
         header.add("Content-Type", "application/json; charset=UTF-8");
 
 		if(result != null){
+            log.info("created user");
             header.add("Status", "201 CREATED");
 
             body.put("id", String.valueOf(result.getUserId()));
@@ -373,80 +382,100 @@ public class GiddController {
                 .headers(header)
                 .body(formatJson(body));
 		}
+        log.error("Created user is null, does the user already exist?");
         header.add("Status", "400 BAD REQUEST");
-
+        body.put("error", "Created user is null, does the user already exist?");
         return ResponseEntity.ok()
             .headers(header).body(formatJson(body));
-}
+    }
 
     @PostMapping("/login")
     public ResponseEntity loginUser(@RequestBody HashMap<String, String> map){
+        log.info("recieved postmapping to /login " + map.toString());
         HttpHeaders header = new HttpHeaders();
 		boolean result = userService.login(map.get("email").toString(), map.get("password").toString());
         Map<String, String> body = new HashMap<>();
         if(result){
+            log.info("logged in user with email " + map.get("email").toString());
             body.put("id", String.valueOf(userService.getUser(map.get("email").toString()).getUserId()));
             header.add("Status", "200 OK");
             return ResponseEntity.ok()
                 .headers(header)
                 .body(formatJson(body));
         }
+        log.error("unable to login user with email: " + map.get("email").toString());
         header.add("Status", "403 Forbidden");
+        body.put("error", "unable to login user with email: " + map.get("email").toString());
         return ResponseEntity.ok()
             .headers(header).body(formatJson(body));
     }
 
     @DeleteMapping("user/{id}")
     public ResponseEntity deleteUser(@PathVariable Integer id){
+		log.info("recieved deletemapping to user with id " + id);
         HttpHeaders header = new HttpHeaders();
         boolean result = userService.deleteUser(id);
         Map<String, String> body = new HashMap<>();
 
         if(result){
+			log.info("deletion successful");
             header.add("Status", "200 OK");
             return ResponseEntity.ok()
                 .headers(header).body(formatJson(body));
         }
+		log.error("unable to delete user with id: " + id);
+        body.put("error", "deletion failed, are you sure the user with id " + id + " exists?");
         header.add("Status", "400 BAD REQUEST");
         return ResponseEntity.ok()
             .headers(header).body(formatJson(body));
     }
 
     private int newActivityValidId(Activity activity) {
+		log.info("creating new activity: " + activity.toString());
         boolean created;
         int endId;
         do{
             endId = getRandomID();
+			log.debug("attempting id: " + endId);
             if (endId < 0){
                 endId = -endId;
             }
             activity.setActivityId(endId);
             created = activityService.addActivity(activity);
+			log.debug("creating activity was " + created + " successfull");
         }
         while(!created);
-
+		log.info("final new activity id: " + endId);
         return endId;
     }
 
+    private int getRandomID() {
+		log.info("creating new random id");
+        Random rand = new Random();
+        return rand.nextInt();
+    }
+
     private List<Tag> splitTags(String tagString) {
+		log.info("splitting tags");
         ArrayList<String> tagNames = new ArrayList<>(Arrays.asList(tagString.split(",")));
         ArrayList<Tag> tags = new ArrayList<>();
-        for (String name:
-            tagNames) {
+        for (String name : tagNames) {
             Tag tag = tagService.getTag(name);
 
             if(tag==null){
+				log.debug("tag: " + name + " did not exist creating new tag");
                 tag = new Tag(-1, name);
                 tagService.addTag(tag);
             }
-
+			log.debug("adding tag " + tag.toString());
             tags.add(tag);
         }
-
+		log.debug("final tag list " + tags.toString());	
         return tags;
     }
 
     private byte[] binaryToByte(String bin) {
+		log.debug("binary to byte array");
         List<Byte> list = new ArrayList<>();
 
         for(String str : bin.split("(?<=\\G.{8})")) {
@@ -458,6 +487,7 @@ public class GiddController {
     }
 
     private String formatJson(Map values){
+		log.debug("formatting json");
         String result = "{";
         Iterator it = values.entrySet().iterator();
         while (it.hasNext()) {
@@ -480,6 +510,7 @@ public class GiddController {
     }
 
     private Activity mapToActivity(Map<String, Object> map, int actId, User user){
+		log.debug("map: " + map.toString() + " to activity");
         String title = map.get("title").toString().trim();
         Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
         int repeat = Integer.parseInt(map.get("repeat").toString());
