@@ -12,6 +12,7 @@ import SortMenu from '../components/Sorting/SortMenu';
 import Activity, { ActivityList } from '../interfaces/Activity';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
 import AddButton from '../components/AddButton';
+import Popup from '../components/Popup';
 
 //Endringer kan forekomme her
 
@@ -57,7 +58,7 @@ const Activities = () => {
                 <AddAndSort>
                     <SortMenu></SortMenu>
                     <AddButton onClick={onClickAddButton}></AddButton>
-                    <ActivityPopup
+                    <Popup
                         title="Legg til aktivitet"
                         openPopup={openPopup}
                         setOpenPopup={setOpenPopup}
@@ -66,7 +67,7 @@ const Activities = () => {
                             openPopup={openPopup}
                             setOpenPopup={setOpenPopup}
                         />
-                    </ActivityPopup>
+                    </Popup>
                 </AddAndSort>
                 <ActivityGrid activities={activities}></ActivityGrid>
             </View>

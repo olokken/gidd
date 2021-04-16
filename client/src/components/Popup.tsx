@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -19,14 +19,17 @@ const useStyles = makeStyles((theme) => ({
     dialogWrapper: {
         padding: theme.spacing(2),
         position: 'absolute',
+        justifyContent: 'center',
         top: theme.spacing(5),
+        maxHeight: 'auto',
+        marginTop: '-20px'
     },
     dialogTitle: {
         paddingRight: '0px',
     },
 }));
 
-const ActivityPopup = ({ title, openPopup, setOpenPopup, children }: Props) => {
+const Popup = ({ title, openPopup, setOpenPopup, children }: Props) => {
     const classes = useStyles();
     return (
         <Dialog
@@ -59,4 +62,4 @@ const ActivityPopup = ({ title, openPopup, setOpenPopup, children }: Props) => {
     );
 };
 
-export default ActivityPopup;
+export default Popup;
