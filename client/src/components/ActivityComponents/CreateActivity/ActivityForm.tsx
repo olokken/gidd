@@ -130,6 +130,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             }
         }
     };
+    //TODO show the next textinput
 
     const createActivity = () => {
         const activity: Activity = {
