@@ -6,7 +6,7 @@ import Login from './containers/Login';
 import Map from './containers/Map';
 import NewUser from './containers/NewUser';
 import Footer from './components/Footer/Footer'
-
+""
 export default (
     <Switch>
         <Route exact path="/" component={Login} />
