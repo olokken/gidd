@@ -80,6 +80,46 @@ public class GiddController {
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         Activity activity = activityService.findActivity(Integer.parseInt(map.get("activityId").toString()));
 
+        HttpHeaders header = new HttpHeaders();
+
+        if(user == null){
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body("Something is wrong with the user");
+        }
+
+        if(activity == null){
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body("Something is wrong with the activity");
+        }
+
+        //Legge inn sjekk om den allerede er registrert
+        List<ActivityUser> activityUser = user.getActivities();
+        ArrayList<Integer> activityIds = new ArrayList<>();
+
+        for(ActivityUser as : activityUser){
+            activityIds.add(as.getActivity().getActivityId());
+        }
+
+        if(activityIds.contains(activity.getActivityId())){
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body("The user is already registered at the activity");
+        }
+
         int id = getRandomID();
 
         //Kalle insert-metode helt til den blir true
@@ -100,7 +140,6 @@ public class GiddController {
         while(ids.contains(id)){
             id = getRandomID();
         }
-        HttpHeaders header = new HttpHeaders();
 
 
         if(userService.addUserToActivity(id, activity, user, time)){
@@ -158,10 +197,10 @@ public class GiddController {
                 .body(activityUser.toString());
     }
 
-    @DeleteMapping(value = "/testDeleteActivitiesToUser", consumes = "application/json", produces = "application/json")
-    public ResponseEntity deleteActivitiesToUser(@RequestBody HashMap<String, Object> map){
-        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
-        Activity activity = activityService.findActivity(Integer.parseInt(map.get("activityId").toString()));
+    @DeleteMapping(value = "/testDeleteActivitiesToUser/{userId}/{activityId}", produces = "application/json")
+    public ResponseEntity deleteActivitiesToUser(@PathVariable Integer userId, @PathVariable Integer activityId){
+        User user = userService.getUser(userId);
+        Activity activity = activityService.findActivity(activityId);
 
         HttpHeaders header = new HttpHeaders();
 
@@ -183,6 +222,23 @@ public class GiddController {
                     .badRequest()
                     .headers(header)
                     .body("Something is wrong with the activity");
+        }
+
+        List<ActivityUser> activityUsers = user.getActivities();
+        List<Integer> activitiesIds = new ArrayList<>();
+
+        for(ActivityUser au : activityUsers){
+            activitiesIds.add(au.getActivity().getActivityId());
+        }
+
+        if(!activitiesIds.contains(activityId)){
+            header.add("Status", "400 REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body("The user is not registered to the activity");
         }
 
         int activityUserId = userService.getActivityUser(activity, user);
@@ -212,7 +268,7 @@ public class GiddController {
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body("lol");
+                .body("It work");
     }
 
     private int getRandomID(){

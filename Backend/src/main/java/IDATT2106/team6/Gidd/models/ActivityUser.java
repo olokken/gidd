@@ -34,4 +34,8 @@ public class ActivityUser {
     public int getId() {
         return id;
     }
+
+    public Activity getActivity() {
+        return activity;
+    }
 }
