@@ -37,7 +37,7 @@ public class UserService {
 	    int phoneNumber, ActivityLevel activityLevel){
 
 		User newUser = new User(id, email, password, firstname, surname, phoneNumber, activityLevel, null);
-        log.info("creating new user: " newUser.toString());
+        log.info("creating new user: " + newUser.toString());
         boolean result = repo.addUser(newUser);
         log.info("adding new user was " + result);
         if(result) return newUser;

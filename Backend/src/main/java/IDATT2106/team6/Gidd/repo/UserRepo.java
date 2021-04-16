@@ -197,7 +197,7 @@ public class UserRepo extends GiddRepo {
             em.getTransaction().commit();
             return true;
         }catch (Exception e){
-            log.error("deleting connection " + activityUser + " failed due to " + e.getMessage());
+            log.error("deleting connection " + activityUser.toString() + " failed due to "+ e.getMessage());
             return false;
         }
     }
@@ -211,7 +211,7 @@ public class UserRepo extends GiddRepo {
             Query q = em.createQuery("SELECT a FROM User a");
             allUsers = q.getResultList();
         }catch (Exception e){
-            log.error("getting all users failed due to " + e.getMessage())
+            log.error("getting all users failed due to " + e.getMessage());
         }finally {
             em.close();
         }
