@@ -4,11 +4,10 @@ deploy:
   script:
     - apt-get update -y && apt-get install openssh-client -y
     - mkdir ~/.ssh
-    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-    - ssh-keyscan ec2-13-48-30-175.eu-north-1.compute.amazonaws.com > ~/.ssh/known_hosts
+    - ssh-keyscan 13.51.58.86 > ~/.ssh/known_hosts
     - touch ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa # Required permission by ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - ssh app@ec2-13-48-30-175.eu-north-1.compute.amazonaws.com ./runjava.sh
+    - ssh app@13.51.58.86 ./runjava.sh
   only:
     - backend-dev
