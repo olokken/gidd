@@ -8,10 +8,8 @@ import IDATT2106.team6.Gidd.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import IDATT2106.team6.Gidd.models.ActivityLevel;
 import org.springframework.stereotype.Service;
-import java.util.Random;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 @Service
 public class UserService {

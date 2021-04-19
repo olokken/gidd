@@ -216,7 +216,7 @@ public class Activity {
             ", \n\"title\": " + "\"" + title + "\"" +
             ", \n\"time\":" + time.getTime() +
             ", \n\"daysToRepeat\":" + daysToRepeat +
-            ", \n\"userId\":" + user.getUserId() +
+            ", \n\"user\":" + user.toJSON() +
             ", \n\"capacity\":" + capacity +
             ", \n\"groupId\":" + groupId +
             ", \n\"description\":" + "\"" +description + "\"" +

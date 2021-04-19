@@ -12,7 +12,6 @@ import org.apache.commons.codec.binary.Hex;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.persistence.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -191,5 +190,17 @@ public class User {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public String toJSON() {
+        return "\n  {" +
+            "\n     \"userId\":" + userId + "," +
+            "\n     \"email\":" + '\"' + email + '\"' +"," +
+            "\n     \"firstName\":" + '\"' + firstName + '\"' +"," +
+            "\n     \"surname\":" + '\"' + surname + '\"' +"," +
+            "\n     \"phoneNumber\":" + phoneNumber +"," +
+            "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
+            "\n     \"points\":" + points +
+            "\n }";
     }
 }
