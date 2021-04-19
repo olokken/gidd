@@ -1,9 +1,13 @@
-import { makeStyles, createStyles, Theme, Grid, Typography, CardContent, Chip, CardMedia, Button } from '@material-ui/core';
+import { makeStyles, createStyles,  Grid, Typography, CardContent, Chip, CardMedia, Button } from '@material-ui/core';
 import React from 'react';
 import Activity from '../../interfaces/Activity';
 import hiking from '../../assets/hiking.jpg';
 import map from '../../assets/map.jpg';
+import WeatherComponent from '../WeatherComponents/WeatherComponent';
 import weather from '../../assets/weather.png';
+
+/*lat={activity.latitude}
+  lon={activity.longitude}*/
 
 interface Props {
     activity: Activity;
@@ -41,6 +45,8 @@ const useStyles = makeStyles(() =>
 const ActivityInformation = ({ activity }: Props) => {
     const classes = useStyles();
     const eventTime = new String(activity.time);
+    const lat = 0;
+    const lon = 0;
     return (
     <div>       
             <Grid>
@@ -162,11 +168,10 @@ const ActivityInformation = ({ activity }: Props) => {
                     </Grid>
                 </div>
                     <Grid item>
-                        <CardMedia
-                            component="img"
-                            alt={'Weather forecast'}
-                            height="200"
-                            image={weather}
+                        <WeatherComponent 
+                            lat={lat}
+                            lon={lon}
+                            time={activity.time}
                         />
                     </Grid>
                 </Grid>
