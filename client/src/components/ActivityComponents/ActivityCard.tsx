@@ -6,12 +6,22 @@ import {
     Grid,
     Avatar,
     Tooltip,
-    Chip,
+    Chip
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
 import hiking from '../../assets/hiking.jpg';
+
+const useStyles = makeStyles({
+    cutText:{
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        height: '1.2em',
+        whiteSpace: 'nowrap'
+    }
+});
 
 const CardInformation = styled.div`
     height: 100%;
@@ -40,6 +50,7 @@ const ActivityCard = ({
     setOpenPopup,
     setActivity,
 }: Props) => {
+    const classes = useStyles();
     const participants = new String(activity.capacity);
     const fullCapacity = new String(activity.maxCapacity);
     const comparison = new String(participants + '/' + fullCapacity);
@@ -119,6 +130,7 @@ const ActivityCard = ({
                         </Grid>
                     </Grid>
                     <Typography
+                        className={classes.cutText}
                         variant="body2"
                         color="textSecondary"
                         component="p"
