@@ -20,14 +20,7 @@ const theme = createMuiTheme({
 });
 
 function App() {
-    const [user, setUser] = useState<User>({
-        firstName: '',
-        surname:'',
-        userID: '',
-        email: '',
-        picture: '',
-        password: '',
-    });
+    const [user, setUser] = useState<string>('');
 
     const value = useMemo(() => ({ user, setUser }), [user, setUser]);
 

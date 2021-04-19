@@ -1,3 +1,5 @@
+import Equipment from './Equipment';
+import Tag from './Tag';
 export default interface Activity {
     ID: number;
     title: string;
@@ -13,17 +15,38 @@ export default interface Activity {
     //latitude: number;
     //longitude: number;
     //picture: any;
+    //address: string;
+    //equipmentList: Equipment[];
+    //tagList: Tag[];
+}
+
+export interface Activity2 {
+    title: string;
+    time: string;
+    repeat: number;
+    userId: string;
+    capacity: number;
+    groupId: number;
+    description: string;
+    image: string;
+    activityLevel: string;
+    equipment: string;
+    tags: string;
+    latitude: number;
+    longitude: number;
 }
 
 export function ActivityList(): Activity[] {
     const akt1: Activity = {
         ID: 1,
-        title: 'Dette er en litt lengre tittel for å se hvordan layaouten reagerer',
+        title:
+            'Dette er en litt lengre tittel for å se hvordan layaouten reagerer',
         time: '2000-12-22',
         owner: 'Ole',
         capacity: 10,
         maxCapacity: 20,
-        description: 'Her skal vi kose oss og ae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim',
+        description:
+            'Her skal vi kose oss og ae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim',
         level: 'Middels',
     };
     const akt2: Activity = {
