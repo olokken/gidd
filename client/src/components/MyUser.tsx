@@ -74,7 +74,7 @@ const MyUser: React.FC = () => {
     const onClickUpdateUser = () => {
         if (checkInput(firstName)) {
             axios
-                .put(`/user/${user.ID}`, {
+                .put(`/user/${user}`, {
                     firstName: user.firstName,
                 })
                 .then((response) => {

@@ -290,7 +290,6 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         <div className="activityform">
             {page === 1 && (
                 <StyledTextField
-                    style={{ padding: '5px' }}
                     label="Tittel"
                     value={title}
                     onChange={onChangeTitle}
@@ -327,7 +326,6 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             )}
             {page === 3 && (
                 <StyledTextField
-                    style={{ padding: '5px' }}
                     label="Dato"
                     type="datetime-local"
                     defaultValue={dateDisplay}
