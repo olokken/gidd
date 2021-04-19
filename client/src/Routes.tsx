@@ -5,13 +5,8 @@ import Activities from './containers/Activities';
 import Login from './containers/Login';
 import Map from './containers/Map';
 import NewUser from './containers/NewUser';
-<<<<<<< HEAD
-import Footer from './components/Footer/Footer';
-import Calendar from './containers/Calendar';
-=======
-import Footer from './components/Footer'
-import Calender from './containers/Calender'
->>>>>>> dc0d5c81251d13458b163f645a2ea990261f0086
+import Footer from './components/Footer/Footer'
+import Calendar from './containers/Calendar'
 
 export default (
     <Switch>
@@ -21,11 +16,7 @@ export default (
             <Navbar></Navbar>
             <Route exact path="/Activities" component={Activities} />
             <Route exact path="/Map" component={Map} />
-<<<<<<< HEAD
-            <Route exact path="/Calendar" component={Calendar} />
-=======
-            <Route exact path="/Calender" component={Calender}/>
->>>>>>> dc0d5c81251d13458b163f645a2ea990261f0086
+            <Route exact path="/Calendar" component={Calendar}/>
             <Footer></Footer>
         </div>
     </Switch>
