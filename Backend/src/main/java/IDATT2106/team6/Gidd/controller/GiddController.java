@@ -293,8 +293,26 @@ public class GiddController {
                 .ok()
                 .headers(header)
                 .body(new JSONObject(activity.toString()).toString());
-                //.body(activity.toString());
     }
+
+    /*@GetMapping(value = "/activity")
+    public ResponseEntity getAllActivities() throws JSONException {
+        log.debug("Received a GetMapping to '/activity'");
+
+        List<Activity> activities = activityService.getAllActivities();
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+
+        body.put("activity", activities.toString());
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        log.debug("Returning activity object " + activities.toString());
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(new JSONObject(activities.toString()).toString());
+    }*/
 
     @PutMapping(value="/activity/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity editActivity(@RequestBody Map<String, Object> map, @PathVariable("id") int actId){
@@ -439,10 +457,13 @@ public class GiddController {
     }
 
     @GetMapping(value = "/activity")
-    public ResponseEntity search(@RequestParam(value="searchWord", required = false) String searchValue, @RequestParam(value = "activityLevel", required = false) Integer activityLevel){
+    public ResponseEntity getActivities(@RequestParam(value="searchWord", required = false) String searchValue, @RequestParam(value = "activityLevel", required = false) Integer activityLevel) throws JSONException {
         log.debug("Received GetMapping to '/activity' with Query Params");
         List<Activity> activities;
-        if(searchValue == null){
+        if(searchValue == null && activityLevel == null){
+            activities = activityService.getAllActivities();
+        }
+        else if(searchValue == null){
             log.debug("Searching for activity level to activity");
             log.debug("Activity level is " + activityLevel);
             activities = activityService.filterByActivityLevel(activityLevel);
@@ -455,28 +476,16 @@ public class GiddController {
         }
 
         HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
 
-        Map<String, String> body = new HashMap<>();
-
-        StringBuilder sb = new StringBuilder();
-
-        for(Activity a : activities){
-            sb.append(a.getActivityId());
-            sb.append(",");
-        }
-
-        if(!activities.isEmpty()) {
-            sb.delete(sb.length() - 1, sb.length());
-        }
-
-        body.put("activityIds", sb.toString());
+        body.put("activity", activities.toString());
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
-        log.debug("Returning activities");
+        log.debug("Returning activity object " + activities.toString());
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(formatJson(body));
+                .body(new JSONObject("{activity:" + activities.toString() + "}").toString());
     }
 
     @GetMapping(value = "/activity/{id}/user", produces = "application/json")
