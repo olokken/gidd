@@ -8,6 +8,9 @@ import axios from '../Axios'
 import styled from 'styled-components';
 import { UserContext } from '../UserContext'
 import { isConstructorDeclaration } from 'typescript';
+import Popup from '../components/Popup';
+import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
+import Activity from '../interfaces/Activity';
 
 const CalendarContainer = styled.div`
   --fc-button-bg-color: #f44336;
@@ -27,7 +30,7 @@ const todayStr = new Date().toISOString().replace(/T.*$/, '')
 const Calender = () => {
   const { user } = useContext(UserContext);
   const [activities, setActivities] = useState<EventInput[]>([]);
-
+  const [openPopup, setOpenPopup] = useState<boolean>(false);
   const getMyActivities = () => {
     const url = `/user/1780489954/activity`;
     const activityIds: string[] = [];
@@ -44,14 +47,14 @@ const Calender = () => {
     const url = '/activity'
     axios.get(url).then((response) => {
       console.log(response)
-        response.data.activity.forEach((activity: any) => {
+      response.data.activity.forEach((activity: any) => {
         const date = new Date(activity.time)
         const curr_date = date.getDate();
         const curr_month = (date.getMonth() + 1) >= 10 ? (date.getMonth()) : '0' + (date.getMonth() + 1);
         const curr_year = date.getFullYear();
         const curr_hour = date.getHours() - 2;
-        const curr_minutes = date.getMinutes() == 0 ? (date.getMinutes() + '0') :date.getMinutes();
-        const curr_seconds = date.getSeconds() == 0 ? (date.getSeconds()+ '0') : date.getSeconds();
+        const curr_minutes = date.getMinutes() == 0 ? (date.getMinutes() + '0') : date.getMinutes();
+        const curr_seconds = date.getSeconds() == 0 ? (date.getSeconds() + '0') : date.getSeconds();
         const formattedDate = curr_year + "-" + curr_month + "-" + curr_date + "T" + curr_hour + ":" + curr_minutes + ":" + curr_seconds;
         const formattedEnd = curr_year + "-" + curr_month + "-" + curr_date + "T" + (curr_hour + 2) + ":" + curr_minutes + ":" + curr_seconds;
         setActivities(activities => [...activities, {
@@ -59,7 +62,7 @@ const Calender = () => {
           title: activity.title,
           start: formattedDate,
           end: formattedEnd,
-          backgroundColor: formattedDate > todayStr ? '#f44336': '#f66055'
+          backgroundColor: formattedDate > todayStr ? '#f44336' : '#f66055'
         }])
       })
     }).catch((error: any) => {
@@ -69,7 +72,7 @@ const Calender = () => {
   }, []);
 
 
-  const handleOnClick = (activity:EventInput) => {
+  const handleOnClick = (activity: EventInput) => {
     const activityID = activity.event.extendedProps.ID
     const url = `/activity/${activityID}`
     axios.get(url).then(response => {
@@ -78,7 +81,7 @@ const Calender = () => {
       console.log('Kunne ikke hente aktivitet: ' + error.message)
     })
 
-    
+
   }
 
   return (
@@ -119,7 +122,8 @@ const Calender = () => {
           meridiem: 'short'
         }}
         eventClick={handleOnClick}
-      /></CalendarContainer>
+      />
+  </CalendarContainer>
   )
 }
 
