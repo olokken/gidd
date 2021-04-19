@@ -1,6 +1,5 @@
 package IDATT2106.team6.Gidd.util;
 
-import IDATT2106.team6.Gidd.service.SecurityService;
 import IDATT2106.team6.Gidd.service.SecurityServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -8,10 +7,9 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
-import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -24,13 +22,10 @@ public class TokenRequiredAspect {
 
     private final SecurityServiceImpl securityService = new SecurityServiceImpl();
 
-    /*@Before("execution (* IDATT2106.team6.Gidd.controller.GiddController.home() ) ")
-    public void tokenRequiredWithoutAnnotation() throws Throwable {
-        log.info("Before tokenRequiredWithExecution");
-    }*/
-
-    @Before("@annotation(tokenRequired)")
-    public void tokenRequiredWithAnnotation(JoinPoint joinPoint, TokenRequired tokenRequired) throws Throwable {
+    @Around("@annotation(bodyTokenRequired)")
+    public Object bodyTokenRequiredWithAnnotation(ProceedingJoinPoint pjp, BodyTokenRequired bodyTokenRequired) throws Throwable {
+        Object[] args = pjp.getArgs();
+        System.out.println(Arrays.toString(args));
         log.info("Before tokenRequiredWithAnnotation");
         ServletRequestAttributes reqAttributes =
             (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -39,7 +34,7 @@ public class TokenRequiredAspect {
         String tokenInHeader = request.getHeader("token");
         if (StringUtils.isEmpty(tokenInHeader)){
             log.error("No token was passed in header");
-            throw new IllegalArgumentException("Empty token");
+            throw new IllegalArgumentException("Token Empty");
         }
         Claims claims = Jwts.parser()
             .setSigningKey(DatatypeConverter.parseBase64Binary(securityService.getSecretKey()))
@@ -48,9 +43,42 @@ public class TokenRequiredAspect {
             log.error("Claims was found to be null");
             throw new IllegalArgumentException("Token Error: Claim is null");
         }
-        if(!claims.getSubject().equalsIgnoreCase(joinPoint.getArgs()[0].toString())){
+        if(!claims.getSubject().equalsIgnoreCase("map.get('').toString()")){
             log.error("Subject does not match token");
             throw new IllegalArgumentException("Subject doesn't match in the token");
         }
+        else {
+            return pjp.proceed();
+        }
     }
+
+    @Around("@annotation(pathTokenRequired)")
+    public Object pathTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
+                                                  PathTokenRequired pathTokenRequired) {
+        return null;
+    }
+
+    private boolean checkInput() {
+        return false;
+    }
+
+    /*
+    @Around("@annotation(tokenRequired)")
+    public Object tokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
+                                              TokenRequired tokenRequired) throws Throwable {
+        Object[] args = pjp.getArgs();
+        Map<String,Object> map = (HashMap<String, Object>) args[0];
+        String val = map.get("value").toString();
+        System.out.println();
+        ServletRequestAttributes reqAttributes =
+            (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpServletResponse response =  reqAttributes.getResponse();
+        if(val.equalsIgnoreCase("hei")){
+            System.out.println("Ja!");
+            response.sendError(HttpStatus.BAD_REQUEST.value(), "");
+        }else{
+            System.out.println("Nei!");
+        }
+        return null;
+    }*/
 }

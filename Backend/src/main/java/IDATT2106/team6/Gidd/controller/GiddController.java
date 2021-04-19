@@ -9,7 +9,7 @@ import IDATT2106.team6.Gidd.service.SecurityService;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.service.ActivityService;
 
-import IDATT2106.team6.Gidd.util.TokenRequired;
+import IDATT2106.team6.Gidd.util.BodyTokenRequired;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,8 +49,8 @@ public class GiddController {
     private SecurityService securityService;
 
     @GetMapping("/aop/test")
-    @TokenRequired
-    public ResponseEntity home(){
+    @BodyTokenRequired
+    public ResponseEntity aopTest(@RequestBody Map<String, Object> map){
         activityService.doNothing();
         return ResponseEntity
             .ok()
@@ -58,7 +58,7 @@ public class GiddController {
     }
 
     @ResponseBody
-    @TokenRequired
+    @BodyTokenRequired
     @GetMapping(value="/tokenTestAOP")
     public Map<String,Object> tokenTestAOP(@RequestParam(value="userid") String userid){
         Map<String,Object> map = new LinkedHashMap<>();
@@ -82,15 +82,6 @@ public class GiddController {
         String subject = securityService.getSubject(token);
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("result", subject);
-        return map;
-    }
-
-    @ResponseBody
-    @GetMapping("/hello2")
-    @TokenRequired
-    public Map<String, Object> testAOPAnnotation() {
-        Map<String,Object> map = new LinkedHashMap<>();
-        map.put("result", "Aloha");
         return map;
     }
 
