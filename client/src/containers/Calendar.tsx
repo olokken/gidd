@@ -20,6 +20,7 @@ const CalendarContainer = styled.div`
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  --fc-event-font-size:50px;
 `;
 
 const todayStr = new Date().toISOString().replace(/T.*$/, '') 
@@ -31,15 +32,15 @@ const todayStr = new Date().toISOString().replace(/T.*$/, '')
 const INITIAL_EVENTS: EventInput[] = [
   {
     title: 'All-day event',
-    start: todayStr + 'T13:00:00',
-    end:  todayStr + 'T16:00:00',
+    start: todayStr + ' 13:00:00',
+    end:  todayStr + ' 16:00:00',
     backgroundColor: todayStr + 'T13:00:00' > todayStr ? '#f44336': '#f66055'
   },
   {
     title: 'Timed event',
-    start: '2021-04-18T12:00:00',
-    end: '2021-04-18T14:00:00',
-    backgroundColor: '2021-04-18T12:00:00' > todayStr ? '#f44336': '#f66055'
+    start: '2021-04-18 12:00:00',
+    end: '2021-04-18 14:00:00',
+    backgroundColor: '2021-04-18T 2:00:00' > todayStr ? '#f44336': '#f66055'
   }
 ]
 
@@ -49,13 +50,13 @@ const Calender = () =>  {
       title: 'All-day event',
       start: todayStr + 'T13:00:00',
       end:  todayStr + 'T16:00:00',
-      backgroundColor: todayStr + 'T13:00:00' > todayStr ? '#f44336': '#f66055'
+      backgroundColor: todayStr + 'T13:00:00' > todayStr ? '#f44336': '#f66055',
     },
     {
       title: 'Timed event',
       start: '2021-04-18T12:00:00',
       end: '2021-04-18T14:00:00',
-      backgroundColor: '2021-04-18T12:00:00' > todayStr ? '#f44336': '#f66055'
+      backgroundColor: '2021-04-18T12:00:00' > todayStr ? '#f44336': '#f66055',
     }]);
     //const Activites = [{title: 'test1', date:'2021-04-15'},{title: 'test2', date:'2021-04-16'}, {title: 'test3', date:'2021-04-14'}]
   
@@ -67,12 +68,12 @@ const Calender = () =>  {
         end:  todayStr + 'T20:00:00',
         backgroundColor: todayStr + 'T13:00:00' > todayStr ? '#f44336': '#f66055'
       }])
-      /*const url = '/activity'
+      const url = '/activity'
       axios.get(url).then((response) => {
         console.log(response.data);
       }).catch(error => {
         console.log('error' + error.message)
-      })*/
+      })
   
   }
     
