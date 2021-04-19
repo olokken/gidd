@@ -7,15 +7,19 @@ import {ActivityList} from '../interfaces/Activity';
 import { EventInput } from '@fullcalendar/react';
 import axios from '../Axios'
 import styled from 'styled-components';
+import Popup from '../components/Popup'
 
 const CalendarContainer = styled.div`
   --fc-button-bg-color: #f44336;
   --fc-button-active-bg-color: #f44336;
+  --fc-button-hover-bg-color:  #f66055
+;
+  
 
 `;
 
-const handleOnClick = () => {
-    console.log('clicked')
+const handleOnClick = (eventInfo:EventInput) => {
+    console.log(eventInfo.event.start)
     /*const url = '/activity'
     axios.get(url).then((response) => {
       console.log(response.data);
@@ -34,15 +38,15 @@ const todayStr = new Date().toISOString().replace(/T.*$/, '')
 const INITIAL_EVENTS: EventInput[] = [
   {
     title: 'All-day event',
-    start: todayStr + 'T13:00:00'
+    start: todayStr + 'T13:00:00',
+    backgroundColor: '#f44336'
   },
   {
     title: 'Timed event',
-    start: todayStr + 'T12:00:00'
+    start: '2021-04-18-T12:00:00',
+    backgroundColor: '2021-04-18-T12:00:00' > todayStr ? '#f44336': '#f66055'
   }
 ]
-
-
 
 const Calender = () =>  {
     const [activities, setActivities] = useState<EventInput[]>([]);
@@ -66,6 +70,7 @@ const Calender = () =>  {
         dayMaxEvents={true}
         initialEvents= {INITIAL_EVENTS}
         firstDay = {1}
+        //eventBackgroundColor = { colorFormat(INITIAL_EVENTS[0])}
         dayHeaderFormat = {{ weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true }}
         //eventContent= {renderEventContent}
         eventClick = {handleOnClick}
