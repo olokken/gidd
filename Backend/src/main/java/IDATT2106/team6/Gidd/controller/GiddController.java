@@ -295,25 +295,6 @@ public class GiddController {
                 .body(new JSONObject(activity.toString()).toString());
     }
 
-    /*@GetMapping(value = "/activity")
-    public ResponseEntity getAllActivities() throws JSONException {
-        log.debug("Received a GetMapping to '/activity'");
-
-        List<Activity> activities = activityService.getAllActivities();
-
-        HttpHeaders header = new HttpHeaders();
-        HashMap<String, String> body = new HashMap<>();
-
-        body.put("activity", activities.toString());
-        header.add("Status", "200 OK");
-        header.add("Content-Type", "application/json; charset=UTF-8");
-        log.debug("Returning activity object " + activities.toString());
-        return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(new JSONObject(activities.toString()).toString());
-    }*/
-
     @PutMapping(value="/activity/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity editActivity(@RequestBody Map<String, Object> map, @PathVariable("id") int actId){
         log.info("recieved putmapping to /activity/{id}");
@@ -457,23 +438,63 @@ public class GiddController {
     }
 
     @GetMapping(value = "/activity")
-    public ResponseEntity getActivities(@RequestParam(value="searchWord", required = false) String searchValue, @RequestParam(value = "activityLevel", required = false) Integer activityLevel) throws JSONException {
+    public ResponseEntity getActivities(@RequestParam(value="searchWord", required = false) String searchValue, @RequestParam(value = "activityLevel", required = false) Integer activityLevel, @RequestParam(value="tagDescription", required = false) String tagDescription) throws JSONException {
         log.debug("Received GetMapping to '/activity' with Query Params");
         List<Activity> activities;
-        if(searchValue == null && activityLevel == null){
+        if(searchValue == null && activityLevel == null && tagDescription == null){
             activities = activityService.getAllActivities();
         }
-        else if(searchValue == null){
+        else if(searchValue == null && tagDescription == null){
             log.debug("Searching for activity level to activity");
             log.debug("Activity level is " + activityLevel);
             activities = activityService.filterByActivityLevel(activityLevel);
-            log.debug("Activities with activity level " + activityLevel + " is " + activities.toString());
-        }else {
+        }else if(tagDescription == null && activityLevel == null){
             log.debug("Searching for title to activity");
             log.debug("Search word is " + searchValue);
             activities = activityService.searchForActivityByTitle(searchValue);
-            log.debug("Activities with title " + searchValue + " is " + activities.toString());
+        }else{
+            log.debug("Filtering activities with tag " + tagDescription);
+            Tag tag = tagService.getTag(tagDescription);
+            if(tag == null){
+                log.error("The tag is null");
+                HttpHeaders header = new HttpHeaders();
+                HashMap<String, String> body = new HashMap<>();
+
+                body.put("error", "The tag does not exist");
+                header.add("Status", "400 BAD REQUEST");
+                header.add("Content-Type", "application/json; charset=UTF-8");
+                log.debug("Returning error message");
+                return ResponseEntity
+                        .badRequest()
+                        .headers(header)
+                        .body(formatJson(body));
+            }
+            int tagId = tag.getTagId();
+            List<Object> activityIds = activityService.filterByTag(tagId);
+            activities = new ArrayList<>();
+            for(Object i : activityIds){
+                if(!(activityService.getActivity((Integer)i) == null)){
+                    activities.add(activityService.getActivity((Integer)i));
+                }
+            }
         }
+
+        if(activities == null){
+            log.error("The activities are null");
+            HttpHeaders header = new HttpHeaders();
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "An error occurred when trying to filter");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            log.debug("Returning error message");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        log.debug("The activities are " + activities.toString());
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();

@@ -265,4 +265,21 @@ public class ActivityRepo extends GiddRepo {
             em.close();
         }
     }
+
+    public List<Object> filterActivitiesByTag(int tagId){
+        log.debug("Filtering activities by tag");
+        EntityManager em = getEm();
+
+        try{
+            Query q = em.createNativeQuery("SELECT Activity_activity_id FROM ACTIVITY_TAG WHERE tags_tag_id = ?1")
+                    .setParameter(1, tagId);
+            log.debug("Returning results");
+            return q.getResultList();
+        }catch (Exception e){
+            log.error("An error has occurred: " + e.getMessage());
+            return null;
+        }finally {
+            em.close();
+        }
+    }
 }
