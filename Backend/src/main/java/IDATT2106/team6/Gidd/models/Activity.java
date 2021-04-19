@@ -227,7 +227,7 @@ public class Activity {
             ", \nlatitude:" + latitude +
             ", \nlongitude:" + longitude +
             ", \nregisteredParticipants: " + registeredParticipants.toString() +
-            ", \ntimeCreated:" + timeCreated.getTime() +
+            ", \ntimeCreated:" + (timeCreated == null ? "null" : timeCreated.getTime()) +
                 "}";
     }
 
