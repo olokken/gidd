@@ -1,11 +1,16 @@
 package IDATT2106.team6.Gidd.models;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -14,6 +19,7 @@ public class Activity {
     @Column(name = "activity_id")
     private int activityId;
     private String title;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "E, dd MMM yyyy HH:mm:ss z", timezone = "GMT+2")
     private Timestamp time;
     @Column(name = "days_to_repeat")
     private int daysToRepeat;
@@ -30,15 +36,15 @@ public class Activity {
     @Column(name = "activity_level")
     private ActivityLevel activityLevel;
     @CascadeOnDelete
-    @ManyToMany(targetEntity = Tag.class)
+    @ManyToMany(targetEntity = Tag.class, fetch = FetchType.EAGER)
     private List<Tag> tags;
     @CascadeOnDelete
-    @OneToMany(mappedBy = "Activity")
+    @OneToMany(mappedBy = "Activity", fetch = FetchType.EAGER)
     private List<ActivityEquipment> equipments;
     private double latitude;
     private double longitude;
     @CascadeOnDelete
-    @OneToMany(mappedBy = "Activity")
+    @OneToMany(mappedBy = "Activity", fetch = FetchType.EAGER)
     private List<ActivityUser> registeredParticipants;
     @Column(name = "time_created")
     private Timestamp timeCreated;
@@ -205,23 +211,35 @@ public class Activity {
 
     @Override
     public String toString() {
-        return "Activity{" +
-            "activityId=" + activityId +
-            ", title='" + title + '\'' +
-            ", time=" + time +
-            ", daysToRepeat=" + daysToRepeat +
-            ", user=" + user +
-            ", capacity=" + capacity +
-            ", groupId=" + groupId +
-            ", description='" + description + '\'' +
-            ", image=" + Arrays.toString(image) +
-            ", activityLevel=" + activityLevel +
-            ", tags=" + tags +
-            ", equipments=" + equipments +
-            ", latitude=" + latitude +
-            ", longitude=" + longitude +
-            ", registeredParticipants=" + registeredParticipants +
-            ", timeCreated=" + timeCreated +
-            '}';
+        return "{" +
+            "\nactivityId: " + activityId +
+            ", \ntitle: " + title +
+            ", \ntime:" + time.getTime() +
+            ", \ndaysToRepeat:" + daysToRepeat +
+            ", \nuserId:" + user.getUserId() +
+            ", \ncapacity:" + capacity +
+            ", \ngroupId:" + groupId +
+            ", \ndescription:" + description +
+            ", \nimage:" + Arrays.toString(image) +
+            ", \nactivityLevel:" + activityLevel +
+            ", \ntags:" + tags.toString() +
+            ", \nequipments:" + equipments.toString() +
+            ", \nlatitude:" + latitude +
+            ", \nlongitude:" + longitude +
+            ", \nregisteredParticipants: " + registeredParticipants.toString() +
+            ", \ntimeCreated:" + timeCreated.getTime() +
+                "}";
     }
+
+    private String getDate(long timeStamp){
+        try{
+            DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+            Date netDate = (new Date(timeStamp));
+            return sdf.format(netDate);
+        }
+        catch(Exception ex){
+            return "xx";
+        }
+    }
+
 }

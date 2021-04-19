@@ -90,4 +90,8 @@ public class ActivityService {
         log.info("Adding equipment connection" + activityEquipment.toString() + " to activity" + activity.toString());
         return repo.addEquipmentToActivity(activity, activityEquipment);
     }
+
+    public boolean updateEquipment(ActivityEquipment activityEquipment, Activity activity){
+        return repo.updateActivity(activity) && repo.updateActivityEquipmentConnection(activityEquipment);
+    }
 }

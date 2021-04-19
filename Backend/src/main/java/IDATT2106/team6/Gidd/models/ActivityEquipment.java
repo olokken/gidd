@@ -50,4 +50,9 @@ public class ActivityEquipment {
     public void setEquipment(Equipment equipment) {
         this.equipment = equipment;
     }
+
+    @Override
+    public String toString() {
+        return  "{equipmentId:" + equipment.getEquipmentId() + "}";
+    }
 }

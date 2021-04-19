@@ -22,6 +22,8 @@ import java.util.*;
 import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -260,6 +262,41 @@ public class GiddController {
                 .body("Woohoo");
     }
 
+    @GetMapping(value = "/activity/{activityId}", produces = "application/json")
+    public ResponseEntity getActivity(@PathVariable Integer activityId) throws JSONException {
+        log.debug("Received GetMapping to '/activity/{activityId}' with activityId " + activityId);
+        Activity activity = activityService.getActivity(activityId);
+
+        if(activity == null){
+            log.error("The activity is null");
+            HttpHeaders header = new HttpHeaders();
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "The activity does not exist");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            log.debug("Returning error message");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+
+        body.put("activity", activity.toString());
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        log.debug("Returning activity object " + activity.toString());
+        System.out.println(activity.toString());
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(new JSONObject(activity.toString()).toString());
+                //.body(activity.toString());
+    }
+
     @PutMapping(value="/activity/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity editActivity(@RequestBody Map<String, Object> map, @PathVariable("id") int actId){
         log.info("recieved putmapping to /activity/{id}");
@@ -300,6 +337,106 @@ public class GiddController {
         return ResponseEntity
                 .ok()
                 .headers(headers).body(formatJson(body));
+    }
+
+    @PostMapping(value = "/activity/{activityId}/equipment/{equipmentId}/user")
+    public ResponseEntity registerUserToEquipment(@RequestBody HashMap<String, Object> map){
+        log.debug("Received PostMapping to '/activity/{activityId}/equipment/{equipmentId}/user'");
+        int activityId = Integer.parseInt(map.get("activityId").toString());
+        Activity activity = activityService.getActivity(activityId);
+
+        log.debug("Finding activity with id " + activityId);
+        if(activity == null){
+            log.error("The activity is null");
+            HttpHeaders header = new HttpHeaders();
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "The activity does not exist");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            log.debug("Returning error message");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        int equipmentId = Integer.parseInt(map.get("equipmentId").toString());
+        Equipment equipment = equipmentService.getEquipment(equipmentId);
+
+        log.debug("Finding equipment with id " + equipmentId);
+        if(equipment == null){
+            log.error("The equipment is null");
+            HttpHeaders header = new HttpHeaders();
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "The equipment does not exist");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            log.debug("Returning error message");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        int userId = Integer.parseInt(map.get("userId").toString());
+        User user = userService.getUser(userId);
+
+        log.debug("Finding user with id " + userId);
+        if(user == null){
+            log.error("The user is null");
+            HttpHeaders header = new HttpHeaders();
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "The user does not exist");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            log.debug("Returning error message");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        List<ActivityEquipment> equipments = activity.getEquipments();
+
+        log.debug("Finding connection between activity and equipment");
+        for(ActivityEquipment ae : equipments){
+            if(ae.getEquipment().getEquipmentId() == equipmentId){
+                log.debug("Registering user to equipment in activity");
+                activity.getEquipments().remove(ae);
+                ae.setBringerId(userId);
+                activity.addEquipment(ae);
+                activityService.updateEquipment(ae, activity);
+
+                HttpHeaders header = new HttpHeaders();
+                HashMap<String, String> body = new HashMap<>();
+
+                body.put("activityId", String.valueOf(activityId));
+                body.put("equipmentId", String.valueOf(equipmentId));
+                body.put("userId", String.valueOf(userId));
+                header.add("Status", "200 OK");
+                header.add("Content-Type", "application/json; charset=UTF-8");
+                log.debug("Returning the id of activity: " + activityId + ", equipment: " + equipment + ", user: " + userId);
+                return ResponseEntity
+                        .ok()
+                        .headers(header)
+                        .body(formatJson(body));
+            }
+        }
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+
+        body.put("error", "The equipment is not registered to the activity");
+        header.add("Status", "400 BAD REQUEST");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        log.error("The equipment is not registered to the activity");
+        return ResponseEntity
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
     }
 
     @GetMapping(value = "/activity")

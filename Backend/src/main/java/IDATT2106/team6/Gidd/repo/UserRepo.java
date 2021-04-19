@@ -83,7 +83,7 @@ public class UserRepo extends GiddRepo {
         }finally {
             em.close();
         }
-        log.info("returning found user " + user.toString());
+        log.info("returning found user " + String.valueOf(user));
         return user;
     }
 

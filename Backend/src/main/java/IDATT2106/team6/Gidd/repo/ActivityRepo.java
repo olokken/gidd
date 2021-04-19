@@ -89,7 +89,7 @@ public class ActivityRepo extends GiddRepo {
         }finally {
             em.close();
         }
-        log.info("activity found successfully: " + activity.toString());
+        log.info("activity found successfully: " + String.valueOf(activity));
         return activity;
     }
 
@@ -257,6 +257,23 @@ public class ActivityRepo extends GiddRepo {
             return true;
         }catch (Exception e){
             log.error("Adding equipment failed due " + e.getMessage());
+            return false;
+        }finally {
+            em.close();
+        }
+    }
+
+    public boolean updateActivityEquipmentConnection(ActivityEquipment activityEquipment){
+        log.debug("Updating activity-equipment connection");
+        EntityManager em = getEm();
+
+        try{
+            em.getTransaction().begin();
+            em.merge(activityEquipment);
+            em.getTransaction().commit();
+            return true;
+        }catch (Exception e){
+            log.error("Updating the activity-equipment connection failed due " + e.getMessage());
             return false;
         }finally {
             em.close();
