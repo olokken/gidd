@@ -3,7 +3,10 @@ import Pageination from '@material-ui/lab/Pagination';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
+import Popup from '../Popup';
 import ActivityCard from './ActivityCard';
+import ActivityInformation from './ActivityInformation';
+import ActivityInformationPopup from './ActivityInformationPopup';
 
 const Container = styled.div`
     display: flex;
@@ -18,6 +21,7 @@ interface Props {
 const ActivityGrid = ({ activities }: Props) => {
     const [page, setPage] = useState<number>(1);
     const [currentActivities, setCurrentActivities] = useState<Activity[]>(activities);
+    const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     useEffect(() => {
         const startIndex = (page - 1) * 24;
@@ -25,18 +29,31 @@ const ActivityGrid = ({ activities }: Props) => {
         setCurrentActivities(activities.slice(startIndex, endIndex));
     }, [page, activities]);
 
-    const renderActivities = currentActivities.map((act, index) => {
+    const [activity, setActivity] = useState<Activity>({
+        ID: 0,
+        title: '',
+        time: '',
+        //repeat: number;
+        //userID: number;
+        owner: '',
+        capacity: 0,
+        maxCapacity: 0,
+        //groupId: number;
+        description: '',
+        level: '',
+        //latitude: number;
+        //longitude: number;
+        //picture: any;
+    });
+
+    const renderActivities = currentActivities.map((act, index: number) => {
         return (
             <ActivityCard
                 key={index}
-                ID={act.ID}
-                title={act.title}
-                time={act.time}
-                owner={act.owner}
-                capacity={act.capacity}
-                maxCapacity={act.maxCapacity}
-                description={act.description}
-                level={act.level}
+                activity={act}
+                openPopup={openPopup}
+                setOpenPopup={setOpenPopup}
+                setActivity={setActivity}
             ></ActivityCard>
         );
     });
@@ -55,6 +72,12 @@ const ActivityGrid = ({ activities }: Props) => {
             >
                 {renderActivities}
             </GridList>
+            <ActivityInformationPopup
+                openPopup={openPopup}
+                setOpenPopup={setOpenPopup}
+            >
+                <ActivityInformation activity={activity} />
+            </ActivityInformationPopup>
             <Pageination
                 style={{ justifyContent: 'center', display: 'flex' }}
                 onChange={onPageChange}

@@ -7,13 +7,13 @@ import {
 } from '@material-ui/core';
 import React, { useState, ChangeEvent } from 'react';
 import './styles.css';
-import axios from '../../../Axios';
+import axios from '../../Axios';
 import MapIcon from '@material-ui/icons/Map';
-import GeoSuggest from '../../MapComponents/GeoSuggest';
-import Popup from '../../Popup';
-import MapComponent from '../../MapComponents/MapComponent';
+import GeoSuggest from '../MapComponents/GeoSuggest';
+import Popup from '../Popup';
+import MapComponent from '../MapComponents/MapComponent';
 import { Marker } from 'react-google-maps';
-import Tag from '../../../interfaces/Tag';
+import Tag from '../../interfaces/Tag';
 
 const StyledButton = withStyles({
     root: {

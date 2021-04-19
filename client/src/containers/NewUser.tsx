@@ -3,8 +3,8 @@ import React, { ChangeEvent, useState } from 'react';
 import { useContext } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
-import NewUserCard from '../components/NewUserCard';
-import { UserContext } from '../components/UserContext';
+import NewUserCard from '../components/CardComponents/NewUserCard';
+import { UserContext } from '../UserContext';
 import axios from '../Axios';
 
 const NewUsernContainer = styled.div`

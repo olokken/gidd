@@ -18,8 +18,8 @@ export default interface Activity {
 export function ActivityList(): Activity[] {
     const akt1: Activity = {
         ID: 1,
-        title: 'Tittel 1',
-        time: new Date('2021-04-15'),
+        title: 'Dette er en litt lengre tittel for å se hvordan layaouten reagerer',
+        time: '2000-12-22',
         owner: 'Ole',
         capacity: 10,
         maxCapacity: 20,

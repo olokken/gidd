@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
-import LoginCard from '../components/LoginCard';
+import LoginCard from '../components/CardComponents/LoginCard';
 import { useHistory } from 'react-router-dom';
 import image from '../assets/GIDD.png';
-import { UserContext } from '../components/UserContext';
+import { UserContext } from '../UserContext';
 import { useContext } from 'react';
 import User from '../interfaces/User';
 import axios from '../Axios';
