@@ -222,11 +222,11 @@ public class Activity {
             ", \n\"description\":" + "\"" +description + "\"" +
             ", \n\"image\":" + "\"" +Arrays.toString(image) +"\"" +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
-            ", \n\"tags\":" + "\"" +tags.toString() +"\"" +
-            ", \n\"equipments\":" +"\"" + equipments.toString() +"\"" +
+            ", \n\"tags\":" + tags.toString() +
+            ", \n\"equipments\":" + equipments.toString() +
             ", \n\"latitude\":" + latitude +
             ", \n\"longitude\":" + longitude +
-            ", \n\"registeredParticipants\": " +"\"" + registeredParticipants.toString() +"\"" +
+            ", \n\"registeredParticipants\": " + registeredParticipants.toString() +
             ", \n\"timeCreated\":" + (timeCreated == null ? "null" : timeCreated.getTime()) +
                 "}";
     }
