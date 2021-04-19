@@ -5,7 +5,8 @@ import {
     Typography,
     MenuItem,
 } from '@material-ui/core';
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useContext } from 'react';
+import { UserContext } from '../../UserContext';
 import './ActivityForm.css';
 import axios from '../../../Axios';
 import MapIcon from '@material-ui/icons/Map';
@@ -14,6 +15,8 @@ import Popup from '../../Popup';
 import MapComponent from '../../MapComponents/MapComponent';
 import { Marker } from 'react-google-maps';
 import Tag from '../../../interfaces/Tag';
+import Activity from '../../../interfaces/Activity';
+import Equipment from '../../../interfaces/Equipment';
 
 const StyledButton = withStyles({
     root: {
@@ -30,17 +33,10 @@ const StyledButton = withStyles({
     },
 })(Button);
 
-interface Activity {
-    title: string;
-    desc: string;
-    date: Date;
-    address: string;
-    equipmentList: Equipment[];
-}
-
-interface Equipment {
-    id: number;
-    description: string;
+enum AcitivyLevel {
+    low,
+    medium,
+    high,
 }
 
 //TODO change the url
@@ -52,6 +48,7 @@ interface Props {
 }
 
 const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
+    const { user, setUser } = useContext(UserContext);
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
     const [date, setDate] = useState<Date>(new Date());
@@ -63,8 +60,9 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     const [counterTag, setCounterTag] = useState<number>(0);
     const [reset, setReset] = useState<boolean>(false);
     const [openShowMap, setOpenShowMap] = useState<boolean>(false);
-    const [tagsList, setTagsList] = useState<Tag[]>([]);
+    const [tagList, setTagList] = useState<Tag[]>([]);
     const [tagsDesc, setTagsDesc] = useState<string>('');
+    const [repetition, setRepetition] = useState(0);
 
     const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle((event.target as HTMLInputElement).value);
@@ -100,7 +98,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                 };
                 equipmentList.push(equipment);
                 setCounterAct(counterAct + 1);
-                setEquipmentDesc('\n');
+                setEquipmentDesc('');
                 setReset(false);
                 return true;
             } else {
@@ -122,11 +120,12 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         if (event.key == 'Enter') {
             if (checkInput(tagsDesc)) {
                 const tags: string[] = tagsDesc.split(',');
-                let i = 0;
                 tags.map((tag) => {
-                    tagsList.push({ ID: i, desc: tag });
-                    i++;
+                    tagList.push({ ID: counterTag, desc: tag });
                 });
+                setCounterTag(counterTag + 1);
+                setTagsDesc('');
+                setReset(false);
             }
         }
     };
@@ -134,11 +133,17 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
 
     const createActivity = () => {
         const activity: Activity = {
+            ID: counterAct,
             title: title,
-            desc: desc,
-            date: date,
+            time: date.toString(),
+            owner: user.firstName + ' ' + user.lastName,
+            capacity: 0,
+            maxCapacity: 0,
+            description: desc,
+            level: '',
             address: address,
             equipmentList: equipmentList,
+            tagList: tagList,
         };
         console.log(activity);
 
@@ -159,6 +164,8 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         setEquipmentDesc('');
         setEquipmentList([]);
         setCounterAct(0);
+        setTagsDesc('');
+        setCounterTag(0);
     };
 
     return (
@@ -281,10 +288,8 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                         }}
                     >
                         {reset === false &&
-                            equipmentList.map((equipment) => (
-                                <li key={equipment.id}>
-                                    {equipment.description}
-                                </li>
+                            tagList.map((tag) => (
+                                <li key={tag.ID}>{tag.desc}</li>
                             ))}
                     </ul>
                 </div>
