@@ -72,9 +72,8 @@ const NewUser = () => {
                 })
                 .then((response) => {
                     console.log(JSON.stringify(response.data.id));
-                    //setUser(response.data.id)
                     setUser(response.data.id);
-                    history.push('/Activites');
+                    history.push('/Activities');
                 })
                 .catch((error) => {
                     // handle this error

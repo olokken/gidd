@@ -16,7 +16,7 @@ export default (
             <Navbar></Navbar>
             <Route exact path="/Activities" component={Activities} />
             <Route exact path="/Map" component={Map} />
-            <Route exact path="/Calendar" component={Calendar} />
+            <Route exact path="/Calendar" component={Calendar}/>
             <Footer></Footer>
         </div>
     </Switch>

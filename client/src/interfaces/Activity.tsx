@@ -82,7 +82,7 @@ export function ActivityList(): Activity[] {
     const akt5: Activity = {
         ID: 5,
         title: 'Tittel 5',
-        time: '2021-12-12',
+        time: ('2021-12-12'),
         owner: 'Ingebrigt',
         capacity: 10,
         maxCapacity: 20,
