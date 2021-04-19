@@ -3,7 +3,6 @@ import React, { useState, ChangeEvent, useContext } from 'react';
 import { UserContext } from '../../UserContext';
 import './ActivityForm.css';
 import axios from '../../Axios';
-import MapIcon from '@material-ui/icons/Map';
 import GeoSuggest from '../MapComponents/GeoSuggest';
 import Popup from '../Popup';
 import MapComponent from '../MapComponents/MapComponent';
@@ -11,8 +10,9 @@ import { Marker } from 'react-google-maps';
 import { Activity2 } from '../../interfaces/Activity';
 import Equipment from '../../interfaces/Equipment';
 import Tag from '../../interfaces/Tag';
-import Pageination from '@material-ui/lab/Pagination';
-import { ContactSupportOutlined } from '@material-ui/icons';
+import Pagination from '@material-ui/lab/Pagination';
+import DefaultCenter from '../../interfaces/DefaultCenter';
+import styled from 'styled-components';
 
 const StyledButton = withStyles({
     root: {
@@ -23,26 +23,38 @@ const StyledButton = withStyles({
         height: 48,
         padding: '0 30px',
         boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+        width: '15vw',
     },
     label: {
         textTransform: 'capitalize',
     },
 })(Button);
 
-enum AcitivyLevel {
-    low,
-    medium,
-    high,
-}
+const StyledTextField = withStyles({
+    root: {
+        width: '50vh',
+    },
+})(TextField);
 
-//TODO change the url
-const url = '/activity';
+const NumberTextField = withStyles({
+    root: {
+        width: '7vw',
+        padding: '5px',
+    },
+})(TextField);
 
+const ButtonsContainer = styled.div`
+    display: flex;
+    width: 30vw;
+    padding: 10px;
+`;
 interface Props {
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+//TODO:
+//Fix adding image
 const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     const [page, setPage] = useState<number>(1);
     const { user, setUser } = useContext(UserContext);
@@ -50,7 +62,10 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     const [desc, setDesc] = useState('');
     const [date, setDate] = useState<Date>(new Date());
     const [dateDisplay, setDateDisplay] = useState<string>('');
-    const [address, setAddress] = useState('');
+    const [location, setLocation] = useState<DefaultCenter>({
+        lat: 50,
+        lng: 50,
+    });
     const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
     const [equipmentDesc, setEquipmentDesc] = useState('');
     const [counterAct, setCounterAct] = useState<number>(0);
@@ -121,7 +136,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     const onChangeCapacity = (event: ChangeEvent<HTMLInputElement>) => {
         const str: string = (event.target as HTMLInputElement).value;
         try {
-            setCapacity(+str);
+            setCapacity(+str < 0 ? 0 : +str);
         } catch (error) {
             alert('Skriv inn et tall');
             console.log('Could not convert string to number: ' + error.message);
@@ -131,11 +146,19 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     const onChangeRepetitions = (event: ChangeEvent<HTMLInputElement>) => {
         const str: string = (event.target as HTMLInputElement).value;
         try {
-            setRepetition(+str);
+            setRepetition(+str < 0 ? 0 : +str);
         } catch (error) {
             alert('Skriv inn et tall');
             console.log('Could not convert string to number: ' + error.message);
         }
+    };
+
+    const onChangeImage = (
+        event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    ) => {
+        console.log(event);
+        setImage(event.target.value);
+        console.log(btoa(event.target.value));
     };
 
     const addEquipment = (event: React.KeyboardEvent): boolean => {
@@ -172,15 +195,21 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         }
     };
 
+    const isDisabled = (): boolean => {
+        if (title === '' || date === new Date() || activityLevel === '') {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     const postActivity = () => {
         let equipmentString = '';
-        equipmentList.map((equipment) => {
-            equipmentString += equipment.description;
-        });
+        equipmentList.map(
+            (equipment) => (equipmentString += equipment.description)
+        );
         let tagString = '';
-        tagList.map((tag) => {
-            tagString += tag.desc;
-        });
+        tagList.map((tag) => (tagString += tag.desc));
         const activity: Activity2 = {
             title: title,
             time:
@@ -204,11 +233,10 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             activityLevel: activityLevel.toUpperCase(),
             equipment: equipmentString,
             tags: tagString,
-            latitude: 0,
-            longitude: 0,
+            latitude: location.lat,
+            longitude: location.lng,
         };
 
-        console.log(activity.time);
         console.log(activity);
 
         axios
@@ -228,7 +256,6 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         setDesc('');
         setDate(new Date());
         setDateDisplay('');
-        setAddress('');
         setEquipmentList([]);
         setEquipmentDesc('');
         setCounterAct(0);
@@ -260,227 +287,170 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     };
 
     return (
-        <div
-            className="activityform"
-            style={{ display: 'flex', justifyContent: 'center' }}
-        >
-            <div id="left">
-                {page === 1 && (
-                    <div>
-                        <TextField
-                            style={{ padding: '5px' }}
-                            className="textfield"
-                            label="Tittel"
-                            value={title}
-                            onChange={onChangeTitle}
-                            variant="outlined"
-                        />
-                    </div>
-                )}
-                <div>
-                    <div
-                        style={{
-                            position: 'relative',
-                            //left: '16px',
-                            //top: '8px',
-                            display: 'flex',
+        <div className="activityform">
+            {page === 1 && (
+                <StyledTextField
+                    label="Tittel"
+                    value={title}
+                    onChange={onChangeTitle}
+                    variant="outlined"
+                />
+            )}
+            {page === 2 && (
+                <div className="activityform__place">
+                    <GeoSuggest
+                        onLocationChange={(location) => {
+                            setLocation(location);
                         }}
+                    ></GeoSuggest>
+                    <StyledButton
+                        className="activityform__placeButton"
+                        onClick={() => setOpenShowMap(!openShowMap)}
                     >
-                        <GeoSuggest
-                            onLocationChange={() => {
-                                console.log('hei');
-                            }}
-                        ></GeoSuggest>
-                        <StyledButton
-                            style={{
-                                height: '2rem',
-                                width: '9rem',
-                                marginTop: '1rem',
-                                marginLeft: '3rem',
-                            }}
-                            onClick={() => setOpenShowMap(!openShowMap)}
+                        Vis på kart
+                    </StyledButton>
+                    <Popup
+                        openPopup={openShowMap}
+                        setOpenPopup={setOpenShowMap}
+                        maxWidth="lg"
+                    >
+                        <MapComponent
+                            width="75vh"
+                            height="75vh"
+                            defaultCenter={location}
                         >
-                            Vis på kart
-                        </StyledButton>
-                        <Popup
-                            openPopup={openShowMap}
-                            setOpenPopup={setOpenShowMap}
-                            maxWidth="lg"
-                        >
-                            <MapComponent
-                                width="75vh"
-                                height="75vh"
-                                defaultCenter={{ lat: 50, lng: 50 }}
-                            >
-                                <Marker
-                                    position={{ lat: 25, lng: 25 }}
-                                ></Marker>
-                            </MapComponent>
-                        </Popup>
-                    </div>
+                            <Marker position={location}></Marker>
+                        </MapComponent>
+                    </Popup>
                 </div>
-                <div>
-                    <TextField
-                        style={{ padding: '5px' }}
-                        label="Dato"
-                        type="datetime-local"
-                        defaultValue={dateDisplay}
-                        value={dateDisplay}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={onChangeDate}
-                        variant="outlined"
-                        className="textfield"
-                    />
-                </div>
-                <div>
-                    <TextField
-                        style={{ padding: '5px' }}
-                        className="description"
-                        label="Beskrivelse"
-                        value={desc}
-                        onChange={onChangeDesc}
-                        variant="outlined"
-                        rows={4}
-                        multiline
-                    />
-                </div>
-                <TextField
-                    style={{ padding: '5px' }}
+            )}
+            {page === 3 && (
+                <StyledTextField
+                    label="Dato"
+                    type="datetime-local"
+                    defaultValue={dateDisplay}
+                    value={dateDisplay}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    onChange={onChangeDate}
+                    variant="outlined"
+                />
+            )}
+            {page === 4 && (
+                <StyledTextField
+                    className="activityform__description"
+                    label="Beskrivelse"
+                    value={desc}
+                    onChange={onChangeDesc}
+                    variant="outlined"
+                    rows={4}
+                    multiline
+                />
+            )}
+            {page === 5 && (
+                <StyledTextField
                     type="file"
                     label="Bilde"
-                    /*value={Picture}
-                    onChange={onChangePicture}*/
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                        console.log((event.target as HTMLInputElement).value);
-                    }}
+                    onChange={onChangeImage}
                     InputLabelProps={{
                         shrink: true,
                     }}
                     variant="outlined"
-                    className="textfield"
                 />
-            </div>
-            <div>
-                <TextField
-                    style={{ padding: '5px' }}
-                    label="Tags"
-                    onChange={onChangeTagsDesc}
-                    onKeyPress={addTags}
-                    value={tagsDesc}
-                    variant="outlined"
-                    className="textfield"
-                />
-                <div style={{ paddingRight: '5px', paddingLeft: '5px' }}>
-                    <h2>Tags</h2>
-                    <ul
-                        style={{
-                            borderRadius: '5px',
-                            border: 'solid lightgrey 1px',
-                            width: 'auto',
-                            height: '110px',
-                            overflow: 'auto',
-                        }}
-                    >
+            )}
+            {page === 6 && (
+                <div>
+                    <StyledTextField
+                        label="Tags"
+                        onChange={onChangeTagsDesc}
+                        onKeyPress={addTags}
+                        value={tagsDesc}
+                        variant="outlined"
+                    />
+                    <ul className="activityform__list">
                         {reset === false &&
                             tagList.map((tag) => (
                                 <li key={tag.ID}>{tag.desc}</li>
                             ))}
                     </ul>
                 </div>
-                <div style={{ padding: '5px', display: 'flex' }}>
-                    <div style={{ padding: '5px' }}>
+            )}
+            {page === 7 && (
+                <div>
+                    <StyledTextField
+                        label="Utstyr"
+                        value={equipmentDesc}
+                        variant="outlined"
+                        onChange={onChangeEqipmentDesc}
+                        onKeyPress={addEquipment}
+                    />
+                    <ul className="activityform__list">
+                        {reset === false &&
+                            equipmentList.map((equipment) => (
+                                <li key={equipment.id}>
+                                    {equipment.description}
+                                </li>
+                            ))}
+                    </ul>
+                </div>
+            )}
+            {page === 8 && (
+                <div>
+                    <div className="activityform__container">
                         <TextField
-                            style={{ width: '110px' }}
-                            id="select"
+                            className="activityform__activityLevel"
                             label="Aktivitetgrad"
                             onChange={onChangeActivityLevel}
                             value={activityLevel}
                             variant="outlined"
-                            className="textfield"
                             select
                         >
                             <MenuItem value="High">High</MenuItem>
                             <MenuItem value="Medium">Medium</MenuItem>
                             <MenuItem value="Low">Low</MenuItem>
                         </TextField>
+                        <NumberTextField
+                            label="Plasser"
+                            type="number"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            value={capacity}
+                            onChange={onChangeCapacity}
+                            variant="outlined"
+                        />
+                        <NumberTextField
+                            label="Gjentakinger"
+                            type="number"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            variant="outlined"
+                            value={repetition}
+                            onChange={onChangeRepetitions}
+                        />
                     </div>
-                    <TextField
-                        style={{ padding: '5px', width: 'auto' }}
-                        label="Plasser"
-                        type="number"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        value={capacity}
-                        onChange={onChangeCapacity}
-                        variant="outlined"
-                        className="textfield"
-                    />
-
-                    <TextField
-                        style={{ padding: '5px', width: 'auto' }}
-                        label="Gjentakinger"
-                        type="number"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        variant="outlined"
-                        className="textfield"
-                        value={repetition}
-                        onChange={onChangeRepetitions}
-                    />
+                    <ButtonsContainer>
+                        <StyledButton
+                            className="activityform__add"
+                            onClick={postActivity}
+                            disabled={isDisabled()}
+                        >
+                            Opprett Aktivitet
+                        </StyledButton>
+                        <StyledButton
+                            className="activityform__reset"
+                            onClick={handleReset}
+                        >
+                            Reset
+                        </StyledButton>
+                    </ButtonsContainer>
                 </div>
+            )}
+            <div className="activityform__item">
+                <Pagination onChange={onPageChange} count={8} size="large" />
             </div>
-            <div id="right">
-                <TextField
-                    style={{ padding: '5px' }}
-                    className="textfield"
-                    label="Utstyr"
-                    value={equipmentDesc}
-                    variant="outlined"
-                    onChange={onChangeEqipmentDesc}
-                    onKeyPress={addEquipment}
-                />
-                <h2>Utstyrsliste</h2>
-                <ul
-                    style={{
-                        borderRadius: '5px',
-                        border: 'solid lightgrey 1px',
-                        width: 'auto',
-                        height: '110px',
-                        overflow: 'auto',
-                    }}
-                >
-                    {reset === false &&
-                        equipmentList.map((equipment) => (
-                            <li key={equipment.id}>{equipment.description}</li>
-                        ))}
-                </ul>
-                <div className="buttons">
-                    <StyledButton
-                        style={{ marginRight: '4px' }}
-                        className="button"
-                        onClick={postActivity}
-                    >
-                        Opprett Aktivitet
-                    </StyledButton>
-                    <StyledButton
-                        style={{ marginLeft: '4px' }}
-                        className="button"
-                        onClick={handleReset}
-                    >
-                        Reset
-                    </StyledButton>
-                </div>
-            </div>
-            <Pageination
-                style={{ justifyContent: 'center', display: 'flex' }}
-                onChange={onPageChange}
-                count={8}
-                size="large"
-            />
         </div>
     );
 };

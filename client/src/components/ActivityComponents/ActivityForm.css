@@ -1,25 +1,59 @@
 .activityform {
     padding: 20px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
-.activityform.div {
-    margin: 4px;
-}
-.description {
+.activityform__description {
     width: 30vh;
     height: 120px;
     width: 50vh;
+    padding: 5px;
 }
 
-.textfield {
-    width: 50vh;
+.activityform__reset {
+    width: 50% !important;
+    margin-left: 4px !important;
 }
 
-.buttons {
+.activityform__add {
+    margin-right: 4px !important;
+}
+
+.activityform__activityLevel {
+    width: 15vw !important;
+    margin-top: 4px !important;
+}
+
+.activityform__container {
+    padding: 10px !important;
+}
+
+.activityform__place {
     display: flex;
-    width: 50vh;
+    margin-right: 0;
 }
 
-.button {
-    width: 50%;
+.activityform__placeButton {
+    height: 2rem !important;
+    width: 9rem !important;
+    margin-top: 1rem !important;
+    margin-left: 1rem !important;
+}
+
+.activityform__list {
+    border-radius: 5px;
+    border: solid lightgrey 1px;
+    width: 45vh;
+    height: 110px;
+    overflow: auto;
+}
+
+.activityform__equipmentField {
+    margin-left: 1px;
+}
+
+.activityform__item {
+    margin-top: 50px;
 }

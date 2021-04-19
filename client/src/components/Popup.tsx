@@ -58,6 +58,7 @@ const Popup = ({
                         {title}
                     </Typography>
                     <Button
+                        style={{ backgroundColor: 'red' }}
                         color="secondary"
                         onClick={() => {
                             setOpenPopup(!openPopup);

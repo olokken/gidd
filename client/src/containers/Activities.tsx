@@ -13,8 +13,11 @@ import ActivityResponse from '../interfaces/ActivityResponse';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
 import Popup from '../components/Popup';
 import AddButton from '../components/ActivityComponents/AddButton';
+<<<<<<< HEAD
 import axios from '../Axios';
 import { Button } from '@material-ui/core';
+=======
+>>>>>>> addactivity
 
 //Endringer kan forekomme her
 
@@ -72,7 +75,7 @@ const Activities = () => {
                         title="Legg til aktivitet"
                         openPopup={openPopup}
                         setOpenPopup={setOpenPopup}
-                        maxWidth="lg"
+                        maxWidth="sm"
                         fullWidth={true}
                     >
                         <ActivityForm
