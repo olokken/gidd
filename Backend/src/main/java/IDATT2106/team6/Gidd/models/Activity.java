@@ -212,22 +212,22 @@ public class Activity {
     @Override
     public String toString() {
         return "{" +
-            "\nactivityId: " + activityId +
-            ", \ntitle: " + title +
-            ", \ntime:" + time.getTime() +
-            ", \ndaysToRepeat:" + daysToRepeat +
-            ", \nuserId:" + user.getUserId() +
-            ", \ncapacity:" + capacity +
-            ", \ngroupId:" + groupId +
-            ", \ndescription:" + description +
-            ", \nimage:" + Arrays.toString(image) +
-            ", \nactivityLevel:" + activityLevel +
-            ", \ntags:" + tags.toString() +
-            ", \nequipments:" + equipments.toString() +
-            ", \nlatitude:" + latitude +
-            ", \nlongitude:" + longitude +
-            ", \nregisteredParticipants: " + registeredParticipants.toString() +
-            ", \ntimeCreated:" + (timeCreated == null ? "null" : timeCreated.getTime()) +
+            "\n\"activityId\": " + activityId +
+            ", \n\"title\": " + "\"" + title + "\"" +
+            ", \n\"time\":" + time.getTime() +
+            ", \n\"daysToRepeat\":" + daysToRepeat +
+            ", \n\"userId\":" + user.getUserId() +
+            ", \n\"capacity\":" + capacity +
+            ", \n\"groupId\":" + groupId +
+            ", \n\"description\":" + "\"" +description + "\"" +
+            ", \n\"image\":" + "\"" +Arrays.toString(image) +"\"" +
+            ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
+            ", \n\"tags\":" + "\"" +tags.toString() +"\"" +
+            ", \n\"equipments\":" +"\"" + equipments.toString() +"\"" +
+            ", \n\"latitude\":" + latitude +
+            ", \n\"longitude\":" + longitude +
+            ", \n\"registeredParticipants\": " +"\"" + registeredParticipants.toString() +"\"" +
+            ", \n\"timeCreated\":" + (timeCreated == null ? "null" : timeCreated.getTime()) +
                 "}";
     }
 
