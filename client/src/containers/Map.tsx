@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import MapComponent from '../components/MapComponents/MapComponent';
-import Activity from '../interfaces/Activity';
-import { Marker } from 'react-google-maps';
+import Activity, { ActivityList } from '../interfaces/Activity';
+import MapMarker from '../components/MapComponents/MapMarker';
 import GeoSuggest from '../components/MapComponents/GeoSuggest';
 import DefaultCenter from '../interfaces/DefaultCenter';
-import { Button } from '@material-ui/core';
+import TagTextField from '../components/ActivityComponents/TagTextField';
+import axios from 'axios';
+import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
 
 const Container = styled.div`
     justify-content: center;
 `;
 
 const Map = () => {
-    const [activities, setActivities] = useState<Activity[]>();
+    const [activities, setActivities] = useState<Activity[]>([]);
     const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>();
 
     const getCoordinates = () => {
@@ -27,18 +29,19 @@ const Map = () => {
                     console.log(latitude + ', ' + longitude);
                     setDefaultCenter({ lat: latitude, lng: longitude });
                 } else {
-                    setDefaultCenter({ lat: 50, lng: 50 });
+                    setDefaultCenter({ lat: 63, lng: 10 });
                 }
             });
     };
 
     useEffect(() => {
         getCoordinates();
+        setActivities(ActivityList());
     }, []);
 
-    const renderMarkers = activities?.map((act, index) => {
-        //Mappe alle aktiviteter fra lista med activities og sette en onCLick der
-        //jeg får opp den Popopen Iben holder på med.
+    const renderMarkers = activities.map((act: Activity, index: number) => {
+        //Test med backend, kanskje den her må inni en useEffect hvor den kjører hver gang activities endrer seg :-)
+        return <MapMarker key={index} activity={act}></MapMarker>;
     });
 
     return (
@@ -49,12 +52,13 @@ const Map = () => {
                     width="100vw"
                     height="85vh"
                 >
-                    <Marker position={defaultCenter}></Marker>
+                    {renderMarkers}
                 </MapComponent>
             )}
             <GeoSuggest
                 onLocationChange={(location) => setDefaultCenter(location)}
             ></GeoSuggest>
+            <TagTextField></TagTextField>
         </Container>
     );
 };
