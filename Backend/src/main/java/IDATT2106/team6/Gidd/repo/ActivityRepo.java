@@ -89,7 +89,7 @@ public class ActivityRepo extends GiddRepo {
         }finally {
             em.close();
         }
-        log.info("activity found successfully: " + activity.toString());
+        log.info("activity found: " + String.valueOf(activity));
         return activity;
     }
 
@@ -209,21 +209,7 @@ public class ActivityRepo extends GiddRepo {
                 }
             });
             return activityUsers.stream().map(a -> a.getUser()).collect(Collectors.toList());
-            //hva vil vi gjøre
-            //metoden i controller henter alle sammen som er påmeldt
-            //tilby metoder i controller som gir venteliste?
-            // /activity/{id}/waiting
-            // todo til mandag:
-            // lag en metode som henter ut KUN de som er på venteliste
-            // tilby et endpoint til klienten som henter ut kun de som er i ventelisten
-            // klient kan da hente ut alle som er påmeldt, og sjekke hvem som er i ventelisten
-            // enhetstester :) og test at endpoint funker
         }
-        return new ArrayList<User>();
-    }
-
-    public List<User> getWaitingList(int activityId){
-        //todo ingebrigt fyller ut denne på mandag
         return new ArrayList<User>();
     }
 

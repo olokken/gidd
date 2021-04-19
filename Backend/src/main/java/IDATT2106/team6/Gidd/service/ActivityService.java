@@ -71,6 +71,16 @@ public class ActivityService {
         return repo.updateActivity(activity);
     }
 
+    public List<User> getUserFromActivity(int id){
+        List<User> participants = new ArrayList<User>();
+        if(getActivity(id) != null){
+            participants = repo.getUsersFromActivity(id);
+            //add owner first
+            participants.add(0, getActivity(id).getUser());
+        }
+        return participants;
+    }
+
     public Activity getActivity(int id) {
         log.info("Getting activity with activityId " + id);
         return repo.findActivity(id);
