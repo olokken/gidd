@@ -240,6 +240,9 @@ public class GiddController {
             log.debug("Created new activity: " + newActivity.toString());
             newId = newActivityValidId(newActivity);
             log.debug("new activity id: " + newId);
+
+            map.get("equipment");
+            registerEquipmentToActivity(newId, map.get("equipmentList").toString());
         } catch (InvalidAttributesException e) {
             log.error("InvalidattributesException, invalid userID recieved " + e.getMessage());
             body.put("error", e.getMessage());
@@ -881,7 +884,7 @@ public class GiddController {
         List<Byte> list = new ArrayList<>();
 
         for(String str : bin.split("(?<=\\G.{8})")) {
-            list.add(Byte.parseByte(str, 2));
+            list.add((byte) Integer.parseInt(str, 2 ));
         }
 
         Byte[] bytes = list.toArray(new Byte[list.size()]);
