@@ -143,7 +143,7 @@ const Navbar = () => {
     };
 
     const changeToCalender = () => {
-        history.push('/Calender');
+        history.push('/Calendar');
     };
 
     const changeToGroupsAndFriends = () => {
@@ -221,7 +221,7 @@ const Navbar = () => {
         };
 
         const changeToCalenderDrawer = () => {
-            history.push('/Calender');
+            history.push('/Calendar');
             handleDrawerClose();
         };
 

@@ -20,7 +20,7 @@ const TimeFilter = () => {
             <h3>Tidspunkt</h3>
             <TextField
                 onChange={handleFromChange}
-                style={{ marginBottom: '10px' }}
+                style={{ marginBottom: '10px', marginRight:'5px' }}
                 label="FRA TIDSPUNKT"
                 type="datetime-local"
                 defaultValue="2017-05-24T10:30"

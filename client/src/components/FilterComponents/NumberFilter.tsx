@@ -37,7 +37,7 @@ const NumberFilter = ({ minValue, maxValue, headline }: Props) => {
     <SliderContainer>
       <h3>{headline}</h3>
       <TextField
-        style={{minWidth:"60px", width: '45%', marginBottom: 24, marginRight: '5px' }}
+        style={{minWidth:"60px",width: '45%', marginBottom: 24, marginRight: '5px' }}
         onChange={onChangeValue}
         value={value[0]}
         id="filled-number"

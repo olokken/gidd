@@ -102,9 +102,9 @@ const { mobileView } = state;
                                 <li>Frontendutvikler: Ole</li>
                                 <li>Frontendutvikler: Håvard</li>
                                 <li>Frontendutvikler: William</li>
+                                <li>Frontendutvikler: Iben</li>
                                 <li>Backendutvikler: Ingebrigt</li>
                                 <li>Backendutvikler: Erling</li>
-                                <li>Backendutvikler: Iben</li>
                                 <li>Backendutvikler: Lea</li>
                             </StyledUl>
                         </StyledCol>
@@ -141,11 +141,13 @@ const { mobileView } = state;
 
                      <hr />
                      <StyledRow>
+                         <div style={{display:"flex"}}>
                          <img src={logo} style={{
                                     width:"40px", 
                                     margin: "10px"}} 
                             />
                          <p>&copy;{new Date().getFullYear} GIDD | Personvernerklæring og informasjonskapsler (cookies) </p>
+                         </div>
                      </StyledRow>
                  </StyledContainer>
         )
