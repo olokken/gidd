@@ -3,7 +3,7 @@ import { Typography, TextField, Button, withStyles } from '@material-ui/core';
 import '../styles/MyUser.css';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import { UserContext } from './UserContext';
+import { UserContext } from '../UserContext';
 import axios from '../Axios';
 import { useHistory } from 'react-router-dom';
 import Popup from './Popup';
