@@ -4,14 +4,14 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import ActivityForm from '../components/ActivityComponents/CreateActivity/ActivityForm';
+import ActivityForm from '../components/ActivityComponents/ActivityForm';
 import styled from 'styled-components';
-import SideFilter from '../components/Filters/SideFilter';
-import SortMenu from '../components/Sorting/SortMenu';
+import SideFilter from '../components/FilterComponents/SideFilter';
+import SortMenu from '../components/SortingComponents/SortMenu';
 import Activity, { ActivityList } from '../interfaces/Activity';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
-import AddButton from '../components/AddButton';
 import Popup from '../components/Popup'
+import AddButton from '../components/ActivityComponents/AddButton'; 
 
 //Endringer kan forekomme her
 

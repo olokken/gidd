@@ -15,9 +15,9 @@ export default interface Activity {
     //latitude: number;
     //longitude: number;
     //picture: any;
-    address: string;
-    equipmentList: Equipment[];
-    tagList: Tag[];
+    //address: string;
+    //equipmentList: Equipment[];
+    //tagList: Tag[];
 }
 
 export function ActivityList(): Activity[] {
@@ -32,9 +32,6 @@ export function ActivityList(): Activity[] {
         description:
             'Her skal vi kose oss og ae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim',
         level: 'Middels',
-        address: '',
-        equipmentList: [],
-        tagList: [],
     };
     const akt2: Activity = {
         ID: 2,
@@ -45,9 +42,6 @@ export function ActivityList(): Activity[] {
         maxCapacity: 20,
         description: 'Her skal vi ikke kose oss',
         level: 'Høy',
-        address: '',
-        equipmentList: [],
-        tagList: [],
     };
     const akt3: Activity = {
         ID: 3,
@@ -58,9 +52,6 @@ export function ActivityList(): Activity[] {
         maxCapacity: 20,
         description: 'Her skal vi kaste oss',
         level: 'Høy',
-        address: '',
-        equipmentList: [],
-        tagList: [],
     };
     const akt4: Activity = {
         ID: 4,
@@ -71,9 +62,6 @@ export function ActivityList(): Activity[] {
         maxCapacity: 20,
         description: 'Her skal vi ikke kaste oss',
         level: 'Lav',
-        address: '',
-        equipmentList: [],
-        tagList: [],
     };
     const akt5: Activity = {
         ID: 5,
@@ -84,9 +72,6 @@ export function ActivityList(): Activity[] {
         maxCapacity: 20,
         description: 'Her skal vi prøve litt mer',
         level: 'Middels',
-        address: '',
-        equipmentList: [],
-        tagList: [],
     };
     const akt6: Activity = {
         ID: 6,
@@ -97,9 +82,6 @@ export function ActivityList(): Activity[] {
         maxCapacity: 20,
         description: 'Her skal vi ikke prøve litt mer',
         level: 'Høy',
-        address: '',
-        equipmentList: [],
-        tagList: [],
     };
     const akt7: Activity = {
         ID: 7,
@@ -110,9 +92,6 @@ export function ActivityList(): Activity[] {
         maxCapacity: 20,
         description: 'Her skal vi kjede oss masse masse mye ',
         level: 'Høy',
-        address: '',
-        equipmentList: [],
-        tagList: [],
     };
 
     return [akt1, akt2, akt3, akt4, akt5, akt6, akt7];

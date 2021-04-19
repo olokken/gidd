@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import Routes from './Routes';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { UserContext } from './components/UserContext';
+import { UserContext } from './UserContext';
 import { useState, useMemo } from 'react';
 import User from './interfaces/User';
 

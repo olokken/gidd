@@ -8,15 +8,15 @@ import {
 import React, { useState, ChangeEvent, useContext } from 'react';
 import { UserContext } from '../../UserContext';
 import './ActivityForm.css';
-import axios from '../../../Axios';
+import axios from '../../Axios';
 import MapIcon from '@material-ui/icons/Map';
-import GeoSuggest from '../../MapComponents/GeoSuggest';
-import Popup from '../../Popup';
-import MapComponent from '../../MapComponents/MapComponent';
+import GeoSuggest from '../MapComponents/GeoSuggest';
+import Popup from '../Popup';
+import MapComponent from '../MapComponents/MapComponent';
 import { Marker } from 'react-google-maps';
-import Tag from '../../../interfaces/Tag';
-import Activity from '../../../interfaces/Activity';
-import Equipment from '../../../interfaces/Equipment';
+import Activity from '../../interfaces/Activity';
+import Equipment from '../../interfaces/Equipment';
+import Tag from '../../interfaces/Tag';
 
 const StyledButton = withStyles({
     root: {
@@ -141,9 +141,11 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             maxCapacity: 0,
             description: desc,
             level: '',
+            /*
             address: address,
             equipmentList: equipmentList,
             tagList: tagList,
+            */
         };
         console.log(activity);
 
