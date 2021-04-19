@@ -1,6 +1,6 @@
 import Button from '@material-ui/core/Button';
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, withGoogleMap } from 'react-google-maps';
+import { GoogleMap, withGoogleMap, Marker } from 'react-google-maps';
 import Activities from '../../containers/Activities';
 import DefaultCenter from '../../interfaces/DefaultCenter';
 
@@ -17,12 +17,11 @@ const Map = withGoogleMap<{ defaultCenter: DefaultCenter }>((props) => (
 
 interface Props {
     defaultCenter: DefaultCenter;
-    children?: React.ReactChild;
+    children?: React.ReactNode;
     width?: string;
     height?: string;
 }
-const MapComponent = ({ defaultCenter, children, width, height }: Props) => {
-    const WrappedMap = Map;
+const MapComponent = ({ defaultCenter, children,  width, height }: Props) => {
     return (
         <div style={{ width: width, height: height }}>
             <Map

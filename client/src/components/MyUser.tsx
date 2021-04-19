@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useState, useContext, useEffect } from 'react';
 import { Typography, TextField, Button, withStyles } from '@material-ui/core';
-import '../styles/MyUser.css';
+import './MyUser.css';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import { UserContext } from '../UserContext';
