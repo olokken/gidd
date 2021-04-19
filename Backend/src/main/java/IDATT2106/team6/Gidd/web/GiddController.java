@@ -496,7 +496,7 @@ public class GiddController {
                     .body(formatJson(body));
         }
 
-        log.debug("The activities are " + activities.toString());
+        log.debug(String.format("There are %d activities", activities.size()));
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
@@ -504,7 +504,7 @@ public class GiddController {
         body.put("activity", activities.toString());
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
-        log.debug("Returning activity object " + activities.toString());
+        log.debug(String.format("Returning %d activities", activities.size()));
         return ResponseEntity
                 .ok()
                 .headers(header)
