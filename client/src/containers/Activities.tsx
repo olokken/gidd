@@ -10,8 +10,8 @@ import SideFilter from '../components/FilterComponents/SideFilter';
 import SortMenu from '../components/SortingComponents/SortMenu';
 import Activity, { ActivityList } from '../interfaces/Activity';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
-import Popup from '../components/Popup'
-import AddButton from '../components/ActivityComponents/AddButton'; 
+import Popup from '../components/Popup';
+import AddButton from '../components/ActivityComponents/AddButton';
 
 //Endringer kan forekomme her
 
@@ -27,7 +27,7 @@ const AddAndSort = styled.div`
 
     @media only screen and (max-width: 951px) {
         flex-direction: column-reverse;
-  }
+    }
 `;
 
 const View = styled.div`
