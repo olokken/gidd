@@ -89,7 +89,7 @@ public class ActivityRepo extends GiddRepo {
         }finally {
             em.close();
         }
-        log.info("activity found successfully: " + String.valueOf(activity));
+        log.info("activity found successfully: " + String.valueOf(activity.getActivityId()));
         return activity;
     }
 
