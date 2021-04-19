@@ -1,4 +1,4 @@
-package IDATT2106.team6.Gidd.controller;
+package IDATT2106.team6.Gidd.web;
 
 import IDATT2106.team6.Gidd.models.*;
 import IDATT2106.team6.Gidd.models.ActivityLevel;
@@ -237,7 +237,7 @@ public class GiddController {
             newId = 0;
 
             Activity newActivity = mapToActivity(map, newId, user);
-            log.debug("Created new activity: " + newActivity.toString());
+            log.debug("Created new activity: " + newActivity.getActivityId());
             newId = newActivityValidId(newActivity);
             log.debug("new activity id: " + newId);
 
@@ -290,12 +290,11 @@ public class GiddController {
         body.put("activity", activity.toString());
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
-        log.debug("Returning activity object " + activity.toString());
-        System.out.println(activity.toString());
+        log.debug("Returning activity object " + activity.getActivityId());
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(new JSONObject(activity.toString()).toString());
+                .body(body);
     }
 
     @PutMapping(value="/activity/{id}", consumes = "application/json", produces = "application/json")
@@ -307,7 +306,7 @@ public class GiddController {
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
         headers.add("Content-Type", "application/json; charset=UTF-8");
-        log.info("old activity " + activity.toString());
+        log.info("old activity " + activity.getActivityId());
         if(activity==null || user == null){
             body.put("error", "user or activity is null");
             log.error("activity or user is null, returning error");
@@ -324,7 +323,7 @@ public class GiddController {
         activity.setDescription(map.get("description").toString());
         activity.setCapacity(Integer.parseInt(map.get("capacity").toString()));
         activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
-        log.info("new activity: " + activity.toString());
+        log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
         if(!edited){
             body.put("error", "activity was not edited");
@@ -836,7 +835,7 @@ public class GiddController {
     }
 
     private int newActivityValidId(Activity activity) {
-		log.info("creating new activity: " + activity.toString());
+		log.info("finding new valid id for an activity");
         boolean created;
         int endId;
         do{
@@ -950,7 +949,7 @@ public class GiddController {
 
         Activity activity = activityService.getActivity(activityId);
 
-        log.debug("Adding " + equipments.toString() + " to " + activity.toString());
+        log.debug("Adding " + equipments.toString() + " to " + activity.getActivityId());
         for(Equipment e : equipments) {
             ActivityEquipment activityEquipment = new ActivityEquipment(activity, e);
             if(activityService.addEquipmentToActivity(activity, activityEquipment)){
