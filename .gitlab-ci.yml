@@ -1,4 +1,3 @@
-image: ubuntu:latest
 #no free docker hmm
 #image: devayansarkar/maven-node-openjdk
 
