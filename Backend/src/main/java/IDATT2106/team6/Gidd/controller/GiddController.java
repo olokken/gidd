@@ -67,8 +67,6 @@ public class GiddController {
         map.put("result", "worked?!");
         return map;
     }
-    //TODO finn ut hvordan man returnerer exception og error message
-    //      evt se https://stackoverflow.com/questions/33801468/how-let-spring-security-response-unauthorizedhttp-401-code-if-requesting-uri-w
 
     @ResponseBody
     @RequestMapping("/security/generate/token")
@@ -257,9 +255,10 @@ public class GiddController {
                 .body(formatJson(body));
         }
         log.info("Activity created successfully");
+        body.put("id", "" + newId);
         return ResponseEntity
                 .created(URI.create(String.format("/activity/%d", newId)))
-                .body("Woohoo");
+                .body(formatJson(body));
     }
 
     @GetMapping(value = "/activity/{activityId}", produces = "application/json")
@@ -480,7 +479,26 @@ public class GiddController {
                 .body(formatJson(body));
     }
 
-    @PostMapping(value = "/user/{userId}/activity", consumes = "application/json", produces = "application/json")
+    @GetMapping(value = "/activity/{id}/user", produces = "application/json")
+    public ResponseEntity getAllUsersFromActivity(@PathVariable Integer id){
+        log.info("recieved get mapping /activity/" + id + "/user");
+        HttpHeaders headers = new HttpHeaders();
+        HashMap<String, String> userMap = new HashMap<>();
+        HashMap<String, String> errorCode = new HashMap<>();
+        List<User> users = activityService.getUserFromActivity(id);
+        if(users.size() != 0){
+            log.info("users found for activity with id " + id);
+            userMap.put("user","");
+            users.stream().forEach(u -> userMap.put("user", userMap.get("user") + u.getUserId() + ","));
+            userMap.put("user", userMap.get("user").substring(0, userMap.get("user").length() - 1));
+            return ResponseEntity.ok().headers(headers).body(formatJson(userMap));
+        }
+        log.error("no activity was found with id: " + id);
+        errorCode.put("error", "no activity found");
+        return ResponseEntity.badRequest().headers(headers).body(formatJson(errorCode));
+    }
+
+    @PostMapping(value = "/user/activity", consumes = "application/json", produces = "application/json")
     public ResponseEntity registerUserToActivity(@RequestBody HashMap<String, Object> map){
         log.debug("Received PostMapping to '/user/{userId}/activity with userId" + Integer.parseInt(map.get("userId").toString()) + " and activityId " + Integer.parseInt(map.get("activityId").toString()));
         Timestamp time = new Timestamp(new Date().getTime());
@@ -756,6 +774,32 @@ public class GiddController {
                 .ok()
                 .headers(header)
                 .body(formatJson(body));
+    }
+
+    //todo - error code when giving too long numbers or strings ?
+    @DeleteMapping(value = "/activity/{activityId}")
+    public ResponseEntity deleteActivity(@PathVariable Integer activityId){
+        List<User> users = activityService.getUserFromActivity(activityId);
+                    Map<String, String> body = new HashMap<>();
+        HttpHeaders header = new HttpHeaders(); 
+        if(activityService.deleteActivity(activityId)){
+            log.debug("The deletion was successful");
+            header.add("Status", "200 OK");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("activityId", String.valueOf(activityId));
+            body.put("users","");
+            users.stream().forEach(u -> body.put("user", body.get("user") + u.getUserId() + ","));
+            body.put("users", body.get("user").substring(0, body.get("user").length() - 1));
+
+            return ResponseEntity
+                    .ok()
+                    .headers(header)
+                    .body(formatJson(body));    
+        }
+
+        body.put("error", "no activity was deleted, are you sure the activity exists");
+        return ResponseEntity.badRequest().headers(header).body(formatJson(body));
     }
 
     private int newActivityValidId(Activity activity) {

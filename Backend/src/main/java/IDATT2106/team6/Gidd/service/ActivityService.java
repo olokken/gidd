@@ -71,6 +71,16 @@ public class ActivityService {
         return repo.updateActivity(activity);
     }
 
+    public List<User> getUserFromActivity(int id){
+        List<User> participants = new ArrayList<User>();
+        if(getActivity(id) != null){
+            participants = repo.getUsersFromActivity(id);
+            //add owner first
+            participants.add(0, getActivity(id).getUser());
+        }
+        return participants;
+    }
+
     public Activity getActivity(int id) {
         log.info("Getting activity with activityId " + id);
         return repo.findActivity(id);
@@ -79,6 +89,11 @@ public class ActivityService {
     public List<Activity> searchForActivityByTitle(String title){
         log.info("Searching for activity with title " + title);
         return repo.findActivitiesBasedOnTitle(title);
+    }
+
+    public boolean deleteActivity(int id){
+        log.info("deleting activity with id: " + id);
+        return repo.deleteActivity(id);
     }
 
     public List<Activity> filterByActivityLevel(int activityLevel){
