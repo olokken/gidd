@@ -20,6 +20,22 @@ export default interface Activity {
     //tagList: Tag[];
 }
 
+export interface Activity2 {
+    title: string;
+    time: string;
+    repeat: number;
+    userId: string;
+    capacity: number;
+    groupId: number;
+    description: string;
+    image: string;
+    activityLevel: string;
+    equipment: string;
+    tags: string;
+    latitude: number;
+    longitude: number;
+}
+
 export function ActivityList(): Activity[] {
     const akt1: Activity = {
         ID: 1,

@@ -1,10 +1,4 @@
-import {
-    TextField,
-    Button,
-    withStyles,
-    Typography,
-    MenuItem,
-} from '@material-ui/core';
+import { TextField, Button, withStyles, MenuItem } from '@material-ui/core';
 import React, { useState, ChangeEvent, useContext } from 'react';
 import { UserContext } from '../../UserContext';
 import './ActivityForm.css';
@@ -14,9 +8,11 @@ import GeoSuggest from '../MapComponents/GeoSuggest';
 import Popup from '../Popup';
 import MapComponent from '../MapComponents/MapComponent';
 import { Marker } from 'react-google-maps';
-import Activity from '../../interfaces/Activity';
+import { Activity2 } from '../../interfaces/Activity';
 import Equipment from '../../interfaces/Equipment';
 import Tag from '../../interfaces/Tag';
+import Pageination from '@material-ui/lab/Pagination';
+import { ContactSupportOutlined } from '@material-ui/icons';
 
 const StyledButton = withStyles({
     root: {
@@ -48,6 +44,7 @@ interface Props {
 }
 
 const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
+    const [page, setPage] = useState<number>(1);
     const { user, setUser } = useContext(UserContext);
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
@@ -62,7 +59,34 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     const [openShowMap, setOpenShowMap] = useState<boolean>(false);
     const [tagList, setTagList] = useState<Tag[]>([]);
     const [tagsDesc, setTagsDesc] = useState<string>('');
-    const [repetition, setRepetition] = useState(0);
+    const [activityLevel, setActivityLevel] = useState<string>('');
+    const [capacity, setCapacity] = useState<number>(0);
+    const [repetition, setRepetition] = useState<number>(0);
+    const [image, setImage] = useState<string>('');
+    const [activity, setActivity] = useState<Activity2>({
+        title: '',
+        time: '',
+        repeat: 0,
+        userId: user.userID,
+        capacity: 0,
+        groupId: 0,
+        description: '',
+        image: '',
+        activityLevel: '',
+        equipment: '',
+        tags: '',
+        latitude: 0,
+        longitude: 0,
+    });
+
+    const onPageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value);
+    };
+
+    const checkInput = (input: string) => {
+        if (input.length > 0 && input.charAt(0) !== ' ') return true;
+        else return false;
+    };
 
     const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
         setTitle((event.target as HTMLInputElement).value);
@@ -89,6 +113,31 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         setTagsDesc(str);
     };
 
+    const onChangeActivityLevel = (event: ChangeEvent<HTMLInputElement>) => {
+        const str: string = (event.target as HTMLInputElement).value;
+        setActivityLevel(str);
+    };
+
+    const onChangeCapacity = (event: ChangeEvent<HTMLInputElement>) => {
+        const str: string = (event.target as HTMLInputElement).value;
+        try {
+            setCapacity(+str);
+        } catch (error) {
+            alert('Skriv inn et tall');
+            console.log('Could not convert string to number: ' + error.message);
+        }
+    };
+
+    const onChangeRepetitions = (event: ChangeEvent<HTMLInputElement>) => {
+        const str: string = (event.target as HTMLInputElement).value;
+        try {
+            setRepetition(+str);
+        } catch (error) {
+            alert('Skriv inn et tall');
+            console.log('Could not convert string to number: ' + error.message);
+        }
+    };
+
     const addEquipment = (event: React.KeyboardEvent): boolean => {
         if (event.key === 'Enter') {
             if (checkInput(equipmentDesc)) {
@@ -109,13 +158,6 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         return false;
     };
 
-    const checkInput = (input: string) => {
-        if (input.length > 0 && input.charAt(0) !== ' ') return true;
-        else return false;
-    };
-
-    //TODO type in tags with commas between each tag. Split the string with commas and map through
-    //all the commas and display them.
     const addTags = (event: React.KeyboardEvent) => {
         if (event.key == 'Enter') {
             if (checkInput(tagsDesc)) {
@@ -129,45 +171,92 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             }
         }
     };
-    //TODO show the next textinput
 
-    const createActivity = () => {
-        const activity: Activity = {
-            ID: counterAct,
+    const postActivity = () => {
+        let equipmentString = '';
+        equipmentList.map((equipment) => {
+            equipmentString += equipment.description;
+        });
+        let tagString = '';
+        tagList.map((tag) => {
+            tagString += tag.desc;
+        });
+        const activity: Activity2 = {
             title: title,
-            time: date.toString(),
-            owner: user.firstName + ' ' + user.lastName,
-            capacity: 0,
-            maxCapacity: 0,
+            time:
+                date.getFullYear() +
+                '-' +
+                (+date.getMonth() + 1) +
+                '-' +
+                date.getDate() +
+                ' ' +
+                date.getHours() +
+                ':' +
+                date.getMinutes() +
+                ':' +
+                date.getSeconds(),
+            repeat: repetition,
+            userId: user,
+            capacity: capacity,
+            groupId: 0,
             description: desc,
-            level: '',
-            /*
-            address: address,
-            equipmentList: equipmentList,
-            tagList: tagList,
-            */
+            image: '1111',
+            activityLevel: activityLevel.toUpperCase(),
+            equipment: equipmentString,
+            tags: tagString,
+            latitude: 0,
+            longitude: 0,
         };
+
+        console.log(activity.time);
         console.log(activity);
 
+        axios
+            .post('/activity', activity)
+            .then((response) => {
+                JSON.stringify(response);
+                console.log(response.data);
+            })
+            .catch((error) =>
+                console.log('Could not post activity: ' + error.message)
+            );
         handleReset();
-        //TODO: Post this to backend.
-        axios.post(url, activity);
-        //.then
-        setOpenPopup(!openPopup);
     };
 
     const handleReset = () => {
-        setReset(true);
         setTitle('');
         setDesc('');
-        setAddress('');
         setDate(new Date());
         setDateDisplay('');
-        setEquipmentDesc('');
+        setAddress('');
         setEquipmentList([]);
+        setEquipmentDesc('');
         setCounterAct(0);
-        setTagsDesc('');
         setCounterTag(0);
+        setReset(true);
+        setOpenShowMap(false);
+        setTagList([]);
+        setTagsDesc('');
+        setActivityLevel('');
+        setCapacity(0);
+        setRepetition(0);
+        setActivity({
+            title: '',
+            time: '',
+            repeat: 0,
+            userId: user.userID,
+            capacity: 0,
+            groupId: 0,
+            description: '',
+            image: '',
+            activityLevel: '',
+            equipment: '',
+            tags: '',
+            latitude: 0,
+            longitude: 0,
+        });
+
+        setOpenPopup(!openPopup);
     };
 
     return (
@@ -176,16 +265,18 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             style={{ display: 'flex', justifyContent: 'center' }}
         >
             <div id="left">
-                <div>
-                    <TextField
-                        style={{ padding: '5px' }}
-                        className="textfield"
-                        label="Tittel"
-                        value={title}
-                        onChange={onChangeTitle}
-                        variant="outlined"
-                    />
-                </div>
+                {page === 1 && (
+                    <div>
+                        <TextField
+                            style={{ padding: '5px' }}
+                            className="textfield"
+                            label="Tittel"
+                            value={title}
+                            onChange={onChangeTitle}
+                            variant="outlined"
+                        />
+                    </div>
+                )}
                 <div>
                     <div
                         style={{
@@ -261,6 +352,9 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     label="Bilde"
                     /*value={Picture}
                     onChange={onChangePicture}*/
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        console.log((event.target as HTMLInputElement).value);
+                    }}
                     InputLabelProps={{
                         shrink: true,
                     }}
@@ -301,8 +395,8 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                             style={{ width: '110px' }}
                             id="select"
                             label="Aktivitetgrad"
-                            /*onChange={onChangeActivityLevel}
-                            value={ActivityLevel}*/
+                            onChange={onChangeActivityLevel}
+                            value={activityLevel}
                             variant="outlined"
                             className="textfield"
                             select
@@ -319,23 +413,23 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                         InputLabelProps={{
                             shrink: true,
                         }}
-                        /*value={address}*/
-                        //onChange={onChangeCapacity}
+                        value={capacity}
+                        onChange={onChangeCapacity}
                         variant="outlined"
                         className="textfield"
                     />
 
                     <TextField
                         style={{ padding: '5px', width: 'auto' }}
-                        type="number"
                         label="Gjentakinger"
+                        type="number"
                         InputLabelProps={{
                             shrink: true,
                         }}
-                        /*value={address}*/
                         variant="outlined"
-                        //onChange={onChangeRepeat}
                         className="textfield"
+                        value={repetition}
+                        onChange={onChangeRepetitions}
                     />
                 </div>
             </div>
@@ -368,7 +462,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     <StyledButton
                         style={{ marginRight: '4px' }}
                         className="button"
-                        onClick={createActivity}
+                        onClick={postActivity}
                     >
                         Opprett Aktivitet
                     </StyledButton>
@@ -381,6 +475,12 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     </StyledButton>
                 </div>
             </div>
+            <Pageination
+                style={{ justifyContent: 'center', display: 'flex' }}
+                onChange={onPageChange}
+                count={8}
+                size="large"
+            />
         </div>
     );
 };
