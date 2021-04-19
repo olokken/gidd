@@ -9,9 +9,12 @@ import styled from 'styled-components';
 import SideFilter from '../components/FilterComponents/SideFilter';
 import SortMenu from '../components/SortingComponents/SortMenu';
 import Activity, { ActivityList } from '../interfaces/Activity';
+import ActivityResponse from '../interfaces/ActivityResponse';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
-import Popup from '../components/Popup'
-import AddButton from '../components/ActivityComponents/AddButton'; 
+import Popup from '../components/Popup';
+import AddButton from '../components/ActivityComponents/AddButton';
+import axios from '../Axios';
+import { Button } from '@material-ui/core';
 
 //Endringer kan forekomme her
 
@@ -27,7 +30,7 @@ const AddAndSort = styled.div`
 
     @media only screen and (max-width: 951px) {
         flex-direction: column-reverse;
-  }
+    }
 `;
 
 const View = styled.div`
@@ -41,7 +44,7 @@ const View = styled.div`
 `;
 
 const Activities = () => {
-    const [activities, setActivities] = useState<Activity[]>([]);
+    const [activities, setActivities] = useState<ActivityResponse[]>([]);
     const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     const onClickAddButton = () => {
@@ -49,9 +52,13 @@ const Activities = () => {
     };
 
     useEffect(() => {
-        const Liste = ActivityList();
-        //Kode for å hente ut alle aktiviteter
-        setActivities(Liste);
+        axios
+            .get('/activity')
+            .then((response) => {
+                console.log(response.data['activity']);
+                setActivities(response.data['activity']);
+            })
+            .catch((error) => console.log(error));
     }, []);
 
     return (

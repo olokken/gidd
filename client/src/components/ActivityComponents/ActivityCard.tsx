@@ -12,6 +12,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
 import hiking from '../../assets/hiking.jpg';
+import ActivityResponse from '../../interfaces/ActivityResponse';
 
 const CardInformation = styled.div`
     height: 100%;
@@ -28,10 +29,10 @@ const TitleArea = styled.div`
 `;
 
 interface Props {
-    activity: Activity;
+    activity: ActivityResponse;
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
-    setActivity: React.Dispatch<React.SetStateAction<Activity>>;
+    setActivity: any;
 }
 
 const ActivityCard = ({
@@ -40,8 +41,8 @@ const ActivityCard = ({
     setOpenPopup,
     setActivity,
 }: Props) => {
-    const participants = new String(activity.capacity);
-    const fullCapacity = new String(activity.maxCapacity);
+    const participants = new String(activity.registeredParticipants.length);
+    const fullCapacity = new String(activity.capacity);
     const comparison = new String(participants + '/' + fullCapacity);
     const eventTime = new String(activity.time);
 
@@ -54,18 +55,19 @@ const ActivityCard = ({
             onClick={onClickActivity}
             style={{ minWidth: '200px', maxWidth: '31%', margin: '5px' }}
         >
-            
             <CardInformation>
-            <Grid>
-                <Grid item>
-                    <CardMedia
-                        component="img"
-                        alt={'Image related to the activity' + activity.title}
-                        height="140"
-                        image={hiking} // hente bildet frå aktiviteta
-                    />
+                <Grid>
+                    <Grid item>
+                        <CardMedia
+                            component="img"
+                            alt={
+                                'Image related to the activity' + activity.title
+                            }
+                            height="140"
+                            image={hiking} // hente bildet frå aktiviteta
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
                 <TitleArea>
                     <Grid container wrap="nowrap" spacing={2}>
                         <Grid item xs={8}>
@@ -91,7 +93,7 @@ const ActivityCard = ({
                             <Chip
                                 variant="outlined"
                                 size="small"
-                                label={activity.level}
+                                label={activity.activityLevel}
                                 style={{
                                     backgroundColor: '#ffa6a0',
                                     borderBlockEndWidth: '0px',
@@ -104,8 +106,8 @@ const ActivityCard = ({
                 <CardContent>
                     <Grid container wrap="nowrap" spacing={2}>
                         <Grid item>
-                            <Tooltip title={activity.owner}>
-                                <Avatar>{activity.owner.charAt(0)}</Avatar>
+                            <Tooltip title={activity.userId}>
+                                <Avatar>{activity.userId}</Avatar>
                             </Tooltip>
                         </Grid>
                         <Grid item xs>

@@ -7,14 +7,17 @@ import GeoSuggest from '../components/MapComponents/GeoSuggest';
 import DefaultCenter from '../interfaces/DefaultCenter';
 import TagTextField from '../components/ActivityComponents/TagTextField';
 import axios from 'axios';
+import {Button} from '@material-ui/core'; 
 import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
+import ActivityResponse from '../interfaces/ActivityResponse';
+import { act } from '@testing-library/react';
 
 const Container = styled.div`
     justify-content: center;
 `;
 
 const Map = () => {
-    const [activities, setActivities] = useState<Activity[]>([]);
+    const [activities, setActivities] = useState<ActivityResponse[]>([]);
     const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>();
 
     const getCoordinates = () => {
@@ -36,13 +39,23 @@ const Map = () => {
 
     useEffect(() => {
         getCoordinates();
-        setActivities(ActivityList());
+        axios
+            .get('/activity')
+            .then((response) => {
+                console.log(response.data['activity']);
+                setActivities(response.data['activity']);
+            })
+            .catch((error) => console.log(error));
     }, []);
 
-    const renderMarkers = activities.map((act: Activity, index: number) => {
-        //Test med backend, kanskje den her må inni en useEffect hvor den kjører hver gang activities endrer seg :-)
-        return <MapMarker key={index} activity={act}></MapMarker>;
-    });
+    let markers;
+
+    useEffect(() => {
+        markers = activities.map((act: ActivityResponse, index: number) => {
+            //Test med backend, kanskje den her må inni en useEffect hvor den kjører hver gang activities endrer seg :-)
+            return <MapMarker key={index} activity={act}></MapMarker>;
+        });
+    }, [activities]);
 
     return (
         <Container>
@@ -52,13 +65,13 @@ const Map = () => {
                     width="100vw"
                     height="85vh"
                 >
-                    {renderMarkers}
+                    {markers}
                 </MapComponent>
             )}
             <GeoSuggest
                 onLocationChange={(location) => setDefaultCenter(location)}
             ></GeoSuggest>
-            <TagTextField></TagTextField>
+            <Button onClick={() => {console.log(activities)}}>Jahahaha</Button>
         </Container>
     );
 };

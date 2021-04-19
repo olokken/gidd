@@ -3,10 +3,11 @@ import Pageination from '@material-ui/lab/Pagination';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
+import ActivityResponse from '../../interfaces/ActivityResponse';
 import Popup from '../Popup';
 import ActivityCard from './ActivityCard';
-import ActivityInformation from './ActivityInformation';
-import ActivityInformationPopup from './ActivityInformationPopup';
+import ActivityInformation from './ActivityInformation'; 
+
 
 const Container = styled.div`
     display: flex;
@@ -15,12 +16,14 @@ const Container = styled.div`
 `;
 
 interface Props {
-    activities: Activity[];
+    activities: ActivityResponse[];
 }
 
 const ActivityGrid = ({ activities }: Props) => {
     const [page, setPage] = useState<number>(1);
-    const [currentActivities, setCurrentActivities] = useState<Activity[]>(activities);
+    const [currentActivities, setCurrentActivities] = useState<
+        ActivityResponse[]
+    >(activities);
     const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     useEffect(() => {
@@ -29,21 +32,23 @@ const ActivityGrid = ({ activities }: Props) => {
         setCurrentActivities(activities.slice(startIndex, endIndex));
     }, [page, activities]);
 
-    const [activity, setActivity] = useState<Activity>({
-        ID: 0,
-        title: '',
-        time: '',
-        //repeat: number;
-        //userID: number;
-        owner: '',
+    const [activity, setActivity] = useState<ActivityResponse>({
+        activityId: 0,
+        activityLevel: 'MEDIUM',
         capacity: 0,
-        maxCapacity: 0,
-        //groupId: number;
-        description: '',
-        level: '',
-        //latitude: number;
-        //longitude: number;
-        //picture: any;
+        daysToRepeat: 0,
+        description: 'test',
+        equipments: [],
+        groupId: 0,
+        image: '',
+        latitude: 0,
+        longitude: 0,
+        registeredParticipants: [],
+        tags: 'SII',
+        time: 1618924200000,
+        timeCreated: 1618830691000,
+        title: 'Test',
+        userId: 273813646,
     });
 
     const renderActivities = currentActivities.map((act, index: number) => {
@@ -72,12 +77,9 @@ const ActivityGrid = ({ activities }: Props) => {
             >
                 {renderActivities}
             </GridList>
-            <ActivityInformationPopup
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
-            >
-                <ActivityInformation activity={activity} />
-            </ActivityInformationPopup>
+            <Popup openPopup={openPopup} setOpenPopup={setOpenPopup}>
+                <ActivityInformation activity={activity}></ActivityInformation>
+            </Popup>
             <Pageination
                 style={{ justifyContent: 'center', display: 'flex' }}
                 onChange={onPageChange}

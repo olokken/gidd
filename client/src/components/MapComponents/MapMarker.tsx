@@ -3,9 +3,9 @@ import Activity from '../../interfaces/Activity';
 import { Marker } from 'react-google-maps';
 import Popup from '../Popup';
 import ActivityInformation from '../ActivityComponents/ActivityInformation';
-import ActivityInformationPopup from '../ActivityComponents/ActivityInformationPopup';
+import ActivityResponse from '../../interfaces/ActivityResponse';
 interface Props {
-    activity: Activity;
+    activity: ActivityResponse;
 }
 
 const MapMarker = ({ activity }: Props) => {
@@ -17,12 +17,9 @@ const MapMarker = ({ activity }: Props) => {
     return (
         <>
             <Marker onClick={markerOnClick} position={{ lat: 0, lng: 0 }} />
-            <ActivityInformationPopup
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
-            >
+            <Popup openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <ActivityInformation activity={activity} />
-            </ActivityInformationPopup>
+            </Popup>
         </>
     );
 };
