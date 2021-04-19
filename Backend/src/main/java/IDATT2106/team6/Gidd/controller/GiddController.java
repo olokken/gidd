@@ -253,9 +253,10 @@ public class GiddController {
                 .body(formatJson(body));
         }
         log.info("Activity created successfully");
+        body.put("id", "" + newId);
         return ResponseEntity
                 .created(URI.create(String.format("/activity/%d", newId)))
-                .body("Woohoo");
+                .body(formatJson(body));
     }
 
     @PutMapping(value="/activity/{id}", consumes = "application/json", produces = "application/json")
@@ -339,6 +340,25 @@ public class GiddController {
                 .ok()
                 .headers(header)
                 .body(formatJson(body));
+    }
+
+    @GetMapping(value = "/activity/{id}/user", produces = "application/json")
+    public ResponseEntity getAllUsersFromActivity(@PathVariable Integer id){
+        log.info("recieved get mapping /activity/" + id + "/user");
+        HttpHeaders headers = new HttpHeaders();
+        HashMap<String, String> userMap = new HashMap<>();
+        HashMap<String, String> errorCode = new HashMap<>();
+        List<User> users = activityService.getUserFromActivity(id);
+        if(users.size() != 0){
+            log.info("users found for activity with id " + id);
+            userMap.put("user","");
+            users.stream().forEach(u -> userMap.put("user", userMap.get("user") + u.getUserId() + ","));
+            userMap.put("user", userMap.get("user").substring(0, userMap.get("user").length() - 1));
+            return ResponseEntity.ok().headers(headers).body(formatJson(userMap));
+        }
+        log.error("no activity was found with id: " + id);
+        errorCode.put("error", "no activity found");
+        return ResponseEntity.badRequest().headers(headers).body(formatJson(errorCode));
     }
 
     @PostMapping(value = "/user/{userId}/activity", consumes = "application/json", produces = "application/json")
