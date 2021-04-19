@@ -97,8 +97,13 @@ public class ActivityService {
     }
 
     public List<Activity> filterByActivityLevel(int activityLevel){
-        log.info("Filtering activities wit activity level " + activityLevel);
+        log.info("Filtering activities with activity level " + activityLevel);
         return repo.findActivityByActivityLevel(activityLevel);
+    }
+
+    public List<Object> filterByTag(int tagId){
+        log.info("Filtering activities with tag " + tagId);
+        return repo.filterActivitiesByTag(tagId);
     }
 
     public boolean addEquipmentToActivity(Activity activity, ActivityEquipment activityEquipment){
