@@ -1,4 +1,4 @@
-import { makeStyles, createStyles, Theme, Grid, Typography, Paper, Avatar, Card, CardContent, Tooltip, Chip, CardMedia, Button } from '@material-ui/core';
+import { makeStyles, createStyles, Theme, Grid, Typography, CardContent, Chip, CardMedia, Button } from '@material-ui/core';
 import React from 'react';
 import Activity from '../../interfaces/Activity';
 import hiking from '../../assets/hiking.jpg';
@@ -8,7 +8,7 @@ import weather from '../../assets/weather.png';
 interface Props {
     activity: Activity;
 }
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     titlearea: {
         /*margin: `${theme.spacing(1)}px auto`,
@@ -42,8 +42,7 @@ const ActivityInformation = ({ activity }: Props) => {
     const classes = useStyles();
     const eventTime = new String(activity.time);
     return (
-    <div
-    >       
+    <div>       
             <Grid>
                 <Grid item>
                     <CardMedia

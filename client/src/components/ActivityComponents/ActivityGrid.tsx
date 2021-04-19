@@ -3,7 +3,6 @@ import Pageination from '@material-ui/lab/Pagination';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
-import Popup from '../Popup';
 import ActivityCard from './ActivityCard';
 import ActivityInformation from './ActivityInformation';
 import ActivityInformationPopup from './ActivityInformationPopup';
