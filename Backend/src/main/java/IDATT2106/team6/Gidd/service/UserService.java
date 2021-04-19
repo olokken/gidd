@@ -38,6 +38,11 @@ public class UserService {
         return repo.updateUser(newUser);
     }
 
+    public List<User> getUsers(){
+        log.info("getting all users");
+        return repo.getAllUsers();
+    }
+
     public User registerUser(int id, String email, String password, String firstname, String surname,
 	    int phoneNumber, ActivityLevel activityLevel){
 

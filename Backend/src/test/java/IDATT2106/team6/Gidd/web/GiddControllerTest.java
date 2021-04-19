@@ -11,6 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import IDATT2106.team6.Gidd.GiddApplication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
+
+import IDATT2106.team6.Gidd.*;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +33,8 @@ public class GiddControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private IDATT2106.team6.Gidd.web.GiddController controller;
+
+    private GiddController controller;
 
     @Before
     public void initialize() throws Exception {

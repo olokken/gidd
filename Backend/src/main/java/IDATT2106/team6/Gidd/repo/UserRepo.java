@@ -20,6 +20,7 @@ import javax.persistence.TypedQuery;
 @Repository
 public class UserRepo extends GiddRepo {
     private Logger log = new Logger(UserRepo.class.toString());
+    
     public UserRepo() throws IOException{
         connect();
     }
