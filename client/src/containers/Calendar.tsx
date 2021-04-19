@@ -1,16 +1,13 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate } from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction'
-import {ActivityList} from '../interfaces/Activity';
 import { EventInput } from '@fullcalendar/react';
 import axios from '../Axios'
 import styled from 'styled-components';
-import Popup from '../components/Popup';
-import ActivityPopup from '../components/ActivityComponents/ActivityInformationPopup'
-import { isAbsolute } from 'node:path';
-import {UserContext} from '../UserContext'
+import { UserContext } from '../UserContext'
+import { isConstructorDeclaration } from 'typescript';
 
 const CalendarContainer = styled.div`
   --fc-button-bg-color: #f44336;
@@ -23,99 +20,107 @@ const CalendarContainer = styled.div`
   --fc-event-font-size:50px;
 `;
 
-const todayStr = new Date().toISOString().replace(/T.*$/, '') 
+const todayStr = new Date().toISOString().replace(/T.*$/, '')
 
-/*list.forEach(x  => {
-  console.log(x.title)
-})*/
 
-const INITIAL_EVENTS: EventInput[] = [
-  {
-    title: 'All-day event',
-    start: todayStr + ' 13:00:00',
-    end:  todayStr + ' 16:00:00',
-    backgroundColor: todayStr + 'T13:00:00' > todayStr ? '#f44336': '#f66055'
-  },
-  {
-    title: 'Timed event',
-    start: '2021-04-18 12:00:00',
-    end: '2021-04-18 14:00:00',
-    backgroundColor: '2021-04-18T 2:00:00' > todayStr ? '#f44336': '#f66055'
+
+const Calender = () => {
+  const { user } = useContext(UserContext);
+  const [activities, setActivities] = useState<EventInput[]>([]);
+
+  const getMyActivities = () => {
+    const url = `/user/1780489954/activity`;
+    const activityIds: string[] = [];
+    console.log(url)
+    axios.get(url).then((response) => {
+      activityIds.push(response.data.activityIds);
+      console.log(activityIds);
+    }).catch((error) => {
+      console.log('error' + error.message)
+    })
   }
-]
 
-const Calender = () =>  {
-  const { user, setUser } = useContext(UserContext);
-  const [activities, setActivities] = useState<EventInput[]>([  {
-      title: 'All-day event',
-      start: todayStr + 'T13:00:00',
-      end:  todayStr + 'T16:00:00',
-      backgroundColor: todayStr + 'T13:00:00' > todayStr ? '#f44336': '#f66055',
-    },
-    {
-      title: 'Timed event',
-      start: '2021-04-18T12:00:00',
-      end: '2021-04-18T14:00:00',
-      backgroundColor: '2021-04-18T12:00:00' > todayStr ? '#f44336': '#f66055',
-    }]);
-    //const Activites = [{title: 'test1', date:'2021-04-15'},{title: 'test2', date:'2021-04-16'}, {title: 'test3', date:'2021-04-14'}]
-  
-    const handleOnClick = (eventInfo:EventInput) => {
-      console.log(user)
-      setActivities(activities => [...activities,{
-        title: 'New event',
-        start: todayStr + 'T18:00:00',
-        end:  todayStr + 'T20:00:00',
-        backgroundColor: todayStr + 'T13:00:00' > todayStr ? '#f44336': '#f66055'
-      }])
-      const url = '/activity'
-      axios.get(url).then((response) => {
-        console.log(response.data);
-      }).catch(error => {
-        console.log('error' + error.message)
+  useEffect(() => {
+    const url = '/activity'
+    axios.get(url).then((response) => {
+      console.log(response)
+        response.data.activity.forEach((activity: any) => {
+        const date = new Date(activity.time)
+        const curr_date = date.getDate();
+        const curr_month = (date.getMonth() + 1) >= 10 ? (date.getMonth()) : '0' + (date.getMonth() + 1);
+        const curr_year = date.getFullYear();
+        const curr_hour = date.getHours() - 2;
+        const curr_minutes = date.getMinutes() == 0 ? (date.getMinutes() + '0') :date.getMinutes();
+        const curr_seconds = date.getSeconds() == 0 ? (date.getSeconds()+ '0') : date.getSeconds();
+        const formattedDate = curr_year + "-" + curr_month + "-" + curr_date + "T" + curr_hour + ":" + curr_minutes + ":" + curr_seconds;
+        const formattedEnd = curr_year + "-" + curr_month + "-" + curr_date + "T" + (curr_hour + 2) + ":" + curr_minutes + ":" + curr_seconds;
+        setActivities(activities => [...activities, {
+          ID: activity.activityId,
+          title: activity.title,
+          start: formattedDate,
+          end: formattedEnd,
+          backgroundColor: formattedDate > todayStr ? '#f44336': '#f66055'
+        }])
       })
-  
-  }
+    }).catch((error: any) => {
+      console.log('error' + error.message)
+    })
+    console.log(activities)
+  }, []);
+
+
+  const handleOnClick = (activity:EventInput) => {
+    const activityID = activity.event.extendedProps.ID
+    const url = `/activity/${activityID}`
+    axios.get(url).then(response => {
+      console.log(response.data)
+    }).catch(error => {
+      console.log('Kunne ikke hente aktivitet: ' + error.message)
+    })
+
     
-    return (
-      <CalendarContainer>
-        <FullCalendar
+  }
+
+  return (
+    <CalendarContainer>
+      <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        }} 
-        height = '750px'
+        }}
+        height='750px'
         initialView="timeGridWeek"
-        editable={true}
-        selectable={false}
+        editable={false}
+        selectable={true}
         selectMirror={true}
         dayMaxEvents={true}
         allDaySlot={false}
-        locale = {'en-GB'}
-        displayEventEnd = {true}
-        buttonText = {{
-          today:    'I dag',
-          month:    'Måned',
-          week:     'Uke',
-          day:      'Dag',
+        locale={'en-GB'}
+        displayEventEnd={true}
+        buttonText={{
+          today: 'I dag',
+          month: 'Måned',
+          week: 'Uke',
+          day: 'Dag',
         }}
-        eventDisplay= {'block'}
-        events= {activities}
-        firstDay = {1}
-        dayHeaderFormat = {{ weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true, hour12: false}}
-        slotLabelFormat = {{
+        slotEventOverlap={false}
+        eventDisplay={'block'}
+        progressiveEventRendering={true}
+        events={activities}
+        firstDay={1}
+        dayHeaderFormat={{ weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true, hour12: false }}
+        slotLabelFormat={{
           hour12: false,
           hour: 'numeric',
           minute: '2-digit',
           omitZeroMinute: false,
           meridiem: 'short'
         }}
-        progressiveEventRendering = {true}
-        eventClick = {handleOnClick}
+        eventClick={handleOnClick}
       /></CalendarContainer>
-    )
+  )
 }
 
 export default Calender;

@@ -47,12 +47,10 @@ const Login = () => {
     const onLogin = async () => {
         if (!checkPassword() || email !== '') {
             const user = await login();
-            console.log(email);
-            console.log(password);
             axios
                 .post('/login', {
-                    "email": email,
-                    "password": password,
+                    email: email,
+                    password: password,
                 })
                 .then((response) => {
                     console.log(JSON.stringify(response.data.id));
