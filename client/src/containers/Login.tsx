@@ -47,7 +47,6 @@ const Login = () => {
     const onLogin = async () => {
         if (!checkPassword() || email !== '') {
             const user = await login();
-            setUser(user);
             axios
                 .post('/login', {
                     email: email,

@@ -12,6 +12,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
 import hiking from '../../assets/hiking.jpg';
+import { convertToObject } from 'typescript';
 
 const CardInformation = styled.div`
     height: 100%;
@@ -46,6 +47,7 @@ const ActivityCard = ({
     const eventTime = new String(activity.time);
 
     const onClickActivity = () => {
+        console.log('hei')
         setOpenPopup(!openPopup);
         setActivity(activity);
     };
