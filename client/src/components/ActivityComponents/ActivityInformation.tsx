@@ -87,7 +87,7 @@ const ActivityInformation = ({ activity }: Props) => {
                 <Grid container wrap="nowrap" spacing={2}>
                     <Grid item style={{ paddingLeft: '15px' }}>
                         <Typography>
-                            Aktivitet publisert av: {activity.userId}
+                            Aktivitet publisert av: {activity.user['firstName']+ ' ' + activity.user['surname']}
                         </Typography>
                     </Grid>
                 </Grid>

@@ -24,13 +24,11 @@ const NumberFilter = ({ minValue, maxValue, headline }: Props) => {
   const onChangeValue = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = [parseInt(event.target.value), value[1]];
     setValue(newValue);
-    console.log(value); 
   };
 
   const onChangeValue2 = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = [value[0], parseInt(event.target.value)];
     setValue(newValue);
-    console.log(value); 
   };
 
   return (

@@ -48,7 +48,7 @@ const ActivityGrid = ({ activities }: Props) => {
         time: 1618924200000,
         timeCreated: 1618830691000,
         title: 'Test',
-        userId: 273813646,
+        user:{},
     });
 
     const renderActivities = currentActivities.map((act, index: number) => {

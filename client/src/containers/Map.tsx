@@ -39,6 +39,7 @@ const Map = () => {
 
     useEffect(() => {
         getCoordinates();
+
         axios
             .get('/activity')
             .then((response) => {
