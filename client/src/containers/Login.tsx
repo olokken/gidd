@@ -47,10 +47,12 @@ const Login = () => {
     const onLogin = async () => {
         if (!checkPassword() || email !== '') {
             const user = await login();
+            console.log(email);
+            console.log(password);
             axios
                 .post('/login', {
-                    email: email,
-                    password: password,
+                    "email": email,
+                    "password": password,
                 })
                 .then((response) => {
                     console.log(JSON.stringify(response.data.id));
@@ -61,7 +63,6 @@ const Login = () => {
                     console.log('error: ' + error.message);
                     alert('Email eller passord er feil');
                 });
-            history.push('/HomePage');
         } else {
             alert('Vennligst fyll ut alt');
         }
@@ -146,12 +147,12 @@ const Login = () => {
         const newUser: User = {
             firstName: response.profileObj.givenName,
             surname: response.profileObj.familyName,
-            userID: '',
+            userID: response.profileObj.googleId,
             email: response.profileObj.email,
             picture: response.profileObj.picture,
             password: '',
         };
-        setUser(newUser);
+        setUser(newUser.userID);
         onLoginSoMe();
     };
 
@@ -165,12 +166,12 @@ const Login = () => {
         const newUser: User = {
             firstName: name[0],
             surname: name[1],
-            userID: '',
+            userID: response.id,
             email: response.email,
             picture: response.picture,
             password: '',
         };
-        setUser(newUser);
+        setUser(newUser.userID);
         onLoginSoMe();
     };
 
