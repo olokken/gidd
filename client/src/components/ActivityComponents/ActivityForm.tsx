@@ -82,7 +82,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         title: '',
         time: '',
         repeat: 0,
-        userId: user.userID,
+        userId: user,
         capacity: 0,
         groupId: 0,
         description: '',

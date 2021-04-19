@@ -1,9 +1,4 @@
-import React, {
-    ChangeEvent,
-    KeyboardEventHandler,
-    useEffect,
-    useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import ActivityForm from '../components/ActivityComponents/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/FilterComponents/SideFilter';
@@ -14,7 +9,6 @@ import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
 import Popup from '../components/Popup';
 import AddButton from '../components/ActivityComponents/AddButton';
 import axios from '../Axios';
-import { Button } from '@material-ui/core';
 
 //Endringer kan forekomme her
 
