@@ -91,6 +91,11 @@ public class ActivityService {
         return repo.findActivitiesBasedOnTitle(title);
     }
 
+    public boolean deleteActivity(int id){
+        log.info("deleting activity with id: " + id);
+        return repo.deleteActivity(id);
+    }
+
     public List<Activity> filterByActivityLevel(int activityLevel){
         log.info("Filtering activities wit activity level " + activityLevel);
         return repo.findActivityByActivityLevel(activityLevel);
