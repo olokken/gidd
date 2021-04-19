@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import Activity from '../../interfaces/Activity';
 import hiking from '../../assets/hiking.jpg';
 import { convertToObject } from 'typescript';
+import ActivityResponse from '../../interfaces/ActivityResponse';
 
 const CardInformation = styled.div`
     height: 100%;
