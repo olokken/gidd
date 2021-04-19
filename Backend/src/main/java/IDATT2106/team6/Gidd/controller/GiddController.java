@@ -96,6 +96,131 @@ public class GiddController {
         return map;
     }
 
+    @PostMapping("/user")
+    public ResponseEntity registerUser(@RequestBody HashMap<String, Object> map){
+        //      TODO Error handling
+        //      Make sure the user's email isn't already registered
+        //      Return Exception to user
+        log.info("recieved postmapping to /user: " + map.toString());
+        User result = userService.registerUser(
+                getRandomID(),
+                map.get("email").toString(),
+                map.get("password").toString(),
+                map.get("firstName").toString(),
+                map.get("surname").toString(),
+                Integer.parseInt(map.get("phoneNumber").toString()),
+                ActivityLevel.valueOf(map.get("activityLevel").toString()));
+        log.info("created user: " + result.toString());
+        Map<String, String> body = new HashMap<>();
+        HttpHeaders header = new HttpHeaders();
+
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        log.info("created user " + result.toString());
+        if(result != null){
+            log.info("created user");
+            header.add("Status", "201 CREATED");
+
+            body.put("id", String.valueOf(result.getUserId()));
+
+            return ResponseEntity.ok()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+        log.error("Created user is null, does the user already exist?");
+        header.add("Status", "400 BAD REQUEST");
+        body.put("error", "Created user is null, does the user already exist?");
+        return ResponseEntity.ok()
+                .headers(header).body(formatJson(body));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity loginUser(@RequestBody Map<String, Object> map){
+        log.info("recieved postmapping to /login " + map.toString());
+        HttpHeaders header = new HttpHeaders();
+        boolean result = userService.login(map.get("email").toString(), map.get("password").toString());
+        Map<String, String> body = new HashMap<>();
+        if(result){
+            log.info("logged in user with email " + map.get("email").toString());
+            body.put("id", String.valueOf(userService.getUser(map.get("email").toString()).getUserId()));
+            header.add("Status", "200 OK");
+            return ResponseEntity.ok()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+        log.error("unable to login user with email: " + map.get("email").toString());
+        header.add("Status", "403 Forbidden");
+        body.put("error", "unable to login user with email: " + map.get("email").toString());
+        return ResponseEntity.ok()
+                .headers(header).body(formatJson(body));
+    }
+
+    @PutMapping(value = "/user/{id}")
+    public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id){
+        log.info("recieved a put mapping for user with id: " + id + " and map " + map.toString());
+        HttpHeaders header = new HttpHeaders();
+        Map<String, String> body = new HashMap<>();
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        if(!validateStringMap(map)){
+            log.error("returning error about null/blank fields in user put mapping " + map.toString());
+            body.put("error", "one or more json-fields is null/blank");
+            return ResponseEntity.badRequest().body(formatJson(body));
+        }
+
+        try {
+            Integer.parseInt(map.get("phoneNumber").toString());
+        } catch (NumberFormatException e) {
+            log.error("phone number cannot be parsed to number " + map.toString());
+            body.put("error", "phone number is not numeric");
+            return ResponseEntity.badRequest().body(formatJson(body));
+        }
+
+        boolean result = userService.updateUser(
+                id,
+                map.get("email").toString(),
+                map.get("password").toString(),
+                map.get("firstName").toString(),
+                map.get("surname").toString(),
+                Integer.parseInt(map.get("phoneNumber").toString()),
+                ActivityLevel.valueOf(map.get("activityLevel").toString()));
+
+        log.info("edited user " + map.toString());
+        if(result){
+            log.info("created user");
+            header.add("Status", "201 CREATED");
+
+            body.put("id", String.valueOf(id));
+
+            return ResponseEntity.ok()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+        log.error("User could not be edited, are you sure the user exists");
+        header.add("Status", "400 BAD REQUEST");
+        body.put("error", "could not edit user are you sure the user exists?");
+        return ResponseEntity.badRequest().body(formatJson(body));
+    }
+
+    @DeleteMapping("user/{id}")
+    public ResponseEntity deleteUser(@PathVariable Integer id){
+        log.info("recieved deletemapping to user with id " + id);
+        HttpHeaders header = new HttpHeaders();
+        boolean result = userService.deleteUser(id);
+        Map<String, String> body = new HashMap<>();
+
+        if(result){
+            log.info("deletion successful");
+            header.add("Status", "200 OK");
+            return ResponseEntity.ok()
+                    .headers(header).body(formatJson(body));
+        }
+        log.error("unable to delete user with id: " + id);
+        body.put("error", "deletion failed, are you sure the user with id " + id + " exists?");
+        header.add("Status", "400 BAD REQUEST");
+        return ResponseEntity.ok()
+                .headers(header).body(formatJson(body));
+    }
+
     @PostMapping(value = "/activity", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
         log.debug("Recieved new activity: " + map.toString());
@@ -133,6 +258,89 @@ public class GiddController {
         return ResponseEntity
                 .created(URI.create(String.format("/activity/%d", newId)))
                 .body("Woohoo");
+    }
+
+    @PutMapping(value="/activity/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity editActivity(@RequestBody Map<String, Object> map, @PathVariable("id") int actId){
+        log.info("recieved putmapping to /activity/{id}");
+        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+        log.debug("User with id recieved " + user.toString());
+        Activity activity = activityService.getActivity(actId);
+        HttpHeaders headers = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+        headers.add("Content-Type", "application/json; charset=UTF-8");
+        log.info("old activity " + activity.toString());
+        if(activity==null || user == null){
+            body.put("error", "user or activity is null");
+            log.error("activity or user is null, returning error");
+            log.debug("Activity: " + (activity == null));
+            log.debug("User: " + (user==null));
+            return ResponseEntity
+                    .badRequest()
+                    .headers(headers)
+                    .body(formatJson(body));
+        }
+
+        activity.setTitle(map.get("title").toString());
+        activity.setTime(Timestamp.valueOf(map.get("time").toString()));
+        activity.setDescription(map.get("description").toString());
+        activity.setCapacity(Integer.parseInt(map.get("capacity").toString()));
+        activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
+        log.info("new activity: " + activity.toString());
+        boolean edited = activityService.editActivity(activity);
+        if(!edited){
+            body.put("error", "activity was not edited");
+            log.info("activity is not edited returning error");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(headers)
+                    .body("didnt work here either sad");
+        }
+
+        return ResponseEntity
+                .ok()
+                .headers(headers).body(formatJson(body));
+    }
+
+    @GetMapping(value = "/activity")
+    public ResponseEntity search(@RequestParam(value="searchWord", required = false) String searchValue, @RequestParam(value = "activityLevel", required = false) Integer activityLevel){
+        log.debug("Received GetMapping to '/activity' with Query Params");
+        List<Activity> activities;
+        if(searchValue == null){
+            log.debug("Searching for activity level to activity");
+            log.debug("Activity level is " + activityLevel);
+            activities = activityService.filterByActivityLevel(activityLevel);
+            log.debug("Activities with activity level " + activityLevel + " is " + activities.toString());
+        }else {
+            log.debug("Searching for title to activity");
+            log.debug("Search word is " + searchValue);
+            activities = activityService.searchForActivityByTitle(searchValue);
+            log.debug("Activities with title " + searchValue + " is " + activities.toString());
+        }
+
+        HttpHeaders header = new HttpHeaders();
+
+        Map<String, String> body = new HashMap<>();
+
+        StringBuilder sb = new StringBuilder();
+
+        for(Activity a : activities){
+            sb.append(a.getActivityId());
+            sb.append(",");
+        }
+
+        if(!activities.isEmpty()) {
+            sb.delete(sb.length() - 1, sb.length());
+        }
+
+        body.put("activityIds", sb.toString());
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        log.debug("Returning activities");
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
     }
 
     @PostMapping(value = "/user/{userId}/activity", consumes = "application/json", produces = "application/json")
@@ -313,95 +521,6 @@ public class GiddController {
                 .body(formatJson(body));
     }
 
-    @PutMapping(value="/activity/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity editActivity(@RequestBody Map<String, Object> map, @PathVariable("id") int actId){
-        log.info("recieved putmapping to /activity/{id}");
-        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
-        log.debug("User with id recieved " + user.toString());
-        Activity activity = activityService.getActivity(actId);
-        HttpHeaders headers = new HttpHeaders();
-        HashMap<String, String> body = new HashMap<>(); 
-        headers.add("Content-Type", "application/json; charset=UTF-8");
-        log.info("old activity " + activity.toString());
-        if(activity==null || user == null){
-            body.put("error", "user or activity is null");
-            log.error("activity or user is null, returning error");
-            log.debug("Activity: " + (activity == null));
-            log.debug("User: " + (user==null));
-            return ResponseEntity
-                .badRequest()
-                .headers(headers)
-                .body(formatJson(body));
-        }
-
-        activity.setTitle(map.get("title").toString());
-        activity.setTime(Timestamp.valueOf(map.get("time").toString()));
-        activity.setDescription(map.get("description").toString());
-        activity.setCapacity(Integer.parseInt(map.get("capacity").toString()));
-        activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
-        log.info("new activity: " + activity.toString());
-        boolean edited = activityService.editActivity(activity);
-        if(!edited){
-            body.put("error", "activity was not edited");
-            log.info("activity is not edited returning error");
-            return ResponseEntity
-                    .badRequest()
-                    .headers(headers)
-                    .body("didnt work here either sad");
-        }
-
-        return ResponseEntity
-                .ok()
-                .headers(headers).body(formatJson(body));
-    }
-
-    @PutMapping(value = "/user/{id}")
-    public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id){
-        log.info("recieved a put mapping for user with id: " + id + " and map " + map.toString());
-        HttpHeaders header = new HttpHeaders();
-        Map<String, String> body = new HashMap<>();
-        header.add("Content-Type", "application/json; charset=UTF-8");
-
-        if(!validateStringMap(map)){
-            log.error("returning error about null/blank fields in user put mapping " + map.toString());
-            body.put("error", "one or more json-fields is null/blank");
-            return ResponseEntity.badRequest().body(formatJson(body));
-        }
-
-        try {
-            Integer.parseInt(map.get("phoneNumber").toString());
-        } catch (NumberFormatException e) {
-            log.error("phone number cannot be parsed to number " + map.toString());
-            body.put("error", "phone number is not numeric");
-            return ResponseEntity.badRequest().body(formatJson(body));
-        }
-        
-        boolean result = userService.updateUser(
-            id,
-            map.get("email").toString(),
-            map.get("password").toString(),
-            map.get("firstName").toString(),
-            map.get("surname").toString(),
-            Integer.parseInt(map.get("phoneNumber").toString()),
-            ActivityLevel.valueOf(map.get("activityLevel").toString()));
-            
-        log.info("edited user " + map.toString());
-        if(result){
-            log.info("created user");
-            header.add("Status", "201 CREATED");
-
-            body.put("id", String.valueOf(id));
-
-            return ResponseEntity.ok()
-                .headers(header)
-                .body(formatJson(body));
-        }
-        log.error("User could not be edited, are you sure the user exists");
-        header.add("Status", "400 BAD REQUEST");
-        body.put("error", "could not edit user are you sure the user exists?");
-        return ResponseEntity.badRequest().body(formatJson(body));
-    }
-
     @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivityToUser(@PathVariable Integer userId, @PathVariable Integer activityId){
         log.debug("Received DeleteMapping to /user/{userId}/activity/{activityId} with userId being " + userId + " and activityId being " + activityId);
@@ -502,84 +621,6 @@ public class GiddController {
                 .body(formatJson(body));
     }
 
-    @PostMapping("/user")
-    public ResponseEntity registerUser(@RequestBody HashMap<String, Object> map){
-        //      TODO Error handling
-        //      Make sure the user's email isn't already registered
-        //      Return Exception to user
-        log.info("recieved postmapping to /user: " + map.toString());
-        User result = userService.registerUser(
-            getRandomID(),
-            map.get("email").toString(),
-            map.get("password").toString(),
-            map.get("firstName").toString(),
-            map.get("surname").toString(),
-            Integer.parseInt(map.get("phoneNumber").toString()),
-            ActivityLevel.valueOf(map.get("activityLevel").toString()));
-        log.info("created user: " + result.toString());
-        Map<String, String> body = new HashMap<>();
-        HttpHeaders header = new HttpHeaders();
-        
-        header.add("Content-Type", "application/json; charset=UTF-8");
-        log.info("created user " + result.toString());
-		if(result != null){
-            log.info("created user");
-            header.add("Status", "201 CREATED");
-
-            body.put("id", String.valueOf(result.getUserId()));
-
-            return ResponseEntity.ok()
-                .headers(header)
-                .body(formatJson(body));
-		}
-        log.error("Created user is null, does the user already exist?");
-        header.add("Status", "400 BAD REQUEST");
-        body.put("error", "Created user is null, does the user already exist?");
-        return ResponseEntity.ok()
-            .headers(header).body(formatJson(body));
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity loginUser(@RequestBody Map<String, Object> map){
-        log.info("recieved postmapping to /login " + map.toString());
-        HttpHeaders header = new HttpHeaders();
-		boolean result = userService.login(map.get("email").toString(), map.get("password").toString());
-        Map<String, String> body = new HashMap<>();
-        if(result){
-            log.info("logged in user with email " + map.get("email").toString());
-            body.put("id", String.valueOf(userService.getUser(map.get("email").toString()).getUserId()));
-            header.add("Status", "200 OK");
-            return ResponseEntity.ok()
-                .headers(header)
-                .body(formatJson(body));
-        }
-        log.error("unable to login user with email: " + map.get("email").toString());
-        header.add("Status", "403 Forbidden");
-        body.put("error", "unable to login user with email: " + map.get("email").toString());
-        return ResponseEntity.ok()
-            .headers(header).body(formatJson(body));
-    }
-
-    @DeleteMapping("user/{id}")
-    public ResponseEntity deleteUser(@PathVariable Integer id){
-		log.info("recieved deletemapping to user with id " + id);
-        HttpHeaders header = new HttpHeaders();
-        boolean result = userService.deleteUser(id);
-        Map<String, String> body = new HashMap<>();
-
-        if(result){
-			log.info("deletion successful");
-            header.add("Status", "200 OK");
-            return ResponseEntity.ok()
-                .headers(header).body(formatJson(body));
-        }
-		log.error("unable to delete user with id: " + id);
-        body.put("error", "deletion failed, are you sure the user with id " + id + " exists?");
-        header.add("Status", "400 BAD REQUEST");
-        return ResponseEntity.ok()
-            .headers(header).body(formatJson(body));
-    }
-
     private int newActivityValidId(Activity activity) {
 		log.info("creating new activity: " + activity.toString());
         boolean created;
@@ -677,47 +718,6 @@ public class GiddController {
             title, newTime, repeat, user,
             capacity, groupId, description, image,
             activityLevel, tags, latitude, longitude, null);
-    }
-
-    @GetMapping(value = "/activity")
-    public ResponseEntity search(@RequestParam(value="searchWord", required = false) String searchValue, @RequestParam(value = "activityLevel", required = false) Integer activityLevel){
-        log.debug("Received GetMapping to '/activity' with Query Params");
-        List<Activity> activities;
-        if(searchValue == null){
-            log.debug("Searching for activity level to activity");
-            log.debug("Activity level is " + activityLevel);
-            activities = activityService.filterByActivityLevel(activityLevel);
-            log.debug("Activities with activity level " + activityLevel + " is " + activities.toString());
-        }else {
-            log.debug("Searching for title to activity");
-            log.debug("Search word is " + searchValue);
-            activities = activityService.searchForActivityByTitle(searchValue);
-            log.debug("Activities with title " + searchValue + " is " + activities.toString());
-        }
-
-        HttpHeaders header = new HttpHeaders();
-
-        Map<String, String> body = new HashMap<>();
-
-        StringBuilder sb = new StringBuilder();
-
-        for(Activity a : activities){
-            sb.append(a.getActivityId());
-            sb.append(",");
-        }
-
-        if(!activities.isEmpty()) {
-            sb.delete(sb.length() - 1, sb.length());
-        }
-
-        body.put("activityIds", sb.toString());
-        header.add("Status", "200 OK");
-        header.add("Content-Type", "application/json; charset=UTF-8");
-        log.debug("Returning activities");
-        return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
     }
 
     private boolean registerEquipmentToActivity(int activityId, String equipment){
