@@ -65,8 +65,6 @@ public class GiddController {
         map.put("result", "worked?!");
         return map;
     }
-    //TODO finn ut hvordan man returnerer exception og error message
-    //      evt se https://stackoverflow.com/questions/33801468/how-let-spring-security-response-unauthorizedhttp-401-code-if-requesting-uri-w
 
     @ResponseBody
     @RequestMapping("/security/generate/token")
