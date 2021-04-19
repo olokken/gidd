@@ -46,7 +46,7 @@ const Map = () => {
             {defaultCenter && (
                 <MapComponent
                     defaultCenter={defaultCenter}
-                    width="100vh"
+                    width="100vw"
                     height="85vh"
                 >
                     <Marker position={defaultCenter}></Marker>

@@ -14,7 +14,6 @@ import Popup from '../../Popup';
 import MapComponent from '../../MapComponents/MapComponent';
 import { Marker } from 'react-google-maps';
 import Tag from '../../../interfaces/Tag';
-import { stringify } from 'node:querystring';
 
 const StyledButton = withStyles({
     root: {
