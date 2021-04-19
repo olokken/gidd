@@ -4,7 +4,6 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import ActivityPopup from '../components/ActivityComponents/CreateActivity/ActivityPopup';
 import ActivityForm from '../components/ActivityComponents/CreateActivity/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/Filters/SideFilter';
@@ -12,6 +11,7 @@ import SortMenu from '../components/Sorting/SortMenu';
 import Activity, { ActivityList } from '../interfaces/Activity';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
 import AddButton from '../components/AddButton';
+import Popup from '../components/Popup'
 
 //Endringer kan forekomme her
 
@@ -24,6 +24,10 @@ const Container = styled.div`
 const AddAndSort = styled.div`
     display: flex;
     justify-content: space-between;
+
+    @media only screen and (max-width: 951px) {
+        flex-direction: column-reverse;
+  }
 `;
 
 const View = styled.div`
@@ -57,16 +61,18 @@ const Activities = () => {
                 <AddAndSort>
                     <SortMenu></SortMenu>
                     <AddButton onClick={onClickAddButton}></AddButton>
-                    <ActivityPopup
+                    <Popup
                         title="Legg til aktivitet"
                         openPopup={openPopup}
                         setOpenPopup={setOpenPopup}
+                        maxWidth="lg"
+                        fullWidth={true}
                     >
                         <ActivityForm
                             openPopup={openPopup}
                             setOpenPopup={setOpenPopup}
                         />
-                    </ActivityPopup>
+                    </Popup>
                 </AddAndSort>
                 <ActivityGrid activities={activities}></ActivityGrid>
             </View>
