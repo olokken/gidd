@@ -1,7 +1,7 @@
 export default interface Activity {
     ID: number;
     title: string;
-    time: string;
+    time: Date;
     //repeat: number;
     //userID: number;
     owner: string;
@@ -19,7 +19,7 @@ export function ActivityList(): Activity[] {
     const akt1: Activity = {
         ID: 1,
         title: 'Tittel 1',
-        time: '2021-04-15T13:12:00',
+        time: new Date('2021-04-15'),
         owner: 'Ole',
         capacity: 10,
         maxCapacity: 20,
@@ -29,7 +29,7 @@ export function ActivityList(): Activity[] {
     const akt2: Activity = {
         ID: 2,
         title: 'Tittel 2',
-        time: '2000-10-22',
+        time: new Date('2000-10-22'),
         owner: 'Mathias',
         capacity: 10,
         maxCapacity: 20,
@@ -39,7 +39,7 @@ export function ActivityList(): Activity[] {
     const akt3: Activity = {
         ID: 3,
         title: 'Tittel 3',
-        time: '2022-12-12',
+        time: new Date('2022-12-12'),
         owner: 'Erling ',
         capacity: 10,
         maxCapacity: 20,
@@ -49,7 +49,7 @@ export function ActivityList(): Activity[] {
     const akt4: Activity = {
         ID: 4,
         title: 'Tittel 4',
-        time: '1978-12-24',
+        time: new Date('1978-12-24'),
         owner: 'Lea',
         capacity: 10,
         maxCapacity: 20,
@@ -59,7 +59,7 @@ export function ActivityList(): Activity[] {
     const akt5: Activity = {
         ID: 5,
         title: 'Tittel 5',
-        time: '2021-12-12',
+        time: new Date('2021-12-12'),
         owner: 'Ingebrigt',
         capacity: 10,
         maxCapacity: 20,
@@ -69,7 +69,7 @@ export function ActivityList(): Activity[] {
     const akt6: Activity = {
         ID: 6,
         title: 'Tittel 6',
-        time: '2020-12-12',
+        time: new Date('2020-12-12'),
         owner: 'Håvard',
         capacity: 10,
         maxCapacity: 20,
@@ -79,7 +79,7 @@ export function ActivityList(): Activity[] {
     const akt7: Activity = {
         ID: 7,
         title: 'Tittel 7',
-        time: '2005-12-12',
+        time: new Date('2005-12-12'),
         owner: 'Håvard',
         capacity: 10,
         maxCapacity: 20,
