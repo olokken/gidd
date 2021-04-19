@@ -6,7 +6,7 @@ import {
     MenuItem,
 } from '@material-ui/core';
 import React, { useState, ChangeEvent } from 'react';
-import './styles.css';
+import './ActivityForm.css';
 import axios from '../../../Axios';
 import MapIcon from '@material-ui/icons/Map';
 import GeoSuggest from '../../MapComponents/GeoSuggest';
@@ -75,10 +75,6 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         setDesc((event.target as HTMLInputElement).value);
     };
 
-    const onChangeAddress = (event: ChangeEvent<HTMLInputElement>) => {
-        setAddress((event.target as HTMLInputElement).value);
-    };
-
     const onChangeDate = (event: ChangeEvent<HTMLInputElement>): void => {
         const strDate: string = (event.target as HTMLInputElement).value;
         setDateDisplay(strDate);
@@ -89,6 +85,11 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         event: ChangeEvent<HTMLInputElement>
     ): void => {
         setEquipmentDesc((event.target as HTMLInputElement).value);
+    };
+
+    const onChangeTagsDesc = (event: ChangeEvent<HTMLInputElement>) => {
+        const str: string = (event.target as HTMLInputElement).value;
+        setTagsDesc(str);
     };
 
     const addEquipment = (event: React.KeyboardEvent): boolean => {
@@ -259,12 +260,13 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     className="textfield"
                 />
             </div>
-            <div id="middle">
+            <div>
                 <TextField
                     style={{ padding: '5px' }}
                     label="Tags"
-                    /*onChange={onChangeTags}
-                    value={tags}*/
+                    onChange={onChangeTagsDesc}
+                    onKeyPress={addTags}
+                    value={tagsDesc}
                     variant="outlined"
                     className="textfield"
                 />
