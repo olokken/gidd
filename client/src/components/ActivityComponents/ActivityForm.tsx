@@ -53,6 +53,8 @@ interface Props {
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+//TODO:
+//Fix adding image
 const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     const [page, setPage] = useState<number>(1);
     const { user, setUser } = useContext(UserContext);
