@@ -44,7 +44,11 @@ const Map = () => {
     return (
         <Container>
             {defaultCenter && (
-                <MapComponent defaultCenter={defaultCenter}>
+                <MapComponent
+                    defaultCenter={defaultCenter}
+                    width="100vw"
+                    height="85vh"
+                >
                     <Marker position={defaultCenter}></Marker>
                 </MapComponent>
             )}
