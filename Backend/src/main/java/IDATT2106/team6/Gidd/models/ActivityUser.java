@@ -64,6 +64,6 @@ public class ActivityUser {
 
     @Override
     public String toString() {
-        return "{\"userId\": " + user.getUserId() + "}";
+        return "{\"userId\": " + user.toJSON() + "}";
     }
 }

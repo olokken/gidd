@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONException;
@@ -748,10 +749,11 @@ public class GiddController {
         if(users.size() != 0){
             log.info("users found for activity with id " + id);
             userMap.put("user","");
+
             users.stream().forEach(u -> userMap.put("user", userMap.get("user") + u.getUserId() + ","));
             //remove trailing comma
             userMap.put("user", userMap.get("user").substring(0, userMap.get("user").length() - 1));
-            return ResponseEntity.ok().headers(headers).body(formatJson(userMap));
+            return ResponseEntity.ok().headers(headers).body("{\"user\":" + users.toString() + "}");
         }
         log.error("no activity was found with id: " + id);
         errorCode.put("error", "no activity found");
@@ -775,6 +777,27 @@ public class GiddController {
             .badRequest()
             .headers(header)
             .body(formatJson(hashMap));
+    }
+
+    @GetMapping(value = "/user/email/{email}", produces = "application/json")
+    public ResponseEntity getUser(@PathVariable String email){
+        log.debug("get mapping for email: " + email);
+        HttpHeaders header = new HttpHeaders();
+
+        User user = userService.getUser(email);
+        if(user != null){
+            return ResponseEntity
+                    .ok()
+                    .headers(header)
+                    .body(user.toJSON());
+        }
+
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("error", "are you sure the user exists?");
+        return ResponseEntity
+                .badRequest()
+                .headers(header)
+                .body(formatJson(hashMap));
     }
 
     @GetMapping(value = "/user/{userId}/activity", produces = "application/json")
@@ -808,7 +831,10 @@ public class GiddController {
 
         StringBuilder sb = new StringBuilder();
 
+        List<Activity> activities = activityUser.stream().map(ActivityUser::getActivity).collect(Collectors.toList());
+
         for(ActivityUser au : activityUser){
+
             sb.append(au.getActivity().getActivityId());
             sb.append(",");
         }
@@ -823,7 +849,7 @@ public class GiddController {
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(formatJson(body));
+                .body("{\"activities\":" + activities.toString() + "}");
     }
 
     @GetMapping(value = "/user/{userId}/user")
