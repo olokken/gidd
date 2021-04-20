@@ -8,7 +8,6 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;

@@ -638,12 +638,32 @@ public class GiddController {
             log.info("users found for activity with id " + id);
             userMap.put("user","");
             users.stream().forEach(u -> userMap.put("user", userMap.get("user") + u.getUserId() + ","));
+            //remove trailing comma
             userMap.put("user", userMap.get("user").substring(0, userMap.get("user").length() - 1));
             return ResponseEntity.ok().headers(headers).body(formatJson(userMap));
         }
         log.error("no activity was found with id: " + id);
         errorCode.put("error", "no activity found");
         return ResponseEntity.badRequest().headers(headers).body(formatJson(errorCode));
+    }
+
+    @GetMapping(value = "/user/{userId}", produces = "application/json")
+    public ResponseEntity getSingleUser(@PathVariable Integer userId){
+        log.debug("recieved single user get " + userId);
+        User user = userService.getUser(userId);
+        HttpHeaders header = new HttpHeaders();
+        if(user != null){
+            return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(user.toJSON());
+        }
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("error", "are you sure the user exists?");
+        return ResponseEntity
+            .badRequest()
+            .headers(header)
+            .body(formatJson(hashMap));
     }
 
     @GetMapping(value = "/user/{userId}/activity", produces = "application/json")
@@ -797,6 +817,8 @@ public class GiddController {
 
     @DeleteMapping("user/{id}")
     public ResponseEntity deleteUser(@PathVariable Integer id){
+        //todo return activity-objects and user id's affected by this user being deleted 
+        // aka the activities this user has created
         log.info("recieved deletemapping to user with id " + id);
         HttpHeaders header = new HttpHeaders();
         boolean result = userService.deleteUser(id);
@@ -808,6 +830,7 @@ public class GiddController {
             return ResponseEntity.ok()
                     .headers(header).body(formatJson(body));
         }
+
         log.error("unable to delete user with id: " + id);
         body.put("error", "deletion failed, are you sure the user with id " + id + " exists?");
         header.add("Status", "400 BAD REQUEST");
