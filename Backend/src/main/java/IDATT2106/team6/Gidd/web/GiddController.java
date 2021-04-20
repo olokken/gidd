@@ -521,13 +521,16 @@ public class GiddController {
             return ResponseEntity.badRequest().body(formatJson(body));
         }
 
-        log.debug("Temporary debug message");
-
         try {
             Integer.parseInt(map.get("phoneNumber").toString());
         } catch (NumberFormatException e) {
             log.error("phone number cannot be parsed to number " + map.toString());
             body.put("error", "phone number is not numeric");
+            return ResponseEntity.badRequest().body(formatJson(body));
+        } catch (Exception e) {
+            log.error("An unexpected message was caught when parsing phoneNumber: " +
+                e.getMessage() + " local: " + e.getLocalizedMessage());
+            body.put("Error", "Something went wrong");
             return ResponseEntity.badRequest().body(formatJson(body));
         }
 
