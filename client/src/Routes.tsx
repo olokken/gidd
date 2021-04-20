@@ -9,6 +9,8 @@ import Footer from './components/FooterComponents/Footer';
 import Calendar from './containers/Calendar';
 import Leaderboard from './containers/Leaderboard';
 import GroupsAndFriends from './containers/GroupsAndFriends';
+import PrivateRoute from './PrivateRoute'
+
 
 export default (
     <Switch>
@@ -16,11 +18,11 @@ export default (
         <Route exact path="/newUser" component={NewUser} />
         <div>
             <Navbar></Navbar>
-            <Route exact path="/Activities" component={Activities} />
-            <Route exact path="/Map" component={Map} />
-            <Route exact path="/Calendar" component={Calendar} />
-            <Route exact path="/Leaderboard" component={Leaderboard} />
-            <Route exact path="/GroupsAndFriends" component={GroupsAndFriends} />
+            <PrivateRoute exact path="/Activities" component={Activities} />
+            <PrivateRoute exact path="/Map" component={Map} />
+            <PrivateRoute exact path="/Calendar" component={Calendar} />
+            <PrivateRoute exact path="/Leaderboard" component={Leaderboard} />
+            <PrivateRoute exact path="/GroupsAndFriends" component={GroupsAndFriends} />
             <Footer></Footer>
         </div>
     </Switch>
