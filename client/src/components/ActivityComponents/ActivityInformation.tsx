@@ -133,7 +133,7 @@ const ActivityInformation = ({ activity }: Props) => {
             return (
                 <Chip
                     key={index}
-                    variant="outlined" // her må man hente utstyr frå det som er registrert og plassere dei inn
+                    variant="outlined"
                     size="small"
                     label={eq.description}
                     style={{
@@ -147,6 +147,13 @@ const ActivityInformation = ({ activity }: Props) => {
             );
         }
     );
+    const mapParticipants = activity.registeredParticipants.map(
+        (par: any, index: number) => {
+            return(
+                <p key={index}>{par.userId}</p>
+            )
+        }
+    )
 
     return (
     <div>       
@@ -187,19 +194,28 @@ const ActivityInformation = ({ activity }: Props) => {
 
             <CardContent>
                 <Grid container wrap="nowrap" spacing={2}>
-                    <Grid item>
-                        <Typography>
-                            <b>Kapasitet:</b>{' '}
-                            {activity.registeredParticipants.length} /{' '}
-                            {activity.capacity}
-                        </Typography>
-                        <Typography>
-                            <b>Vanskligheitsgrad:</b> {activity.activityLevel}
-                        </Typography>
-                        <Typography>
-                            <b>Tidspunkt: </b>
-                            {eventTime}
-                        </Typography>
+                    <Grid item xs={8}>
+                        <Grid item>
+                            <Typography>
+                                <b>Kapasitet:</b>{' '}
+                                {activity.registeredParticipants.length} /{' '}
+                                {activity.capacity}
+                            </Typography>
+                            <Typography>
+                                <b>Vanskligheitsgrad:</b> {activity.activityLevel}
+                            </Typography>
+                            <Typography>
+                                <b>Tidspunkt: </b>
+                                {eventTime}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={3}>
+                    <Typography>
+                                <b>Påmeldte personer:</b>{' '}
+                                {mapParticipants}
+                            </Typography>
                     </Grid>
                 </Grid>
                 <Typography style={{ color: 'black' }}>
