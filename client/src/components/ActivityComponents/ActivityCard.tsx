@@ -45,7 +45,8 @@ const ActivityCard = ({
     const participants = new String(activity.registeredParticipants.length);
     const fullCapacity = new String(activity.capacity);
     const comparison = new String(participants + '/' + fullCapacity);
-    const eventTime = new String(activity.time);
+    const date = new Date(activity.time);
+    const eventTime = new String(date).substring(0,24);
 
     const onClickActivity = () => {
         setOpenPopup(!openPopup);
