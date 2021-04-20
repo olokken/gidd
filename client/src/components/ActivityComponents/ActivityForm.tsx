@@ -1,4 +1,12 @@
-import { TextField, Button, withStyles, MenuItem } from '@material-ui/core';
+import {
+    TextField,
+    Button,
+    withStyles,
+    MenuItem,
+    Typography,
+    Link,
+    Tooltip,
+} from '@material-ui/core';
 import React, { useState, ChangeEvent, useContext } from 'react';
 import { UserContext } from '../../UserContext';
 import './ActivityForm.css';
@@ -13,6 +21,7 @@ import Tag from '../../interfaces/Tag';
 import Pagination from '@material-ui/lab/Pagination';
 import DefaultCenter from '../../interfaces/DefaultCenter';
 import styled from 'styled-components';
+import InfoIcon from '@material-ui/icons/Info';
 
 const StyledButton = withStyles({
     root: {
@@ -181,6 +190,10 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         return false;
     };
 
+    const deleteEquipment = (ID: number) => {
+        setEquipmentList(equipmentList.filter((equip) => equip.id !== ID));
+    };
+
     const addTags = (event: React.KeyboardEvent) => {
         if (event.key == 'Enter') {
             if (checkInput(tagsDesc)) {
@@ -193,6 +206,10 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                 setReset(false);
             }
         }
+    };
+
+    const deleteTag = (ID: number) => {
+        setTagList(tagList.filter((tag) => tag.ID !== ID));
     };
 
     const isDisabled = (): boolean => {
@@ -289,78 +306,121 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     return (
         <div className="activityform">
             {page === 1 && (
-                <StyledTextField
-                    label="Tittel"
-                    value={title}
-                    onChange={onChangeTitle}
-                    variant="outlined"
-                />
+                <div>
+                    <Typography
+                        className="activityform__containerItem1"
+                        component="h2"
+                    >
+                        Legg til tittel
+                    </Typography>
+                    <StyledTextField
+                        label="Tittel"
+                        value={title}
+                        onChange={onChangeTitle}
+                        variant="outlined"
+                    />
+                </div>
             )}
             {page === 2 && (
-                <div className="activityform__place">
-                    <GeoSuggest
-                        onLocationChange={(location) => {
-                            setLocation(location);
-                        }}
-                    ></GeoSuggest>
-                    <StyledButton
-                        className="activityform__placeButton"
-                        onClick={() => setOpenShowMap(!openShowMap)}
-                    >
-                        Vis på kart
-                    </StyledButton>
-                    <Popup
-                        openPopup={openShowMap}
-                        setOpenPopup={setOpenShowMap}
-                        maxWidth="lg"
-                    >
-                        <MapComponent
-                            width="75vh"
-                            height="75vh"
-                            defaultCenter={location}
+                <div>
+                    <Typography component="h2">Legg til plassering</Typography>
+                    <div className="activityform__place">
+                        <div className="activityform__placeItem1">
+                            <GeoSuggest
+                                onLocationChange={(location) => {
+                                    setLocation(location);
+                                }}
+                            ></GeoSuggest>
+                        </div>
+                        <StyledButton
+                            className="activityform__placeButton"
+                            onClick={() => setOpenShowMap(!openShowMap)}
                         >
-                            <Marker position={location}></Marker>
-                        </MapComponent>
-                    </Popup>
+                            Vis på kart
+                        </StyledButton>
+                        <Popup
+                            openPopup={openShowMap}
+                            setOpenPopup={setOpenShowMap}
+                            maxWidth="lg"
+                        >
+                            <MapComponent
+                                width="75vh"
+                                height="75vh"
+                                defaultCenter={location}
+                            >
+                                <Marker position={location}></Marker>
+                            </MapComponent>
+                        </Popup>
+                    </div>
                 </div>
             )}
             {page === 3 && (
-                <StyledTextField
-                    label="Dato"
-                    type="datetime-local"
-                    defaultValue={dateDisplay}
-                    value={dateDisplay}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    onChange={onChangeDate}
-                    variant="outlined"
-                />
+                <div>
+                    <Typography
+                        className="activityform__containerItem1"
+                        component="h2"
+                    >
+                        Legg til dato
+                    </Typography>
+                    <StyledTextField
+                        label="Dato"
+                        type="datetime-local"
+                        defaultValue={dateDisplay}
+                        value={dateDisplay}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        onChange={onChangeDate}
+                        variant="outlined"
+                    />
+                </div>
             )}
             {page === 4 && (
-                <StyledTextField
-                    className="activityform__description"
-                    label="Beskrivelse"
-                    value={desc}
-                    onChange={onChangeDesc}
-                    variant="outlined"
-                    rows={4}
-                    multiline
-                />
+                <div>
+                    <Typography
+                        className="activityform__containerItem1"
+                        component="h2"
+                    >
+                        Legg til beskrivelse
+                    </Typography>
+                    <StyledTextField
+                        className="activityform__description"
+                        label="Beskrivelse"
+                        value={desc}
+                        onChange={onChangeDesc}
+                        variant="outlined"
+                        rows={4}
+                        multiline
+                    />
+                </div>
             )}
             {page === 5 && (
-                <StyledTextField
-                    type="file"
-                    label="Bilde"
-                    onChange={onChangeImage}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    variant="outlined"
-                />
+                <div>
+                    <Typography
+                        className="activityform__containerItem1"
+                        component="h2"
+                    >
+                        Legg til bilde
+                    </Typography>
+                    <StyledTextField
+                        type="file"
+                        label="Bilde"
+                        onChange={onChangeImage}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        variant="outlined"
+                    />
+                </div>
             )}
             {page === 6 && (
                 <div>
+                    <Typography
+                        className="activityform__containerItem1"
+                        component="h2"
+                    >
+                        Legg til tags
+                    </Typography>
                     <StyledTextField
                         label="Tags"
                         onChange={onChangeTagsDesc}
@@ -371,13 +431,33 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     <ul className="activityform__list">
                         {reset === false &&
                             tagList.map((tag) => (
-                                <li key={tag.ID}>{tag.desc}</li>
+                                <Link
+                                    onClick={deleteTag.bind(this, tag.ID)}
+                                    //onClick={() => deleteTag(tag.ID)}
+                                    key={tag.ID}
+                                >
+                                    <li key={tag.ID}>{tag.desc}</li>
+                                </Link>
                             ))}
                     </ul>
                 </div>
             )}
             {page === 7 && (
                 <div>
+                    <div className="activityform__header">
+                        <Typography
+                            className="activitform__headerItem1"
+                            component="h2"
+                        >
+                            Legg til utstyr
+                        </Typography>
+                        <Tooltip
+                            placement="right-start"
+                            title="Press enter for å legge til. Trykk for å fjerne"
+                        >
+                            <InfoIcon />
+                        </Tooltip>
+                    </div>
                     <StyledTextField
                         label="Utstyr"
                         value={equipmentDesc}
@@ -388,7 +468,13 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     <ul className="activityform__list">
                         {reset === false &&
                             equipmentList.map((equipment) => (
-                                <li key={equipment.id}>
+                                <li
+                                    key={equipment.id}
+                                    onClick={deleteEquipment.bind(
+                                        this,
+                                        equipment.id
+                                    )}
+                                >
                                     {equipment.description}
                                 </li>
                             ))}
@@ -448,7 +534,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     </ButtonsContainer>
                 </div>
             )}
-            <div className="activityform__item">
+            <div className="activityform__pageContainer">
                 <Pagination onChange={onPageChange} count={8} size="large" />
             </div>
         </div>

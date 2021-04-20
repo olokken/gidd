@@ -5,6 +5,18 @@
     flex-direction: column;
 }
 
+.activityform__container {
+    padding: 10px !important;
+}
+
+.activityform__pageContainer {
+    margin-top: 50px;
+}
+
+.activityform__containerItem1 {
+    margin-bottom: 3vh !important;
+}
+
 .activityform__description {
     width: 30vh;
     height: 120px;
@@ -26,10 +38,6 @@
     margin-top: 4px !important;
 }
 
-.activityform__container {
-    padding: 10px !important;
-}
-
 .activityform__place {
     display: flex;
     margin-right: 0;
@@ -39,7 +47,11 @@
     height: 2rem !important;
     width: 9rem !important;
     margin-top: 1rem !important;
-    margin-left: 1rem !important;
+}
+
+.activityform__placeItem1 {
+    left: 0;
+    width: 25vw;
 }
 
 .activityform__list {
@@ -54,6 +66,11 @@
     margin-left: 1px;
 }
 
-.activityform__item {
-    margin-top: 50px;
+.activityform__header {
+    display: flex;
+    margin-bottom: 3vh;
+}
+
+.acitivityform__headerItem1 {
+    margin-right: 2vw !important;
 }
