@@ -5,7 +5,7 @@ import Activities from './containers/Activities';
 import Login from './containers/Login';
 import Map from './containers/Map';
 import NewUser from './containers/NewUser';
-import Footer from './components/FooterComponents/Footer'; 
+import Footer from './components/FooterComponents/Footer';
 import Calendar from './containers/Calendar';
 import Leaderboard from './containers/Leaderboard';
 import GroupsAndFriends from './containers/GroupsAndFriends';

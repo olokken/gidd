@@ -22,15 +22,16 @@ import ActivityResponse from '../../interfaces/ActivityResponse';
 import { UserContext } from '../../UserContext';
 import Equipment from '../../interfaces/Equipment';
 import axios from '../../Axios';
+import MapMarker from '../MapComponents/MapMarker';
+import WeatherComponent from '../WeatherComponents/WeatherComponent';
 
 interface Props {
     activity: ActivityResponse;
 }
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        titlearea: {
-            /*margin: `${theme.spacing(1)}px auto`,
+const useStyles = makeStyles(() =>
+  createStyles({
+    titlearea: {
+        /*margin: `${theme.spacing(1)}px auto`,
         padding: theme.spacing(2),*/
             flex: 1,
             backgroundColor: '#f44336',
@@ -57,6 +58,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const ActivityInformation = ({ activity }: Props) => {
+    const lat = 63.430515;
+    const lon = 10.395053;
     const classes = useStyles();
     const date = new Date(activity.time);
     const eventTime = new String(date);
@@ -146,7 +149,7 @@ const ActivityInformation = ({ activity }: Props) => {
     );
 
     return (
-        <div>
+    <div>       
             <Grid>
                 <Grid item>
                     <CardMedia
@@ -254,17 +257,16 @@ const ActivityInformation = ({ activity }: Props) => {
                         </Typography>
                     </Grid>
                 </div>
-                <Grid item>
-                    <CardMedia
-                        component="img"
-                        alt={'Weather forecast'}
-                        height="200"
-                        image={weather}
-                    />
-                </Grid>
+                    <Grid item>
+                        <WeatherComponent 
+                            lat={lat}//lat og lon må korrespondere med informasjonen om lokasjonen til økta
+                            lon={lon}
+                            time={activity.time}
+                        />
+                    </Grid>
             </Grid>
         </div>
     );
-};
+}
 
 export default ActivityInformation;

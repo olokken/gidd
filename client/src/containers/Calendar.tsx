@@ -60,8 +60,6 @@ const Calender = () => {
   }
 
   useEffect(() => {
-    setUser(user)
-    console.log(user)
     const url = '/activity'
     axios.get(url).then((response) => {
       console.log(response.data['activities'])
