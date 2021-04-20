@@ -64,8 +64,7 @@ public class UserRepo extends GiddRepo {
             log.info("successfully updated user " + user.toString());
             return true;
         }catch(Exception e){
-            log.error("updating user: " + user.toString() + " failed due to " + e.getMessage());;
-            em.getTransaction().rollback();
+            log.error("updating user: " + user.toString() + " failed due to " + e.getMessage());
             return false;
         }finally {
             em.close();
