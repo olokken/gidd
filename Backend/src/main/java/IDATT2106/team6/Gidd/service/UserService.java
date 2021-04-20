@@ -31,10 +31,13 @@ public class UserService {
 		return getUser(email).verifyPassword(password);
 	}
 
-    public boolean updateUser(int id, String email, String password, String firstname, String surname,
-    int phoneNumber, ActivityLevel activityLevel){
+    public boolean editUser(int id, String email, String password, String firstname, String surname,
+                            int phoneNumber, ActivityLevel activityLevel){
+        List<User> friends = getUser(id).getFriendList();
 		User newUser = new User(id, email, password, firstname, surname, phoneNumber, activityLevel, null);
+		newUser.setFriendList(friends);
         log.info("updating user: " + newUser.toString());
+
         return repo.updateUser(newUser);
     }
 
@@ -87,5 +90,57 @@ public class UserService {
     public boolean deleteUser(int userId){
         log.info("deleting user " + userId);
         return repo.deleteUser(userId);
+    }
+
+    public boolean updateUser(User user, User friend){
+        log.debug("Adding friend to user and updating object");
+        user.addFriend(friend);
+        return repo.updateUser(user);
+    }
+
+    public boolean deleteFriendship(User user, User friend){
+        log.debug("Deleting friendship between user " + user.getUserId() + " and user " + friend.getUserId());
+        Boolean delete1 = null;
+        Boolean delete2 = null;
+
+        log.debug("Checking if the friendship exists");
+        ArrayList<Integer> friendIds1 = new ArrayList<>();
+        for(User u : user.getFriendList()){
+            friendIds1.add(u.getUserId());
+        }
+
+        ArrayList<Integer> friendIds2 = new ArrayList<>();
+        for(User u : friend.getFriendList()){
+            friendIds2.add(u.getUserId());
+        }
+
+        log.debug("Removing friendship");
+        if(friendIds1.contains(friend.getUserId())){
+            for(User u : user.getFriendList()) {
+                if(u.getUserId() == friend.getUserId()) {
+                    user.getFriendList().remove(u);
+                    delete1 = repo.updateUser(user);
+                    break;
+                }
+            }
+        }
+        if(friendIds2.contains(user.getUserId())){
+            for(User u : friend.getFriendList()) {
+                if(u.getUserId() == user.getUserId()) {
+                    friend.getFriendList().remove(u);
+                    delete2 = repo.updateUser(friend);
+                    break;
+                }
+            }
+        }
+        if(delete1 == null && delete2 == null){
+            return false;
+        }
+        else if(delete1 == null){
+            return delete2;
+        }else if(delete2 == null){
+            return delete1;
+        }
+        return (delete1 && delete2);
     }
 }

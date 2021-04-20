@@ -434,6 +434,79 @@ public class GiddController {
                 .body(formatJson(body));
     }
 
+    @PostMapping(value = "/user/{userId}/user")
+    public ResponseEntity addFriend(@RequestBody HashMap<String, Object> map){
+        log.debug("Adding friend with userId " + map.get("friendId").toString() + " to " + map.get("userId").toString());
+        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+        User friend = userService.getUser(Integer.parseInt(map.get("friendId").toString()));
+
+        if(friend == null || user == null){
+            log.error("One of the users are null");
+            HttpHeaders header = new HttpHeaders();
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "One of the users do not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        ArrayList<Integer> friendIds = new ArrayList<>();
+        for(User u : user.getFriendList()){
+            friendIds.add(u.getUserId());
+        }
+
+        if(friendIds.contains(friend.getUserId())){
+            log.error("There are already a connection between the users");
+            HttpHeaders header = new HttpHeaders();
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "The users are already friends");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        if(!userService.updateUser(user, friend)){
+            log.error("Something wrong happened when trying to update");
+            HttpHeaders header = new HttpHeaders();
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "Something wrong happened when trying to update");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        HttpHeaders header = new HttpHeaders();
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        Map<String, String> body = new HashMap<>();
+
+        body.put("userId", String.valueOf(user.getUserId()));
+        body.put("friendId", String.valueOf(friend.getUserId()));
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
+    }
 
     @PutMapping(value = "/user/{id}")
     public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id){
@@ -458,7 +531,7 @@ public class GiddController {
             return ResponseEntity.badRequest().body(formatJson(body));
         }
 
-        boolean result = userService.updateUser(
+        boolean result = userService.editUser(
                 id,
                 map.get("email").toString(),
                 map.get("password").toString(),
@@ -640,12 +713,32 @@ public class GiddController {
             log.info("users found for activity with id " + id);
             userMap.put("user","");
             users.stream().forEach(u -> userMap.put("user", userMap.get("user") + u.getUserId() + ","));
+            //remove trailing comma
             userMap.put("user", userMap.get("user").substring(0, userMap.get("user").length() - 1));
             return ResponseEntity.ok().headers(headers).body(formatJson(userMap));
         }
         log.error("no activity was found with id: " + id);
         errorCode.put("error", "no activity found");
         return ResponseEntity.badRequest().headers(headers).body(formatJson(errorCode));
+    }
+
+    @GetMapping(value = "/user/{userId}", produces = "application/json")
+    public ResponseEntity getSingleUser(@PathVariable Integer userId){
+        log.debug("recieved single user get " + userId);
+        User user = userService.getUser(userId);
+        HttpHeaders header = new HttpHeaders();
+        if(user != null){
+            return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(user.toJSON());
+        }
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("error", "are you sure the user exists?");
+        return ResponseEntity
+            .badRequest()
+            .headers(header)
+            .body(formatJson(hashMap));
     }
 
     @GetMapping(value = "/user/{userId}/activity", produces = "application/json")
@@ -695,6 +788,52 @@ public class GiddController {
                 .ok()
                 .headers(header)
                 .body(formatJson(body));
+    }
+
+    @GetMapping(value = "/user/{userId}/user")
+    public ResponseEntity getFriends(@PathVariable Integer userId){
+        log.debug("Received GetMapping to '/user/{userId}/user'");
+        User user = userService.getUser(userId);
+
+        if(user == null){
+            HttpHeaders header = new HttpHeaders();
+            log.error("The user is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "The user does not exist");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        ArrayList<User> friends = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("{\"users\":[");
+
+        for(User u : user.getFriendList()){
+            if(u.getFriendList().contains(user)){
+                friends.add(u);
+                stringBuilder.append(u.toJSON());
+                stringBuilder.append(",");
+            }
+        }
+
+        stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");
+        stringBuilder.append("]}");
+
+        HttpHeaders header = new HttpHeaders();
+        log.debug("Returning friends");
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(stringBuilder.toString());
     }
 
     @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")
@@ -799,6 +938,8 @@ public class GiddController {
 
     @DeleteMapping("user/{id}")
     public ResponseEntity deleteUser(@PathVariable Integer id){
+        //todo return activity-objects and user id's affected by this user being deleted 
+        // aka the activities this user has created
         log.info("recieved deletemapping to user with id " + id);
         HttpHeaders header = new HttpHeaders();
         boolean result = userService.deleteUser(id);
@@ -810,6 +951,7 @@ public class GiddController {
             return ResponseEntity.ok()
                     .headers(header).body(formatJson(body));
         }
+
         log.error("unable to delete user with id: " + id);
         body.put("error", "deletion failed, are you sure the user with id " + id + " exists?");
         header.add("Status", "400 BAD REQUEST");
@@ -841,6 +983,60 @@ public class GiddController {
 
         body.put("error", "no activity was deleted, are you sure the activity exists");
         return ResponseEntity.badRequest().headers(header).body(formatJson(body));
+    }
+
+    @DeleteMapping(value = "/user/{userId}/user/{friendId}")
+    public ResponseEntity deleteFriend(@PathVariable Integer userId, @PathVariable Integer friendId){
+        log.debug("Received DeleteMapping to '/user/{userId}/user/{friendId}");
+        User user = userService.getUser(userId);
+        User friend = userService.getUser(friendId);
+
+        if(friend == null || user == null){
+            log.error("One of the users are null");
+            HttpHeaders header = new HttpHeaders();
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "One of the users do not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        if(!userService.deleteFriendship(user, friend)){
+            log.error("The deleting went wrong");
+            HttpHeaders header = new HttpHeaders();
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "The deleting went wrong");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        log.debug("The friendship was deleted");
+        HttpHeaders header = new HttpHeaders();
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        Map<String, String> body = new HashMap<>();
+
+        body.put("userId", String.valueOf(user.getUserId()));
+        body.put("friendId", String.valueOf(friend.getUserId()));
+
+        return ResponseEntity
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
     }
 
     private int newActivityValidId(Activity activity) {
@@ -914,7 +1110,6 @@ public class GiddController {
                 goose = "\"";
             }
 
-            System.out.println("goose: " + goose + " because " + pair.getValue() instanceof String);
             result += "\"" + pair.getKey() + "\":" + goose + pair.getValue() + goose + ",\n";
             it.remove(); // avoids a ConcurrentModificationException
         }
