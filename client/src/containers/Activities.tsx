@@ -3,7 +3,7 @@ import ActivityForm from '../components/ActivityComponents/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/FilterComponents/SideFilter';
 import SortMenu from '../components/SortingComponents/SortMenu';
-import Activity  from '../interfaces/Activity';
+import Activity from '../interfaces/Activity';
 import ActivityResponse from '../interfaces/ActivityResponse';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
 import Popup from '../components/Popup'

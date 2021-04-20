@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate } from '@fullcalendar/react';
+import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate, triggerDateSelect } from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction'
@@ -7,10 +7,9 @@ import { EventInput } from '@fullcalendar/react';
 import axios from '../Axios'
 import styled from 'styled-components';
 import { UserContext } from '../UserContext'
-import { isConstructorDeclaration } from 'typescript';
 import Popup from '../components/Popup';
 import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
-import Activity from '../interfaces/Activity';
+import ActivityResponse from '../interfaces/ActivityResponse';
 
 const CalendarContainer = styled.div`
   --fc-button-bg-color: #f44336;
@@ -23,66 +22,95 @@ const CalendarContainer = styled.div`
   --fc-event-font-size:50px;
 `;
 
-const todayStr = new Date().toISOString().replace(/T.*$/, '')
+const todayStr = new Date().toISOString().replace(/T.*$/, '') + "T" + new Date().toLocaleTimeString()
 
 
 
 const Calender = () => {
-  const { user } = useContext(UserContext);
+  const { setUser, user } = useContext(UserContext);
   const [activities, setActivities] = useState<EventInput[]>([]);
   const [openPopup, setOpenPopup] = useState<boolean>(false);
+  const [activity, setActivity] = useState<ActivityResponse>({
+    activityId: 0,
+    activityLevel: 'MEDIUM',
+    capacity: 0,
+    daysToRepeat: 0,
+    description: 'test',
+    equipments: [],
+    groupId: 0,
+    image: '',
+    latitude: 0,
+    longitude: 0,
+    registeredParticipants: [],
+    tags: 'SII',
+    time: 1618924200000,
+    timeCreated: 1618830691000,
+    title: 'Test',
+    user: 1231323
+  }
+  );
+
   const getMyActivities = () => {
-    const url = `/user/1780489954/activity`;
-    const activityIds: string[] = [];
-    console.log(url)
+    const url = `/user/${user}/activity`;
     axios.get(url).then((response) => {
-      activityIds.push(response.data.activityIds);
-      console.log(activityIds);
+      console.log(response.data);
     }).catch((error) => {
       console.log('error' + error.message)
     })
   }
 
   useEffect(() => {
+    setUser(user)
+    console.log(user)
     const url = '/activity'
     axios.get(url).then((response) => {
-      console.log(response)
-      response.data.activity.forEach((activity: any) => {
+      console.log(response.data['activities'])
+      response.data['activities'].forEach((activity: any) => {
         const date = new Date(activity.time)
         const curr_date = date.getDate();
         const curr_month = (date.getMonth() + 1) >= 10 ? (date.getMonth()) : '0' + (date.getMonth() + 1);
         const curr_year = date.getFullYear();
-        const curr_hour = date.getHours() - 2;
+        const curr_hour = (date.getHours() - 2) < 10 ? ('0' + (date.getHours() - 2)) : (date.getHours() - 2);
         const curr_minutes = date.getMinutes() == 0 ? (date.getMinutes() + '0') : date.getMinutes();
         const curr_seconds = date.getSeconds() == 0 ? (date.getSeconds() + '0') : date.getSeconds();
         const formattedDate = curr_year + "-" + curr_month + "-" + curr_date + "T" + curr_hour + ":" + curr_minutes + ":" + curr_seconds;
-        const formattedEnd = curr_year + "-" + curr_month + "-" + curr_date + "T" + (curr_hour + 2) + ":" + curr_minutes + ":" + curr_seconds;
+        const formattedEnd = curr_year + "-" + curr_month + "-" + curr_date + "T" + (curr_hour) + ":" + curr_minutes + ":" + curr_seconds;
         setActivities(activities => [...activities, {
           ID: activity.activityId,
           title: activity.title,
           start: formattedDate,
           end: formattedEnd,
+          formattedDate: formattedDate,
           backgroundColor: formattedDate > todayStr ? '#f44336' : '#f66055'
         }])
       })
     }).catch((error: any) => {
       console.log('error' + error.message)
     })
-    console.log(activities)
   }, []);
 
 
-  const handleOnClick = (activity: EventInput) => {
-    const activityID = activity.event.extendedProps.ID
+  const handleOnClick = (eventInfo: EventInput) => {
+    console.log(activities)
+    const activityID = eventInfo.event.extendedProps.ID
     const url = `/activity/${activityID}`
     axios.get(url).then(response => {
-      console.log(response.data)
+      setActivity(response.data)
+      setOpenPopup(!openPopup)
     }).catch(error => {
       console.log('Kunne ikke hente aktivitet: ' + error.message)
     })
-
-
   }
+
+  const handleEventEnter = (eventInfo: any) => {
+    eventInfo.event.setProp('backgroundColor', '#f66055');
+  }
+
+  const handleEventLeave = (eventInfo: any) => {
+    const normalColor = eventInfo.event.extendedProps.formattedDate > todayStr ? '#f44336' : '#f66055'
+    eventInfo.event.setProp('backgroundColor', normalColor);
+  }
+
 
   return (
     <CalendarContainer>
@@ -95,8 +123,8 @@ const Calender = () => {
         }}
         height='750px'
         initialView="timeGridWeek"
-        editable={false}
-        selectable={true}
+        editable={true}
+        selectable={false}
         selectMirror={true}
         dayMaxEvents={true}
         allDaySlot={false}
@@ -113,6 +141,8 @@ const Calender = () => {
         progressiveEventRendering={true}
         events={activities}
         firstDay={1}
+        eventMouseEnter={handleEventEnter}
+        eventMouseLeave={handleEventLeave}
         dayHeaderFormat={{ weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true, hour12: false }}
         slotLabelFormat={{
           hour12: false,
@@ -123,7 +153,17 @@ const Calender = () => {
         }}
         eventClick={handleOnClick}
       />
-  </CalendarContainer>
+      <Popup
+        title="Legg til aktivitet"
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+        maxWidth="md"
+      >
+        <ActivityInformation
+          activity={activity}
+        />
+      </Popup>
+    </CalendarContainer>
   )
 }
 
