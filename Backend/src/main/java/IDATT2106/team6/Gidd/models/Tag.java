@@ -39,7 +39,7 @@ public class Tag {
 
     @Override
     public String toString() {
-        return description;
+        return "\""+description+"\"";
     }
 }
 

@@ -48,4 +48,12 @@ public class Equipment {
     public void setActivities(List<ActivityEquipment> activities) {
         this.activities = activities;
     }
+
+    @Override
+    public String toString() {
+        return "{\n " +
+                    "\"equipmentID\": " + equipmentId + "\n" +
+                    "\"description\": \"" + description + "\"\n" +
+                "}";
+    }
 }

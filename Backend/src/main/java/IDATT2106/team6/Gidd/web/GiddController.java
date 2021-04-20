@@ -185,7 +185,7 @@ public class GiddController {
                     .body(formatJson(body));
         } catch(Exception e) {
             body.put("error", "unknown error: " + e.getMessage());
-            log.error("unexplained error caught " + e.getMessage());
+            log.error("unexplained error caught " + e + "; local:" + e.getLocalizedMessage());
             return ResponseEntity
                     .badRequest()
                     .body(formatJson(body));
@@ -616,7 +616,7 @@ public class GiddController {
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body("{activity:" + activities.toString() + "}");
+                .body("{\"activities\": \n" + activities.toString() + "\n}");
     }
 
     @GetMapping(value = "/activity/{id}/user", produces = "application/json")
