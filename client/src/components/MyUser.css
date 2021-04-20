@@ -1,4 +1,34 @@
-.password-icon {
-    position: absolute;
+.myuser {
+    margin: 2vh;
+    justify-content: center;
+}
+
+.myuser__information {
+    margin-bottom: 2vh;
+}
+
+.myuser__informationItem {
+    margin: 1vh !important;
+}
+
+.myuser__textfields {
+}
+
+.myuser__textfield {
+    margin: 1vh !important;
+    width: 23rem !important;
+}
+
+.myuser__buttons {
+    display: flex;
+}
+
+.myuser__button {
+    width: 11rem !important;
+    margin: 1vh !important;
+}
+
+.passwordicon {
     cursor: pointer;
+    margin-top: 3vh !important;
 }
