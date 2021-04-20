@@ -7,10 +7,10 @@ import { EventInput } from '@fullcalendar/react';
 import axios from '../Axios'
 import styled from 'styled-components';
 import { UserContext } from '../UserContext'
-import { isConstructorDeclaration } from 'typescript';
 import Popup from '../components/Popup';
 import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
-import Activity from '../interfaces/Activity';
+import ActivityResponse from '../interfaces/ActivityResponse';
+import { ContactSupportOutlined } from '@material-ui/icons';
 
 const CalendarContainer = styled.div`
   --fc-button-bg-color: #f44336;
@@ -31,6 +31,26 @@ const Calender = () => {
   const { user } = useContext(UserContext);
   const [activities, setActivities] = useState<EventInput[]>([]);
   const [openPopup, setOpenPopup] = useState<boolean>(false);
+  const [activity, setActivity] = useState<ActivityResponse>({
+    activityId: 0,
+    activityLevel: 'MEDIUM',
+    capacity: 0,
+    daysToRepeat: 0,
+    description: 'test',
+    equipments: [],
+    groupId: 0,
+    image: '',
+    latitude: 0,
+    longitude: 0,
+    registeredParticipants: [],
+    tags: 'SII',
+    time: 1618924200000,
+    timeCreated: 1618830691000,
+    title: 'Test',
+    user: ''
+  }
+  );
+
   const getMyActivities = () => {
     const url = `/user/1780489954/activity`;
     const activityIds: string[] = [];
@@ -72,15 +92,19 @@ const Calender = () => {
   }, []);
 
 
-  const handleOnClick = (activity: EventInput) => {
-    const activityID = activity.event.extendedProps.ID
+  const handleOnClick = (eventInfo: EventInput) => {
+    const activityID = eventInfo.event.extendedProps.ID
     const url = `/activity/${activityID}`
     axios.get(url).then(response => {
-      console.log(response.data)
-    }).catch(error => {
+      setActivity(response.data['activity'])
+      console.log(activity)
+      console.log(user)
+    }).then( () => {
+      //setOpenPopup(!openPopup)
+    }
+    ).catch(error => {
       console.log('Kunne ikke hente aktivitet: ' + error.message)
     })
-
 
   }
 
@@ -123,7 +147,18 @@ const Calender = () => {
         }}
         eventClick={handleOnClick}
       />
-  </CalendarContainer>
+      <Popup
+        title="Legg til aktivitet"
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+        maxWidth="lg"
+        fullWidth={true}
+      >
+        <ActivityInformation
+          activity={activity}
+        />
+      </Popup>
+    </CalendarContainer>
   )
 }
 
