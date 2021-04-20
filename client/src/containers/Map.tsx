@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import MapComponent from '../components/MapComponents/MapComponent';
-import Activity, { ActivityList } from '../interfaces/Activity';
 import MapMarker from '../components/MapComponents/MapMarker';
 import GeoSuggest from '../components/MapComponents/GeoSuggest';
 import DefaultCenter from '../interfaces/DefaultCenter';
 import TagTextField from '../components/ActivityComponents/TagTextField';
 import axios from 'axios';
-import {Button} from '@material-ui/core'; 
+import { Button } from '@material-ui/core';
 import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
 import ActivityResponse from '../interfaces/ActivityResponse';
 import { act } from '@testing-library/react';
@@ -60,6 +59,9 @@ const Map = () => {
 
     return (
         <Container>
+            <GeoSuggest
+                onLocationChange={(location) => setDefaultCenter(location)}
+            ></GeoSuggest>
             {defaultCenter && (
                 <MapComponent
                     defaultCenter={defaultCenter}
@@ -69,10 +71,6 @@ const Map = () => {
                     {markers}
                 </MapComponent>
             )}
-            <GeoSuggest
-                onLocationChange={(location) => setDefaultCenter(location)}
-            ></GeoSuggest>
-            <Button onClick={() => {console.log(activities)}}>Jahahaha</Button>
         </Container>
     );
 };

@@ -10,7 +10,6 @@ import { UserContext } from '../UserContext'
 import Popup from '../components/Popup';
 import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
 import ActivityResponse from '../interfaces/ActivityResponse';
-import { DragHandleTwoTone } from '@material-ui/icons';
 
 const CalendarContainer = styled.div`
   --fc-button-bg-color: #f44336;
@@ -23,12 +22,12 @@ const CalendarContainer = styled.div`
   --fc-event-font-size:50px;
 `;
 
-const todayStr = new Date().toISOString().replace(/T.*$/, '')
+const todayStr = new Date().toISOString().replace(/T.*$/, '') + "T" + new Date().toLocaleTimeString()
 
 
 
 const Calender = () => {
-  const { user } = useContext(UserContext);
+  const { setUser, user } = useContext(UserContext);
   const [activities, setActivities] = useState<EventInput[]>([]);
   const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [activity, setActivity] = useState<ActivityResponse>({
@@ -52,16 +51,17 @@ const Calender = () => {
   );
 
   const getMyActivities = () => {
-    const url = `/user/1780489954/activity`;
-    const activityIds: string[] = [];    axios.get(url).then((response) => {
-      activityIds.push(response.data.activityIds);
-      console.log(activityIds);
+    const url = `/user/${user}/activity`;
+    axios.get(url).then((response) => {
+      console.log(response.data);
     }).catch((error) => {
       console.log('error' + error.message)
     })
   }
 
   useEffect(() => {
+    setUser(user)
+    console.log(user)
     const url = '/activity'
     axios.get(url).then((response) => {
       console.log(response.data['activities'])
@@ -70,7 +70,7 @@ const Calender = () => {
         const curr_date = date.getDate();
         const curr_month = (date.getMonth() + 1) >= 10 ? (date.getMonth()) : '0' + (date.getMonth() + 1);
         const curr_year = date.getFullYear();
-        const curr_hour = (date.getHours() - 2) < 10 ? ('0' + (date.getHours() - 2 )) : (date.getHours() - 2);
+        const curr_hour = (date.getHours() - 2) < 10 ? ('0' + (date.getHours() - 2)) : (date.getHours() - 2);
         const curr_minutes = date.getMinutes() == 0 ? (date.getMinutes() + '0') : date.getMinutes();
         const curr_seconds = date.getSeconds() == 0 ? (date.getSeconds() + '0') : date.getSeconds();
         const formattedDate = curr_year + "-" + curr_month + "-" + curr_date + "T" + curr_hour + ":" + curr_minutes + ":" + curr_seconds;
@@ -80,6 +80,7 @@ const Calender = () => {
           title: activity.title,
           start: formattedDate,
           end: formattedEnd,
+          formattedDate: formattedDate,
           backgroundColor: formattedDate > todayStr ? '#f44336' : '#f66055'
         }])
       })
@@ -100,14 +101,14 @@ const Calender = () => {
       console.log('Kunne ikke hente aktivitet: ' + error.message)
     })
   }
-  
-  const handleEventEnter = (eventInfo:any) => {
-      eventInfo.event.setProp('backgroundColor', '#f66055');
+
+  const handleEventEnter = (eventInfo: any) => {
+    eventInfo.event.setProp('backgroundColor', '#f66055');
   }
 
-  const handleEventLeave = (eventInfo:any) => {
-    const normalColor = eventInfo.event.start > todayStr ? '#f44336' : '#f66055'
-    eventInfo.event.setProp('backgroundColor', '  #f44336');
+  const handleEventLeave = (eventInfo: any) => {
+    const normalColor = eventInfo.event.extendedProps.formattedDate > todayStr ? '#f44336' : '#f66055'
+    eventInfo.event.setProp('backgroundColor', normalColor);
   }
 
 
@@ -140,8 +141,8 @@ const Calender = () => {
         progressiveEventRendering={true}
         events={activities}
         firstDay={1}
-        eventMouseEnter = {handleEventEnter}
-        eventMouseLeave = {handleEventLeave}
+        eventMouseEnter={handleEventEnter}
+        eventMouseLeave={handleEventLeave}
         dayHeaderFormat={{ weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true, hour12: false }}
         slotLabelFormat={{
           hour12: false,
@@ -156,8 +157,7 @@ const Calender = () => {
         title="Legg til aktivitet"
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
-        maxWidth="lg"
-        fullWidth={true}
+        maxWidth="md"
       >
         <ActivityInformation
           activity={activity}

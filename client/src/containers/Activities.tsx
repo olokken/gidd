@@ -3,12 +3,13 @@ import ActivityForm from '../components/ActivityComponents/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/FilterComponents/SideFilter';
 import SortMenu from '../components/SortingComponents/SortMenu';
-import Activity, { ActivityList } from '../interfaces/Activity';
+import Activity from '../interfaces/Activity';
 import ActivityResponse from '../interfaces/ActivityResponse';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
 import Popup from '../components/Popup';
 import AddButton from '../components/ActivityComponents/AddButton';
 import axios from '../Axios';
+import { Button } from '@material-ui/core';
 
 //Endringer kan forekomme her
 
@@ -49,7 +50,6 @@ const Activities = () => {
         axios
             .get('/activity')
             .then((response) => {
-                console.log(response.data['activities']);
                 setActivities(response.data['activities']);
             })
             .catch((error) => console.log(error));
@@ -76,6 +76,7 @@ const Activities = () => {
                     </Popup>
                 </AddAndSort>
                 <ActivityGrid activities={activities}></ActivityGrid>
+                <Button onClick={() => console.log(activities)}>Hore</Button>
             </View>
         </Container>
     );
