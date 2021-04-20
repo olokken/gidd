@@ -216,7 +216,6 @@ public class Activity {
 
     @Override
     public String toString() {
-        System.out.println(equipments);
         return "{" +
             "\n\"activityId\": " + activityId +
             ", \n\"title\": " + "\"" + title.trim() + "\"" +
