@@ -159,7 +159,7 @@ public class GiddController {
         log.error("unable to login user with email: " + map.get("email").toString());
         header.add("Status", "403 Forbidden");
         body.put("error", "unable to login user with email: " + map.get("email").toString());
-        return ResponseEntity.ok()
+        return ResponseEntity.status(403)
                 .headers(header).body(formatJson(body));
     }
 
