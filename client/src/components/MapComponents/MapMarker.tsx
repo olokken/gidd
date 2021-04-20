@@ -4,11 +4,13 @@ import { Marker } from 'react-google-maps';
 import Popup from '../Popup';
 import ActivityInformation from '../ActivityComponents/ActivityInformation';
 import ActivityResponse from '../../interfaces/ActivityResponse';
+import DefaultCenter from '../../interfaces/DefaultCenter';
 interface Props {
     activity: ActivityResponse;
+    position: DefaultCenter;
 }
 
-const MapMarker = ({ activity }: Props) => {
+const MapMarker = ({ activity, position }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     const markerOnClick = () => {
         setOpenPopup(!openPopup);
@@ -16,7 +18,7 @@ const MapMarker = ({ activity }: Props) => {
 
     return (
         <>
-            <Marker onClick={markerOnClick} position={{ lat: 0, lng: 0 }} />
+            <Marker onClick={markerOnClick} position={position} />
             <Popup openPopup={openPopup} setOpenPopup={setOpenPopup}>
                 <ActivityInformation activity={activity} />
             </Popup>

@@ -14,12 +14,14 @@ import {
     Button,
 } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
+import { Marker } from 'react-google-maps';
 import hiking from '../../assets/hiking.jpg';
 import MapComponent from '../MapComponents/MapComponent';
 import weather from '../../assets/weather.png';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import { UserContext } from '../../UserContext';
 import Equipment from '../../interfaces/Equipment';
+import MapMarker from '../MapComponents/MapMarker';
 
 interface Props {
     activity: ActivityResponse;
@@ -61,6 +63,14 @@ const ActivityInformation = ({ activity }: Props) => {
     const [isRegistered, setIsRegistered] = useState<boolean>(true);
     const { user } = useContext(UserContext);
 
+    const register = () => {
+        console.log('Registrer bruker til aktivitet');
+    };
+
+    const unRegister = () => {
+        console.log('Avregistrer bruker til aktivitet');
+    };
+
     useEffect(() => {
         const registered: number[] = activity.registeredParticipants.map(
             (u) => u.userID
@@ -69,13 +79,15 @@ const ActivityInformation = ({ activity }: Props) => {
         else setIsRegistered(false);
     }, []);
 
-    const register = () => {
-        console.log('Registrer bruker til aktivitet');
-    };
-
-    const unRegister = () => {
-        console.log('Avregistrer bruker til aktivitet');
-    };
+    const registerBtn = isRegistered ? (
+        <Button onClick={unRegister} className={classes.joinButton}>
+            Meld deg av
+        </Button>
+    ) : (
+        <Button onClick={register} className={classes.joinButton}>
+            Meld deg på
+        </Button>
+    );
 
     const mapEquipments = activity.equipments.map(
         (eq: Equipment, index: number) => {
@@ -117,12 +129,7 @@ const ActivityInformation = ({ activity }: Props) => {
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
-                        <Button
-                            onClick={() => console.log(isRegistered)}
-                            className={classes.joinButton}
-                        >
-                            Meld deg på
-                        </Button>
+                        {registerBtn}
                     </Grid>
                 </Grid>
             </div>
@@ -179,7 +186,14 @@ const ActivityInformation = ({ activity }: Props) => {
                         }}
                         width="100%"
                         height="30rem"
-                    ></MapComponent>
+                    >
+                        <Marker
+                            position={{
+                                lat: activity.latitude,
+                                lng: activity.longitude,
+                            }}
+                        ></Marker>
+                    </MapComponent>
                 </Grid>
             </Grid>
             <br />

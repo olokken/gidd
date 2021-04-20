@@ -4,12 +4,10 @@ import MapComponent from '../components/MapComponents/MapComponent';
 import MapMarker from '../components/MapComponents/MapMarker';
 import GeoSuggest from '../components/MapComponents/GeoSuggest';
 import DefaultCenter from '../interfaces/DefaultCenter';
-import TagTextField from '../components/ActivityComponents/TagTextField';
 import axios from 'axios';
 import { Button } from '@material-ui/core';
 import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
 import ActivityResponse from '../interfaces/ActivityResponse';
-import { act } from '@testing-library/react';
 
 const Container = styled.div`
     justify-content: center;
@@ -53,7 +51,13 @@ const Map = () => {
     useEffect(() => {
         markers = activities.map((act: ActivityResponse, index: number) => {
             //Test med backend, kanskje den her må inni en useEffect hvor den kjører hver gang activities endrer seg :-)
-            return <MapMarker key={index} activity={act}></MapMarker>;
+            return (
+                <MapMarker
+                    key={index}
+                    activity={act}
+                    position={{ lat: act.latitude, lng: act.longitude }}
+                ></MapMarker>
+            );
         });
     }, [activities]);
 
