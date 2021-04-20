@@ -54,7 +54,7 @@ const NumberTextField = withStyles({
 
 const ButtonsContainer = styled.div`
     display: flex;
-    width: 30vw;
+    width: 34vw;
     padding: 10px;
 `;
 interface Props {
@@ -227,6 +227,17 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         );
         let tagString = '';
         tagList.map((tag) => (tagString += tag.desc));
+
+        const escapedJSONDescription = JSON.stringify(desc)
+            .replace(/\\n/g, '\\n')
+            .replace(/\\'/g, "\\'")
+            .replace(/\\"/g, '\\"')
+            .replace(/\\&/g, '\\&')
+            .replace(/\\r/g, '\\r')
+            .replace(/\\t/g, '\\t')
+            .replace(/\\b/g, '\\b')
+            .replace(/\\f/g, '\\f');
+
         const activity: Activity2 = {
             title: title,
             time:
@@ -245,7 +256,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             userId: user,
             capacity: capacity,
             groupId: 0,
-            description: desc,
+            description: escapedJSONDescription,
             image: '1111',
             activityLevel: activityLevel.toUpperCase(),
             equipment: equipmentString,
@@ -266,6 +277,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                 console.log('Could not post activity: ' + error.message)
             );
         handleReset();
+        setOpenPopup(!openPopup);
     };
 
     const handleReset = () => {
@@ -288,7 +300,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             title: '',
             time: '',
             repeat: 0,
-            userId: user.userID,
+            userId: user,
             capacity: 0,
             groupId: 0,
             description: '',
@@ -299,8 +311,6 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             latitude: 0,
             longitude: 0,
         });
-
-        setOpenPopup(!openPopup);
     };
 
     return (
@@ -311,7 +321,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                         className="activityform__containerItem1"
                         component="h2"
                     >
-                        Legg til tittel
+                        Legg til tittel*
                     </Typography>
                     <StyledTextField
                         label="Tittel"
@@ -323,7 +333,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             )}
             {page === 2 && (
                 <div>
-                    <Typography component="h2">Legg til plassering</Typography>
+                    <Typography component="h2">Legg til plassering*</Typography>
                     <div className="activityform__place">
                         <div className="activityform__placeItem1">
                             <GeoSuggest
@@ -415,12 +425,20 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             )}
             {page === 6 && (
                 <div>
-                    <Typography
-                        className="activityform__containerItem1"
-                        component="h2"
-                    >
-                        Legg til tags
-                    </Typography>
+                    <div className="activityform__header">
+                        <Typography
+                            className="activityform__headerItem1"
+                            component="h2"
+                        >
+                            Legg til tags
+                        </Typography>
+                        <Tooltip
+                            placement="right-start"
+                            title="Press enter for å legge til. Trykk for å fjerne"
+                        >
+                            <InfoIcon />
+                        </Tooltip>
+                    </div>
                     <StyledTextField
                         label="Tags"
                         onChange={onChangeTagsDesc}
@@ -431,13 +449,12 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     <ul className="activityform__list">
                         {reset === false &&
                             tagList.map((tag) => (
-                                <Link
-                                    onClick={deleteTag.bind(this, tag.ID)}
-                                    //onClick={() => deleteTag(tag.ID)}
+                                <li
                                     key={tag.ID}
+                                    onClick={deleteTag.bind(this, tag.ID)}
                                 >
-                                    <li key={tag.ID}>{tag.desc}</li>
-                                </Link>
+                                    {tag.desc}
+                                </li>
                             ))}
                     </ul>
                 </div>
@@ -446,7 +463,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                 <div>
                     <div className="activityform__header">
                         <Typography
-                            className="activitform__headerItem1"
+                            className="activityform__headerItem1"
                             component="h2"
                         >
                             Legg til utstyr
@@ -483,7 +500,10 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             )}
             {page === 8 && (
                 <div>
-                    <div className="activityform__container">
+                    <Typography className="activityform__containerItem1">
+                        Legg til aktivitetsgrad*, plasser og gjentakninger
+                    </Typography>
+                    <div className="acitivityform__containerItem2">
                         <TextField
                             className="activityform__activityLevel"
                             label="Aktivitetgrad"
