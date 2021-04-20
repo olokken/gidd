@@ -19,7 +19,11 @@ const MapMarker = ({ activity, position }: Props) => {
     return (
         <>
             <Marker onClick={markerOnClick} position={position} />
-            <Popup openPopup={openPopup} setOpenPopup={setOpenPopup}>
+            <Popup
+                openPopup={openPopup}
+                setOpenPopup={setOpenPopup}
+                maxWidth="md"
+            >
                 <ActivityInformation activity={activity} />
             </Popup>
         </>

@@ -16,7 +16,7 @@ const StyledContainer = styled.div`
 const SideFilter = () => {
     return (
         <StyledContainer>
-            <TextField fullWidth={true} label="Search" variant="outlined" />
+            <TextField fullWidth={true} label="Søk på tittel" variant="outlined" />
             <DistanceFilter></DistanceFilter>
             <TimeFilter></TimeFilter>
             <NumberFilter
@@ -25,7 +25,6 @@ const SideFilter = () => {
                 headline={'Kapasitet'}
             ></NumberFilter>
             <DifficultLevel></DifficultLevel>
-            <ActivityBoxes></ActivityBoxes>
         </StyledContainer>
     );
 };

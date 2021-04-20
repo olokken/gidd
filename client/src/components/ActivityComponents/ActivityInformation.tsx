@@ -29,9 +29,9 @@ interface Props {
     activity: ActivityResponse;
 }
 const useStyles = makeStyles(() =>
-  createStyles({
-    titlearea: {
-        /*margin: `${theme.spacing(1)}px auto`,
+    createStyles({
+        titlearea: {
+            /*margin: `${theme.spacing(1)}px auto`,
         padding: theme.spacing(2),*/
             flex: 1,
             backgroundColor: '#f44336',
@@ -149,14 +149,16 @@ const ActivityInformation = ({ activity }: Props) => {
     );
     const mapParticipants = activity.registeredParticipants.map(
         (par: any, index: number) => {
-            return(
-                <p key={index}>{par.userId}</p>
-            )
+            return (
+                <p key={index}>
+                    {par.userId['firstName'] + ' ' + par.userId['surname']}
+                </p>
+            );
         }
-    )
+    );
 
     return (
-    <div>       
+        <div>
             <Grid>
                 <Grid item>
                     <CardMedia
@@ -202,7 +204,8 @@ const ActivityInformation = ({ activity }: Props) => {
                                 {activity.capacity}
                             </Typography>
                             <Typography>
-                                <b>Vanskligheitsgrad:</b> {activity.activityLevel}
+                                <b>Vanskligheitsgrad:</b>{' '}
+                                {activity.activityLevel}
                             </Typography>
                             <Typography>
                                 <b>Tidspunkt: </b>
@@ -212,10 +215,9 @@ const ActivityInformation = ({ activity }: Props) => {
                     </Grid>
                     <Grid item xs={1}></Grid>
                     <Grid item xs={3}>
-                    <Typography>
-                                <b>Påmeldte personer:</b>{' '}
-                                {mapParticipants}
-                            </Typography>
+                        <Typography>
+                            <b>Påmeldte personer:</b> {mapParticipants}
+                        </Typography>
                     </Grid>
                 </Grid>
                 <Typography style={{ color: 'black' }}>
@@ -273,16 +275,16 @@ const ActivityInformation = ({ activity }: Props) => {
                         </Typography>
                     </Grid>
                 </div>
-                    <Grid item>
-                        <WeatherComponent 
-                            lat={lat}//lat og lon må korrespondere med informasjonen om lokasjonen til økta
-                            lon={lon}
-                            time={activity.time}
-                        />
-                    </Grid>
+                <Grid item>
+                    <WeatherComponent
+                        lat={lat} //lat og lon må korrespondere med informasjonen om lokasjonen til økta
+                        lon={lon}
+                        time={activity.time}
+                    />
+                </Grid>
             </Grid>
         </div>
     );
-}
+};
 
 export default ActivityInformation;

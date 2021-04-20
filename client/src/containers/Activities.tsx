@@ -64,6 +64,7 @@ const Activities = () => {
     }, []);
     
     const [activities, setActivities] = useState<ActivityResponse[]>([]);
+    const [currentActivities, setCurrentActivities] = useState<ActivityResponse[]>(activities); 
     const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     const onClickAddButton = () => {
@@ -84,7 +85,7 @@ const Activities = () => {
             return (
                 <Container>
                     <div style={{width:"20%"}}>
-                        <SideFilter ></SideFilter>
+                        <SideFilter></SideFilter>
                     </div>
                     <View>
                         <AddAndSort>
