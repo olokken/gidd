@@ -1,4 +1,5 @@
 export default interface Equipment {
-    id: number;
+    equipmentId: number;
     description: string;
+    bringerID?:number; 
 }

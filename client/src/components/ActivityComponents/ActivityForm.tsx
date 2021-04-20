@@ -165,7 +165,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         if (event.key === 'Enter') {
             if (checkInput(equipmentDesc)) {
                 const equipment: Equipment = {
-                    id: counterAct,
+                    equipmentId: counterAct,
                     description: equipmentDesc,
                 };
                 equipmentList.push(equipment);
@@ -388,7 +388,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     <ul className="activityform__list">
                         {reset === false &&
                             equipmentList.map((equipment) => (
-                                <li key={equipment.id}>
+                                <li key={equipment.equipmentId}>
                                     {equipment.description}
                                 </li>
                             ))}

@@ -1,4 +1,4 @@
-import User from "./User";
+import Equipment from "./Equipment";
 
 export default interface ActivityResponse {
     activityId: number;
@@ -6,7 +6,7 @@ export default interface ActivityResponse {
     capacity: number;
     daysToRepeat: number;
     description: string;
-    equipments: string[];
+    equipments: Equipment[];
     groupId: number;
     image: any;
     latitude: number;
