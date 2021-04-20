@@ -19,7 +19,7 @@ export function ActivityList(): Activity[] {
     const akt1: Activity = {
         ID: 1,
         title: 'Dette er en litt lengre tittel for å se hvordan layaouten reagerer',
-        time: '2000-12-22',
+        time: '2021-04-22',
         owner: 'Ole',
         capacity: 10,
         maxCapacity: 20,

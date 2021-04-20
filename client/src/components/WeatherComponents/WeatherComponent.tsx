@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Weather from '../../interfaces/Weather';
 import WeatherContent from './WeatherContent';
 /* denne script-fila må hente ut alle data for været og 
 sende det til ein weatherContent div*/
@@ -15,24 +16,32 @@ interface Props{
 }
 
 const WeatherComponent = ({ lat, lon, time }: Props) =>{
-  const openWeatherURL = "http://api.openweathermap.org/data/2.5/forecast?";
   const latitude = new String(lat);
   const longitude = new String(lon);
   const dateExact = new Date(time);
-  const dateRounded = roundMinutes(dateExact);
+  const dateRounded = roundThirdHour(dateExact);
+  const openWeatherURL = "http://api.openweathermap.org/data/2.5/forecast?";
   const lat_long = "lat=" +latitude+ "&lon=" +longitude;
   const join_key = "&appid=" + "bf5aff56f689df8dd3147e0a62c61bac";
   const units = "&units=metric";
-  const dateString = new String(dateRounded);
+  const dateStringRounded = new String(dateRounded);
+  const [weather, setWeather] = useState<Weather>({
+    name: '',
+    temp: 0,
+});
 
-  function roundMinutes(date: Date) {
+  /* Runder av tida til nærmaste tredje time */
+  function roundThirdHour(date: Date) {
+    const myDate = date;
+    myDate.setHours(myDate.getHours() + Math.round(myDate.getMinutes()/60));
+    myDate.setMinutes(0, 0, 0);
+    const diff = myDate.getHours()%3;
+    if(diff===1){ myDate.setHours(myDate.getHours()-1)}
+    if(diff===2){ myDate.setHours(myDate.getHours()+1)}
 
-    date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
-    date.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
-
-    return date;
+    return myDate;
 }
-
+/* Hentar værmeldinger og finn den som stemmer for tidspunktet til økta */
   Promise.all([fetch(openWeatherURL+lat_long+join_key+units)])
     .then(([response]) => {
       if(response.ok){
@@ -40,16 +49,24 @@ const WeatherComponent = ({ lat, lon, time }: Props) =>{
     }
     throw Error(response.statusText);
     })
-    .then(([data]) => {// sammenlign tid og dag
-      //lagre denne infoen en stad
+    .then(([data]) => {
+      // sammenlign tid og dag
+      // lagre denne infoen en stad
       console.log(data);
+      const weather: any[] = data.list;
+      const message : any = weather.filter(w => w.dt === dateRounded).find; 
+                if (message) {
+                  setWeather(message) 
+                  console.log(message)
+                }
+      
     })
     .catch(error => {
       console.log(error);
     });
 
   return(
-    <div>{dateString}</div>
+    <div>{dateStringRounded}</div>
   )
 }
 
