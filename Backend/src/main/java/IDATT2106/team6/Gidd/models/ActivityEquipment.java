@@ -56,7 +56,7 @@ public class ActivityEquipment {
     public String toString() {
         return  "{" +
             "\n   \"equipmentId\": " + equipment.getEquipmentId() +
-            ",\n   \"description\": \"" + equipment.getDescription() + "\"" +
+            ",\n   \"description\": \"" + equipment.getDescription().trim() + "\"" +
             ",\n   \"bringerID\": " + this.getBringerId() +
             "\n}";
     }

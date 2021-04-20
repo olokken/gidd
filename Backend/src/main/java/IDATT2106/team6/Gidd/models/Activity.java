@@ -213,13 +213,13 @@ public class Activity {
     public String toString() {
         return "{" +
             "\n\"activityId\": " + activityId +
-            ", \n\"title\": " + "\"" + title + "\"" +
+            ", \n\"title\": " + "\"" + title.trim() + "\"" +
             ", \n\"time\":" + time.getTime() +
             ", \n\"daysToRepeat\":" + daysToRepeat +
             ", \n\"user\":" + user.toJSON() +
             ", \n\"capacity\":" + capacity +
             ", \n\"groupId\":" + groupId +
-            ", \n\"description\":" + "\"" +description + "\"" +
+            ", \n\"description\":" + "\"" +description.trim() + "\"" +
             ", \n\"image\":" + "\"" +Arrays.toString(image) +"\"" +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
             ", \n\"tags\":" + tags.toString() +

@@ -53,7 +53,7 @@ public class Equipment {
     public String toString() {
         return "{\n " +
                     "\"equipmentID\": " + equipmentId + "\n" +
-                    "\"description\": \"" + description + "\"\n" +
+                    "\"description\": \"" + description.trim() + "\"\n" +
                 "}";
     }
 }
