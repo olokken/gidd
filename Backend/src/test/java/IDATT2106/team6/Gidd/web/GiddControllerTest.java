@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -17,6 +18,8 @@ import IDATT2106.team6.Gidd.GiddApplication;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonpCharacterEscapes;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.JSONArray;
+import net.minidev.json.parser.JSONParser;
 import org.hamcrest.Matchers;
 import org.json.JSONException;
 
@@ -25,6 +28,7 @@ import IDATT2106.team6.Gidd.models.*;
 import jdk.jfr.ContentType;
 import net.minidev.json.JSONObject;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
@@ -41,6 +45,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @RunWith(SpringRunner.class) // JUnit
 @SpringBootTest(webEnvironment = MOCK, classes = GiddApplication.class) // Spring
 @AutoConfigureMockMvc // Trengs for å kunne autowire MockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GiddControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -50,9 +55,9 @@ public class GiddControllerTest {
 
     private User user1;
     private User user2;
-    private User user3; 
+    private User user3;
     private User user4;
-    private User user5; 
+    private User user5;
     private Activity activity1;
     
     @Before
@@ -67,7 +72,7 @@ public class GiddControllerTest {
         ActivityLevel.HIGH,
         Provider.LOCAL);
 
-        user3 = new User(33, "3@3", "pass3", "Hans jakob", "Matte", 1233, 
+        user3 = new User(33, "3@3", "pass3", "Hans Jakob", "Matte", 1233,
         ActivityLevel.HIGH,
         Provider.LOCAL);
 
@@ -87,8 +92,29 @@ public class GiddControllerTest {
     public void beforeEach(){
         System.out.println("Beginning a test!\n");
 
-       
 
+        user1 = new User(11, "1@1", "pass1", "Olav", "Skundeberg", 123,
+                ActivityLevel.HIGH,
+                Provider.LOCAL);
+
+        user2 = new User(22, "2@2", "pass2", "Ole", "Christian", 1232,
+                ActivityLevel.HIGH,
+                Provider.LOCAL);
+
+        user3 = new User(33, "3@3", "pass3", "Hans jakob", "Matte", 1233,
+                ActivityLevel.HIGH,
+                Provider.LOCAL);
+
+        user4 = new User(44, "4@4", "pass4", "Jonas", "Støhre", 1234,
+                ActivityLevel.HIGH, Provider.LOCAL);
+
+        user5 = new User(55, "5@5", "pass5", "Erna", "Solberg", 1235,
+                ActivityLevel.HIGH, Provider.LOCAL);
+
+        activity1 = new Activity(121, "skrive tester",
+                new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
+                0, user1, 50, 5, "det som du gjør nå", new byte[]{-5},
+                ActivityLevel.HIGH, null, 0.001, 0.005, null);
     }
 
   //  @Test
@@ -110,15 +136,39 @@ public class GiddControllerTest {
 
     @Test
     @Order(1)
-    public void registerUserTest(){
+    public void registerUserTest() throws Exception {
         //make new user
         System.out.println("test 1");
+        String id = mockMvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\"email\":\"" + user1.getEmail() + "\"," +
+                        "\"password\":\"" + 123 + "\"," +
+                        "\"firstName\":\"" + user1.getFirstName() + "\"," +
+                        "\"surname\":\"" + user1.getSurname() + "\"," +
+                        "\"phoneNumber\":\"" + user1.getPhoneNumber() + "\"," +
+                        "\"activityLevel\":\"" + user1.getActivityLevel() + "\"" +
+                        "}")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        String user2String = mockMvc.perform(get("/user/email/" + user1.getEmail())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(user2String);
+        assertEquals(user1.getEmail(), json.get("email"));
     }
+
     @Order(2)
     @Test
-    public void loginTest(){
+    public void loginTest() throws Exception {
         //login user from order 1
         System.out.println("test 2");
+        mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON)
+        .content("{" +
+                "\"email\":\"" + user1.getEmail() + "\"," +
+                "\"password\":\"" + 123 + "\""))
+                .andExpect(status().isOk()).andExpect((MockMvcResultMatchers.jsonPath("$.userId").exists()));
     }
 
     @Order(3)
@@ -176,17 +226,18 @@ public class GiddControllerTest {
         //create new user, add to activity and check order
         System.out.println("test 8");
 
-        String id = mockMvc.perform(post("/user").content("{" +
-            "\"email\":\"ikhovidn@email.com\"," +
-            "\"password\":\"123\"," +
-            "\"firstName\":\"ingebrigt\"," +
-            "\"surname\":\"Hovidn\"," +
-            "\"phoneNumber\":\"123\"," +
-            "\"activityLevel\":\"LOW\"" +
+        String id = mockMvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+            "\"email\":\"" + user2.getEmail() + "\"," +
+            "\"password\":\"" + 123 + "\"," +
+            "\"firstName\":\"" + user2.getFirstName() + "\"," +
+            "\"surname\":\"" + user2.getSurname() + "\"," +
+            "\"phoneNumber\":\"" + user2.getPhoneNumber() + "\"," +
+            "\"activityLevel\":\"" + user2.getActivityLevel() + "\"" +
         "}")).andReturn().getResponse().getContentAsString();
-        
-        
-        JSONObject json  = (JSONObject) org.skyscreamer.jsonassert.JSONParser.parseJSON(id);
+
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(id);
 
         mockMvc.perform(post("/user/activity").contentType(MediaType.APPLICATION_JSON)
         .content("{"+
@@ -199,16 +250,13 @@ public class GiddControllerTest {
         .accept(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("$.user").exists())
         .andReturn().getResponse().getContentAsString();
-        
-        JSONObject jsonOrder  = (JSONObject) org.skyscreamer.jsonassert.JSONParser.parseJSON(order);
 
-        String csv = (String) jsonOrder.get("user");
-
+        JSONObject jsonOrder = (JSONObject) parser.parse(order);
 
         //order is supposed to be user1 -> user2 -> user3
-        assertEquals(Integer.parseInt(csv.split(",")[0]), user1.getUserId());
-        assertEquals(Integer.parseInt(csv.split(",")[1]), user2.getUserId());
-        assertEquals(Integer.parseInt(csv.split(",")[2]), user3.getUserId());
+        assertEquals(((JSONObject)((JSONArray)jsonOrder.get("user")).get(0)).get("userId"), user1.getUserId());
+        //assertEquals(Integer.parseInt(csv.split(",")[1]), user2.getUserId());
+        //assertEquals(Integer.parseInt(csv.split(",")[2]), user3.getUserId());
     }
     @Order(9)
     @Test
@@ -268,6 +316,21 @@ public class GiddControllerTest {
         //edit user2
     }
 
+    @AfterAll
+    public void tearDown() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/user/" + user1.getUserId()));
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/user/" + user2.getUserId()));
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/user/" + user3.getUserId()));
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/user/" + user4.getUserId()));
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/user/" + user5.getUserId()));
+
+
+    }
 
     public static String asJsonString(final Object obj) {
         try {
