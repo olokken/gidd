@@ -13,11 +13,13 @@ import {
     CardMedia,
     Button,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import hiking from '../../assets/hiking.jpg';
-import map from '../../assets/map.jpg';
+import MapComponent from '../MapComponents/MapComponent';
 import weather from '../../assets/weather.png';
 import ActivityResponse from '../../interfaces/ActivityResponse';
+import { UserContext } from '../../UserContext';
+import Equipment from '../../interfaces/Equipment';
 
 interface Props {
     activity: ActivityResponse;
@@ -56,6 +58,44 @@ const ActivityInformation = ({ activity }: Props) => {
     const classes = useStyles();
     const date = new Date(activity.time);
     const eventTime = new String(date);
+    const [isRegistered, setIsRegistered] = useState<boolean>(true);
+    const { user } = useContext(UserContext);
+
+    useEffect(() => {
+        const registered: number[] = activity.registeredParticipants.map(
+            (u) => u.userID
+        );
+        if (registered.includes(user)) setIsRegistered(true);
+        else setIsRegistered(false);
+    }, []);
+
+    const register = () => {
+        console.log('Registrer bruker til aktivitet');
+    };
+
+    const unRegister = () => {
+        console.log('Avregistrer bruker til aktivitet');
+    };
+
+    const mapEquipments = activity.equipments.map(
+        (eq: Equipment, index: number) => {
+            return (
+                <Chip
+                    key={index}
+                    variant="outlined" // her må man hente utstyr frå det som er registrert og plassere dei inn
+                    size="small"
+                    label={eq.description}
+                    style={{
+                        backgroundColor: '#f44336',
+                        borderBlockEndWidth: '0px',
+                        color: 'white',
+                        padding: '10px',
+                        margin: '10px',
+                    }}
+                />
+            );
+        }
+    );
 
     return (
         <div>
@@ -77,7 +117,10 @@ const ActivityInformation = ({ activity }: Props) => {
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
-                        <Button className={classes.joinButton}>
+                        <Button
+                            onClick={() => console.log(isRegistered)}
+                            className={classes.joinButton}
+                        >
                             Meld deg på
                         </Button>
                     </Grid>
@@ -87,7 +130,10 @@ const ActivityInformation = ({ activity }: Props) => {
                 <Grid container wrap="nowrap" spacing={2}>
                     <Grid item style={{ paddingLeft: '15px' }}>
                         <Typography>
-                            Aktivitet publisert av: {activity.user['firstName']+ ' ' + activity.user['surname']}
+                            Aktivitet publisert av:{' '}
+                            {activity.user['firstName'] +
+                                ' ' +
+                                activity.user['surname']}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -126,12 +172,14 @@ const ActivityInformation = ({ activity }: Props) => {
                     </Grid>
                 </div>
                 <Grid item>
-                    <CardMedia
-                        component="img"
-                        alt={'Map'}
-                        height="200"
-                        image={map}
-                    />
+                    <MapComponent
+                        defaultCenter={{
+                            lat: activity.latitude,
+                            lng: activity.longitude,
+                        }}
+                        width="100%"
+                        height="30rem"
+                    ></MapComponent>
                 </Grid>
             </Grid>
             <br />
@@ -142,18 +190,7 @@ const ActivityInformation = ({ activity }: Props) => {
                     </Grid>
                     <Grid item xs={8}>
                         <div className={classes.supplyList}>
-                            <Chip
-                                variant="outlined" // her må man hente utstyr frå det som er registrert og plassere dei inn
-                                size="small"
-                                label="fotball"
-                                style={{
-                                    backgroundColor: '#f44336',
-                                    borderBlockEndWidth: '0px',
-                                    color: 'white',
-                                    padding: '10px',
-                                    margin: '10px',
-                                }}
-                            />
+                            {mapEquipments}
                         </div>
                     </Grid>
                 </Grid>
