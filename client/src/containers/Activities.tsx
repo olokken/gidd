@@ -16,7 +16,6 @@ import {Drawer,Button} from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
-import MenuIcon from '@material-ui/icons/Menu';
 
 
 
@@ -84,7 +83,7 @@ const Activities = () => {
             return (
                 <Container>
                     <div style={{width:"20%"}}>
-                    <SideFilter ></SideFilter>
+                        <SideFilter ></SideFilter>
                     </div>
                     <View>
                         <AddAndSort>

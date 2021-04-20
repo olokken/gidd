@@ -4,37 +4,36 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import styled from 'styled-components';
 import FriendList from '../components/GroupsAndFriendsComponents/FriendList';
+import GroupList from '../components/GroupsAndFriendsComponents/GroupList';
 
 
 
 //Endringer kan forekomme her
 
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    paper: {
-      padding: theme.spacing(2),
-      textAlign: 'center',
-      color: theme.palette.text.secondary,
-    },
-  }),
-);
+const Container = styled.div`
+    display: flex;
+    margin-left: 10px;
+    width: 100%;
+`;
 
 const GroupsAndFriends = () => {
-    const classes = useStyles();
 
     return (
-        <div className={classes.root}>
+        <Container>
             <div style={{width:'20%'}}>
                 <FriendList/>
             </div>
-        </div>
+            <div style={{width:'57%'}}>
+              
+            </div>
+
+            <div style={{width:'20%'}}>
+                <GroupList/>
+            </div>
+        </Container>
     );
 };
 

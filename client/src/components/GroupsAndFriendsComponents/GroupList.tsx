@@ -30,34 +30,42 @@ const friends = [
 
 const FriendList = () => {
     const [searchInput, setSearchInput] = useState<string>('');
-    const [addFriendInput, setAddFriendInput] = useState<any>({});
+    const [addGroupInput, setGroupInput] = useState<any>([]);
 
      const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput((event.target as HTMLInputElement).value);
     };
-    const onAddFriendClick = () => {
-        console.log(addFriendInput);
-        setAddFriendInput(null);
+
+    const onAddGroupClick = () => {
+        console.log(addGroupInput);
+        setGroupInput(null);
     }
     
     return (
         <StyledContainer>
             <Select
-                defaultValue={null}
+                defaultValue={[friends[2], friends[3]]}
+                isMulti
                 name="colors"
                 options={friends}
-                placeholder="Legg til venn"
-                noOptionsMessage={() => 'Ingen brukere med dette navnet'}
-                className="basic-single"
+                onChange={setGroupInput}
+                noOptionsMessage={() => 'Ingen grupper med dette navnet'}
+                placeholder="Legg til medlemmer"
+                className="basic-multi-select"
                 classNamePrefix="select"
-                onChange={setAddFriendInput}
                 isSearchable
                 isClearable
             />
-            <Button onClick={onAddFriendClick}>Legg til venn</Button>
+            <Button onClick={onAddGroupClick}>Lag gruppe</Button>
+
             
-            <TextField style={{marginTop:'5px'}} onChange={onSearchChange} fullWidth={true} label="Søk etter venner" variant="outlined" />
-            <h2>Dine venner</h2>
+            <TextField style={{marginTop:'5px'}} 
+                onChange={onSearchChange} 
+                fullWidth={true} 
+                label="Søk etter grupper" 
+                variant="outlined" 
+            />
+            <h2>Dine grupper</h2>
             <StyledUl >
                 {friends.filter((friend: { name: string}) => {
                 if(searchInput == ""){
