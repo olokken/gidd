@@ -533,8 +533,8 @@ public class GiddController {
             body.put("Error", "Something went wrong");
             return ResponseEntity.badRequest().body(formatJson(body));
         }
-
-        boolean result = userService.editUser(
+        try {
+            boolean result = userService.editUser(
                 id,
                 map.get("email").toString(),
                 map.get("password").toString(),
@@ -543,17 +543,24 @@ public class GiddController {
                 Integer.parseInt(map.get("phoneNumber").toString()),
                 ActivityLevel.valueOf(map.get("activityLevel").toString()));
 
-        log.info("edited user " + map.toString());
-        if(result){
-            log.info("created user");
-            header.add("Status", "201 CREATED");
+            log.info("edited user " + map.toString());
+            if(result){
+                log.info("created user");
+                header.add("Status", "201 CREATED");
 
-            body.put("id", String.valueOf(id));
+                body.put("id", String.valueOf(id));
 
-            return ResponseEntity.ok()
+                return ResponseEntity.ok()
                     .headers(header)
                     .body(formatJson(body));
+            }
+        } catch(Exception e) {
+            log.debug("En error was caught while attempting to edit user: " +
+                e.getMessage() + " | Local: " + e.getLocalizedMessage());
+            body.put("Error", "Something went wrong");
+            return ResponseEntity.badRequest().body(formatJson(body));
         }
+
         log.error("User could not be edited, are you sure the user exists");
         header.add("Status", "400 BAD REQUEST");
         body.put("error", "could not edit user are you sure the user exists?");
