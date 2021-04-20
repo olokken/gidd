@@ -53,9 +53,7 @@ const Calender = () => {
 
   const getMyActivities = () => {
     const url = `/user/1780489954/activity`;
-    const activityIds: string[] = [];
-    console.log(url)
-    axios.get(url).then((response) => {
+    const activityIds: string[] = [];    axios.get(url).then((response) => {
       activityIds.push(response.data.activityIds);
       console.log(activityIds);
     }).catch((error) => {
@@ -97,7 +95,6 @@ const Calender = () => {
     const url = `/activity/${activityID}`
     axios.get(url).then(response => {
       setActivity(response.data)
-      console.log(activity)
       setOpenPopup(!openPopup)
     }).catch(error => {
       console.log('Kunne ikke hente aktivitet: ' + error.message)
@@ -105,7 +102,6 @@ const Calender = () => {
   }
   
   const handleEventEnter = (eventInfo:any) => {
-      console.log(eventInfo)
       eventInfo.event.setProp('backgroundColor', '#f66055');
   }
 
