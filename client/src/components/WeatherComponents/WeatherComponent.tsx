@@ -16,12 +16,40 @@ interface Props{
 
 const WeatherComponent = ({ lat, lon, time }: Props) =>{
   const openWeatherURL = "http://api.openweathermap.org/data/2.5/forecast?";
-  const lat_long = "lat=" + lat.toString + "&lon=" + lon.toString;
-  const join_key = "&appid=" + "b6907d289e10d714a6e88b30761fae22";
+  const latitude = new String(lat);
+  const longitude = new String(lon);
+  const dateExact = new Date(time);
+  const dateRounded = roundMinutes(dateExact);
+  const lat_long = "lat=" +latitude+ "&lon=" +longitude;
+  const join_key = "&appid=" + "bf5aff56f689df8dd3147e0a62c61bac";
   const units = "&units=metric";
+  const dateString = new String(dateRounded);
+
+  function roundMinutes(date: Date) {
+
+    date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
+    date.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
+
+    return date;
+}
+
+  Promise.all([fetch(openWeatherURL+lat_long+join_key+units)])
+    .then(([response]) => {
+      if(response.ok){
+      return Promise.all([response.json()]);
+    }
+    throw Error(response.statusText);
+    })
+    .then(([data]) => {// sammenlign tid og dag
+      //lagre denne infoen en stad
+      console.log(data);
+    })
+    .catch(error => {
+      console.log(error);
+    });
 
   return(
-    <div>HI</div>
+    <div>{dateString}</div>
   )
 }
 

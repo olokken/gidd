@@ -4,7 +4,6 @@ import Activity from '../../interfaces/Activity';
 import hiking from '../../assets/hiking.jpg';
 import map from '../../assets/map.jpg';
 import WeatherComponent from '../WeatherComponents/WeatherComponent';
-import weather from '../../assets/weather.png';
 
 /*lat={activity.latitude}
   lon={activity.longitude}*/
@@ -45,8 +44,8 @@ const useStyles = makeStyles(() =>
 const ActivityInformation = ({ activity }: Props) => {
     const classes = useStyles();
     const eventTime = new String(activity.time);
-    const lat = 0;
-    const lon = 0;
+    const lat = 63.430515;
+    const lon = 10.395053;
     return (
     <div>       
             <Grid>
@@ -169,7 +168,7 @@ const ActivityInformation = ({ activity }: Props) => {
                 </div>
                     <Grid item>
                         <WeatherComponent 
-                            lat={lat}
+                            lat={lat}//lat og lon må korrespondere med informasjonen om lokasjonen til økta
                             lon={lon}
                             time={activity.time}
                         />
