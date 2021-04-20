@@ -448,6 +448,8 @@ public class GiddController {
             return ResponseEntity.badRequest().body(formatJson(body));
         }
 
+        log.debug("Temporary debug message");
+
         try {
             Integer.parseInt(map.get("phoneNumber").toString());
         } catch (NumberFormatException e) {
@@ -976,13 +978,13 @@ public class GiddController {
 
     private boolean validateStringMap(Map<String, Object> map){
         log.info("validating map values of " + map.toString());
-        Iterator it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, String> pair = (Map.Entry)it.next();
-            if(pair.getValue().isBlank() || pair.getValue() == null){
+        for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+            Map.Entry<String, String> pair = (Map.Entry) stringObjectEntry;
+            log.debug("Validating pair: " + pair.getKey() + ":" + pair.getValue());
+            if (pair.getValue().isBlank() || pair.getValue() == null) {
                 log.error(pair.getKey() + " : " + pair.getValue() + " could not be validated");
                 return false;
-            } 
+            }
         }
         log.info("map: " + map.toString() + " validated");
         return true;
