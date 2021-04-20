@@ -10,14 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.Timestamp;
-
 import IDATT2106.team6.Gidd.GiddApplication;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonpCharacterEscapes;
+import IDATT2106.team6.Gidd.models.Activity;
+import IDATT2106.team6.Gidd.models.ActivityLevel;
+import IDATT2106.team6.Gidd.models.Provider;
+import IDATT2106.team6.Gidd.models.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.sql.Timestamp;
 import net.minidev.json.JSONArray;
 import net.minidev.json.parser.JSONParser;
 import org.hamcrest.Matchers;
@@ -27,6 +26,7 @@ import IDATT2106.team6.Gidd.*;
 import IDATT2106.team6.Gidd.models.*;
 import jdk.jfr.ContentType;
 import net.minidev.json.JSONObject;
+import org.hamcrest.Matchers;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -76,10 +76,10 @@ public class GiddControllerTest {
         ActivityLevel.HIGH,
         Provider.LOCAL);
 
-        user4 = new User(44, "4@4", "pass4", "Jonas", "Støhre", 1234, 
+        user4 = new User(44, "4@4", "pass4", "Jonas", "Støhre", 1234,
         ActivityLevel.HIGH, Provider.LOCAL);
 
-        user5 = new User(55, "5@5", "pass5", "Erna", "Solberg", 1235, 
+        user5 = new User(55, "5@5", "pass5", "Erna", "Solberg", 1235,
         ActivityLevel.HIGH, Provider.LOCAL);
 
         activity1 = new Activity(121, "skrive tester",
@@ -186,14 +186,14 @@ public class GiddControllerTest {
     }
     @Order(5)
     @Test
-    public void getSingleActivityTest(){
+    public void getSingleActivityTest() {
         //get activity from order 4 and threee
         System.out.println("test 5");
     }
     @Order(6)
     @Test
-    public void registerUserToActivity(){
-        //make new user here and register them
+    public void registerUserToActivity() {
+        // register user 2
         System.out.println("test 6");
     }
     @Order(7)

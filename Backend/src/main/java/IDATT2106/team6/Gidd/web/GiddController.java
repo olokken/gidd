@@ -528,9 +528,15 @@ public class GiddController {
             log.error("phone number cannot be parsed to number " + map.toString());
             body.put("error", "phone number is not numeric");
             return ResponseEntity.badRequest().body(formatJson(body));
+        } catch (Exception e) {
+            log.error("An unexpected message was caught when parsing phoneNumber: " +
+                e.getMessage() + " local: " + e.getLocalizedMessage());
+            body.put("Error", "Something went wrong");
+            return ResponseEntity.badRequest().body(formatJson(body));
         }
-
-        boolean result = userService.editUser(
+        log.debug("temp"); // TODO Delete
+        try {
+            boolean result = userService.editUser(
                 id,
                 map.get("email").toString(),
                 map.get("password").toString(),
@@ -539,17 +545,24 @@ public class GiddController {
                 Integer.parseInt(map.get("phoneNumber").toString()),
                 ActivityLevel.valueOf(map.get("activityLevel").toString()));
 
-        log.info("edited user " + map.toString());
-        if(result){
-            log.info("created user");
-            header.add("Status", "201 CREATED");
+            log.info("edited user " + map.toString());
+            if(result){
+                log.info("created user");
+                header.add("Status", "201 CREATED");
 
-            body.put("id", String.valueOf(id));
+                body.put("id", String.valueOf(id));
 
-            return ResponseEntity.ok()
+                return ResponseEntity.ok()
                     .headers(header)
                     .body(formatJson(body));
+            }
+        } catch(Exception e) {
+            log.debug("En error was caught while attempting to edit user: " +
+                e.getMessage() + " | Local: " + e.getLocalizedMessage());
+            body.put("Error", "Something went wrong");
+            return ResponseEntity.badRequest().body(formatJson(body));
         }
+
         log.error("User could not be edited, are you sure the user exists");
         header.add("Status", "400 BAD REQUEST");
         body.put("error", "could not edit user are you sure the user exists?");
@@ -1197,13 +1210,18 @@ public class GiddController {
 
     private boolean validateStringMap(Map<String, Object> map){
         log.info("validating map values of " + map.toString());
-        Iterator it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, String> pair = (Map.Entry)it.next();
-            if(pair.getValue().isBlank() || pair.getValue() == null){
-                log.error(pair.getKey() + " : " + pair.getValue() + " could not be validated");
-                return false;
-            } 
+        for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+            try {
+                Map.Entry<String, Object> pair = (Map.Entry) stringObjectEntry;
+                log.debug("Validating pair: " + pair.getKey() + ":" + pair.getValue());
+                if (String.valueOf(pair.getValue()).isBlank() || pair.getValue() == null) {
+                    log.error(pair.getKey() + " : " + pair.getValue() + " could not be validated");
+                    return false;
+                }
+            }catch(Exception e) {
+                log.error("An exception was caught while validating string map: " +
+                    e.getMessage() + "local: " + e.getLocalizedMessage());
+            }
         }
         log.info("map: " + map.toString() + " validated");
         return true;
