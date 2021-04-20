@@ -7,6 +7,7 @@ import { UserContext } from '../UserContext';
 import axios from '../Axios';
 import { useHistory } from 'react-router-dom';
 import Popup from './Popup';
+import User from '../interfaces/User';
 
 const StyledButton = withStyles({
     root: {
@@ -26,11 +27,21 @@ const StyledButton = withStyles({
 const MyUser: React.FC = () => {
     const history = useHistory();
     const { user, setUser } = useContext(UserContext);
+    const [currentUser, setCurrentUser] = useState<User>({
+        firstName: '',
+        surname: '',
+        userID: '',
+        email: '',
+        picture: '',
+        password: '',
+    });
     const [firstName, setFirstName] = useState<string>('');
     const [surname, setSurname] = useState<string>('');
+    const [userId, setUserId] = useState<string>('');
     const [email, setEmail] = useState<string>('');
-    const [password1, setPassword1] = useState<string>('');
-    const [password2, setPassword2] = useState<string>('');
+    const [picture, setPicture] = useState<string>('');
+    const [editPass, setEditPass] = useState<string>('');
+    const [confirmPass, setConfirmPass] = useState<string>('');
     const [showEditPass, setShowEditPass] = useState<boolean>(false);
     const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
     const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -61,25 +72,25 @@ const MyUser: React.FC = () => {
     const onChangePassword1 = (event: ChangeEvent<HTMLInputElement>) => {
         setNoMatchPass(false);
         const input: string = (event.target as HTMLInputElement).value;
-        setPassword1(input);
+        setEditPass(input);
     };
 
     const onChangePassword2 = (event: ChangeEvent<HTMLInputElement>) => {
         setNoMatchPass(false);
         const input: string = (event.target as HTMLInputElement).value;
-        setPassword2(input);
+        setConfirmPass(input);
     };
 
     //TODO post to axios in order to change user for each variable that is changed.
     const onClickUpdateUser = () => {
+        const putUrl = `/user/${user}`;
         if (checkInput(firstName)) {
+            setCurrentUser({ ...currentUser, firstName: firstName });
             axios
-                .put(`/user/${user}`, {
-                    firstName: user.firstName,
-                })
+                .put(putUrl, currentUser)
                 .then((response) => {
                     JSON.stringify(response);
-                    //setUser({ ...user, firstName: response.result.data});
+                    //setCurrentUser({ ...user, firstName: response.data.});
                 })
                 .catch((error) =>
                     console.log('Could not change username: ' + error.message)
@@ -87,18 +98,36 @@ const MyUser: React.FC = () => {
             setFirstName('');
         }
         if (checkInput(surname)) {
-            setUser({ ...user, surname: surname });
+            setCurrentUser({ ...currentUser, surname: surname });
+            axios
+                .put(putUrl, currentUser)
+                .then((response) => {
+                    JSON.stringify(response);
+                    console.log(response);
+                })
+                .catch((error) =>
+                    console.log('Could not change surname: ' + error.message)
+                );
             setSurname('');
         }
         if (checkInput(email)) {
-            setUser({ ...user, email: email });
+            setCurrentUser({ ...user, email: email });
+            axios
+                .put(putUrl, currentUser)
+                .then((response) => {
+                    JSON.stringify(response);
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log('Could not change email: ' + error.message);
+                });
             setEmail('');
         }
-        if (password1 === password2) {
-            if (checkInput(password1)) {
-                setUser({ ...user, password: password1 });
-                setPassword1('');
-                setPassword2('');
+        if (editPass === confirmPass) {
+            if (checkInput(editPass)) {
+                setUser({ ...user, password: editPass });
+                setEditPass('');
+                setConfirmPass('');
             }
         } else {
             setNoMatchPass(true);
@@ -121,14 +150,25 @@ const MyUser: React.FC = () => {
             });
     };
 
+    useEffect(() => {
+        async function fetchUser() {
+            const request = await axios.get(`/user/${user}`);
+            console.log(request);
+            setCurrentUser(request.data);
+            return request;
+        }
+        fetchUser();
+    }, []);
+
     return (
         <div>
             <Typography component="h2">
-                Navn: {user.firstName} {user.surname}
+                Navn: {currentUser.firstName} {currentUser.surname}
             </Typography>
-            <Typography component="h2">Email: {user.email}</Typography>
-            <Typography component="h2">Poeng: {user.poeng}</Typography>
-            <Typography component="h2">Passord: {user.password}</Typography>
+            <Typography component="h2">Email: {currentUser.email}</Typography>
+            <Typography component="h2">
+                Passord: {currentUser.password}
+            </Typography>
             <div>
                 <TextField
                     style={{ width: '22rem' }}
@@ -164,7 +204,7 @@ const MyUser: React.FC = () => {
                     label="Endre passord"
                     variant="outlined"
                     onChange={onChangePassword1}
-                    value={password1}
+                    value={editPass}
                 />
                 {showEditPass ? (
                     <VisibilityIcon
@@ -185,7 +225,7 @@ const MyUser: React.FC = () => {
                     label="Bekreft passord"
                     variant="outlined"
                     onChange={onChangePassword2}
-                    value={password2}
+                    value={confirmPass}
                 />
                 {showConfirmPass ? (
                     <VisibilityIcon
