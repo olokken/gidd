@@ -533,6 +533,7 @@ public class GiddController {
             body.put("Error", "Something went wrong");
             return ResponseEntity.badRequest().body(formatJson(body));
         }
+        log.debug("temp"); // TODO Delete
         try {
             boolean result = userService.editUser(
                 id,

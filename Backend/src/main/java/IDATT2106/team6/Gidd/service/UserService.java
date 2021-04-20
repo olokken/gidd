@@ -34,9 +34,12 @@ public class UserService {
     public boolean editUser(int id, String email, String password, String firstname, String surname,
                             int phoneNumber, ActivityLevel activityLevel){
         try {
+            log.debug("In editUser");
             List<User> friends = getUser(id).getFriendList();
+            log.debug("Got friends");
             User newUser =
                 new User(id, email, password, firstname, surname, phoneNumber, activityLevel, null);
+            log.debug("Setting friends");
             newUser.setFriendList(friends);
             log.info("updating user: " + newUser.toString());
 
