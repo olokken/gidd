@@ -21,7 +21,7 @@ import weather from '../../assets/weather.png';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import { UserContext } from '../../UserContext';
 import Equipment from '../../interfaces/Equipment';
-import MapMarker from '../MapComponents/MapMarker';
+import axios from '../../Axios';
 
 interface Props {
     activity: ActivityResponse;
@@ -60,11 +60,21 @@ const ActivityInformation = ({ activity }: Props) => {
     const classes = useStyles();
     const date = new Date(activity.time);
     const eventTime = new String(date);
-    const [isRegistered, setIsRegistered] = useState<boolean>(true);
+    //Registration is 0 if registration is posible, 1 if you are already registered and 2 if the activity is ful
+    const [registration, setRegistration] = useState<number>();
     const { user } = useContext(UserContext);
 
     const register = () => {
-        console.log('Registrer bruker til aktivitet');
+        axios
+            .post('/user/activity', {
+                userId: user,
+                activityId: activity.activityId,
+            })
+            .then((data) => {
+                if (data) {
+                    setRegistration(1);
+                }
+            });
     };
 
     const unRegister = () => {
@@ -72,22 +82,48 @@ const ActivityInformation = ({ activity }: Props) => {
     };
 
     useEffect(() => {
-        const registered: number[] = activity.registeredParticipants.map(
-            (u) => u.userID
-        );
-        if (registered.includes(user)) setIsRegistered(true);
-        else setIsRegistered(false);
+        if (activity.registeredParticipants.length >= activity.capacity) {
+            setRegistration(2);
+        } else {
+            const registered: number[] = activity.registeredParticipants.map(
+                (u) => u.userID
+            );
+            if (!registered.includes(user)) setRegistration(0);
+            else setRegistration(1);
+        }
     }, []);
 
-    const registerBtn = isRegistered ? (
-        <Button onClick={unRegister} className={classes.joinButton}>
-            Meld deg av
-        </Button>
-    ) : (
-        <Button onClick={register} className={classes.joinButton}>
-            Meld deg på
-        </Button>
-    );
+    let registerBtn =
+        registration === 2 ? (
+            <Button className={classes.joinButton} disabled>
+                Aktiviteten er allerede fullbooket
+            </Button>
+        ) : registration === 1 ? (
+            <Button onClick={unRegister} className={classes.joinButton}>
+                Meld deg av
+            </Button>
+        ) : (
+            <Button onClick={register} className={classes.joinButton}>
+                Meld deg på
+            </Button>
+        );
+
+    useEffect(() => {
+        registerBtn =
+            registration === 2 ? (
+                <Button className={classes.joinButton} disabled>
+                    Aktiviteten er allerede fullbooket
+                </Button>
+            ) : registration === 1 ? (
+                <Button onClick={unRegister} className={classes.joinButton}>
+                    Meld deg av
+                </Button>
+            ) : (
+                <Button onClick={register} className={classes.joinButton}>
+                    Meld deg på
+                </Button>
+            );
+    }, [registration]);
 
     const mapEquipments = activity.equipments.map(
         (eq: Equipment, index: number) => {
