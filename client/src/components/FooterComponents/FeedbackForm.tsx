@@ -71,7 +71,9 @@ const FeedbackForm = ({ openPopup, setOpenPopup }: Props) => {
                         </div>
                         <div>
                             <Button 
-                                style={{color:"white", backgroundColor:"red", marginLeft:"10px", width:"205px"}}
+                                color="primary"
+                                variant="contained" 
+                                style={{ marginLeft:"10px", width:"205px", height:"47px"}}
                                 type="submit" 
                                 >Send melding
                             </Button>

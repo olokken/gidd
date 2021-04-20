@@ -34,26 +34,28 @@ const FriendCard = ({friend}: any) =>{
         <Card
             style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
         >
-            <Grid container spacing={2}>
-            <Grid item xs={2}>
-                <CardMedia
-                    component="img"
-                    alt={'Image related to the activity' }
-                    height="50px"
-                    width="50px"
-                    image={logo} // hente bildet frå aktiviteta
-                />
-            </Grid>
-            <Grid item >
-                <Typography
-                    gutterBottom
-                    variant="h5"
-                    component="h3"
-                >
-                    {friend.name}
-                </Typography>
-            </Grid>
-            </Grid>
+            <CardInformation>
+                <Grid container spacing={2}>
+                <Grid item xs={3}>
+                    <CardMedia
+                        component="img"
+                        alt={'Image related to the activity' }
+                        height="40px"
+                        width="40px"
+                        image={logo} // hente bildet frå aktiviteta
+                    />
+                </Grid>
+                <Grid item >
+                    <Typography
+                        gutterBottom
+                        variant="subtitle2"
+                        component="h3"
+                    >
+                        {friend.name}
+                    </Typography>
+                </Grid>
+                </Grid>
+            </CardInformation>
         </Card>
     );
 };

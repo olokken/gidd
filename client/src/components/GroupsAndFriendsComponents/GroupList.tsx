@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { TextField, Button } from '@material-ui/core';
 import Select from 'react-select';
 import FriendCard from './FriendCard';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import AddBox from '@material-ui/icons/AddBox';
 
 const StyledContainer = styled.div`
     margin-left: 1rem;
@@ -28,35 +30,55 @@ const friends = [
 ]
 
 
-const FriendList = () => {
+const GroupList = () => {
     const [searchInput, setSearchInput] = useState<string>('');
-    const [addGroupInput, setGroupInput] = useState<any>([]);
+    const [selectInput, setSelectInput] = useState<string[] | undefined>([]);
+    const [searchValue, setSearchValue] = useState('');
 
      const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput((event.target as HTMLInputElement).value);
     };
 
-    const onAddGroupClick = () => {
-        console.log(addGroupInput);
-        setGroupInput(null);
+     const onAddGroupClick = () => {
+        console.log("selectInput: " + selectInput);
+        console.log("searchInput: " + searchValue);
+        setSelectInput([]);
+        setSearchValue('');
     }
     
     return (
         <StyledContainer>
-            <Select
-                defaultValue={[friends[2], friends[3]]}
-                isMulti
-                name="colors"
-                options={friends}
-                onChange={setGroupInput}
-                noOptionsMessage={() => 'Ingen grupper med dette navnet'}
-                placeholder="Legg til medlemmer"
-                className="basic-multi-select"
-                classNamePrefix="select"
-                isSearchable
-                isClearable
+           <Autocomplete
+                id="free-solo-demo"
+                multiple
+                noOptionsText="ingen valg"
+                value={selectInput}
+                onChange={(event: any, newValue: string[] | undefined) => {
+                    setSelectInput(newValue);
+                }}
+                inputValue={searchValue}
+                onInputChange={(event, newInputValue) => {
+                    setSearchValue(newInputValue);
+                }}
+                options={friends.map((friend) => friend.name)}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Lag din egen gruppe"
+                        margin="normal"
+                        variant="outlined"
+                    />
+                )}
             />
-            <Button onClick={onAddGroupClick}>Lag gruppe</Button>
+            <Button 
+                onClick={onAddGroupClick}
+                variant="contained" 
+                color="primary"
+                style={{width:"100%"}}
+            >
+                Lag gruppe
+                <AddBox style={{ marginLeft: '8px'}}></AddBox>
+            </Button>
 
             
             <TextField style={{marginTop:'5px'}} 
@@ -79,4 +101,4 @@ const FriendList = () => {
     );
 };
 
-export default FriendList;
+export default GroupList;
