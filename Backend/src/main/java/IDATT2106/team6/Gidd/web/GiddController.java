@@ -514,12 +514,16 @@ public class GiddController {
     public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id){
         log.info("recieved a put mapping for user with id: " + id + " and map " + map.toString());
         Map<String, String> body = new HashMap<>();
+        HttpHeaders header = new HttpHeaders();
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
         try {
             if (!userService.login(map.get("email").toString(), map.get("password").toString())) {
                 log.debug("Someone tried to edit a user with an invalid email or password ");
                 body.put("error", "Invalid Email or Password");
                 return ResponseEntity
                     .badRequest()
+                    .headers(header)
                     .body(formatJson(body));
             }
         } catch (NullPointerException e) {
@@ -527,11 +531,13 @@ public class GiddController {
             body.put("error","Invalid Email or Password");
             return ResponseEntity
                 .badRequest()
+                .headers(header)
                 .body(formatJson(body));
         }
 
-        HttpHeaders header = new HttpHeaders();
-        header.add("Content-Type", "application/json; charset=UTF-8");
+        if(map.get("newPassword") == null || map.get("newPassword").equals("")) {
+            map.put("newPassword", map.get("password"));
+        }
 
         if(!validateStringMap(map)){
             log.error("returning error about null/blank fields in user put mapping " + map.toString());
@@ -556,7 +562,7 @@ public class GiddController {
             boolean result = userService.editUser(
                 id,
                 map.get("email").toString(),
-                map.get("password").toString(),
+                map.get("newPassword").toString(),
                 map.get("firstName").toString(),
                 map.get("surname").toString(),
                 Integer.parseInt(map.get("phoneNumber").toString()),
@@ -573,10 +579,16 @@ public class GiddController {
                     .headers(header)
                     .body(formatJson(body));
             }
-        } catch(Exception e) {
-            log.debug("En error was caught while attempting to edit user: " +
+        } catch(NullPointerException e) {
+            log.debug("A NullPointerException was caught while attempting to edit user");
+            body.put("error", "invalid input");
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        } catch (Exception e) {
+            log.debug("An error was caught while attempting to edit user: " +
                 e.getMessage() + " | Local: " + e.getLocalizedMessage());
-            body.put("Error", "Something went wrong");
+            body.put("error", "Something went wrong");
             return ResponseEntity.badRequest().body(formatJson(body));
         }
 
