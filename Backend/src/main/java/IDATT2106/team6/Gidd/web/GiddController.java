@@ -537,9 +537,7 @@ public class GiddController {
         }
 
         HttpHeaders header = new HttpHeaders();
-        HashMap<String, String> body = new HashMap<>();
 
-        body.put("activity", activity.toString());
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
         log.debug("Returning activity object " + activity.getActivityId());
@@ -618,7 +616,7 @@ public class GiddController {
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(new JSONObject("{activity:" + activities.toString() + "}").toString());
+                .body("{activity:" + activities.toString() + "}");
     }
 
     @GetMapping(value = "/activity/{id}/user", produces = "application/json")
