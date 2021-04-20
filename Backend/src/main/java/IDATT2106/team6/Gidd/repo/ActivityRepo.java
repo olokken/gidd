@@ -3,12 +3,9 @@ package IDATT2106.team6.Gidd.repo;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.ActivityEquipment;
@@ -41,7 +38,7 @@ public class ActivityRepo extends GiddRepo {
     }
 
     public boolean addActivity(Activity activity){
-        log.info("adding activity " + activity.toString());
+        log.info("adding activity " + activity.getActivityId() + ":" + activity.getTitle());
         EntityManager em = getEm();
 
         try {
@@ -231,12 +228,11 @@ public class ActivityRepo extends GiddRepo {
         return new ArrayList<>(allActivities);
     }
 
-    public boolean addEquipmentToActivity(Activity activity, ActivityEquipment activityEquipment){
-        log.debug("Adding equipment connection " + activityEquipment.toString() + " to activity " + activity.toString());
+    public boolean addEquipmentToActivity(Activity activity){
+        log.debug("Adding equipment connection to activity " + activity.getActivityId());
         EntityManager em = getEm();
 
         try{
-            activity.addEquipment(activityEquipment);
             em.getTransaction().begin();
             em.merge(activity);
             em.getTransaction().commit();

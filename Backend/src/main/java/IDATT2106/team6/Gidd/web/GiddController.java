@@ -1,39 +1,47 @@
 package IDATT2106.team6.Gidd.web;
 
-import IDATT2106.team6.Gidd.models.*;
+import IDATT2106.team6.Gidd.models.Activity;
+import IDATT2106.team6.Gidd.models.ActivityEquipment;
 import IDATT2106.team6.Gidd.models.ActivityLevel;
+import IDATT2106.team6.Gidd.models.ActivityUser;
+import IDATT2106.team6.Gidd.models.Equipment;
 import IDATT2106.team6.Gidd.models.Tag;
 import IDATT2106.team6.Gidd.models.User;
-import IDATT2106.team6.Gidd.models.Activity;
-import IDATT2106.team6.Gidd.service.SecurityService;
-import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.service.ActivityService;
-
-import IDATT2106.team6.Gidd.util.TokenRequired;
-import java.util.HashMap;
-import java.util.Map;
-
 import IDATT2106.team6.Gidd.service.EquipmentService;
+import IDATT2106.team6.Gidd.service.SecurityService;
 import IDATT2106.team6.Gidd.service.TagService;
-
+import IDATT2106.team6.Gidd.service.UserService;
+import IDATT2106.team6.Gidd.util.Logger;
+import IDATT2106.team6.Gidd.util.TokenRequired;
 import java.net.URI;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
-
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.*;
-import IDATT2106.team6.Gidd.util.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @CrossOrigin
 @Controller
@@ -948,13 +956,14 @@ public class GiddController {
 
         Activity activity = activityService.getActivity(activityId);
 
-        log.debug("Adding " + equipments.toString() + " to " + activity.getActivityId());
         for(Equipment e : equipments) {
+            log.debug("Adding [" + e.getEquipmentId() + ":" + e.getDescription() + "] to " + activity.getActivityId());
             ActivityEquipment activityEquipment = new ActivityEquipment(activity, e);
-            if(activityService.addEquipmentToActivity(activity, activityEquipment)){
-                log.error("The registration failed");
-                return false;
-            }
+            activity.addEquipment(activityEquipment);
+        }
+        if(!activityService.addEquipmentToActivity(activity)){
+            log.error("The registration failed");
+            return false;
         }
         log.debug("The registration was successful");
         return true;

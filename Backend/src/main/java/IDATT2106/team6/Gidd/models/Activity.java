@@ -1,17 +1,22 @@
 package IDATT2106.team6.Gidd.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.eclipse.persistence.annotations.CascadeOnDelete;
-
-import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 @Entity
 public class Activity {
@@ -211,6 +216,7 @@ public class Activity {
 
     @Override
     public String toString() {
+        System.out.println(equipments);
         return "{" +
             "\n\"activityId\": " + activityId +
             ", \n\"title\": " + "\"" + title.trim() + "\"" +
