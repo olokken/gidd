@@ -221,7 +221,7 @@ const Navbar = () => {
         };
 
         const changeToCalenderDrawer = () => {
-            history.push('/Calender');
+            history.push('/Calendar');
             handleDrawerClose();
         };
 

@@ -4,10 +4,16 @@ import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
 import { InputLabel, Button } from '@material-ui/core';
 
-const FeedbackForm = () => {
+interface Props {
+    openPopup: boolean;
+    setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const FeedbackForm = ({ openPopup, setOpenPopup }: Props) => {
     
     function sendEmail (e:any){
          e.preventDefault();
+         setOpenPopup(!openPopup);
 
     emailjs.sendForm('service_xff4aj9', 'template_rc6pxwq', e.target, 'user_BsfvYr9KimVDL5GVUY5kV')
       .then((result:any) => {
@@ -25,7 +31,8 @@ const FeedbackForm = () => {
                   <div id="main" style={{display:"flex"}} >
                     <div id="left">
                         <div style={{padding:"10px"}}>
-                            <TextField  label="Navn"
+                            <TextField  
+                                label="Navn"
                                 variant="outlined"
                                 rows={1}
                                 multiline  
@@ -33,7 +40,8 @@ const FeedbackForm = () => {
                                 name="name" />
                         </div>
                         <div style={{padding:"10px"}}>
-                            <TextField  label="Email"
+                            <TextField  
+                                label="Email"
                                 variant="outlined"
                                 rows={1}
                                 multiline  
@@ -63,7 +71,7 @@ const FeedbackForm = () => {
                         </div>
                         <div>
                             <Button 
-                                style={{backgroundColor:"red", marginLeft:"10px", width:"205px"}}
+                                style={{color:"white", backgroundColor:"red", marginLeft:"10px", width:"205px"}}
                                 type="submit" 
                                 >Send melding
                             </Button>
