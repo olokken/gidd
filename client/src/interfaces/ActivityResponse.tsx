@@ -1,3 +1,5 @@
+import User from "./User";
+
 export default interface ActivityResponse {
     activityId: number;
     activityLevel: string;
@@ -14,5 +16,5 @@ export default interface ActivityResponse {
     time: number;
     timeCreated: number;
     title: string;
-    userId: number;
+    user: any;
 }

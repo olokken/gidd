@@ -48,7 +48,6 @@ const ActivityCard = ({
     const eventTime = new String(activity.time);
 
     const onClickActivity = () => {
-        console.log('hei')
         setOpenPopup(!openPopup);
         console.log(activity)
         setActivity(activity);
@@ -109,8 +108,8 @@ const ActivityCard = ({
                 <CardContent>
                     <Grid container wrap="nowrap" spacing={2}>
                         <Grid item>
-                            <Tooltip title={activity.userId}>
-                                <Avatar>{activity.userId}</Avatar>
+                            <Tooltip title={activity.user['firstname']}>
+                                <Avatar>{activity.user['firstname']}</Avatar>
                             </Tooltip>
                         </Grid>
                         <Grid item xs>
