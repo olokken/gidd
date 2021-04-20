@@ -10,6 +10,7 @@ import { UserContext } from '../UserContext'
 import Popup from '../components/Popup';
 import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
 import ActivityResponse from '../interfaces/ActivityResponse';
+import { DragHandleTwoTone } from '@material-ui/icons';
 
 const CalendarContainer = styled.div`
   --fc-button-bg-color: #f44336;
@@ -46,7 +47,7 @@ const Calender = () => {
     time: 1618924200000,
     timeCreated: 1618830691000,
     title: 'Test',
-    userId: 1231323
+    user: 1231323
   }
   );
 
@@ -65,17 +66,17 @@ const Calender = () => {
   useEffect(() => {
     const url = '/activity'
     axios.get(url).then((response) => {
-      console.log(response)
-      response.data.activity.forEach((activity: any) => {
+      console.log(response.data['activities'])
+      response.data['activities'].forEach((activity: any) => {
         const date = new Date(activity.time)
         const curr_date = date.getDate();
         const curr_month = (date.getMonth() + 1) >= 10 ? (date.getMonth()) : '0' + (date.getMonth() + 1);
         const curr_year = date.getFullYear();
-        const curr_hour = date.getHours() - 2;
+        const curr_hour = (date.getHours() - 2) < 10 ? ('0' + (date.getHours() - 2 )) : (date.getHours() - 2);
         const curr_minutes = date.getMinutes() == 0 ? (date.getMinutes() + '0') : date.getMinutes();
         const curr_seconds = date.getSeconds() == 0 ? (date.getSeconds() + '0') : date.getSeconds();
         const formattedDate = curr_year + "-" + curr_month + "-" + curr_date + "T" + curr_hour + ":" + curr_minutes + ":" + curr_seconds;
-        const formattedEnd = curr_year + "-" + curr_month + "-" + curr_date + "T" + (curr_hour + 2) + ":" + curr_minutes + ":" + curr_seconds;
+        const formattedEnd = curr_year + "-" + curr_month + "-" + curr_date + "T" + (curr_hour) + ":" + curr_minutes + ":" + curr_seconds;
         setActivities(activities => [...activities, {
           ID: activity.activityId,
           title: activity.title,
@@ -87,19 +88,17 @@ const Calender = () => {
     }).catch((error: any) => {
       console.log('error' + error.message)
     })
-    console.log(activities)
   }, []);
 
 
   const handleOnClick = (eventInfo: EventInput) => {
+    console.log(activities)
     const activityID = eventInfo.event.extendedProps.ID
-    console.log(activityID)
     const url = `/activity/${activityID}`
     axios.get(url).then(response => {
-      console.log(response.data)
       setActivity(response.data)
       console.log(activity)
-      //setOpenPopup(!openPopup)
+      setOpenPopup(!openPopup)
     }).catch(error => {
       console.log('Kunne ikke hente aktivitet: ' + error.message)
     })
@@ -107,6 +106,12 @@ const Calender = () => {
   
   const handleEventEnter = (eventInfo:any) => {
       console.log(eventInfo)
+      eventInfo.event.setProp('backgroundColor', '#f66055');
+  }
+
+  const handleEventLeave = (eventInfo:any) => {
+    const normalColor = eventInfo.event.start > todayStr ? '#f44336' : '#f66055'
+    eventInfo.event.setProp('backgroundColor', '  #f44336');
   }
 
 
@@ -121,7 +126,7 @@ const Calender = () => {
         }}
         height='750px'
         initialView="timeGridWeek"
-        editable={false}
+        editable={true}
         selectable={false}
         selectMirror={true}
         dayMaxEvents={true}
@@ -140,6 +145,7 @@ const Calender = () => {
         events={activities}
         firstDay={1}
         eventMouseEnter = {handleEventEnter}
+        eventMouseLeave = {handleEventLeave}
         dayHeaderFormat={{ weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true, hour12: false }}
         slotLabelFormat={{
           hour12: false,

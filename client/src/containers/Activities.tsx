@@ -49,8 +49,8 @@ const Activities = () => {
         axios
             .get('/activity')
             .then((response) => {
-                console.log(response.data['activity']);
-                setActivities(response.data['activity']);
+                console.log(response.data['activities']);
+                setActivities(response.data['activities']);
             })
             .catch((error) => console.log(error));
     }, []);
