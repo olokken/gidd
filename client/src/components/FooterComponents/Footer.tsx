@@ -69,7 +69,10 @@ const { mobileView } = state;
                                 openPopup={openPopup}
                                 setOpenPopup={setOpenPopup}
                             >
-                                <FeedbackForm  />
+                                <FeedbackForm
+                                    openPopup={openPopup}
+                                    setOpenPopup={setOpenPopup}  
+                                />
                             </Popup>
                             <Button onClick={() => setOpenPopup2(!openPopup2)} style={{color:"white"}}>Om GIDD</Button>
                             <Popup
@@ -120,7 +123,10 @@ const { mobileView } = state;
                             openPopup={openPopup}
                             setOpenPopup={setOpenPopup}
                             >
-                        <FeedbackForm  />
+                        <FeedbackForm 
+                            openPopup={openPopup}
+                            setOpenPopup={setOpenPopup}
+                        />
                         </Popup>
                         <Popup
                             title="Om oss"

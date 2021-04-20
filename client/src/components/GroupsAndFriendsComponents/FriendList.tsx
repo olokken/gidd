@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
-import { TextField } from '@material-ui/core';
-import SelectSearch from 'react-select-search';
+import { TextField, Button } from '@material-ui/core';
+import Select from 'react-select';
 import FriendCard from './FriendCard';
 
 const StyledContainer = styled.div`
@@ -17,31 +17,65 @@ const StyledUl = styled.ul`
 `;
 
 const friends = [
-    {name: 'Mathias',value: '1'},
-    {name: 'bob1',value: '2'},
-    {name: 'bob2',value: '3'},
-    {name: 'bob3',value: '4'},
-    {name: 'bob4',value: '5'},
-    {name: 'bob5',value: '6'},
-    {name: 'bob6',value: '7'},
-    {name: 'bob7',value: '8'},
+    {name: 'Mathias',value: '1',label:'Mathias'},
+    {name: 'bob1',value: '2',label:'bob1'},
+    {name: 'bob2',value: '3',label:'bob2'},
+    {name: 'bob3',value: '4',label:'bob3'},
+    {name: 'bob4',value: '5',label:'bob4'},
+    {name: 'bob5',value: '6',label:'bob5'},
+    {name: 'bob6',value: '7',label:'bob6'},
+    {name: 'bob7',value: '8',label:'bob7'},
 ]
 
 
 const FriendList = () => {
     const [searchInput, setSearchInput] = useState<string>('');
+    const [addFriendInput, setAddFriendInput] = useState<any>({});
+    const [addGroupInput, setGroupInput] = useState<any>([]);
 
      const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput((event.target as HTMLInputElement).value);
     };
+    const onAddFriendClick = () => {
+        console.log(addFriendInput);
+        setAddFriendInput(null);
+    }
+    const onAddGroupClick = () => {
+        console.log(addGroupInput);
+        setGroupInput(null);
+    }
+    
     return (
         <StyledContainer>
-            <SelectSearch 
-            options={friends} 
-            value="1" 
-            search
-            printOptions="auto"
-            placeholder="Søk etter brukere" />
+            <Select
+                defaultValue={[friends[2], friends[3]]}
+                isMulti
+                name="colors"
+                options={friends}
+                onChange={setGroupInput}
+                noOptionsMessage={() => 'Ingen brukere med dette navnet'}
+                placeholder="Legg til medlemmer"
+                className="basic-multi-select"
+                classNamePrefix="select"
+                isSearchable
+                isClearable
+            />
+            <Button onClick={onAddGroupClick}>Lag gruppe</Button>
+
+            <Select
+                defaultValue={null}
+                name="colors"
+                options={friends}
+                placeholder="Legg til venn"
+                noOptionsMessage={() => 'Ingen brukere med dette navnet'}
+                className="basic-single"
+                classNamePrefix="select"
+                onChange={setAddFriendInput}
+                isSearchable
+                isClearable
+            />
+            <Button onClick={onAddFriendClick}>Legg til venn</Button>
+            
             <TextField style={{marginTop:'5px'}} onChange={onSearchChange} fullWidth={true} label="Søk etter venner" variant="outlined" />
             <h2>Dine venner</h2>
             <StyledUl >
