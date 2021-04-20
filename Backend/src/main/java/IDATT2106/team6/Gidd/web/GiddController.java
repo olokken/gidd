@@ -1,39 +1,47 @@
 package IDATT2106.team6.Gidd.web;
 
-import IDATT2106.team6.Gidd.models.*;
+import IDATT2106.team6.Gidd.models.Activity;
+import IDATT2106.team6.Gidd.models.ActivityEquipment;
 import IDATT2106.team6.Gidd.models.ActivityLevel;
+import IDATT2106.team6.Gidd.models.ActivityUser;
+import IDATT2106.team6.Gidd.models.Equipment;
 import IDATT2106.team6.Gidd.models.Tag;
 import IDATT2106.team6.Gidd.models.User;
-import IDATT2106.team6.Gidd.models.Activity;
-import IDATT2106.team6.Gidd.service.SecurityService;
-import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.service.ActivityService;
-
-import IDATT2106.team6.Gidd.util.TokenRequired;
-import java.util.HashMap;
-import java.util.Map;
-
 import IDATT2106.team6.Gidd.service.EquipmentService;
+import IDATT2106.team6.Gidd.service.SecurityService;
 import IDATT2106.team6.Gidd.service.TagService;
-
+import IDATT2106.team6.Gidd.service.UserService;
+import IDATT2106.team6.Gidd.util.Logger;
+import IDATT2106.team6.Gidd.util.TokenRequired;
 import java.net.URI;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
-
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.*;
-import IDATT2106.team6.Gidd.util.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @CrossOrigin
 @Controller
@@ -185,7 +193,7 @@ public class GiddController {
                     .body(formatJson(body));
         } catch(Exception e) {
             body.put("error", "unknown error: " + e.getMessage());
-            log.error("unexplained error caught " + e.getMessage());
+            log.error("unexplained error caught " + e + "; local:" + e.getLocalizedMessage());
             return ResponseEntity
                     .badRequest()
                     .body(formatJson(body));
@@ -610,9 +618,7 @@ public class GiddController {
         }
 
         HttpHeaders header = new HttpHeaders();
-        HashMap<String, String> body = new HashMap<>();
 
-        body.put("activity", activity.toString());
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
         log.debug("Returning activity object " + activity.getActivityId());
@@ -691,7 +697,7 @@ public class GiddController {
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(new JSONObject("{activity:" + activities.toString() + "}").toString());
+                .body("{\"activities\": \n" + activities.toString() + "\n}");
     }
 
     @GetMapping(value = "/activity/{id}/user", produces = "application/json")
@@ -705,12 +711,32 @@ public class GiddController {
             log.info("users found for activity with id " + id);
             userMap.put("user","");
             users.stream().forEach(u -> userMap.put("user", userMap.get("user") + u.getUserId() + ","));
+            //remove trailing comma
             userMap.put("user", userMap.get("user").substring(0, userMap.get("user").length() - 1));
             return ResponseEntity.ok().headers(headers).body(formatJson(userMap));
         }
         log.error("no activity was found with id: " + id);
         errorCode.put("error", "no activity found");
         return ResponseEntity.badRequest().headers(headers).body(formatJson(errorCode));
+    }
+
+    @GetMapping(value = "/user/{userId}", produces = "application/json")
+    public ResponseEntity getSingleUser(@PathVariable Integer userId){
+        log.debug("recieved single user get " + userId);
+        User user = userService.getUser(userId);
+        HttpHeaders header = new HttpHeaders();
+        if(user != null){
+            return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(user.toJSON());
+        }
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("error", "are you sure the user exists?");
+        return ResponseEntity
+            .badRequest()
+            .headers(header)
+            .body(formatJson(hashMap));
     }
 
     @GetMapping(value = "/user/{userId}/activity", produces = "application/json")
@@ -910,6 +936,8 @@ public class GiddController {
 
     @DeleteMapping("user/{id}")
     public ResponseEntity deleteUser(@PathVariable Integer id){
+        //todo return activity-objects and user id's affected by this user being deleted 
+        // aka the activities this user has created
         log.info("recieved deletemapping to user with id " + id);
         HttpHeaders header = new HttpHeaders();
         boolean result = userService.deleteUser(id);
@@ -921,6 +949,7 @@ public class GiddController {
             return ResponseEntity.ok()
                     .headers(header).body(formatJson(body));
         }
+
         log.error("unable to delete user with id: " + id);
         body.put("error", "deletion failed, are you sure the user with id " + id + " exists?");
         header.add("Status", "400 BAD REQUEST");
@@ -1122,13 +1151,14 @@ public class GiddController {
 
         Activity activity = activityService.getActivity(activityId);
 
-        log.debug("Adding " + equipments.toString() + " to " + activity.getActivityId());
         for(Equipment e : equipments) {
+            log.debug("Adding [" + e.getEquipmentId() + ":" + e.getDescription() + "] to " + activity.getActivityId());
             ActivityEquipment activityEquipment = new ActivityEquipment(activity, e);
-            if(activityService.addEquipmentToActivity(activity, activityEquipment)){
-                log.error("The registration failed");
-                return false;
-            }
+            activity.addEquipment(activityEquipment);
+        }
+        if(!activityService.addEquipmentToActivity(activity)){
+            log.error("The registration failed");
+            return false;
         }
         log.debug("The registration was successful");
         return true;

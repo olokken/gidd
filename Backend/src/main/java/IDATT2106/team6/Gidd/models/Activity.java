@@ -1,17 +1,22 @@
 package IDATT2106.team6.Gidd.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.eclipse.persistence.annotations.CascadeOnDelete;
-
-import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 @Entity
 public class Activity {
@@ -213,13 +218,13 @@ public class Activity {
     public String toString() {
         return "{" +
             "\n\"activityId\": " + activityId +
-            ", \n\"title\": " + "\"" + title + "\"" +
+            ", \n\"title\": " + "\"" + title.trim() + "\"" +
             ", \n\"time\":" + time.getTime() +
             ", \n\"daysToRepeat\":" + daysToRepeat +
             ", \n\"user\":" + user.toJSON() +
             ", \n\"capacity\":" + capacity +
             ", \n\"groupId\":" + groupId +
-            ", \n\"description\":" + "\"" +description + "\"" +
+            ", \n\"description\":" + "\"" + description.substring(1, description.length()-1) + "\"" +
             ", \n\"image\":" + "\"" +Arrays.toString(image) +"\"" +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
             ", \n\"tags\":" + tags.toString() +

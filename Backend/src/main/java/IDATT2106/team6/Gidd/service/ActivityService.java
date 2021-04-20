@@ -23,7 +23,7 @@ public class ActivityService {
     public boolean addActivity(Activity activity) {
         Timestamp currentTime = new Timestamp(new Date().getTime());
         activity.setTimeCreated(currentTime);
-        log.info("adding new Activity: " + activity.toString());
+        log.info("adding new Activity: " + activity.getActivityId() + ":" + activity.getTitle());
         return repo.addActivity(activity);
     }
 
@@ -106,9 +106,9 @@ public class ActivityService {
         return repo.filterActivitiesByTag(tagId);
     }
 
-    public boolean addEquipmentToActivity(Activity activity, ActivityEquipment activityEquipment){
-        log.info("Adding equipment connection" + activityEquipment.toString() + " to activity" + activity.toString());
-        return repo.addEquipmentToActivity(activity, activityEquipment);
+    public boolean addEquipmentToActivity(Activity activity){
+        log.info("Adding equipment connection to activity" + activity.getActivityId());
+        return repo.addEquipmentToActivity(activity);
     }
 
     public boolean updateEquipment(ActivityEquipment activityEquipment, Activity activity){
