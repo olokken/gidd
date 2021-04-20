@@ -1174,11 +1174,16 @@ public class GiddController {
     private boolean validateStringMap(Map<String, Object> map){
         log.info("validating map values of " + map.toString());
         for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
-            Map.Entry<String, String> pair = (Map.Entry) stringObjectEntry;
-            log.debug("Validating pair: " + pair.getKey() + ":" + pair.getValue());
-            if (pair.getValue().isBlank() || pair.getValue() == null) {
-                log.error(pair.getKey() + " : " + pair.getValue() + " could not be validated");
-                return false;
+            try {
+                Map.Entry<String, String> pair = (Map.Entry) stringObjectEntry;
+                log.debug("Validating pair: " + pair.getKey() + ":" + pair.getValue());
+                if (pair.getValue().isBlank() || pair.getValue() == null) {
+                    log.error(pair.getKey() + " : " + pair.getValue() + " could not be validated");
+                    return false;
+                }
+            }catch(Exception e) {
+                log.error("An exception was caught while validating string map: " +
+                    e.getMessage() + "local: " + e.getLocalizedMessage());
             }
         }
         log.info("map: " + map.toString() + " validated");
