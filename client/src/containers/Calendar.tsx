@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate } from '@fullcalendar/react';
+import FullCalendar, { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate, triggerDateSelect } from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction'
@@ -10,7 +10,6 @@ import { UserContext } from '../UserContext'
 import Popup from '../components/Popup';
 import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
 import ActivityResponse from '../interfaces/ActivityResponse';
-import { ContactSupportOutlined } from '@material-ui/icons';
 
 const CalendarContainer = styled.div`
   --fc-button-bg-color: #f44336;
@@ -47,7 +46,7 @@ const Calender = () => {
     time: 1618924200000,
     timeCreated: 1618830691000,
     title: 'Test',
-    user: ''
+    userId: 1231323
   }
   );
 
@@ -94,19 +93,22 @@ const Calender = () => {
 
   const handleOnClick = (eventInfo: EventInput) => {
     const activityID = eventInfo.event.extendedProps.ID
+    console.log(activityID)
     const url = `/activity/${activityID}`
     axios.get(url).then(response => {
-      setActivity(response.data['activity'])
+      console.log(response.data)
+      setActivity(response.data)
       console.log(activity)
-      console.log(user)
-    }).then( () => {
       //setOpenPopup(!openPopup)
-    }
-    ).catch(error => {
+    }).catch(error => {
       console.log('Kunne ikke hente aktivitet: ' + error.message)
     })
-
   }
+  
+  const handleEventEnter = (eventInfo:any) => {
+      console.log(eventInfo)
+  }
+
 
   return (
     <CalendarContainer>
@@ -120,7 +122,7 @@ const Calender = () => {
         height='750px'
         initialView="timeGridWeek"
         editable={false}
-        selectable={true}
+        selectable={false}
         selectMirror={true}
         dayMaxEvents={true}
         allDaySlot={false}
@@ -137,6 +139,7 @@ const Calender = () => {
         progressiveEventRendering={true}
         events={activities}
         firstDay={1}
+        eventMouseEnter = {handleEventEnter}
         dayHeaderFormat={{ weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true, hour12: false }}
         slotLabelFormat={{
           hour12: false,
