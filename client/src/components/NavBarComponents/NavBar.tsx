@@ -130,6 +130,7 @@ const Navbar = () => {
     };
 
     const changeToLoginPage = () => {
+        localStorage.clear();
         history.push('/');
         handleCloseProfileMenu();
     };
