@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import javax.naming.directory.InvalidAttributesException;
@@ -511,8 +512,24 @@ public class GiddController {
     @PutMapping(value = "/user/{id}")
     public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id){
         log.info("recieved a put mapping for user with id: " + id + " and map " + map.toString());
-        HttpHeaders header = new HttpHeaders();
         Map<String, String> body = new HashMap<>();
+        try {
+            if (!userService.login(map.get("email").toString(), map.get("password").toString())) {
+                log.debug("Someone tried to edit a user with an invalid email or password ");
+                body.put("error", "Invalid Email or Password");
+                return ResponseEntity
+                    .badRequest()
+                    .body(formatJson(body));
+            }
+        } catch (NullPointerException e) {
+            log.error("A NullPointerException was caught while editing user");
+            body.put("error","Invalid Email or Password");
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
+
+        HttpHeaders header = new HttpHeaders();
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         if(!validateStringMap(map)){
@@ -533,7 +550,7 @@ public class GiddController {
             body.put("Error", "Something went wrong");
             return ResponseEntity.badRequest().body(formatJson(body));
         }
-        log.debug("temp"); // TODO Delete
+
         try {
             boolean result = userService.editUser(
                 id,
@@ -608,6 +625,14 @@ public class GiddController {
         return ResponseEntity
                 .ok()
                 .headers(headers).body(formatJson(body));
+    }
+
+    @GetMapping(value = "/tags", produces = "application/json")
+    public ResponseEntity getAllTags() {
+        List<Tag> tags = tagService.getAllTags();
+        return ResponseEntity
+            .ok()
+            .body(tags);
     }
 
     @GetMapping(value = "/activity/{activityId}", produces = "application/json")
@@ -1080,6 +1105,7 @@ public class GiddController {
         ArrayList<String> tagNames = new ArrayList<>(Arrays.asList(tagString.split(",")));
         ArrayList<Tag> tags = new ArrayList<>();
         for (String name : tagNames) {
+            name = name.toLowerCase();
             Tag tag = tagService.getTag(name);
 
             if(tag==null){
