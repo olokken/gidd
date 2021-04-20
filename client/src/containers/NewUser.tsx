@@ -71,7 +71,15 @@ const NewUser = () => {
                     activityLevel: activityLevel.toUpperCase(),
                 })
                 .then((response) => {
-                    console.log(JSON.stringify(response.data.id));
+                    const id = response.data.id
+                    console.log(JSON.stringify(id));
+                    axios.get(`/security/generate/token?subject=${id}`).then(response => {
+                        const token = response.data.result;
+                        localStorage.setItem('token', token);
+                        localStorage.setItem('userID', id);
+                    }).catch(error => {
+                        console.log('Feil med token: ' + error.message)
+                    })
                     setUser(response.data.id);
                     history.push('/Activities');
                 })

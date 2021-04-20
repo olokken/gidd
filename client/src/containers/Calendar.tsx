@@ -89,6 +89,9 @@ const Calender = () => {
 
 
   const handleOnClick = (eventInfo: EventInput) => {
+    console.log('token:' + localStorage.getItem('token'))
+    console.log('refreshToken:' + localStorage.getItem('refreshToken'))
+    console.log('bruker: ' + user)
     console.log(activities)
     const activityID = eventInfo.event.extendedProps.ID
     const url = `/activity/${activityID}`

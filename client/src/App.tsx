@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import Routes from './Routes';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -22,6 +22,20 @@ const theme = createMuiTheme({
 function App() {
     const [user, setUser] = useState<string>();
     const value = useMemo(() => ({ user, setUser }), [user, setUser]);
+
+    useEffect(() => {
+        const id = localStorage.getItem('userID')
+        const token = localStorage.getItem('token')
+        const refreshToken = localStorage.getItem('refreshToken')
+
+        console.log('brukerID: ' + id)
+        console.log('token: ' + token)
+        console.log('token: ' + refreshToken)
+
+        if (id !== null) {
+            setUser(id)
+        }
+    })
 
     return (
         <ThemeProvider theme={theme}>

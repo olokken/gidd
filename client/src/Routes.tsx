@@ -9,13 +9,14 @@ import Footer from './components/FooterComponents/Footer';
 import Calendar from './containers/Calendar';
 import Leaderboard from './containers/Leaderboard';
 import GroupsAndFriends from './containers/GroupsAndFriends';
-import PrivateRoute from './PrivateRoute'
+import PrivateRoute from './PrivateRoute';
+import PublicRoute from './PublicRoute';
 
 
 export default (
     <Switch>
-        <Route exact path="/" component={Login} />
-        <Route exact path="/newUser" component={NewUser} />
+        <PublicRoute exact path="/" component={Login} />
+        <PublicRoute exact path="/newUser" component={NewUser} />
         <div>
             <Navbar></Navbar>
             <PrivateRoute exact path="/Activities" component={Activities} />

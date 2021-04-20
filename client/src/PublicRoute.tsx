@@ -3,17 +3,14 @@ import { UserContext } from './UserContext';
 import { Redirect, Route, RouteProps, Switch } from 'react-router';
 
 
-
-interface PrivateRouteProps extends RouteProps {
+interface PublicRouteProps extends RouteProps {
     // tslint:disable-next-line:no-any
     component: any;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ ...rest }) => {
-    const { user } = useContext(UserContext);
-    if (localStorage.getItem('token') === null) return <Redirect to='/' />;
+const PrivateRoute: React.FC<PublicRouteProps> = ({ ...rest }) => {
+    if (localStorage.getItem('token') !== null) return <Redirect to='/Activities' />;
     return <Route {...rest} />;
 }
 
 export default PrivateRoute;
-
