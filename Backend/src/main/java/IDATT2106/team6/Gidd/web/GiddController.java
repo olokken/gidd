@@ -546,7 +546,7 @@ public class GiddController {
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(body);
+                .body(activity.toString());
     }
 
     @GetMapping(value = "/activity")
