@@ -628,7 +628,7 @@ public class GiddController {
                 .headers(headers).body(formatJson(body));
     }
 
-    @GetMapping(value = "/tags", produces = "application/json")
+    @GetMapping(value = "/tag", produces = "application/json")
     public ResponseEntity getAllTags() {
         List<Tag> tags = tagService.getAllTags();
         return ResponseEntity
