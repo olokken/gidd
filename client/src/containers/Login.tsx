@@ -76,29 +76,6 @@ const Login = () => {
         }
     };
 
-    const onLoginSoMe = async () => {
-        //TODO fix første login og registrering med backend
-
-        axios
-            .post('/user', {
-                email: email,
-                password: password,
-                firstName: firstName,
-                surname: surname,
-                phoneNumber: '',
-                activityLevel: '',
-            })
-            .then((response) => {
-                console.log(JSON.stringify(response.data.id));
-                setUser(response.data.id);
-                history.push('/Activites');
-            })
-            .catch((error) => {
-                // handle this error
-                console.log('error: ' + error.message);
-            });
-    };
-
     const login = async () => {
         const newUser: User = {
             firstName: firstName,
@@ -176,14 +153,17 @@ const Login = () => {
         console.log(response);
         const name: string[] = response.name.split(' ');
         const accessToken = response.accessToken;
-        axios.post('/login/test', {
+        axios.post('/login', {
             provider: "FACEBOOK",
             accessToken: accessToken,
             email: response.email,
             firstName: name[0],
             surname: name[1],
         }).then(response => {
-            console.log(response.data);
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('userID', response.data.userId);
+        }).then(() => {
+            history.push('/Activities');
         }).catch(error => {
             console.log(error.message);
         })
