@@ -36,9 +36,54 @@ const activityLevelFilter = (
     });
 };
 
+const showMyActivities = (
+    activities: ActivityResponse[],
+    show: boolean,
+    user: string
+): ActivityResponse[] => {
+    console.log(user);
+    return activities.filter((act: ActivityResponse) => {
+        const registered = act.registeredParticipants
+            .map((par) => par.userId['userId'])
+            .filter((userID) => userID == user && userID.length !== 0);
+        if (show === false) {
+            return act;
+        } else if (registered.length !== 0 && show === true) {
+            return act;
+        }
+    });
+};
+
+const showFutureActivities = (
+    activities: ActivityResponse[],
+    show: boolean
+): ActivityResponse[] => {
+    return activities.filter((act: ActivityResponse) => {
+        const today = new Date();
+        if (show === false) {
+            return act;
+        } else if (act.time >= today.getTime()) {
+            return act;
+        }
+    });
+};
+
+const changeCapacity = (
+    activities: ActivityResponse[],
+    capacity: number[]
+): ActivityResponse[] => {
+    return activities.filter((act: ActivityResponse) => {
+        if (act.capacity >= capacity[0] && act.capacity <= capacity[1]) {
+            return act;
+        }
+    });
+};
 export const FilterFunctions = {
     titleFilter,
-    dateFromFilter,
-    dateToFilter,
+    showMyActivities,
+    showFutureActivities,
+    changeCapacity,
     activityLevelFilter,
+    dateToFilter,
+    dateFromFilter,
 };

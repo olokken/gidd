@@ -7,7 +7,7 @@ import DistanceFilter from './DistanceFilter';
 import { TextField } from '@material-ui/core';
 import ViewBox from './ViewBox';
 import TagTextField from './TagTextField';
-import ActivityLevels from '../../interfaces/ActivityLevels'; 
+import ActivityLevels from '../../interfaces/ActivityLevels';
 
 const StyledContainer = styled.div`
     margin-left: 1rem;
@@ -20,13 +20,19 @@ interface Props {
     onTimeFromChange: (searchResult: Date) => void;
     onTimeToChange: (searchResult: Date) => void;
     onLevelChange: (levels: ActivityLevels) => void;
+    onShowFuture: (state: boolean) => void;
+    onShowMine: (state: boolean) => void;
+    onCapacityChange: (range: number[]) => void;
 }
 
 const SideFilter = ({
     onTitleSearch,
+    onShowFuture,
+    onShowMine,
+    onCapacityChange,
+    onLevelChange,
     onTimeFromChange,
     onTimeToChange,
-    onLevelChange,
 }: Props) => {
     const [titleSearch, setTitleSearch] = useState<string>('');
 
@@ -47,8 +53,14 @@ const SideFilter = ({
                 label="Søk på tittel"
                 variant="outlined"
             />
-            <ViewBox label={'Vis kun framtidige aktiviteter'}></ViewBox>
-            <ViewBox label={'Vis kun påmeldte aktiviteter'}></ViewBox>
+            <ViewBox
+                label={'Vis kun framtidige aktiviteter'}
+                onStateChange={onShowFuture}
+            ></ViewBox>
+            <ViewBox
+                label={'Vis kun påmeldte aktiviteter'}
+                onStateChange={onShowMine}
+            ></ViewBox>
             <DistanceFilter></DistanceFilter>
             <TimeFilter
                 onTimeFromChange={onTimeFromChange}
@@ -58,6 +70,7 @@ const SideFilter = ({
                 minValue={0}
                 maxValue={20}
                 headline={'Kapasitet'}
+                onCapacityChange={onCapacityChange}
             ></NumberFilter>
             <TagTextField></TagTextField>
             <ActivityLevel onLevelChange={onLevelChange}></ActivityLevel>

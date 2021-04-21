@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ActivityForm from '../components/ActivityComponents/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/FilterComponents/SideFilter';
@@ -15,6 +15,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { FilterFunctions } from '../components/FilterComponents/FilterFunctions';
 import axios from '../Axios';
 import ActivityLevels from '../interfaces/ActivityLevels';
+import { UserContext } from '../UserContext';
 
 //Endringer kan forekomme her
 
@@ -44,6 +45,7 @@ const View = styled.div`
 `;
 
 const Activities = () => {
+    const { user } = useContext(UserContext);
     const [state, setState] = useState({
         mobileView: false,
         drawerOpen: false,
@@ -53,14 +55,13 @@ const Activities = () => {
         ActivityResponse[]
     >([]);
     const [openPopup, setOpenPopup] = useState<boolean>(false);
-
     const [titleSearch, setTitleSearch] = useState<string>('');
-
-    const [showFuture, setShowFuture] = useState<boolean>();
+    const [showMine, setShowMine] = useState<boolean>(false);
+    const [showFuture, setShowFuture] = useState<boolean>(false);
     const [distance, setDistance] = useState<number>();
     const [fromTime, setFromTime] = useState<Date>(new Date());
     const [toTime, setToTime] = useState<Date>(new Date());
-    const [capacity, setCapacity] = useState<number[]>();
+    const [capacity, setCapacity] = useState<number[]>([]);
     const [tag, setTags] = useState<string>();
     const [activityLevel, setActivityLevel] = useState<ActivityLevels>({
         Low: true,
@@ -74,17 +75,42 @@ const Activities = () => {
             activities,
             titleSearch
         );
-        filteredActivities = FilterFunctions.dateFromFilter(
+        filteredActivities = FilterFunctions.showMyActivities(
             filteredActivities,
-            new Date(fromTime)
+            showMine,
+            user
+        );
+        filteredActivities = FilterFunctions.showFutureActivities(
+            filteredActivities,
+            showFuture
+        );
+        filteredActivities = FilterFunctions.changeCapacity(
+            filteredActivities,
+            capacity
         );
         filteredActivities = FilterFunctions.dateToFilter(
             filteredActivities,
             new Date(toTime)
         );
-        filteredActivities = FilterFunctions.activityLevelFilter(filteredActivities, activityLevel);
+        filteredActivities = FilterFunctions.dateFromFilter(
+            filteredActivities,
+            new Date(fromTime)
+        );
+        filteredActivities = FilterFunctions.activityLevelFilter(
+            filteredActivities,
+            activityLevel
+        );
         setCurrentActivities(filteredActivities);
-    }, [titleSearch, activities, fromTime, toTime, activityLevel]);
+    }, [
+        titleSearch,
+        activities,
+        showFuture,
+        showMine,
+        capacity,
+        fromTime,
+        toTime,
+        activityLevel,
+    ]);
 
     const { mobileView, drawerOpen } = state;
 
@@ -126,6 +152,9 @@ const Activities = () => {
                         }}
                         onTitleSearch={(title) => setTitleSearch(title)}
                         onLevelChange={(level) => setActivityLevel(level)}
+                        onShowFuture={(showFuture) => setShowFuture(showFuture)}
+                        onShowMine={(showMine) => setShowMine(showMine)}
+                        onCapacityChange={(range) => setCapacity(range)}
                     ></SideFilter>
                 </div>
                 <View>
@@ -209,6 +238,15 @@ const Activities = () => {
                                     }
                                     onLevelChange={(level) =>
                                         setActivityLevel(level)
+                                    }
+                                    onShowFuture={(showFuture) =>
+                                        setShowFuture(showFuture)
+                                    }
+                                    onShowMine={(showMine) =>
+                                        setShowMine(showMine)
+                                    }
+                                    onCapacityChange={(range) =>
+                                        setCapacity(range)
                                     }
                                 ></SideFilter>
                             </div>
