@@ -77,7 +77,7 @@ const Activities = () => {
             }
         });
         setCurrentActivities(nyAktiviteter);
-    }, [titleSearch]);
+    }, [titleSearch, activities]);
 
     const { mobileView, drawerOpen } = state;
 
