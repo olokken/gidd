@@ -163,96 +163,71 @@ public class GiddController {
     @PostMapping("/login")
     public ResponseEntity loginSome(@RequestBody Map<String, Object> map) throws IOException {
         Map<String, String> body = new HashMap<>();
-        HttpHeaders headers = new HttpHeaders();
 
-        log.info("received postmapping to /login/some " + map.toString());
-        log.error("provider recieved: " + map.get("provider").toString());
-        Provider provider = Provider.valueOf(map.get("provider").toString());
-        if (provider == Provider.LOCAL) {
-            log.info("logging in with LOCAL");
-            boolean result =
-                userService.login(map.get("email").toString(), map.get("password").toString());
-            if (result) {
-                log.info("logged in user with email " + map.get("email").toString());
-                body.put("id",
-                    String.valueOf(userService.getUser(map.get("email").toString()).getUserId()));
-
-                return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .body(formatJson(body));
+        try {
+            log.info("received postmapping to /login" + map.toString());
+            log.error("provider recieved: " + map.get("provider").toString());
+            Provider provider = Provider.valueOf(map.get("provider").toString());
+            if (provider == Provider.LOCAL) {
+                return loginUser(map);
             }
 
-            log.error("unable to login user with email: " + map.get("email").toString());
-            body.put("error", "unable to login user with email: " + map.get("email").toString());
+            URL url = null;
 
-            return ResponseEntity
-                .status(403)
-                .headers(headers)
-                .body(formatJson(body));
-        }
+            if (provider == Provider.FACEBOOK) {
+                log.info("logging in with FACEBOOK");
+                url = new URL("https://graph.facebook.com/debug_token?input_token=" +
+                    map.get("accessToken").toString() +
+                    "&access_token=124734739639594|mI_etwHdsRvB6s3fVf62yZQldYQ");
+            }
+            if (provider == Provider.GOOGLE) {
+                log.info("logging in with GOOGLE");
+                url = new URL(
+                    "https://oauth2.googleapis.com/tokeninfo?id_token=" + map.get("accessToken"));
+            }
 
-        URL url;
-        if (provider == Provider.FACEBOOK) {
-            log.info("logging in with FACEBOOK");
-            url = new URL("https://graph.facebook.com/debug_token?input_token=" +
-                map.get("accessToken").toString() +
-                "&access_token=124734739639594|mI_etwHdsRvB6s3fVf62yZQldYQ");
-        } else if (provider == Provider.GOOGLE) {
-            log.info("logging in with GOOGLE");
-            url = new URL(
-                "https://oauth2.googleapis.com/tokeninfo?id_token=" + map.get("accessToken"));
-        } else {
-            log.error("invalid provider received");
-            body.put("error", "An invalid provider was passed");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setConnectTimeout(5000);
+            con.setReadTimeout(5000);
 
-            return ResponseEntity
-                .badRequest()
-                .headers(headers)
-                .body(formatJson(body));
-        }
+            int status = con.getResponseCode();
+            BufferedReader in;
+            if (status > 299) {
+                in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+            } else {
+                in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            }
 
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            in.close();
+            con.disconnect();
 
-        int status = con.getResponseCode();
-        BufferedReader in;
-        if (status > 299) {
-            in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
-        } else {
-            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        }
+            Map resMap;
+            // TODO Should be extracted into per-provider methods to reduce complexity of loginSome
+            if (provider == Provider.FACEBOOK) {
+                resMap =
+                    new ObjectMapper()
+                        .readValue(content.substring(8, content.length() - 1), Map.class);
+                if (Boolean.parseBoolean(resMap.get("is_valid").toString())) {
+                    log.info("access token valid");
+                    User user = userService.getUser(map.get("email").toString());
+                    if (user != null) {
+                        log.info("email already found in database, generating JWT");
+                        body.put("token", securityService
+                            .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
+                        body.put("userId", String.valueOf(user.getUserId()));
 
-        String inputLine;
-        StringBuilder content = new StringBuilder();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
-        }
-        in.close();
-        con.disconnect();
+                        return ResponseEntity
+                            .ok()
+                            .body(formatJson(body));
+                    }
 
-        Map<String, Object> resMap;
-        boolean validity = false;
-        if (provider == Provider.FACEBOOK) {
-            resMap =
-                new ObjectMapper().readValue(content.substring(8, content.length() - 1), Map.class);
-            if (Boolean.parseBoolean(resMap.get("is_valid").toString())) {
-                log.info("access token valid");
-                User user = userService.getUser(map.get("email").toString());
-                if (user != null) {
-                    log.info("email already found in database, generating JWT");
-                    body.put("token", securityService
-                        .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
-                    body.put("userId", String.valueOf(user.getUserId()));
-
-                    return ResponseEntity
-                        .ok()
-                        .body(formatJson(body));
-                }
-                try {
                     log.info("email doesn't exist in database, attempting to create user");
                     User newUser = userService.registerUser(
                         getRandomID(),
@@ -276,32 +251,48 @@ public class GiddController {
                         .created((new URI("/user/" + newUser.getUserId())))
                         .body(formatJson(body));
 
-                } catch (Exception e) {
-                    log.error("An error was caught while attempting to register FACEBOOK user");
-                    e.printStackTrace();
-                    body.put("error", "error could not be created");
+
+                } else {
+                    body.put("error", "invalid access token");
                     return ResponseEntity
                         .badRequest()
                         .body(formatJson(body));
                 }
             }
-        } else if (provider == Provider.GOOGLE) {
-            resMap = new ObjectMapper().readValue(content.toString(), Map.class);
-            if (!resMap.containsKey("error")) {
+            // Provider must be GOOGLE if not FACEBOOK or LOCAL. Add if,
+            // if more SoMe logins are added
+            else {
+                // TODO GOOGLE
+                resMap = new ObjectMapper().readValue(content.toString(), Map.class);
+                if (!resMap.containsKey("error")) {
+                    body.put("error", "invalid access token");
+
+                    return ResponseEntity
+                        .badRequest()
+                        .body(formatJson(body));
+                }
+
 
             }
-        }
+        } catch (NullPointerException e) {
+            body.put("error", "missing parameter");
 
-        if (validity) {
-            body.put("code", "all good");
-            body.put("token", securityService.createToken("test", (1000 * 60 * 5)));
             return ResponseEntity
-                .ok()
+                .badRequest()
+                .body(formatJson(body));
+        } catch (Exception e) {
+            log.error("An unexpected error was caught while logging in");
+
+            body.put("error", "something went wrong");
+            return ResponseEntity
+                .unprocessableEntity()
                 .body(formatJson(body));
         }
-        body.put("error", "invalid access token");
+
+        body.put("error", "something went wrong");
+
         return ResponseEntity
-            .badRequest()
+            .unprocessableEntity()
             .body(formatJson(body));
     }
 
