@@ -125,11 +125,13 @@ const MyUser: React.FC = () => {
         if (checkInput(oldPassword) === false) {
             alert('Skriv inn gammelt passord for å endre brukeren');
             return;
+        } else {
+            sendUser.password = oldPassword;
         }
         if (checkInput(firstName)) {
             sendUser.firstName = firstName;
             axios
-                .post(putUrl, sendUser)
+                .put(putUrl, sendUser)
                 .then((response) => {
                     console.log(response);
                     setCurrentUser({ ...currentUser, firstName: firstName });
@@ -142,6 +144,7 @@ const MyUser: React.FC = () => {
         }
         if (checkInput(surname)) {
             sendUser.surname = surname;
+            console.log(sendUser);
             axios
                 .put(putUrl, sendUser)
                 .then((response) => {
@@ -174,6 +177,7 @@ const MyUser: React.FC = () => {
                     phoneNumber: currentUser.phoneNumber,
                     activityLevel: currentUser.activityLevel,
                 };
+                console.log(sendUser);
                 axios
                     .put(putUrl, sendUser)
                     .then((response) => {
@@ -202,6 +206,8 @@ const MyUser: React.FC = () => {
         if (checkInput(oldPassword) === false) {
             alert('Skriv inn gammelt passord for å endre brukeren');
             return;
+        } else {
+            sendUser.password = oldPassword;
         }
         if (checkInput(phone)) {
             sendUser.phoneNumber = phone;
@@ -226,6 +232,8 @@ const MyUser: React.FC = () => {
         if (checkInput(oldPassword) === false) {
             alert('Skriv inn gammelt passord for å endre brukeren');
             return;
+        } else {
+            sendUser.password = oldPassword;
         }
         if (
             (checkInput(activityLevel) &&
@@ -273,13 +281,12 @@ const MyUser: React.FC = () => {
                 console.log(response);
                 setCurrentUser({ ...currentUser, password: editPass });
             });
-            setEditPass('');
-            setConfirmPass('');
         } else {
-            //sendUser.password = oldPassword;
-            setOldPassword('');
             setNoMatchPass(true);
         }
+        setOldPassword('');
+        setEditPass('');
+        setConfirmPass('');
     };
 
     const onClickDeleteUser = () => {
