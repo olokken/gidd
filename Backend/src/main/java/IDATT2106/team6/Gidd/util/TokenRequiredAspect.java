@@ -3,7 +3,6 @@ package IDATT2106.team6.Gidd.util;
 import IDATT2106.team6.Gidd.service.SecurityServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import java.util.Arrays;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
@@ -23,11 +22,31 @@ public class TokenRequiredAspect {
 
     private final SecurityServiceImpl securityService = new SecurityServiceImpl();
 
-    @Around("@annotation(bodyTokenRequired)")
-    public Object bodyTokenRequiredWithAnnotation(ProceedingJoinPoint pjp, TokenRequired bodyTokenRequired) throws Throwable {
-        String token = checkInput(pjp.getArgs());
-        System.out.println(Arrays.toString(args));
-        log.info("Before tokenRequiredWithAnnotation");
+    @Around("@annotation(mapTokenRequired)")
+    public Object mapTokenRequiredWithAnnotation(ProceedingJoinPoint pjp, MapTokenRequired mapTokenRequired) throws Throwable {
+        log.info("Around mapTokenRequiredWithAnnotation");
+        Object[] args = pjp.getArgs();
+        String subject = "";
+        if(args[0] instanceof Map){
+            Map map = (Map) args[0];
+            if(map.containsKey("userId")) {
+                subject = map.get("userId").toString();
+            }
+        }
+        return handleToken(pjp, subject);
+    }
+
+    @Around("@annotation(pathTokenRequired)")
+    public Object pathTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
+                                                  PathTokenRequired pathTokenRequired) {
+        return null;
+    }
+
+    private Object handleToken(ProceedingJoinPoint pjp, String subject) throws Throwable {
+        if(subject==null || subject.equals("")){
+            log.error("No subject");
+            return false;
+        }
         ServletRequestAttributes reqAttributes =
             (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request =  reqAttributes.getRequest();
@@ -44,27 +63,13 @@ public class TokenRequiredAspect {
             log.error("Claims was found to be null");
             throw new IllegalArgumentException("Token Error: Claim is null");
         }
-        if(!claims.getSubject().equalsIgnoreCase("map.get('').toString()")){
+        if(!claims.getSubject().equalsIgnoreCase(subject)){
             log.error("Subject does not match token");
             throw new IllegalArgumentException("Subject doesn't match in the token");
         }
         else {
             return pjp.proceed();
         }
-    }
-
-    @Around("@annotation(pathTokenRequired)")
-    public Object pathTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
-                                                  PathTokenRequired pathTokenRequired) {
-        return null;
-    }
-
-    private String checkInput(Object[] args) {
-        Object zero = args[0];
-        if(zero instanceof Map){
-
-        }
-        return null;
     }
 
     /*
