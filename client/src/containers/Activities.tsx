@@ -62,7 +62,7 @@ const Activities = () => {
     const [fromTime, setFromTime] = useState<Date>();
     const [toTime, setToTime] = useState<Date>();
     const [capacity, setCapacity] = useState<number[]>([0, 20]);
-    const [tags, setTags] = useState<string[]>();
+    const [tags, setTags] = useState<string[]>(['Fotball']);
     const [activityLevel] = useState<string[]>();
     const { user } = useContext(UserContext);
 
