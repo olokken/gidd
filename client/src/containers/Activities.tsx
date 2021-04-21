@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ActivityForm from '../components/ActivityComponents/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/FilterComponents/SideFilter';
@@ -12,8 +12,9 @@ import { Drawer, Button } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
-import { FilterFunctions } from './FilterFunctions'; 
+import { FilterFunctions } from './FilterFunctions';
 import axios from '../Axios';
+import { UserContext } from '../UserContext';
 
 //Endringer kan forekomme her
 
@@ -55,19 +56,22 @@ const Activities = () => {
 
     const [titleSearch, setTitleSearch] = useState<string>('');
 
-    const [showFuture, setShowFuture] = useState<boolean>();
+    const [showMine, setShowMine] = useState<boolean>(false);
+    const [showFuture, setShowFuture] = useState<boolean>(false);
     const [distance, setDistance] = useState<number>();
     const [fromTime, setFromTime] = useState<Date>();
     const [toTime, setToTime] = useState<Date>();
     const [capacity, setCapacity] = useState<number[]>();
     const [tag, setTags] = useState<string>();
     const [activityLevel] = useState<string[]>();
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         setCurrentActivities(activities);
-        const filteredActivities = FilterFunctions.titleFilter(currentActivities, titleSearch); 
+        //const filteredActivities = FilterFunctions.titleFilter(activities, titleSearch);
+        const filteredActivities = FilterFunctions.showMyActivities(activities, showMine, user)
         setCurrentActivities(filteredActivities);
-    }, [titleSearch, activities]);
+    }, [titleSearch, activities, showFuture, showMine]);
 
     const { mobileView, drawerOpen } = state;
 
@@ -76,9 +80,9 @@ const Activities = () => {
             return window.innerWidth < 951
                 ? setState((prevState) => ({ ...prevState, mobileView: true }))
                 : setState((prevState) => ({
-                      ...prevState,
-                      mobileView: false,
-                  }));
+                    ...prevState,
+                    mobileView: false,
+                }));
         };
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());
@@ -104,6 +108,8 @@ const Activities = () => {
                 <div style={{ width: '20%' }}>
                     <SideFilter
                         onTitleSearch={(title) => setTitleSearch(title)}
+                        onShowFuture={(showFuture) => setShowFuture(showFuture)}
+                        onShowMine={(showMine => setShowMine(showMine))}
                     ></SideFilter>
                 </div>
                 <View>
@@ -179,6 +185,8 @@ const Activities = () => {
                                     onTitleSearch={(title) =>
                                         setTitleSearch(title)
                                     }
+                                    onShowFuture={(showFuture) => setShowFuture(showFuture)}
+                                    onShowMine={(showMine => setShowMine(showMine))}
                                 ></SideFilter>
                             </div>
                         </Drawer>

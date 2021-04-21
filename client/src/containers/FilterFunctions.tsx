@@ -16,5 +16,20 @@ const titleFilter = (
     });
 };
 
-
-export const FilterFunctions = {titleFilter};
+const showMyActivities = (
+    activities: ActivityResponse[],
+    show: boolean,
+    user: string
+): ActivityResponse[] => {
+    console.log(user)
+    return activities.filter((act: ActivityResponse) => {
+        if (show === false) {
+            return act;
+        }
+        else if (act.registeredParticipants
+            .filter((par) => par.userId['userId']).includes(user) && show === true) {
+            return act;
+        }
+    });
+};
+export const FilterFunctions = { titleFilter, showMyActivities };

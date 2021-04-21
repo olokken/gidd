@@ -1,5 +1,5 @@
 import { FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -9,16 +9,19 @@ const Container = styled.div`
 
 interface Props {
     label: string;
+    onStateChange: (state: boolean) => void;
 }
 
-const ViewBox = ({ label }: Props) => {
-    const [state, setState] = useState({
-        label: false,
-    });
+const ViewBox = ({ label, onStateChange }: Props) => {
+    const [state, setState] = useState<boolean>(false);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setState({ ...state, [event.target.name]: event.target.checked });
+        setState(event.target.checked)
     };
+
+    useEffect(() => {
+        onStateChange(state)
+    }, [state]);
 
     return (
         <Container>

@@ -17,10 +17,13 @@ const StyledContainer = styled.div`
 
 interface Props {
     onTitleSearch: (searchResult: string) => void;
+    onShowFuture: (state: boolean) => void;
+    onShowMine: (state: boolean) => void;
 }
 
-const SideFilter = ({ onTitleSearch }: Props) => {
+const SideFilter = ({ onTitleSearch, onShowFuture, onShowMine }: Props) => {
     const [titleSearch, setTitleSearch] = useState<string>('');
+
 
     const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
         const current: string = (event.target as HTMLInputElement).value;
@@ -39,8 +42,8 @@ const SideFilter = ({ onTitleSearch }: Props) => {
                 label="Søk på tittel"
                 variant="outlined"
             />
-            <ViewBox label={'Vis kun framtidige aktiviteter'}></ViewBox>
-            <ViewBox label={'Vis kun påmeldte aktiviteter'}></ViewBox>
+            <ViewBox label={'Vis kun framtidige aktiviteter'} onStateChange={onShowFuture}></ViewBox>
+            <ViewBox label={'Vis kun påmeldte aktiviteter'} onStateChange={onShowMine}></ViewBox>
             <DistanceFilter></DistanceFilter>
             <TimeFilter></TimeFilter>
             <NumberFilter
