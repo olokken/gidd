@@ -55,6 +55,7 @@ public class User {
         this.authProvider = provider;
         this.activities = new ArrayList<ActivityUser>();
         this.points = 0;
+        System.out.println("nytt passord er " + password);
 
         //generates random salt
         SecureRandom random = new SecureRandom();
@@ -93,6 +94,7 @@ public class User {
 
     public boolean verifyPassword(String testPassword) {
         //the password that is to be tested
+        System.out.println("passordet er " + testPassword);
         if (testPassword == null) return false;
         char[] passwordChars = testPassword.toCharArray();
         byte[] saltBytes = Base64.decodeBase64(salt);

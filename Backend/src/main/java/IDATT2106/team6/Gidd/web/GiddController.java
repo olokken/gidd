@@ -765,7 +765,7 @@ public class GiddController {
                                        @PathVariable("id") int actId) {
         log.info("recieved putmapping to /activity/{id}");
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
-        log.debug("User with id recieved " + user.toString());
+        log.debug("User with id recieved");
         Activity activity = activityService.getActivity(actId);
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
@@ -787,6 +787,8 @@ public class GiddController {
         activity.setDescription(map.get("description").toString());
         activity.setCapacity(Integer.parseInt(map.get("capacity").toString()));
         activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
+        activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
+        activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
         log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
         if (!edited) {
