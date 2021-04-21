@@ -117,9 +117,18 @@ public class GiddController {
     @PostMapping("/user")
     public ResponseEntity registerUser(@RequestBody HashMap<String, Object> map) {
         //      TODO Error handling
-        //      Make sure the user's email isn't already registered
         //      Return Exception to user
         log.info("recieved postmapping to /user: " + map.toString());
+        Map<String, String> body = new HashMap<>();
+
+        if (userService.getUser(map.get("email").toString()) != null) {
+            body.put("error", "a user with that email already exists!");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
+
         User result = userService.registerUser(
             getRandomID(),
             map.get("email").toString(),
@@ -127,9 +136,9 @@ public class GiddController {
             map.get("firstName").toString(),
             map.get("surname").toString(),
             Integer.parseInt(map.get("phoneNumber").toString()),
-            ActivityLevel.valueOf(map.get("activityLevel").toString()), null);
+            ActivityLevel.valueOf(map.get("activityLevel").toString()),
+            Provider.LOCAL);
         log.info("created user with id: " + result.getUserId());
-        Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
 
         header.add("Content-Type", "application/json; charset=UTF-8");
@@ -255,7 +264,7 @@ public class GiddController {
                         null,
                         Provider.FACEBOOK);
 
-                    if(newUser == null) {
+                    if (newUser == null) {
                         throw new NullPointerException();
                     }
 
@@ -264,7 +273,7 @@ public class GiddController {
                     body.put("userId", String.valueOf(newUser.getUserId()));
 
                     return ResponseEntity
-                        .created((new URI("/user/"+newUser.getUserId())))
+                        .created((new URI("/user/" + newUser.getUserId())))
                         .body(formatJson(body));
 
                 } catch (Exception e) {

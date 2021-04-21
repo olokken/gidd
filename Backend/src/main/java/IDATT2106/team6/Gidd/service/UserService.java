@@ -57,7 +57,7 @@ public class UserService {
                              int phoneNumber, ActivityLevel activityLevel,
                              Provider provider){
 
-		User newUser = new User(id, email, password, firstname, surname, phoneNumber, activityLevel, null);
+		User newUser = new User(id, email, password, firstname, surname, phoneNumber, activityLevel, provider);
         log.info("creating new user: " + newUser.getUserId());
         boolean result = repo.addUser(newUser);
         log.info("adding new user was " + result);
