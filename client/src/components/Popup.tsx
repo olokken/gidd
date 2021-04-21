@@ -49,7 +49,6 @@ const Popup = ({
         >
             <DialogTitle className={classes.dialogTitle}>
                 <div style={{ display: 'flex' }}>
-                    {/* The typography and button component will be shown in a single line*/}
                     <Typography
                         variant="h6"
                         component="div"
