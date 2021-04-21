@@ -17,6 +17,8 @@ import IDATT2106.team6.Gidd.models.Provider;
 import IDATT2106.team6.Gidd.models.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.parser.JSONParser;
 import org.hamcrest.Matchers;
@@ -88,7 +90,7 @@ public class GiddControllerTest {
         ActivityLevel.HIGH, null, 0.001, 0.005, null);
     }
 
-    @BeforeEach
+    @BeforeAll
     public void beforeEach(){
         System.out.println("Beginning a test!\n");
 
@@ -114,7 +116,7 @@ public class GiddControllerTest {
         activity1 = new Activity(121, "skrive tester",
                 new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
                 0, user1, 50, 5, "det som du gjør nå", new byte[]{-5},
-                ActivityLevel.HIGH, null, 0.001, 0.005, null);
+                ActivityLevel.HIGH, new ArrayList<>(), 0.001, 0.005, null);
     }
 
   //  @Test
@@ -125,14 +127,6 @@ public class GiddControllerTest {
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.activity", Matchers.greaterThanOrEqualTo(0)));
     }
-/*
-    @Test
-    void addActivity() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-            .post("/activity")
-            .content()
-    }
-*/
 
     @Test
     @Order(1)
@@ -147,7 +141,10 @@ public class GiddControllerTest {
                         "\"surname\":\"" + user1.getSurname() + "\"," +
                         "\"phoneNumber\":\"" + user1.getPhoneNumber() + "\"," +
                         "\"activityLevel\":\"" + user1.getActivityLevel() + "\"" +
-                        "}")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+                        "}"))
+                .andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty())
+                .andReturn().getResponse().getContentAsString();
 
         String user2String = mockMvc.perform(get("/user/email/" + user1.getEmail())
                 .accept(MediaType.APPLICATION_JSON)
@@ -156,7 +153,8 @@ public class GiddControllerTest {
 
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(user2String);
-        //user1.setUserId(json.get("userId"));
+        JSONObject idJson = (JSONObject) parser.parse(id);
+        user1.setId(idJson.getAsNumber("id").intValue());
         assertEquals(user1.getEmail(), json.get("email"));
     }
 
@@ -177,32 +175,37 @@ public class GiddControllerTest {
     public void newActivityTest() throws Exception {
         System.out.println("test 3");
         //create new activity
-        String id = mockMvc.perform(post("/activity").contentType(MediaType.APPLICATION_JSON)
+        String id = mockMvc.perform(MockMvcRequestBuilders
+                .post("/activity").contentType(MediaType.APPLICATION_JSON)
                 .content("{\n" +
                         "    \"title\" : \"" + activity1.getTitle() + "\",\n" +
-                        "    \"time\" : \"" + activity1.getTime().getTime() + "\",\n" +
+                        "    \"time\" : \"" + activity1.getTime() + "\",\n" +
                         "    \"repeat\" : " + activity1.getDaysToRepeat() + ",\n" +
-                        "    \"userId\" : " + 22 + ",\n" +
+                        "    \"userId\" : " + user1.getUserId() + ",\n" +
                         "    \"capacity\" : " + activity1.getCapacity() + ",\n" +
                         "    \"groupId\" : " + activity1.getGroupId() + ",\n" +
                         "    \"description\" : \"" + activity1.getDescription() + "\",\n" +
-                        "    \"image\" : \"" + activity1.getImage() + "\",\n" +
+                        "    \"image\" : \"" + 1101 + "\",\n" +
                         "    \"activityLevel\" : \"" + activity1.getActivityLevel() + "\",\n" +
-                        "    \"tags\" : \"" + activity1.getTags() + "\",\n" +
+                        "    \"tags\" : " + "\"Fisk\"" + ",\n" +
                         "    \"latitude\" : " + activity1.getLatitude() + ",\n" +
-                        "    \"longitude\": " + activity1.getLongitude() + "\n" +
-                        "}")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+                        "    \"longitude\": " + activity1.getLongitude() + ",\n" +
+                        "    \"equipmentList\": \"Fish\" ,\n" +
+                        "    \"equipment\": \"Fish\" \n" +
+                        "}")).andExpect(status().isCreated()).andDo(print()).andReturn().getResponse().getContentAsString();
 
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(id);
 
-        String activity2String = mockMvc.perform(get("/activity/" + json.getAsNumber("activityId"))
+        System.out.println(json);
+
+        String activity2String = mockMvc.perform(get("/activity/" + json.getAsNumber("id"))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         JSONObject json2 = (JSONObject) parser.parse(activity2String);
-        assertEquals(json.getAsNumber("activityId"), json2.getAsNumber("activityId"));
+        assertEquals(json.getAsNumber("id"), json2.getAsNumber("activityId"));
     }
 
     @Order(4)

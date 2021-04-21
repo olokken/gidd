@@ -1,6 +1,6 @@
 package IDATT2106.team6.Gidd.service;
 
-import IDATT2106.team6.Gidd.util.Logger;
+/*import IDATT2106.team6.Gidd.util.Logger;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -12,12 +12,12 @@ import java.util.Date;
 import java.util.Properties;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;*/
 
-@Service
-public class SecurityServiceImpl implements SecurityService{
+//@Service
+public class SecurityServiceImpl{
 
-    private static Logger log = new Logger(SecurityServiceImpl.class.toString());
+    /*private static Logger log = new Logger(SecurityServiceImpl.class.toString());
 
     private static String setSecretKey() throws IOException {
         Properties prop = new Properties();
@@ -67,5 +67,5 @@ public class SecurityServiceImpl implements SecurityService{
             .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
             .parseClaimsJws(token).getBody();
         return claims.getSubject();
-    }
+    }*/
 }

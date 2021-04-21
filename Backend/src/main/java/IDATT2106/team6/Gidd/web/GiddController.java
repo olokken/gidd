@@ -29,7 +29,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
-import org.json.JSONException;
+import org.eclipse.persistence.exceptions.JSONException;
+//import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -57,8 +58,8 @@ public class GiddController {
     private UserService userService;
     @Autowired
     private TagService tagService;
-    @Autowired
-    private SecurityService securityService;
+  //  @Autowired
+    //private SecurityService securityService;
 
     @GetMapping("/aop/test")
     @TokenRequired
@@ -77,7 +78,7 @@ public class GiddController {
         map.put("result", "worked?!");
         return map;
     }
-
+/*
     @ResponseBody
     @RequestMapping("/security/generate/token")
     public Map<String,Object> generateToken(@RequestParam(value="subject") String subject) {
@@ -88,6 +89,8 @@ public class GiddController {
         return map;
     }
 
+ */
+/*
     @ResponseBody
     @RequestMapping("/security/get/subject")
     public Map<String, Object> getSubject(@RequestParam(value="token") String token) {
@@ -96,6 +99,8 @@ public class GiddController {
         map.put("result", subject);
         return map;
     }
+
+ */
 
     @ResponseBody
     @GetMapping("/hello2")
@@ -166,7 +171,7 @@ public class GiddController {
 
     @PostMapping(value = "/activity", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
-        log.debug("Recieved new activity: " + map.toString());
+        log.debug("Received new activity: " + map.toString());
         int newId;
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
