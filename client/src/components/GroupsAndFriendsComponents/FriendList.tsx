@@ -32,9 +32,10 @@ const FriendList = () => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [addFriendInput, setAddFriendInput] = useState<any>({});
 
-     const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput((event.target as HTMLInputElement).value);
     };
+    
     const onAddFriendClick = () => {
         console.log(addFriendInput);
         setAddFriendInput(null);

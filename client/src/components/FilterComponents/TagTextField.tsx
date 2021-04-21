@@ -5,11 +5,11 @@ import Tag from '../../interfaces/Tag';
 import axios from '../../Axios';
 
 const TagTextField = () => {
-    const [tags, setTags] = useState<string[]>([]);
+    const [tags, setTags] = useState<Tag[]>([]);
 
     useEffect(() => {
-        axios.get('').then((data) => {
-            console.log(data.data);
+        axios.get('/tag').then((data) => {
+            setTags(data.data);
         });
     }, []);
 
@@ -17,11 +17,11 @@ const TagTextField = () => {
         <Autocomplete
             id="free-solo-demo"
             freeSolo
-            options={tags.map((option) => option)}
+            options={tags.map((option) => option.description)}
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    label="Tags"
+                    label="Søk på tags"
                     margin="normal"
                     variant="outlined"
                 />

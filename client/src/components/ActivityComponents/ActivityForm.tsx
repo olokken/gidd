@@ -201,7 +201,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             if (checkInput(tagsDesc)) {
                 const tags: string[] = tagsDesc.split(',');
                 tags.map((tag) => {
-                    tagList.push({ ID: counterTag, desc: tag });
+                    tagList.push({ tagId: counterTag, description: tag });
                 });
                 setCounterTag(counterTag + 1);
                 setTagsDesc('');
@@ -211,7 +211,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     };
 
     const deleteTag = (ID: number) => {
-        setTagList(tagList.filter((tag) => tag.ID !== ID));
+        setTagList(tagList.filter((tag) => tag.tagId !== ID));
     };
 
     const isDisabled = (): boolean => {
@@ -228,7 +228,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             (equipment) => (equipmentString += equipment.description + ',')
         );
         let tagString = '';
-        tagList.map((tag) => (tagString += tag.desc + ','));
+        tagList.map((tag) => (tagString += tag.description + ','));
 
         const escapedJSONDescription = JSON.stringify(desc)
             .replace(/\\n/g, '\\n')
@@ -452,10 +452,10 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                         {reset === false &&
                             tagList.map((tag) => (
                                 <li
-                                    key={tag.ID}
-                                    onClick={deleteTag.bind(this, tag.ID)}
+                                    key={tag.tagId}
+                                    onClick={deleteTag.bind(this, tag.tagId)}
                                 >
-                                    {tag.desc}
+                                    {tag.description}
                                 </li>
                             ))}
                     </ul>

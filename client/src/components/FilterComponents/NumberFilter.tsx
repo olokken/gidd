@@ -18,7 +18,6 @@ const NumberFilter = ({ minValue, maxValue, headline }: Props) => {
 
   const handleChange = (event: any, newValue: number | number[]) => {
     setValue(newValue as number[]);
-    console.log(value); 
   };
 
   const onChangeValue = (event: ChangeEvent<HTMLInputElement>) => {

@@ -4,7 +4,9 @@ import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
 const SortMenu = (props: any) => {
     return (
-        <FormControl style={{marginRight:'10px', width:'100%', maxWidth:'500px'}}>
+        <FormControl
+            style={{ marginRight: '10px', width: '100%', maxWidth: '500px' }}
+        >
             <InputLabel>Sortering</InputLabel>
             <Select
                 labelId="demo-simple-select-label"
@@ -12,6 +14,8 @@ const SortMenu = (props: any) => {
                 //value={age}
                 //onChange={handleChange}
             >
+                <MenuItem value={10}>Ny - Gammel</MenuItem>
+                <MenuItem value={20}>Gammel - Ny</MenuItem>
                 <MenuItem value={10}>Kort avstand - Lang avstand</MenuItem>
                 <MenuItem value={20}>Lang avstand - Kort avstand</MenuItem>
                 <MenuItem value={30}>Liten kapasitet - Stor kapasitet</MenuItem>
