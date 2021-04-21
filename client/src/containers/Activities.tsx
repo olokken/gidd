@@ -12,6 +12,7 @@ import { Drawer, Button } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
+import { FilterFunctions } from './FilterFunctions'; 
 import axios from '../Axios';
 
 //Endringer kan forekomme her
@@ -64,19 +65,8 @@ const Activities = () => {
 
     useEffect(() => {
         setCurrentActivities(activities);
-        const nyAktiviteter = activities.filter((act: ActivityResponse) => {
-            if (titleSearch == '') {
-                return act;
-            } else if (
-                act.title != null &&
-                act.title
-                    .toLowerCase()
-                    .includes(titleSearch.toLocaleLowerCase())
-            ) {
-                return act;
-            }
-        });
-        setCurrentActivities(nyAktiviteter);
+        const filteredActivities = FilterFunctions.titleFilter(currentActivities, titleSearch); 
+        setCurrentActivities(filteredActivities);
     }, [titleSearch, activities]);
 
     const { mobileView, drawerOpen } = state;
