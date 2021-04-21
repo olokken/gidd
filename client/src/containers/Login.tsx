@@ -176,17 +176,16 @@ const Login = () => {
         console.log(response);
         const name: string[] = response.name.split(' ');
         const accessToken = response.accessToken;
-        axios.post('/login', {
-            provider: 'FACEBOOK',
+        axios.post('/login/test', {
+            provider: "FACEBOOK",
             accessToken: accessToken,
             email: response.email,
             firstName: name[0],
             surname: name[1],
-            id: response.userID
         }).then(response => {
-            console.log(response);
+            console.log(response.data);
         }).catch(error => {
-            console.log(error);
+            console.log(error.message);
         })
     };
 
