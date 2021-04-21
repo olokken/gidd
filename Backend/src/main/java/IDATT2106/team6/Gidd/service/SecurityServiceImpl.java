@@ -15,7 +15,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SecurityServiceImpl{
+public class SecurityServiceImpl implements SecurityService{
 
     private static Logger log = new Logger(SecurityServiceImpl.class.toString());
 
