@@ -4,6 +4,7 @@ import IDATT2106.team6.Gidd.service.SecurityServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import java.util.Arrays;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringUtils;
@@ -23,8 +24,8 @@ public class TokenRequiredAspect {
     private final SecurityServiceImpl securityService = new SecurityServiceImpl();
 
     @Around("@annotation(bodyTokenRequired)")
-    public Object bodyTokenRequiredWithAnnotation(ProceedingJoinPoint pjp, BodyTokenRequired bodyTokenRequired) throws Throwable {
-        Object[] args = pjp.getArgs();
+    public Object bodyTokenRequiredWithAnnotation(ProceedingJoinPoint pjp, TokenRequired bodyTokenRequired) throws Throwable {
+        String token = checkInput(pjp.getArgs());
         System.out.println(Arrays.toString(args));
         log.info("Before tokenRequiredWithAnnotation");
         ServletRequestAttributes reqAttributes =
@@ -58,8 +59,12 @@ public class TokenRequiredAspect {
         return null;
     }
 
-    private boolean checkInput() {
-        return false;
+    private String checkInput(Object[] args) {
+        Object zero = args[0];
+        if(zero instanceof Map){
+
+        }
+        return null;
     }
 
     /*
