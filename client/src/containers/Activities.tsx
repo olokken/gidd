@@ -69,6 +69,7 @@ const Activities = () => {
 
     useEffect(() => {
         setCurrentActivities(activities);
+        console.log(activities)
         let filteredActivities = FilterFunctions.titleFilter(
             activities,
             titleSearch
@@ -98,6 +99,10 @@ const Activities = () => {
             filteredActivities,
             activityLevel
         );
+        filteredActivities = FilterFunctions.tagFilter(
+            filteredActivities,
+            tags
+        );
         setCurrentActivities(filteredActivities);
     }, [
         titleSearch,
@@ -108,6 +113,7 @@ const Activities = () => {
         fromTime,
         toTime,
         activityLevel,
+        tags
     ]);
 
     const { mobileView, drawerOpen } = state;
