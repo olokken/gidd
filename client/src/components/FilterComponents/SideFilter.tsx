@@ -10,13 +10,13 @@ import { TextField } from '@material-ui/core';
 const StyledContainer = styled.div`
     margin-left: 1rem;
     margin-top:1rem;
-    width: 20%;
+    width: 95%;
 `;
 
 const SideFilter = () => {
     return (
         <StyledContainer>
-            <TextField style={{width:'95%'}} label="Search" variant="outlined" />
+            <TextField fullWidth={true} label="Søk på tittel" variant="outlined" />
             <DistanceFilter></DistanceFilter>
             <TimeFilter></TimeFilter>
             <NumberFilter
@@ -25,7 +25,6 @@ const SideFilter = () => {
                 headline={'Kapasitet'}
             ></NumberFilter>
             <DifficultLevel></DifficultLevel>
-            <ActivityBoxes></ActivityBoxes>
         </StyledContainer>
     );
 };

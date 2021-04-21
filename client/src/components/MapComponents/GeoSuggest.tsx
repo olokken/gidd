@@ -9,7 +9,7 @@ interface Props {
 
 const GeoSuggest = ({ onLocationChange }: Props) => {
     const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>();
-    
+
     const onSuggestSelect = (place: Suggest) => {
         if (place) {
             console.log(place.location.lat + ', ' + place.location.lng);
@@ -28,8 +28,7 @@ const GeoSuggest = ({ onLocationChange }: Props) => {
 
     return (
         <Geosuggest
-            placeholder="Start typing!"
-            initialValue="Trondheim"
+            placeholder="Skriv inn adresse/lokasjon"
             onSuggestSelect={onSuggestSelect}
             location={new google.maps.LatLng(53.558572, 9.9278215)}
             radius={20}

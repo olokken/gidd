@@ -14,18 +14,21 @@ import {
     Button,
 } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
+import { Marker } from 'react-google-maps';
 import hiking from '../../assets/hiking.jpg';
 import MapComponent from '../MapComponents/MapComponent';
 import weather from '../../assets/weather.png';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import { UserContext } from '../../UserContext';
 import Equipment from '../../interfaces/Equipment';
+import axios from '../../Axios';
+import MapMarker from '../MapComponents/MapMarker';
+import WeatherComponent from '../WeatherComponents/WeatherComponent';
 
 interface Props {
     activity: ActivityResponse;
 }
-
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
     createStyles({
         titlearea: {
             /*margin: `${theme.spacing(1)}px auto`,
@@ -55,34 +58,82 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const ActivityInformation = ({ activity }: Props) => {
+    const lat = 63.430515;
+    const lon = 10.395053;
     const classes = useStyles();
     const date = new Date(activity.time);
     const eventTime = new String(date);
-    const [isRegistered, setIsRegistered] = useState<boolean>(true);
+    //Registration is 0 if registration is posible, 1 if you are already registered and 2 if the activity is ful
+    const [registration, setRegistration] = useState<number>();
     const { user } = useContext(UserContext);
 
-    useEffect(() => {
-        const registered: number[] = activity.registeredParticipants.map(
-            (u) => u.userID
-        );
-        if (registered.includes(user)) setIsRegistered(true);
-        else setIsRegistered(false);
-    }, []);
-
     const register = () => {
-        console.log('Registrer bruker til aktivitet');
+        axios
+            .post('/user/activity', {
+                userId: user,
+                activityId: activity.activityId,
+            })
+            .then((data) => {
+                if (data) {
+                    setRegistration(1);
+                }
+            });
     };
 
     const unRegister = () => {
         console.log('Avregistrer bruker til aktivitet');
     };
 
+    useEffect(() => {
+        if (activity.registeredParticipants.length >= activity.capacity) {
+            setRegistration(2);
+        } else {
+            const registered: number[] = activity.registeredParticipants.map(
+                (u) => u.userID
+            );
+            if (!registered.includes(user)) setRegistration(0);
+            else setRegistration(1);
+        }
+    }, []);
+
+    let registerBtn =
+        registration === 2 ? (
+            <Button className={classes.joinButton} disabled>
+                Aktiviteten er allerede fullbooket
+            </Button>
+        ) : registration === 1 ? (
+            <Button onClick={unRegister} className={classes.joinButton}>
+                Meld deg av
+            </Button>
+        ) : (
+            <Button onClick={register} className={classes.joinButton}>
+                Meld deg på
+            </Button>
+        );
+
+    useEffect(() => {
+        registerBtn =
+            registration === 2 ? (
+                <Button className={classes.joinButton} disabled>
+                    Aktiviteten er allerede fullbooket
+                </Button>
+            ) : registration === 1 ? (
+                <Button onClick={unRegister} className={classes.joinButton}>
+                    Meld deg av
+                </Button>
+            ) : (
+                <Button onClick={register} className={classes.joinButton}>
+                    Meld deg på
+                </Button>
+            );
+    }, [registration]);
+
     const mapEquipments = activity.equipments.map(
         (eq: Equipment, index: number) => {
             return (
                 <Chip
                     key={index}
-                    variant="outlined" // her må man hente utstyr frå det som er registrert og plassere dei inn
+                    variant="outlined"
                     size="small"
                     label={eq.description}
                     style={{
@@ -93,6 +144,15 @@ const ActivityInformation = ({ activity }: Props) => {
                         margin: '10px',
                     }}
                 />
+            );
+        }
+    );
+    const mapParticipants = activity.registeredParticipants.map(
+        (par: any, index: number) => {
+            return (
+                <p key={index}>
+                    {par.userId['firstName'] + ' ' + par.userId['surname']}
+                </p>
             );
         }
     );
@@ -117,12 +177,7 @@ const ActivityInformation = ({ activity }: Props) => {
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
-                        <Button
-                            onClick={() => console.log(isRegistered)}
-                            className={classes.joinButton}
-                        >
-                            Meld deg på
-                        </Button>
+                        {registerBtn}
                     </Grid>
                 </Grid>
             </div>
@@ -141,18 +196,27 @@ const ActivityInformation = ({ activity }: Props) => {
 
             <CardContent>
                 <Grid container wrap="nowrap" spacing={2}>
-                    <Grid item>
+                    <Grid item xs={8}>
+                        <Grid item>
+                            <Typography>
+                                <b>Kapasitet:</b>{' '}
+                                {activity.registeredParticipants.length} /{' '}
+                                {activity.capacity}
+                            </Typography>
+                            <Typography>
+                                <b>Vanskligheitsgrad:</b>{' '}
+                                {activity.activityLevel}
+                            </Typography>
+                            <Typography>
+                                <b>Tidspunkt: </b>
+                                {eventTime}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={3}>
                         <Typography>
-                            <b>Kapasitet:</b>{' '}
-                            {activity.registeredParticipants.length} /{' '}
-                            {activity.capacity}
-                        </Typography>
-                        <Typography>
-                            <b>Vanskligheitsgrad:</b> {activity.activityLevel}
-                        </Typography>
-                        <Typography>
-                            <b>Tidspunkt: </b>
-                            {eventTime}
+                            <b>Påmeldte personer:</b> {mapParticipants}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -179,7 +243,14 @@ const ActivityInformation = ({ activity }: Props) => {
                         }}
                         width="100%"
                         height="30rem"
-                    ></MapComponent>
+                    >
+                        <Marker
+                            position={{
+                                lat: activity.latitude,
+                                lng: activity.longitude,
+                            }}
+                        ></Marker>
+                    </MapComponent>
                 </Grid>
             </Grid>
             <br />
@@ -205,11 +276,10 @@ const ActivityInformation = ({ activity }: Props) => {
                     </Grid>
                 </div>
                 <Grid item>
-                    <CardMedia
-                        component="img"
-                        alt={'Weather forecast'}
-                        height="200"
-                        image={weather}
+                    <WeatherComponent
+                        lat={lat} //lat og lon må korrespondere med informasjonen om lokasjonen til økta
+                        lon={lon}
+                        time={activity.time}
                     />
                 </Grid>
             </Grid>

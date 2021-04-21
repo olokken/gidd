@@ -77,7 +77,7 @@ const ActivityGrid = ({ activities }: Props) => {
             >
                 {renderActivities}
             </GridList>
-            <Popup openPopup={openPopup} setOpenPopup={setOpenPopup}>
+            <Popup openPopup={openPopup} setOpenPopup={setOpenPopup} maxWidth='md'>
                 <ActivityInformation activity={activity}></ActivityInformation>
             </Popup>
             <Pageination

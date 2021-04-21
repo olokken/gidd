@@ -97,7 +97,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         description: '',
         image: '',
         activityLevel: '',
-        equipment: '',
+        equipmentList: '',
         tags: '',
         latitude: 0,
         longitude: 0,
@@ -225,10 +225,10 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
     const postActivity = () => {
         let equipmentString = '';
         equipmentList.map(
-            (equipment) => (equipmentString += equipment.description)
+            (equipment) => (equipmentString += equipment.description + ',')
         );
         let tagString = '';
-        tagList.map((tag) => (tagString += tag.desc));
+        tagList.map((tag) => (tagString += tag.desc + ','));
 
         const escapedJSONDescription = JSON.stringify(desc)
             .replace(/\\n/g, '\\n')
@@ -261,7 +261,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             description: escapedJSONDescription,
             image: '1111',
             activityLevel: activityLevel.toUpperCase(),
-            equipment: equipmentString,
+            equipmentList: equipmentString,
             tags: tagString,
             latitude: location.lat,
             longitude: location.lng,
@@ -308,7 +308,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             description: '',
             image: '',
             activityLevel: '',
-            equipment: '',
+            equipmentList: '',
             tags: '',
             latitude: 0,
             longitude: 0,

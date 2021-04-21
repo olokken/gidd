@@ -30,7 +30,7 @@ export interface Activity2 {
     description: string;
     image: string;
     activityLevel: string;
-    equipment: string;
+    equipmentList: string;
     tags: string;
     latitude: number;
     longitude: number;

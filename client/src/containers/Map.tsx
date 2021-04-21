@@ -4,12 +4,9 @@ import MapComponent from '../components/MapComponents/MapComponent';
 import MapMarker from '../components/MapComponents/MapMarker';
 import GeoSuggest from '../components/MapComponents/GeoSuggest';
 import DefaultCenter from '../interfaces/DefaultCenter';
-import TagTextField from '../components/ActivityComponents/TagTextField';
-import axios from 'axios';
-import { Button } from '@material-ui/core';
-import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
+import axios from '../Axios';
 import ActivityResponse from '../interfaces/ActivityResponse';
-import { act } from '@testing-library/react';
+import { Button } from '@material-ui/core';
 
 const Container = styled.div`
     justify-content: center;
@@ -18,6 +15,7 @@ const Container = styled.div`
 const Map = () => {
     const [activities, setActivities] = useState<ActivityResponse[]>([]);
     const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>();
+    const [markers, setMarkers] = useState<React.ReactNode>();
 
     const getCoordinates = () => {
         fetch(
@@ -38,24 +36,27 @@ const Map = () => {
 
     useEffect(() => {
         getCoordinates();
-
         axios
             .get('/activity')
             .then((response) => {
-                console.log(response.data['activity']);
-                setActivities(response.data['activity']);
+                console.log(response.data['activities']);
+                setActivities(response.data['activities']);
             })
+            .then(() => setMarkers(renderMarkers))
             .catch((error) => console.log(error));
-    }, []);
+    }, [markers]);
 
-    let markers;
-
-    useEffect(() => {
-        markers = activities.map((act: ActivityResponse, index: number) => {
-            //Test med backend, kanskje den her må inni en useEffect hvor den kjører hver gang activities endrer seg :-)
-            return <MapMarker key={index} activity={act}></MapMarker>;
+    const renderMarkers = (): React.ReactNode[] => {
+        return activities.map((act: ActivityResponse, index: number) => {
+            return (
+                <MapMarker
+                    key={index}
+                    activity={act}
+                    position={{ lat: act.latitude, lng: act.longitude }}
+                ></MapMarker>
+            );
         });
-    }, [activities]);
+    };
 
     return (
         <Container>

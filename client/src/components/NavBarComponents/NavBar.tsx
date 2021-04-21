@@ -130,6 +130,7 @@ const Navbar = () => {
     };
 
     const changeToLoginPage = () => {
+        localStorage.clear();
         history.push('/');
         handleCloseProfileMenu();
     };
@@ -221,7 +222,7 @@ const Navbar = () => {
         };
 
         const changeToCalenderDrawer = () => {
-            history.push('/Calender');
+            history.push('/Calendar');
             handleDrawerClose();
         };
 

@@ -53,9 +53,18 @@ const Login = () => {
                     password: password,
                 })
                 .then((response) => {
-                    console.log(JSON.stringify(response.data.id));
-                    setUser(response.data.id);
-                    history.push('/Activities');
+                    console.log(JSON.stringify(response.data));
+                    const id = response.data.id
+                    setUser(id);
+                    axios.get(`/security/generate/token?subject=${id}`).then(response => {
+                        const token = response.data.result;
+                        localStorage.setItem('token', token);
+                        localStorage.setItem('userID', id);
+                    }).then(() => {
+                        history.push('/Activities');
+                    }).catch(error => {
+                        console.log('Feil med token: ' + error.message)
+                    })
                 })
                 .catch((error) => {
                     console.log('error: ' + error.message);
