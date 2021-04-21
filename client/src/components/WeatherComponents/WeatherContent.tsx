@@ -9,7 +9,7 @@ interface Props{
 const CardExampleCard = ({weatherData}: Props) => (
   <Card>
     <CardContent>
-        <CardHeader className="header">{weatherData.name}</CardHeader>
+        <CardHeader className="header">{weatherData.cityName}</CardHeader>
     </CardContent>
   </Card>
 )

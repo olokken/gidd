@@ -282,8 +282,8 @@ const ActivityInformation = ({ activity }: Props) => {
                 </div>
                 <Grid item>
                     <WeatherComponent
-                        lat={lat} //lat og lon må korrespondere med informasjonen om lokasjonen til økta
-                        lon={lon}
+                        lat={activity.latitude} 
+                        lon={activity.longitude}
                         time={activity.time}
                     />
                 </Grid>
