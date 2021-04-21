@@ -1,5 +1,3 @@
-image: ubuntu:latest
-
 deploy:
   script:
     - apt-get update -y && apt-get install openssh-client -y
@@ -10,4 +8,4 @@ deploy:
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - ssh app@13.51.58.86 ./runjava.sh
   only:
-    - backend-dev
+    - CI

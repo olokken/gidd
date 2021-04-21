@@ -61,4 +61,9 @@ public class ActivityUser {
     public Timestamp getTimestamp(){
         return reserved;
     }
+
+    @Override
+    public String toString() {
+        return "{\"userId\": " + user.toJSON() + "}";
+    }
 }

@@ -23,7 +23,7 @@ public class ActivityService {
     public boolean addActivity(Activity activity) {
         Timestamp currentTime = new Timestamp(new Date().getTime());
         activity.setTimeCreated(currentTime);
-        log.info("adding new Activity: " + activity.toString());
+        log.info("adding new Activity: " + activity.getActivityId() + ":" + activity.getTitle());
         return repo.addActivity(activity);
     }
 
@@ -91,13 +91,27 @@ public class ActivityService {
         return repo.findActivitiesBasedOnTitle(title);
     }
 
+    public boolean deleteActivity(int id){
+        log.info("deleting activity with id: " + id);
+        return repo.deleteActivity(id);
+    }
+
     public List<Activity> filterByActivityLevel(int activityLevel){
-        log.info("Filtering activities wit activity level " + activityLevel);
+        log.info("Filtering activities with activity level " + activityLevel);
         return repo.findActivityByActivityLevel(activityLevel);
     }
 
-    public boolean addEquipmentToActivity(Activity activity, ActivityEquipment activityEquipment){
-        log.info("Adding equipment connection" + activityEquipment.toString() + " to activity" + activity.toString());
-        return repo.addEquipmentToActivity(activity, activityEquipment);
+    public List<Object> filterByTag(int tagId){
+        log.info("Filtering activities with tag " + tagId);
+        return repo.filterActivitiesByTag(tagId);
+    }
+
+    public boolean addEquipmentToActivity(Activity activity){
+        log.info("Adding equipment connection to activity" + activity.getActivityId());
+        return repo.addEquipmentToActivity(activity);
+    }
+
+    public boolean updateEquipment(ActivityEquipment activityEquipment, Activity activity){
+        return repo.updateActivity(activity) && repo.updateActivityEquipmentConnection(activityEquipment);
     }
 }

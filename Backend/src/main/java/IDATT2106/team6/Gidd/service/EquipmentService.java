@@ -27,4 +27,9 @@ public class EquipmentService {
         log.info("Adding activity connection " + activityEquipment + " to equipment " + equipment.toString());
         return this.repo.addActivityToEquipment(equipment, activityEquipment);
     }
+
+    public Equipment getEquipment(int equipmentId){
+        log.info("Finding equipment with id " + equipmentId);
+        return this.repo.findEquipment(equipmentId);
+    }
 }

@@ -12,7 +12,6 @@ import org.apache.commons.codec.binary.Hex;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.persistence.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -38,6 +37,8 @@ public class User {
     @OneToMany(mappedBy = "User", fetch = FetchType.EAGER)
     private List<ActivityUser> activities;
     private String salt;
+    @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
+    private List<User> friendList;
 
 
     //Konstrutøren må tilpasses
@@ -69,6 +70,8 @@ public class User {
         //convert byte to string
         this.salt = org.apache.commons.codec.binary.Base64.encodeBase64String(salt);
         this.password = hashedString;
+
+        this.friendList = new ArrayList<>();
     }
 
     private byte[] hashPassword(final char[] password, final byte[] salt) {
@@ -141,6 +144,14 @@ public class User {
         return activities;
     }
 
+    public String getSalt() {
+        return salt;
+    }
+
+    public List<User> getFriendList() {
+        return friendList;
+    }
+
     public void setId(int id) {
         this.userId = id;
     }
@@ -185,11 +196,39 @@ public class User {
         this.activities = activities;
     }
 
-    public String getSalt() {
-        return salt;
-    }
-
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public void setFriendList(List<User> friendList) {
+        this.friendList = friendList;
+    }
+
+    public void addFriend(User user){
+        this.friendList.add(user);
+    }
+
+    public String toJSON() {
+        return "\n  {" +
+            "\n     \"userId\":" + userId + "," +
+            "\n     \"email\":" + '\"' + email + '\"' +"," +
+            "\n     \"firstName\":" + '\"' + firstName + '\"' +"," +
+            "\n     \"surname\":" + '\"' + surname + '\"' +"," +
+            "\n     \"phoneNumber\":" + phoneNumber +"," +
+            "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
+            "\n     \"points\":" + points +
+            "\n }";
+    }
+
+    public String toString() {
+        return "\n  {" +
+                "\n     \"userId\":" + userId + "," +
+                "\n     \"email\":" + '\"' + email + '\"' +"," +
+                "\n     \"firstName\":" + '\"' + firstName + '\"' +"," +
+                "\n     \"surname\":" + '\"' + surname + '\"' +"," +
+                "\n     \"phoneNumber\":" + phoneNumber +"," +
+                "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
+                "\n     \"points\":" + points +
+                "\n }";
     }
 }

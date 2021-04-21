@@ -35,19 +35,29 @@ public class ActivityEquipment {
         return equipment;
     }
 
-    public int getBringerId() {
-        return bringerId;
+    public void setEquipment(Equipment equipment) {
+        this.equipment = equipment;
     }
 
     public void setActivity(Activity activity) {
         this.activity = activity;
     }
 
+    public int getBringerId() {
+        return bringerId;
+    }
+
     public void setBringerId(int bringerId) {
         this.bringerId = bringerId;
     }
 
-    public void setEquipment(Equipment equipment) {
-        this.equipment = equipment;
+
+    @Override
+    public String toString() {
+        return  "{" +
+            "\n   \"equipmentId\": " + equipment.getEquipmentId() +
+            ",\n   \"description\": \"" + equipment.getDescription().trim() + "\"" +
+            ",\n   \"bringerID\": " + this.getBringerId() +
+            "\n}";
     }
 }

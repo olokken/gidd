@@ -3,12 +3,9 @@ package IDATT2106.team6.Gidd.repo;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.ActivityEquipment;
@@ -41,7 +38,7 @@ public class ActivityRepo extends GiddRepo {
     }
 
     public boolean addActivity(Activity activity){
-        log.info("adding activity " + activity.toString());
+        log.info("adding activity " + activity.getActivityId() + ":" + activity.getTitle());
         EntityManager em = getEm();
 
         try {
@@ -89,7 +86,7 @@ public class ActivityRepo extends GiddRepo {
         }finally {
             em.close();
         }
-        log.info("activity found: " + String.valueOf(activity));
+        log.info("activity found successfully: " + String.valueOf(activity.getActivityId()));
         return activity;
     }
 
@@ -231,12 +228,11 @@ public class ActivityRepo extends GiddRepo {
         return new ArrayList<>(allActivities);
     }
 
-    public boolean addEquipmentToActivity(Activity activity, ActivityEquipment activityEquipment){
-        log.debug("Adding equipment connection " + activityEquipment.toString() + " to activity " + activity.toString());
+    public boolean addEquipmentToActivity(Activity activity){
+        log.debug("Adding equipment connection to activity " + activity.getActivityId());
         EntityManager em = getEm();
 
         try{
-            activity.addEquipment(activityEquipment);
             em.getTransaction().begin();
             em.merge(activity);
             em.getTransaction().commit();
@@ -244,6 +240,40 @@ public class ActivityRepo extends GiddRepo {
         }catch (Exception e){
             log.error("Adding equipment failed due " + e.getMessage());
             return false;
+        }finally {
+            em.close();
+        }
+    }
+
+    public boolean updateActivityEquipmentConnection(ActivityEquipment activityEquipment){
+        log.debug("Updating activity-equipment connection");
+        EntityManager em = getEm();
+
+        try{
+            em.getTransaction().begin();
+            em.merge(activityEquipment);
+            em.getTransaction().commit();
+            return true;
+        }catch (Exception e){
+            log.error("Updating the activity-equipment connection failed due " + e.getMessage());
+            return false;
+        }finally {
+            em.close();
+        }
+    }
+
+    public List<Object> filterActivitiesByTag(int tagId){
+        log.debug("Filtering activities by tag");
+        EntityManager em = getEm();
+
+        try{
+            Query q = em.createNativeQuery("SELECT Activity_activity_id FROM ACTIVITY_TAG WHERE tags_tag_id = ?1")
+                    .setParameter(1, tagId);
+            log.debug("Returning results");
+            return q.getResultList();
+        }catch (Exception e){
+            log.error("An error has occurred: " + e.getMessage());
+            return null;
         }finally {
             em.close();
         }

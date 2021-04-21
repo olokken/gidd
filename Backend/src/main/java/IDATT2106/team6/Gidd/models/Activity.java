@@ -1,12 +1,22 @@
 package IDATT2106.team6.Gidd.models;
 
-import java.util.Arrays;
-import org.eclipse.persistence.annotations.CascadeOnDelete;
-
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 @Entity
 public class Activity {
@@ -14,6 +24,7 @@ public class Activity {
     @Column(name = "activity_id")
     private int activityId;
     private String title;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "E, dd MMM yyyy HH:mm:ss z", timezone = "GMT+2")
     private Timestamp time;
     @Column(name = "days_to_repeat")
     private int daysToRepeat;
@@ -30,15 +41,15 @@ public class Activity {
     @Column(name = "activity_level")
     private ActivityLevel activityLevel;
     @CascadeOnDelete
-    @ManyToMany(targetEntity = Tag.class)
+    @ManyToMany(targetEntity = Tag.class, fetch = FetchType.EAGER)
     private List<Tag> tags;
     @CascadeOnDelete
-    @OneToMany(mappedBy = "Activity")
+    @OneToMany(mappedBy = "Activity", fetch = FetchType.EAGER)
     private List<ActivityEquipment> equipments;
     private double latitude;
     private double longitude;
     @CascadeOnDelete
-    @OneToMany(mappedBy = "Activity")
+    @OneToMany(mappedBy = "Activity", fetch = FetchType.EAGER)
     private List<ActivityUser> registeredParticipants;
     @Column(name = "time_created")
     private Timestamp timeCreated;
@@ -205,23 +216,35 @@ public class Activity {
 
     @Override
     public String toString() {
-        return "Activity{" +
-            "activityId=" + activityId +
-            ", title='" + title + '\'' +
-            ", time=" + time +
-            ", daysToRepeat=" + daysToRepeat +
-            ", user=" + user +
-            ", capacity=" + capacity +
-            ", groupId=" + groupId +
-            ", description='" + description + '\'' +
-            ", image=" + Arrays.toString(image) +
-            ", activityLevel=" + activityLevel +
-            ", tags=" + tags +
-            ", equipments=" + equipments +
-            ", latitude=" + latitude +
-            ", longitude=" + longitude +
-            ", registeredParticipants=" + registeredParticipants +
-            ", timeCreated=" + timeCreated +
-            '}';
+        return "{" +
+            "\n\"activityId\": " + activityId +
+            ", \n\"title\": " + "\"" + title.trim() + "\"" +
+            ", \n\"time\":" + time.getTime() +
+            ", \n\"daysToRepeat\":" + daysToRepeat +
+            ", \n\"user\":" + user.toJSON() +
+            ", \n\"capacity\":" + capacity +
+            ", \n\"groupId\":" + groupId +
+            ", \n\"description\":" + "\"" + description.substring(1, description.length()-1) + "\"" +
+            ", \n\"image\":" + "\"" +Arrays.toString(image) +"\"" +
+            ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
+            ", \n\"tags\":" + tags.toString() +
+            ", \n\"equipments\":" + equipments.toString() +
+            ", \n\"latitude\":" + latitude +
+            ", \n\"longitude\":" + longitude +
+            ", \n\"registeredParticipants\": " + registeredParticipants.toString() +
+            ", \n\"timeCreated\":" + (timeCreated == null ? "null" : timeCreated.getTime()) +
+                "}";
     }
+
+    private String getDate(long timeStamp){
+        try{
+            DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+            Date netDate = (new Date(timeStamp));
+            return sdf.format(netDate);
+        }
+        catch(Exception ex){
+            return "xx";
+        }
+    }
+
 }
