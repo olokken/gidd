@@ -1,6 +1,6 @@
 package IDATT2106.team6.Gidd.util;
 
-/*import IDATT2106.team6.Gidd.service.SecurityService;
+import IDATT2106.team6.Gidd.service.SecurityService;
 import IDATT2106.team6.Gidd.service.SecurityServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,17 +16,17 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Aspect
-@Component*/
+@Component
 public class TokenRequiredAspect {
 
-    /*private Logger log = new Logger(TokenRequiredAspect.class.toString());
+    private Logger log = new Logger(TokenRequiredAspect.class.toString());
 
     private final SecurityServiceImpl securityService = new SecurityServiceImpl();
 
     /*@Before("execution (* IDATT2106.team6.Gidd.controller.GiddController.home() ) ")
     public void tokenRequiredWithoutAnnotation() throws Throwable {
         log.info("Before tokenRequiredWithExecution");
-    }
+    }*/
 
     @Before("@annotation(tokenRequired)")
     public void tokenRequiredWithAnnotation(JoinPoint joinPoint, TokenRequired tokenRequired) throws Throwable {
@@ -51,5 +51,5 @@ public class TokenRequiredAspect {
             log.error("Subject does not match token");
             throw new IllegalArgumentException("Subject doesn't match in the token");
         }
-    }*/
+    }
 }

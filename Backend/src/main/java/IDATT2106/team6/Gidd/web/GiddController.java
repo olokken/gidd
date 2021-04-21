@@ -31,6 +31,7 @@ import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.persistence.exceptions.JSONException;
 //import org.json.JSONException;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -58,8 +59,8 @@ public class GiddController {
     private UserService userService;
     @Autowired
     private TagService tagService;
-  //  @Autowired
-    //private SecurityService securityService;
+    @Autowired
+    private SecurityService securityService;
 
     @GetMapping("/aop/test")
     @TokenRequired
@@ -78,7 +79,7 @@ public class GiddController {
         map.put("result", "worked?!");
         return map;
     }
-/*
+
     @ResponseBody
     @RequestMapping("/security/generate/token")
     public Map<String,Object> generateToken(@RequestParam(value="subject") String subject) {
@@ -89,8 +90,6 @@ public class GiddController {
         return map;
     }
 
- */
-/*
     @ResponseBody
     @RequestMapping("/security/get/subject")
     public Map<String, Object> getSubject(@RequestParam(value="token") String token) {
@@ -99,8 +98,6 @@ public class GiddController {
         map.put("result", subject);
         return map;
     }
-
- */
 
     @ResponseBody
     @GetMapping("/hello2")
@@ -645,12 +642,46 @@ public class GiddController {
                 .headers(headers).body(formatJson(body));
     }
 
+    @GetMapping(value = "/user", produces = "application/json")
+    public ResponseEntity getAllUsers() {
+        log.debug("Received GetMapping at '/user'");
+        try{
+            List<User> users = userService.getUsers();
+            return ResponseEntity
+                .ok()
+                .body(users.toString());
+        } catch (Exception e) {
+            log.error("An unexpected error was caught while getting all tags: " +
+                e.getCause() + " with message" + e.getCause().getMessage());
+            HashMap<String, String> body = new HashMap<>();
+            body.put("error", "something went wrong");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
+
+    }
+
     @GetMapping(value = "/tag", produces = "application/json")
     public ResponseEntity getAllTags() {
-        List<Tag> tags = tagService.getAllTags();
-        return ResponseEntity
-            .ok()
-            .body(tags);
+        log.debug("Received GetMapping at '/tag'");
+        try {
+            List<Tag> tags = tagService.getAllTags();
+
+            return ResponseEntity
+                .ok()
+                .body(tags);
+        } catch(Exception e) {
+            log.error("An unexpected error was caught while getting all tags: " +
+                e.getCause() + " with message" + e.getCause().getMessage());
+            HashMap<String, String> body = new HashMap<>();
+            body.put("error", "something went wrong");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
     }
 
     @GetMapping(value = "/activity/{activityId}", produces = "application/json")
