@@ -151,7 +151,7 @@ public class GiddController {
             .headers(header).body(formatJson(body));
     }
 
-    @PostMapping("/login/test")
+    @PostMapping("/login")
     public ResponseEntity loginSome(@RequestBody Map<String, Object> map) throws IOException {
         Map<String, String> body = new HashMap<>();
         HttpHeaders headers = new HttpHeaders();
@@ -245,23 +245,30 @@ public class GiddController {
                 }
                 try {
                     log.info("email doesn't exist in database, attempting to create user");
-                    userService.registerUser(
+                    User newUser = userService.registerUser(
                         getRandomID(),
                         map.get("email").toString(),
                         "9djw#ekc<_>a8ZS" + getRandomID(),
                         map.get("firstName").toString(),
                         map.get("surname").toString(),
                         -1,
-                        null, Provider.FACEBOOK);
+                        null,
+                        Provider.FACEBOOK);
+
+                    if(newUser == null) {
+                        throw new NullPointerException();
+                    }
 
                     body.put("token", securityService
-                        .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
-                    body.put("userId", String.valueOf(user.getUserId()));
+                        .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 5)));
+                    body.put("userId", String.valueOf(newUser.getUserId()));
 
                     return ResponseEntity
-                        .created((new URI("/user/"+user.getUserId())))
-                        .body(body);
+                        .created((new URI("/user/"+newUser.getUserId())))
+                        .body(formatJson(body));
+
                 } catch (Exception e) {
+                    log.error("An error was caught while attempting to register FACEBOOK user");
                     e.printStackTrace();
                     body.put("error", "error could not be created");
                     return ResponseEntity
@@ -289,7 +296,7 @@ public class GiddController {
             .body(formatJson(body));
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login/old")
     public ResponseEntity loginUser(@RequestBody Map<String, Object> map) {
         log.info("recieved postmapping to /login " + map.toString());
         HttpHeaders header = new HttpHeaders();
