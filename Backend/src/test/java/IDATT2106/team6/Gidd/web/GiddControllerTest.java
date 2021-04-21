@@ -159,7 +159,9 @@ public class GiddControllerTest {
         mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON)
         .content("{" +
                 "\"email\":\"" + user1.getEmail() + "\"," +
-                "\"password\":\"" + 123 + "\"}"))
+                "\"password\":\"" + 123 + "\"," +
+                "\"provider\": \"" + "LOCAL\"" +
+                "}"))
                 .andExpect(status().isOk()).andExpect((MockMvcResultMatchers.jsonPath("$.id").exists()));
     }
 
@@ -353,12 +355,12 @@ public class GiddControllerTest {
 
         String id = mockMvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-            "\"email\":\"" + user2.getEmail() + "\"," +
+            "\"email\":\"" + user3.getEmail() + "\"," +
             "\"password\":\"" + 123 + "\"," +
-            "\"firstName\":\"" + user2.getFirstName() + "\"," +
-            "\"surname\":\"" + user2.getSurname() + "\"," +
-            "\"phoneNumber\":\"" + user2.getPhoneNumber() + "\"," +
-            "\"activityLevel\":\"" + user2.getActivityLevel() + "\"" +
+            "\"firstName\":\"" + user3.getFirstName() + "\"," +
+            "\"surname\":\"" + user3.getSurname() + "\"," +
+            "\"phoneNumber\":\"" + user3.getPhoneNumber() + "\"," +
+            "\"activityLevel\":\"" + user3.getActivityLevel() + "\"" +
         "}")).andReturn().getResponse().getContentAsString();
 
         JSONParser parser = new JSONParser();
@@ -515,8 +517,10 @@ public class GiddControllerTest {
         //edit user2
         System.out.println("test 12");
         HashMap<String, Object> newValues = new HashMap<String, Object>();
-        newValues.put("email", "ikhovidn@email.com");
-        newValues.put("surname", "sungsletta");
+        newValues.put("email", user2.getEmail());
+        newValues.put("newEmail", "ikhovind@mail.com");
+        newValues.put("surname", "Sungsletta");
+        newValues.put("firstName", "Erling");
         newValues.put("phoneNumber", 8);
         newValues.put("points", 15);
         newValues.put("password", "123");
@@ -528,11 +532,13 @@ public class GiddControllerTest {
                 .content("{\n" +
                         "    \"email\" : \"" + newValues.get("email") + "\",\n" +
                         "    \"surname\" : \"" + newValues.get("surname") + "\",\n" +
+                        "    \"firstName\" : \"" + newValues.get("firstName") + "\",\n" +
+                        "    \"newEmail\" : \"" + newValues.get("newEmail") + "\",\n" +
                         "    \"phoneNumber\" : " + newValues.get("phoneNumber") + ",\n" +
                         "    \"points\" : " +  newValues.get("points") + ",\n" +
-                        "    \"password\" : " + newValues.get("password") + ",\n" +
-                        "    \"activityLevel\" : " + newValues.get("activityLevel") + ",\n" +
-                        "    \"newPassword\" : \"" + newValues.get("newPassword") + "\",\n" +
+                        "    \"password\" : \"" + newValues.get("password") + "\",\n" +
+                        "    \"activityLevel\" : \"" + newValues.get("activityLevel") + "\",\n" +
+                        "    \"newPassword\" : \"" + newValues.get("newPassword") + "\"\n" +
                         "}")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         
          String userString = mockMvc.perform(get("/user/" + user2.getUserId())
@@ -546,7 +552,15 @@ public class GiddControllerTest {
         Iterator it = newValues.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            assertEquals(pair.getValue(), userJson.get(pair.getKey()));
+            if(pair.getKey().equals("newEmail")){
+                assertEquals(pair.getValue(), userJson.get("email"));
+            }
+            else if(!(pair.getKey().equals("email") ||
+                    pair.getKey().equals("password") ||
+                    pair.getKey().equals("newPassword") ||
+                    pair.getKey().equals("points"))) {
+                assertEquals(pair.getValue(), userJson.get(pair.getKey()));
+            }
         }
     }
 
