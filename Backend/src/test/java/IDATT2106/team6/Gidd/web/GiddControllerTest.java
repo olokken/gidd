@@ -197,8 +197,6 @@ public class GiddControllerTest {
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(id);
 
-        System.out.println(json);
-
         String activity2String = mockMvc.perform(get("/activity/" + json.getAsNumber("id"))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -319,13 +317,41 @@ public class GiddControllerTest {
     public void deleteUserTest() throws Exception{
         System.out.println("test 10");
 
+        String id = mockMvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\"email\":\"" + user4.getEmail() + "\"," +
+                        "\"password\":\"" + "pass4" + "\"," +
+                        "\"firstName\":\"" + user4.getFirstName() + "\"," +
+                        "\"surname\":\"" + user4.getSurname() + "\"," +
+                        "\"phoneNumber\":\"" + user4.getPhoneNumber() + "\"," +
+                        "\"activityLevel\":\"" + user4.getActivityLevel() + "\"" +
+                        "}"))
+                .andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty())
+                .andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject idJson = (JSONObject) parser.parse(id);
+        user4.setId(idJson.getAsNumber("id").intValue());
+
+        mockMvc.perform(get("/user/" + user4.getUserId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").isNotEmpty());
+
+
         String response = mockMvc.perform(MockMvcRequestBuilders
-        .delete("/user/" + user1.getUserId() + "/activity/" + activity1.getActivityId()))
+        .delete("/user/" + user4.getUserId()))
         .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-        JSONObject jsonOrder  = (JSONObject) org.skyscreamer.jsonassert.JSONParser.parseJSON(response);
+        assert(response.equals("{}"));
 
-        String csv = (String) jsonOrder.get("user");
+        mockMvc.perform(get("/user/" + user4.getUserId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").doesNotExist());
+
         //todo fill out after the todo in the delete mapping is complete
         // create one user
         // create new activity with owner the user from order 8
@@ -333,11 +359,52 @@ public class GiddControllerTest {
         // delete user from order 8
         // check that user is deleted and that the new user is returned
     }
+
     @Order(11)
     @Test
-    public void deleteActivityTest(){
+    public void deleteActivityTest() throws Exception {
         System.out.println("test 11");
         //delete activity and check that users are returned
+
+        String id = mockMvc.perform(MockMvcRequestBuilders
+                .post("/activity").contentType(MediaType.APPLICATION_JSON)
+                .content("{\n" +
+                        "    \"title\" : \"" + activity1.getTitle() + "\",\n" +
+                        "    \"time\" : \"" + activity1.getTime() + "\",\n" +
+                        "    \"repeat\" : " + activity1.getDaysToRepeat() + ",\n" +
+                        "    \"userId\" : " + user1.getUserId() + ",\n" +
+                        "    \"capacity\" : " + activity1.getCapacity() + ",\n" +
+                        "    \"groupId\" : " + activity1.getGroupId() + ",\n" +
+                        "    \"description\" : \"" + activity1.getDescription() + "\",\n" +
+                        "    \"image\" : \"" + 1101 + "\",\n" +
+                        "    \"activityLevel\" : \"" + activity1.getActivityLevel() + "\",\n" +
+                        "    \"tags\" : " + "\"Fisk\"" + ",\n" +
+                        "    \"latitude\" : " + activity1.getLatitude() + ",\n" +
+                        "    \"longitude\": " + activity1.getLongitude() + ",\n" +
+                        "    \"equipmentList\": \"Fish\" ,\n" +
+                        "    \"equipment\": \"Fish\" \n" +
+                        "}")).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(id);
+
+        String activity2String = mockMvc.perform(get("/activity/" + json.getAsNumber("id"))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONObject json2 = (JSONObject) parser.parse(activity2String);
+        assertEquals(json.getAsNumber("id"), json2.getAsNumber("activityId"));
+
+        String response = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/activity/" + json.getAsNumber("id")))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        mockMvc.perform(get("/activity/" + json.getAsNumber("id"))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.activityId").doesNotExist());
     }
 
     @Order(12)
