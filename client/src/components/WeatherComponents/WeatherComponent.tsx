@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Weather from '../../interfaces/Weather';
 import WeatherContent from './WeatherContent';
 /* Her hentast værmeldinga frå openweathermap og den rette værmeldinga vert sendt til
@@ -54,9 +54,8 @@ const WeatherComponent = ({ lat, lon, time }: Props) =>{
   }
 
 /* Hentar værmeldinger og finn den som stemmer for tidspunktet til økta */
-const getWeather = () => {
-
-  Promise.all([fetch(openWeatherURL+lat_long+join_key+units)])
+  useEffect(() => {
+    Promise.all([fetch(openWeatherURL+lat_long+join_key+units)])
     .then(([response]) => {
       if(response.ok){
       return Promise.all([response.json()]);
@@ -81,12 +80,12 @@ const getWeather = () => {
           })
         }
       }
-      
     })
     .catch(error => {
       console.log(error);
     });
-  }
+  }, []); 
+
   return(
     <WeatherContent
       weatherData={weather}

@@ -46,7 +46,7 @@ const SmallItem = styled.div`
 
 const CardExampleCard = ({weatherData}: Props) => {
   const weatherForecast = 
-      weatherData.cityName === '' ? (
+      weatherData.cityName !== '' ? (
         <Main>
           <Grid container wrap="nowrap" spacing={2}>
                     <Grid item xs={4} style={{padding: '15px'}}>
