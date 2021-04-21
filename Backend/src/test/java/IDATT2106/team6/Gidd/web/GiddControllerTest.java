@@ -485,10 +485,43 @@ public class GiddControllerTest {
 
     @Order(12)
     @Test
-    public void editUserTest(){
+    public void editUserTest() throws Exception {
         //edit user2
         System.out.println("test 12");
         HashMap<String, Object> newValues = new HashMap<String, Object>();
+        newValues.put("email", "ikhovidn@email.com");
+        newValues.put("surname", "sungsletta");
+        newValues.put("phoneNumber", 8);
+        newValues.put("points", 15);
+        newValues.put("password", "123");
+        newValues.put("activityLevel", "MEDIUM");
+        newValues.put("newPassword", "321");
+
+        String id = mockMvc.perform(MockMvcRequestBuilders
+                .put("/user/" + user2.getUserId()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\n" +
+                        "    \"email\" : \"" + newValues.get("email") + "\",\n" +
+                        "    \"surname\" : \"" + newValues.get("surname") + "\",\n" +
+                        "    \"phoneNumber\" : " + newValues.get("phoneNumber") + ",\n" +
+                        "    \"points\" : " +  newValues.get("points") + ",\n" +
+                        "    \"password\" : " + newValues.get("password") + ",\n" +
+                        "    \"activityLevel\" : " + newValues.get("activityLevel") + ",\n" +
+                        "    \"newPassword\" : \"" + newValues.get("newPassword") + "\",\n" +
+                        "}")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        
+         String userString = mockMvc.perform(get("/user/" + user2.getUserId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject userJson = (JSONObject) parser.parse(userString);
+
+        Iterator it = newValues.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            assertEquals(pair.getValue(), userJson.get(pair.getKey()));
+        }
     }
 
     @AfterAll
