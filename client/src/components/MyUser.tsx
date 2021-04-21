@@ -6,6 +6,11 @@ import {
     Table,
     TableCell,
     TableRow,
+    FormControl,
+    FormLabel,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
 } from '@material-ui/core';
 import './MyUser.css';
 import VisibilityIcon from '@material-ui/icons/Visibility';
@@ -236,8 +241,7 @@ const MyUser: React.FC = () => {
             sendUser.password = oldPassword;
         }
         if (
-            (checkInput(activityLevel) &&
-                activityLevel.toUpperCase() === 'LOW') ||
+            activityLevel.toUpperCase() === 'LOW' ||
             activityLevel.toUpperCase() === 'MEDIUM' ||
             activityLevel.toUpperCase() === 'HIGH'
         ) {
@@ -320,7 +324,7 @@ const MyUser: React.FC = () => {
             <div>
                 <Table>
                     <TableRow>
-                        <TableCell>Navn</TableCell>
+                        <TableCell align="left">Navn</TableCell>
                         <TableCell align="center">
                             {currentUser.firstName} {currentUser.surname}
                         </TableCell>
@@ -366,10 +370,7 @@ const MyUser: React.FC = () => {
                                 <div className="myuser__buttons">
                                     <StyledButton
                                         className="myuser__button"
-                                        onClick={
-                                            onClickChangeName
-                                            //setShowChangeName(!showChangeName);
-                                        }
+                                        onClick={onClickChangeName}
                                     >
                                         Bekreft
                                     </StyledButton>
@@ -386,7 +387,7 @@ const MyUser: React.FC = () => {
                         </TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell>Email</TableCell>
+                        <TableCell align="left">Email</TableCell>
                         <TableCell align="center">
                             {currentUser.email}
                         </TableCell>
@@ -447,7 +448,7 @@ const MyUser: React.FC = () => {
                         </TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell>Telefon</TableCell>
+                        <TableCell align="left">Telefon</TableCell>
                         <TableCell align="center">
                             {currentUser.phoneNumber}
                         </TableCell>
@@ -501,7 +502,7 @@ const MyUser: React.FC = () => {
                         </TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell>Aktivitetsnivå</TableCell>
+                        <TableCell align="left">Aktivitetsnivå</TableCell>
                         <TableCell align="center">
                             {currentUser.activityLevel}
                         </TableCell>
@@ -519,13 +520,32 @@ const MyUser: React.FC = () => {
                                 openPopup={showChangeActLvl}
                                 setOpenPopup={setShowChangeActLvl}
                             >
-                                <TextField
-                                    className="myuser__textfield"
-                                    label="Endre aktivitetsnivå"
-                                    variant="outlined"
-                                    onChange={onChangeAcitivityLevel}
-                                    value={activityLevel}
-                                />
+                                <FormLabel component="label">
+                                    Aktivitetsnivå
+                                </FormLabel>
+                                <RadioGroup>
+                                    <FormControlLabel
+                                        control={<Radio />}
+                                        label="Low"
+                                        onClick={() => setActivityLevel('LOW')}
+                                        value="low"
+                                    />
+                                    <FormControlLabel
+                                        control={<Radio />}
+                                        label="Medium"
+                                        onClick={() =>
+                                            setActivityLevel('MEDIUM')
+                                        }
+                                        value="medium"
+                                    />
+                                    <FormControlLabel
+                                        control={<Radio />}
+                                        label="High"
+                                        onClick={() => setActivityLevel('HIGH')}
+                                        value="high"
+                                    />
+                                </RadioGroup>
+
                                 <TextField
                                     className="myuser__textfield"
                                     type={showPassword ? 'text' : 'password'}
@@ -555,7 +575,7 @@ const MyUser: React.FC = () => {
                         </TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell>Passord</TableCell>
+                        <TableCell align="left">Passord</TableCell>
                         <TableCell></TableCell>
                         <TableCell align="right">
                             <Button
@@ -686,7 +706,7 @@ const MyUser: React.FC = () => {
             <div className="myuser__textfields"></div>
             <div className="myuser__buttons">
                 <StyledButton
-                    className="myuser__button"
+                    className="myuser__deleteButton"
                     onClick={() => setShowConfirmDelete(!showConfirmDelete)}
                 >
                     Slett bruker
