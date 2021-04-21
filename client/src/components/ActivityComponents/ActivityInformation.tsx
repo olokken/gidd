@@ -13,6 +13,7 @@ import {
     CardMedia,
     Button,
 } from '@material-ui/core';
+import { Edit, Delete } from '@material-ui/icons';
 import React, { useContext, useEffect, useState } from 'react';
 import { Marker } from 'react-google-maps';
 import hiking from '../../assets/hiking.jpg';
@@ -49,6 +50,14 @@ const useStyles = makeStyles(() =>
                 background: '#ffa6a0',
             },
         },
+        otherButton: {
+            float: 'right',
+            margin: '15px',
+            backgroundColor: 'white',
+            '&:hover': {
+                background: '#ffa6a0',
+            },
+        },
         supplyList: {
             backgroundColor: 'white',
             marginRight: '10px',
@@ -58,8 +67,6 @@ const useStyles = makeStyles(() =>
 );
 
 const ActivityInformation = ({ activity }: Props) => {
-    const lat = 63.430515;
-    const lon = 10.395053;
     const classes = useStyles();
     const date = new Date(activity.time);
     const eventTime = new String(date);
@@ -176,12 +183,26 @@ const ActivityInformation = ({ activity }: Props) => {
             </Grid>
             <div className={classes.titlearea}>
                 <Grid container wrap="nowrap" spacing={2}>
-                    <Grid item xs={8} style={{ padding: '15px' }}>
+                    <Grid item xs={7} style={{ padding: '15px' }}>
                         <Typography gutterBottom variant="h5" component="h3">
                             {activity.title}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={1}>
+                        <Tooltip title='Rediger denne aktiviteten'>
+                            <Button className={classes.otherButton}>
+                                <Edit></Edit>
+                            </Button>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs={1}>
+                        <Tooltip title='Slett denne aktiviteten'>
+                            <Button className={classes.otherButton}>
+                                <Delete></Delete>
+                            </Button>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs={3}>
                         {registerBtn}
                     </Grid>
                 </Grid>
