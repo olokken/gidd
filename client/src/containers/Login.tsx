@@ -7,7 +7,6 @@ import { UserContext } from '../UserContext';
 import { useContext } from 'react';
 import User from '../interfaces/User';
 import axios from '../Axios';
-import testAxios from 'axios'
 
 const LoginContainer = styled.div`
     width: 100%;
@@ -50,6 +49,7 @@ const Login = () => {
             const user = await login();
             axios
                 .post('/login', {
+                    provider: 'LOCAL',
                     email: email,
                     password: password,
                 })
@@ -154,21 +154,18 @@ const Login = () => {
         console.log(answer);
         const accessToken = response.tokenId;
         console.log('fått svar');
-        /*axios.post('/login/google', {
-            accessToken : accessToken
+        axios.post('/login', {
+            provider: 'GOOGLE',
+            accessToken: accessToken,
+            email: response.profileObj.email,
+            firstName: response.profileObj.givenName,
+            surname: response.profileObj.familyName,
+            id: response.profileObj.googleID
         }).then(response => {
             console.log(response);
-            //TODO if true === true -> godkjent
         }).catch(error => {
-            console.log('Fikk ikke sendt token' + error.messge )
-        })*/
-        //setUser(newUser.userID);
-        testAxios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${accessToken}`).then(response => {
-            console.log(response);
-        }).catch(error => {
-            console.log(error)
+            console.log(error);
         })
-        //onLoginSoMe();
     };
 
     const failureGoogle = (response: any) => {
@@ -179,26 +176,18 @@ const Login = () => {
         console.log(response);
         const name: string[] = response.name.split(' ');
         const accessToken = response.accessToken;
-        console.log(accessToken);
-        const appToken = '124734739639594|mI_etwHdsRvB6s3fVf62yZQldYQ'
-        /*axios.post('/login/facebook', {
+        axios.post('/login', {
+            provider: 'FACEBOOK',
             accessToken: accessToken,
             email: response.email,
             firstName: name[0],
             surname: name[1],
+            id: response.userID
         }).then(response => {
-            console.log(response);
-            //TODO hvis response === true
-        }).catch(error => {
-            console.log(error);
-        })*/
-        testAxios.get(`https://graph.facebook.com/debug_token?input_token=${accessToken}&access_token=${appToken}`).then(response => {
             console.log(response);
         }).catch(error => {
             console.log(error);
         })
-
-        //onLoginSoMe();
     };
 
     const componentClicked = async () => {
