@@ -157,6 +157,7 @@ public class GiddController {
         HttpHeaders headers = new HttpHeaders();
 
         log.info("received postmapping to /login/some " + map.toString());
+        log.error("provider recieved: " + map.get("provider").toString());
         Provider provider = Provider.valueOf(map.get("provider").toString());
         if (provider == Provider.LOCAL) {
             log.info("logging in with LOCAL");
@@ -227,13 +228,15 @@ public class GiddController {
         Map<String, Object> resMap;
         boolean validity = false;
         if (provider == Provider.FACEBOOK) {
-            resMap = new ObjectMapper().readValue(content.substring(8, content.length() - 1), Map.class);
-            if(Boolean.parseBoolean(resMap.get("is_valid").toString())){
+            resMap =
+                new ObjectMapper().readValue(content.substring(8, content.length() - 1), Map.class);
+            if (Boolean.parseBoolean(resMap.get("is_valid").toString())) {
                 log.info("access token valid");
                 User user = userService.getUser(map.get("email").toString());
-                if(user != null){
+                if (user != null) {
                     log.info("email already found in database, generating JWT");
-                    body.put("token", securityService.createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
+                    body.put("token", securityService
+                        .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
                     body.put("userId", String.valueOf(user.getUserId()));
 
                     return ResponseEntity
@@ -250,6 +253,14 @@ public class GiddController {
                         map.get("surname").toString(),
                         -1,
                         null, Provider.FACEBOOK);
+
+                    body.put("token", securityService
+                        .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
+                    body.put("userId", String.valueOf(user.getUserId()));
+
+                    return ResponseEntity
+                        .created((new URI("/user/"+user.getUserId())))
+                        .body(body);
                 } catch (Exception e) {
                     e.printStackTrace();
                     body.put("error", "error could not be created");
@@ -260,7 +271,7 @@ public class GiddController {
             }
         } else if (provider == Provider.GOOGLE) {
             resMap = new ObjectMapper().readValue(content.toString(), Map.class);
-            if (!resMap.containsKey("error")){
+            if (!resMap.containsKey("error")) {
 
             }
         }
@@ -788,7 +799,7 @@ public class GiddController {
     @GetMapping(value = "/user", produces = "application/json")
     public ResponseEntity getAllUsers() {
         log.debug("Received GetMapping at '/user'");
-        try{
+        try {
             List<User> users = userService.getUsers();
             return ResponseEntity
                 .ok()
@@ -815,7 +826,7 @@ public class GiddController {
             return ResponseEntity
                 .ok()
                 .body(tags);
-        } catch(Exception e) {
+        } catch (Exception e) {
             log.error("An unexpected error was caught while getting all tags: " +
                 e.getCause() + " with message" + e.getCause().getMessage());
             HashMap<String, String> body = new HashMap<>();
