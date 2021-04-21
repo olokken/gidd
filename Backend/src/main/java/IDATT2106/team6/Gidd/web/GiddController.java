@@ -29,6 +29,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.coyote.Response;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -640,12 +641,46 @@ public class GiddController {
                 .headers(headers).body(formatJson(body));
     }
 
+    @GetMapping(value = "/user", produces = "application/json")
+    public ResponseEntity getAllUsers() {
+        log.debug("Received GetMapping at '/user'");
+        try{
+            List<User> users = userService.getUsers();
+            return ResponseEntity
+                .ok()
+                .body(users.toString());
+        } catch (Exception e) {
+            log.error("An unexpected error was caught while getting all tags: " +
+                e.getCause() + " with message" + e.getCause().getMessage());
+            HashMap<String, String> body = new HashMap<>();
+            body.put("error", "something went wrong");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
+
+    }
+
     @GetMapping(value = "/tag", produces = "application/json")
     public ResponseEntity getAllTags() {
-        List<Tag> tags = tagService.getAllTags();
-        return ResponseEntity
-            .ok()
-            .body(tags);
+        log.debug("Received GetMapping at '/tag'");
+        try {
+            List<Tag> tags = tagService.getAllTags();
+
+            return ResponseEntity
+                .ok()
+                .body(tags);
+        } catch(Exception e) {
+            log.error("An unexpected error was caught while getting all tags: " +
+                e.getCause() + " with message" + e.getCause().getMessage());
+            HashMap<String, String> body = new HashMap<>();
+            body.put("error", "something went wrong");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
     }
 
     @GetMapping(value = "/activity/{activityId}", produces = "application/json")
