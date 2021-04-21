@@ -1,8 +1,12 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { TextField, Button } from '@material-ui/core';
 import Select from 'react-select';
 import FriendCard from './FriendCard';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import AddBox from '@material-ui/icons/AddBox';
+import User from '../../interfaces/User';
+import axios from 'axios';
 
 const StyledContainer = styled.div`
     margin-left: 1rem;
@@ -17,44 +21,78 @@ const StyledUl = styled.ul`
 `;
 
 const friends = [
-    {name: 'Mathias',value: '1',label:'Mathias'},
-    {name: 'bob1',value: '2',label:'bob1'},
-    {name: 'bob2',value: '3',label:'bob2'},
-    {name: 'bob3',value: '4',label:'bob3'},
-    {name: 'bob4',value: '5',label:'bob4'},
-    {name: 'bob5',value: '6',label:'bob5'},
-    {name: 'bob6',value: '7',label:'bob6'},
-    {name: 'bob7',value: '8',label:'bob7'},
+    {name: 'Mathias'},
+    {name: 'bob1'},
+    {name: 'bob2'},
+    {name: 'bob3'},
+    {name: 'bob4'},
+    {name: 'bob5'},
+    {name: 'bob6'},
+    {name: 'bob7'},
+    {name: 'mattimy99@gmail.com'},
 ]
 
 
 const FriendList = () => {
     const [searchInput, setSearchInput] = useState<string>('');
-    const [addFriendInput, setAddFriendInput] = useState<any>({});
+    const [firends, setFriends] = useState<User[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
+
+    const [selectInput, setSelectInput] = useState<string | null>(null);
+    const [searchValue, setSearchValue] = React.useState('');
 
      const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput((event.target as HTMLInputElement).value);
     };
     const onAddFriendClick = () => {
-        console.log(addFriendInput);
-        setAddFriendInput(null);
+        console.log("selectInput" + selectInput);
+        console.log("searchInput" + searchValue);
+        setSelectInput(null);
+        setSearchValue('');
     }
+
+    useEffect(() => {
+        axios
+            .get('/user')
+            .then((response) => {
+                console.log(response.data);
+                setUsers(response.data['users']);
+            })
+            .catch((error) => console.log(error));
+    }, []);
     
     return (
         <StyledContainer>
-            <Select
-                defaultValue={null}
-                name="colors"
-                options={friends}
-                placeholder="Legg til venn"
-                noOptionsMessage={() => 'Ingen brukere med dette navnet'}
-                className="basic-single"
-                classNamePrefix="select"
-                onChange={setAddFriendInput}
-                isSearchable
-                isClearable
+            <Autocomplete
+                id="free-solo-demo"
+                value={selectInput}
+                noOptionsText="ingen valg"
+                onChange={(event: any, newValue: string | null) => {
+                    setSelectInput(newValue);
+                }}
+                inputValue={searchValue}
+                onInputChange={(event, newInputValue) => {
+                    setSearchValue(newInputValue);
+                }}
+                options={users.map((user) => user.firstName + ' ' + user.surname)}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Legg til ny venn"
+                        margin="normal"
+                        variant="outlined"
+                    />
+                )}
             />
-            <Button onClick={onAddFriendClick}>Legg til venn</Button>
+            <Button 
+                onClick={onAddFriendClick} 
+                variant="contained" 
+                color="primary"
+                style={{width:"100%"}}
+            >
+                Legg til venn
+                <AddBox style={{ marginLeft: '8px'}}></AddBox>
+            </Button>
             
             <TextField style={{marginTop:'5px'}} onChange={onSearchChange} fullWidth={true} label="Søk etter venner" variant="outlined" />
             <h2>Dine venner</h2>
