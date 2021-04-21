@@ -12,8 +12,9 @@ import { Drawer, Button } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
-import { FilterFunctions } from './FilterFunctions'; 
+import { FilterFunctions } from '../components/FilterComponents/FilterFunctions';
 import axios from '../Axios';
+import ActivityLevels from '../interfaces/ActivityLevels';
 
 //Endringer kan forekomme her
 
@@ -57,17 +58,33 @@ const Activities = () => {
 
     const [showFuture, setShowFuture] = useState<boolean>();
     const [distance, setDistance] = useState<number>();
-    const [fromTime, setFromTime] = useState<Date>();
-    const [toTime, setToTime] = useState<Date>();
+    const [fromTime, setFromTime] = useState<Date>(new Date());
+    const [toTime, setToTime] = useState<Date>(new Date());
     const [capacity, setCapacity] = useState<number[]>();
     const [tag, setTags] = useState<string>();
-    const [activityLevel] = useState<string[]>();
+    const [activityLevel, setActivityLevel] = useState<ActivityLevels>({
+        Low: true,
+        Medium: true,
+        High: true,
+    });
 
     useEffect(() => {
         setCurrentActivities(activities);
-        const filteredActivities = FilterFunctions.titleFilter(currentActivities, titleSearch); 
+        let filteredActivities = FilterFunctions.titleFilter(
+            activities,
+            titleSearch
+        );
+        filteredActivities = FilterFunctions.dateFromFilter(
+            filteredActivities,
+            new Date(fromTime)
+        );
+        filteredActivities = FilterFunctions.dateToFilter(
+            filteredActivities,
+            new Date(toTime)
+        );
+        filteredActivities = FilterFunctions.activityLevelFilter(filteredActivities, activityLevel);
         setCurrentActivities(filteredActivities);
-    }, [titleSearch, activities]);
+    }, [titleSearch, activities, fromTime, toTime, activityLevel]);
 
     const { mobileView, drawerOpen } = state;
 
@@ -103,7 +120,12 @@ const Activities = () => {
             <Container>
                 <div style={{ width: '20%' }}>
                     <SideFilter
+                        onTimeFromChange={(time) => setFromTime(time)}
+                        onTimeToChange={(time) => {
+                            setToTime(time);
+                        }}
                         onTitleSearch={(title) => setTitleSearch(title)}
+                        onLevelChange={(level) => setActivityLevel(level)}
                     ></SideFilter>
                 </div>
                 <View>
@@ -176,8 +198,17 @@ const Activities = () => {
                             />
                             <div style={{ padding: '10px' }}>
                                 <SideFilter
+                                    onTimeFromChange={(time) =>
+                                        setFromTime(time)
+                                    }
+                                    onTimeToChange={(time) => {
+                                        setToTime(time);
+                                    }}
                                     onTitleSearch={(title) =>
                                         setTitleSearch(title)
+                                    }
+                                    onLevelChange={(level) =>
+                                        setActivityLevel(level)
                                     }
                                 ></SideFilter>
                             </div>

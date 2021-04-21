@@ -1,13 +1,13 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import styled from 'styled-components';
 import NumberFilter from './NumberFilter';
-import DifficultLevel from './DifficultLevel';
-import ActivityBoxes from './ActivityBoxes';
+import ActivityLevel from './ActivityLevel';
 import TimeFilter from './TimeFilter';
 import DistanceFilter from './DistanceFilter';
 import { TextField } from '@material-ui/core';
 import ViewBox from './ViewBox';
 import TagTextField from './TagTextField';
+import ActivityLevels from '../../interfaces/ActivityLevels'; 
 
 const StyledContainer = styled.div`
     margin-left: 1rem;
@@ -17,9 +17,17 @@ const StyledContainer = styled.div`
 
 interface Props {
     onTitleSearch: (searchResult: string) => void;
+    onTimeFromChange: (searchResult: Date) => void;
+    onTimeToChange: (searchResult: Date) => void;
+    onLevelChange: (levels: ActivityLevels) => void;
 }
 
-const SideFilter = ({ onTitleSearch }: Props) => {
+const SideFilter = ({
+    onTitleSearch,
+    onTimeFromChange,
+    onTimeToChange,
+    onLevelChange,
+}: Props) => {
     const [titleSearch, setTitleSearch] = useState<string>('');
 
     const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
@@ -42,14 +50,17 @@ const SideFilter = ({ onTitleSearch }: Props) => {
             <ViewBox label={'Vis kun framtidige aktiviteter'}></ViewBox>
             <ViewBox label={'Vis kun påmeldte aktiviteter'}></ViewBox>
             <DistanceFilter></DistanceFilter>
-            <TimeFilter></TimeFilter>
+            <TimeFilter
+                onTimeFromChange={onTimeFromChange}
+                onTimeToChange={onTimeToChange}
+            ></TimeFilter>
             <NumberFilter
                 minValue={0}
                 maxValue={20}
                 headline={'Kapasitet'}
             ></NumberFilter>
             <TagTextField></TagTextField>
-            <DifficultLevel></DifficultLevel>
+            <ActivityLevel onLevelChange={onLevelChange}></ActivityLevel>
         </StyledContainer>
     );
 };

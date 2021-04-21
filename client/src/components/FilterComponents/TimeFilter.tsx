@@ -1,11 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { TextField } from '@material-ui/core';
 const Container = styled.div``;
 
-const TimeFilter = () => {
-    const [from, setFrom] = useState<Date>();
-    const [to, setTo] = useState<Date>();
+interface Props {
+    onTimeFromChange: (searchResult: Date) => void;
+    onTimeToChange: (searchResult: Date) => void;
+}
+
+const TimeFilter = ({ onTimeFromChange, onTimeToChange }: Props) => {
+    const [from, setFrom] = useState<Date>(new Date(0));
+    const [to, setTo] = useState<Date>(new Date(2050,0,0));
+
+    useEffect(() => {
+        onTimeFromChange(from);
+    }, [from]);
+
+    useEffect(() => {
+        onTimeToChange(to);
+    }, [to]);
 
     const handleFromChange = (event: any) => {
         setFrom(event.target.value as Date);
@@ -20,10 +33,9 @@ const TimeFilter = () => {
             <h3>Tidspunkt</h3>
             <TextField
                 onChange={handleFromChange}
-                style={{ marginBottom: '10px', marginRight:'5px' }}
+                style={{ marginBottom: '10px', marginRight: '5px' }}
                 label="FRA TIDSPUNKT"
                 type="datetime-local"
-                defaultValue="2017-05-24T10:30"
                 InputLabelProps={{
                     shrink: true,
                 }}
@@ -32,7 +44,6 @@ const TimeFilter = () => {
                 onChange={handleToChange}
                 label="TIL TIDSPUNKT"
                 type="datetime-local"
-                defaultValue="2017-05-24T10:30"
                 InputLabelProps={{
                     shrink: true,
                 }}
