@@ -12,7 +12,7 @@ import { Drawer, Button } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
-import { FilterFunctions } from './FilterFunctions';
+import { FilterFunctions } from '../components/FilterComponents/FilterFunctions';
 import axios from '../Axios';
 import { UserContext } from '../UserContext';
 
@@ -61,17 +61,19 @@ const Activities = () => {
     const [distance, setDistance] = useState<number>();
     const [fromTime, setFromTime] = useState<Date>();
     const [toTime, setToTime] = useState<Date>();
-    const [capacity, setCapacity] = useState<number[]>();
+    const [capacity, setCapacity] = useState<number[]>([0, 20]);
     const [tag, setTags] = useState<string>();
     const [activityLevel] = useState<string[]>();
     const { user } = useContext(UserContext);
 
     useEffect(() => {
         setCurrentActivities(activities);
-        //const filteredActivities = FilterFunctions.titleFilter(activities, titleSearch);
-        const filteredActivities = FilterFunctions.showMyActivities(activities, showMine, user)
+        let filteredActivities = FilterFunctions.titleFilter(activities, titleSearch);
+        filteredActivities = FilterFunctions.showMyActivities(filteredActivities, showMine, user)
+        filteredActivities = FilterFunctions.showFutureActivities(filteredActivities, showFuture);
+        filteredActivities = FilterFunctions.changeCapacity(filteredActivities, capacity);
         setCurrentActivities(filteredActivities);
-    }, [titleSearch, activities, showFuture, showMine]);
+    }, [titleSearch, activities, showFuture, showMine, capacity]);
 
     const { mobileView, drawerOpen } = state;
 
@@ -110,6 +112,7 @@ const Activities = () => {
                         onTitleSearch={(title) => setTitleSearch(title)}
                         onShowFuture={(showFuture) => setShowFuture(showFuture)}
                         onShowMine={(showMine => setShowMine(showMine))}
+                        onCapacityChange={(range) => setCapacity(range)}
                     ></SideFilter>
                 </div>
                 <View>
@@ -186,7 +189,8 @@ const Activities = () => {
                                         setTitleSearch(title)
                                     }
                                     onShowFuture={(showFuture) => setShowFuture(showFuture)}
-                                    onShowMine={(showMine => setShowMine(showMine))}
+                                    onShowMine={(showMine) => setShowMine(showMine)}
+                                    onCapacityChange={(range) => setCapacity(range)}
                                 ></SideFilter>
                             </div>
                         </Drawer>
@@ -206,7 +210,7 @@ const Activities = () => {
                     </AddAndSort>
                     <ActivityGrid activities={currentActivities}></ActivityGrid>
                 </View>
-            </Container>
+            </Container >
         );
     };
 

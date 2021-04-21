@@ -19,9 +19,10 @@ interface Props {
     onTitleSearch: (searchResult: string) => void;
     onShowFuture: (state: boolean) => void;
     onShowMine: (state: boolean) => void;
+    onCapacityChange: (range: number[]) => void;
 }
 
-const SideFilter = ({ onTitleSearch, onShowFuture, onShowMine }: Props) => {
+const SideFilter = ({ onTitleSearch, onShowFuture, onShowMine, onCapacityChange }: Props) => {
     const [titleSearch, setTitleSearch] = useState<string>('');
 
 
@@ -50,6 +51,7 @@ const SideFilter = ({ onTitleSearch, onShowFuture, onShowMine }: Props) => {
                 minValue={0}
                 maxValue={20}
                 headline={'Kapasitet'}
+                onCapacityChange={onCapacityChange}
             ></NumberFilter>
             <TagTextField></TagTextField>
             <DifficultLevel></DifficultLevel>
