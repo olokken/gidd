@@ -44,7 +44,7 @@ const ActivityGrid = ({ activities }: Props) => {
         latitude: 0,
         longitude: 0,
         registeredParticipants: [],
-        tags: 'SII',
+        tags: ['SII'],
         time: 1618924200000,
         timeCreated: 1618830691000,
         title: 'Test',

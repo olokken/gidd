@@ -62,7 +62,7 @@ const Activities = () => {
     const [fromTime, setFromTime] = useState<Date>();
     const [toTime, setToTime] = useState<Date>();
     const [capacity, setCapacity] = useState<number[]>([0, 20]);
-    const [tags, setTags] = useState<string[]>(['Fotball']);
+    const [tags, setTags] = useState<string[]>();
     const [activityLevel] = useState<string[]>();
     const { user } = useContext(UserContext);
 
@@ -72,6 +72,7 @@ const Activities = () => {
         filteredActivities = FilterFunctions.showMyActivities(filteredActivities, showMine, user)
         filteredActivities = FilterFunctions.showFutureActivities(filteredActivities, showFuture);
         filteredActivities = FilterFunctions.changeCapacity(filteredActivities, capacity);
+        filteredActivities = FilterFunctions.tagFilter(activities, tags);
         setCurrentActivities(filteredActivities);
     }, [titleSearch, activities, showFuture, showMine, capacity, tags]);
 

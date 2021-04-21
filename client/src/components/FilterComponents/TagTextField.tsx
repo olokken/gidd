@@ -25,8 +25,6 @@ const TagTextField = ({ onTagsChange }: Props) => {
     }, [currTags]);
 
     const onChangeTags = (event: ChangeEvent<any>, newInputValue: string[] | undefined) => {
-        console.log(event)
-        console.log(newInputValue);
         if (newInputValue) {
             setCurrTags(newInputValue);
         }

@@ -58,4 +58,20 @@ const changeCapacity = (
         }
     })
 }
-export const FilterFunctions = { titleFilter, showMyActivities, showFutureActivities, changeCapacity };
+
+const tagFilter = (
+    activities: ActivityResponse[],
+    tags: string[] | undefined
+): ActivityResponse[] => {
+    return activities.filter((act: ActivityResponse) => {
+        if (!tags) {
+            return act
+        } else {
+            console.log(act.tags.forEach((tag) => {
+                console.log(tag);
+            }))
+        }
+    })
+}
+
+export const FilterFunctions = { titleFilter, showMyActivities, showFutureActivities, changeCapacity, tagFilter };

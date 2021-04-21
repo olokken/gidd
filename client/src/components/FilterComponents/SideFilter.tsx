@@ -55,8 +55,8 @@ const SideFilter = ({ onTitleSearch, onShowFuture, onShowMine, onCapacityChange,
                 onCapacityChange={onCapacityChange}
             ></NumberFilter>
             <TagTextField
-                onTagsChange={onTagsChange}>
-            </TagTextField>
+                onTagsChange={onTagsChange}
+            />
             <DifficultLevel></DifficultLevel>
         </StyledContainer>
     );
