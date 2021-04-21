@@ -604,7 +604,7 @@ public class GiddController {
     public ResponseEntity editActivity(@RequestBody Map<String, Object> map, @PathVariable("id") int actId){
         log.info("recieved putmapping to /activity/{id}");
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
-        log.debug("User with id recieved " + user.toString());
+        log.debug("User with id recieved");
         Activity activity = activityService.getActivity(actId);
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
@@ -626,6 +626,8 @@ public class GiddController {
         activity.setDescription(map.get("description").toString());
         activity.setCapacity(Integer.parseInt(map.get("capacity").toString()));
         activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
+        activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
+        activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
         log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
         if(!edited){
@@ -709,6 +711,7 @@ public class GiddController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
         log.debug("Returning activity object " + activity.getActivityId());
+        System.out.println("Activity: " + activity.toString());
         return ResponseEntity
                 .ok()
                 .headers(header)
@@ -1197,7 +1200,6 @@ public class GiddController {
     private byte[] binaryToByte(String bin) {
 		log.debug("binary to byte array");
         List<Byte> list = new ArrayList<>();
-
         for(String str : bin.split("(?<=\\G.{8})")) {
             list.add((byte) Integer.parseInt(str, 2 ));
         }

@@ -27,7 +27,7 @@ public class Activity {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "E, dd MMM yyyy HH:mm:ss z", timezone = "GMT+2")
     private Timestamp time;
     @Column(name = "days_to_repeat")
-    private int daysToRepeat;
+    private int repeat;
     @CascadeOnDelete
     @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_id")
@@ -60,7 +60,7 @@ public class Activity {
         this.activityId = id;
         this.title = title;
         this.time = time;
-        this.daysToRepeat = repeat;
+        this.repeat = repeat;
         this.user = user;
         this.capacity = capacity;
         this.groupId = groupId;
@@ -101,12 +101,12 @@ public class Activity {
         this.time = time;
     }
 
-    public int getDaysToRepeat() {
-        return daysToRepeat;
+    public int getRepeat() {
+        return repeat;
     }
 
-    public void setDaysToRepeat(int daysToRepeat) {
-        this.daysToRepeat = daysToRepeat;
+    public void setRepeat(int daysToRepeat) {
+        this.repeat = daysToRepeat;
     }
 
     public User getUser() {
@@ -220,11 +220,11 @@ public class Activity {
             "\n\"activityId\": " + activityId +
             ", \n\"title\": " + "\"" + title.trim() + "\"" +
             ", \n\"time\":" + time.getTime() +
-            ", \n\"daysToRepeat\":" + daysToRepeat +
+            ", \n\"repeat\":" + repeat +
             ", \n\"user\":" + user.toJSON() +
             ", \n\"capacity\":" + capacity +
             ", \n\"groupId\":" + groupId +
-            ", \n\"description\":" + "\"" + description.substring(1, description.length()-1) + "\"" +
+            ", \n\"description\":" + "\"" + description + "\"" +
             ", \n\"image\":" + "\"" +Arrays.toString(image) +"\"" +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
             ", \n\"tags\":" + tags.toString() +
