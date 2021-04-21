@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import Weather from '../../interfaces/Weather';
 import WeatherContent from './WeatherContent';
-/* denne script-fila må hente ut alle data for været og 
-sende det til ein weatherContent div*/
+/* Her hentast værmeldinga frå openweathermap og den rette værmeldinga vert sendt til
+weathercontent*/
 
-/* <WeatherContent
-      weatherData={weather}
-    />
-*/
 
 interface Props{
   lat: number;
@@ -24,10 +20,20 @@ const WeatherComponent = ({ lat, lon, time }: Props) =>{
   const lat_long = "lat=" +latitude+ "&lon=" +longitude;
   const join_key = "&appid=" + "bf5aff56f689df8dd3147e0a62c61bac";
   const units = "&units=metric";
-  const dateStringRounded = new String(dateRounded);
+  const oldNum = new Number(dateRounded);
+  const num = changeFormat(oldNum);
   const [weather, setWeather] = useState<Weather>({
-    name: '',
+    cityName: '',
+    countryName: '',
+    date: '',
     temp: 0,
+    description: '',
+    hiTemp: 0,
+    loTemp: 0,
+    wind: 0,
+    icon: '',
+    id: 0,
+    main: '',
 });
 
   /* Runder av tida til nærmaste tredje time */
@@ -41,7 +47,15 @@ const WeatherComponent = ({ lat, lon, time }: Props) =>{
 
     return myDate;
 }
+  function changeFormat(num: any) {
+    let newNum = num/1000;
+    newNum = newNum + 7200;
+    return newNum;
+  }
+
 /* Hentar værmeldinger og finn den som stemmer for tidspunktet til økta */
+const getWeather = () => {
+
   Promise.all([fetch(openWeatherURL+lat_long+join_key+units)])
     .then(([response]) => {
       if(response.ok){
@@ -50,23 +64,33 @@ const WeatherComponent = ({ lat, lon, time }: Props) =>{
     throw Error(response.statusText);
     })
     .then(([data]) => {
-      // sammenlign tid og dag
-      // lagre denne infoen en stad
-      console.log(data);
-      /*const weather: any[] = data.list;
-      const message : any = weather.filter(w => w.dt === dateRounded).find; 
-                if (message) {
-                  setWeather(message) 
-                  console.log(message)
-                }*/
+      for (const w in data.list){
+        if(data.list[w].dt === num){
+          setWeather({
+            cityName: data.city.name,
+            countryName: data.city.country,
+            date: data.list[w].dt_txt,
+            temp: data.list[w].main.temp,
+            description: data.list[w].weather[0].description,
+            hiTemp: data.list[w].main.temp_max,
+            loTemp: data.list[w].main.temp_min,
+            wind: data.list[w].wind.speed,
+            icon: data.list[w].weather[0].icon,
+            id: data.list[w].weather[0].id,
+            main: data.list[w].weather[0].main,
+          })
+        }
+      }
       
     })
     .catch(error => {
       console.log(error);
     });
-
+  }
   return(
-    <div>{dateStringRounded}</div>
+    <WeatherContent
+      weatherData={weather}
+    />
   )
 }
 

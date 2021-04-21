@@ -2,7 +2,6 @@ import { GridList } from '@material-ui/core';
 import Pageination from '@material-ui/lab/Pagination';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Activity from '../../interfaces/Activity';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import Popup from '../Popup';
 import ActivityCard from './ActivityCard';
