@@ -81,18 +81,23 @@ const ActivityInformation = ({ activity }: Props) => {
     };
 
     const unRegister = () => {
-        console.log('Avregistrer bruker til aktivitet');
+        axios
+            .delete(`/user/${user}/activity/${activity.activityId}`)
+            .then(() => setRegistration(0));
     };
 
     useEffect(() => {
         if (activity.registeredParticipants.length >= activity.capacity) {
             setRegistration(2);
         } else {
-            const registered: number[] = activity.registeredParticipants.map(
-                (u) => u.userID
-            );
-            if (!registered.includes(user)) setRegistration(0);
-            else setRegistration(1);
+            const registered: number = activity.registeredParticipants
+                .map((par) => par.userId['userId'])
+                .filter((num) => num == user).length;
+            if (registered >= 1) {
+                setRegistration(1);
+            } else {
+                setRegistration(0);
+            }
         }
     }, []);
 
