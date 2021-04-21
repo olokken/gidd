@@ -1,10 +1,12 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { TextField, Button } from '@material-ui/core';
 import Select from 'react-select';
 import FriendCard from './FriendCard';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddBox from '@material-ui/icons/AddBox';
+import User from '../../interfaces/User';
+import axios from 'axios';
 
 const StyledContainer = styled.div`
     margin-left: 1rem;
@@ -33,6 +35,8 @@ const friends = [
 
 const FriendList = () => {
     const [searchInput, setSearchInput] = useState<string>('');
+    const [firends, setFriends] = useState<User[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
 
     const [selectInput, setSelectInput] = useState<string | null>(null);
     const [searchValue, setSearchValue] = React.useState('');
@@ -46,6 +50,16 @@ const FriendList = () => {
         setSelectInput(null);
         setSearchValue('');
     }
+
+    useEffect(() => {
+        axios
+            .get('/user')
+            .then((response) => {
+                console.log(response.data);
+                setUsers(response.data['users']);
+            })
+            .catch((error) => console.log(error));
+    }, []);
     
     return (
         <StyledContainer>
@@ -60,7 +74,7 @@ const FriendList = () => {
                 onInputChange={(event, newInputValue) => {
                     setSearchValue(newInputValue);
                 }}
-                options={friends.map((friend) => friend.name)}
+                options={users.map((user) => user.firstName + ' ' + user.surname)}
                 renderInput={(params) => (
                     <TextField
                         {...params}

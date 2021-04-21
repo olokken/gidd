@@ -10,9 +10,9 @@ import {
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Activity from '../../interfaces/Activity';
-import hiking from '../../assets/hiking.jpg';
 import logo from '../../assets/logo.png';
+import Popup from '../Popup';
+import UserProfile from './UserProfile';
 
 const CardInformation = styled.div`
     height: 100%;
@@ -30,10 +30,19 @@ const TitleArea = styled.div`
 
 
 const FriendCard = ({friend}: any) =>{
+    const [openPopup, setOpenPopup] = useState<boolean>(false);
     return (
         <Card
             style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
+            onClick={() => setOpenPopup(!openPopup)}
         >
+            <Popup
+                title={friend.name}
+                openPopup={openPopup}
+                setOpenPopup={setOpenPopup}
+            >
+                <UserProfile friend={friend}/>
+            </Popup>
             <CardInformation>
                 <Grid container spacing={2}>
                 <Grid item xs={3}>
