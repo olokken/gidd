@@ -120,8 +120,8 @@ const ActivityCard = ({
                 <CardContent>
                     <Grid container wrap="nowrap" spacing={2}>
                         <Grid item>
-                            <Tooltip title={activity.user['firstname']}>
-                                <Avatar>{activity.user['firstname']}</Avatar>
+                            <Tooltip title={activity.user.firstname}>
+                                <Avatar>{activity.user.firstname}</Avatar>
                             </Tooltip>
                         </Grid>
                         <Grid item xs>
