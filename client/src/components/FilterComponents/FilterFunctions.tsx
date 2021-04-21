@@ -1,4 +1,5 @@
 import ActivityResponse from '../../interfaces/ActivityResponse';
+import ActivityLevels from '../../interfaces/ActivityLevels';
 
 const titleFilter = (
     activities: ActivityResponse[],
@@ -16,19 +17,38 @@ const titleFilter = (
     });
 };
 
+const dateFromFilter = (activities: ActivityResponse[], fromDate: Date) => {
+    return activities.filter((act) => act.time > fromDate.getTime());
+};
+
+const dateToFilter = (activities: ActivityResponse[], fromDate: Date) => {
+    return activities.filter((act) => act.time < fromDate.getTime());
+};
+
+const activityLevelFilter = (
+    activities: ActivityResponse[],
+    activityLevel: ActivityLevels
+): ActivityResponse[] => {
+    return activities.filter((act) => {
+        if (activityLevel.Low && act.activityLevel == 'LOW') return act;
+        if (activityLevel.Medium && act.activityLevel == 'MEDIUM') return act;
+        if (activityLevel.High && act.activityLevel == 'HIGH') return act;
+    });
+};
+
 const showMyActivities = (
     activities: ActivityResponse[],
     show: boolean,
     user: string
 ): ActivityResponse[] => {
-    console.log(user)
+    console.log(user);
     return activities.filter((act: ActivityResponse) => {
         const registered = act.registeredParticipants
-            .map((par) => par.userId['userId']).filter((userID) => userID == user && userID.length !== 0)
+            .map((par) => par.userId['userId'])
+            .filter((userID) => userID == user && userID.length !== 0);
         if (show === false) {
             return act;
-        }
-        else if (registered.length !== 0 && show === true) {
+        } else if (registered.length !== 0 && show === true) {
             return act;
         }
     });
@@ -45,8 +65,8 @@ const showFutureActivities = (
         } else if (act.time >= today.getTime()) {
             return act;
         }
-    })
-}
+    });
+};
 
 const changeCapacity = (
     activities: ActivityResponse[],
@@ -74,4 +94,13 @@ const tagFilter = (
     })
 }
 
-export const FilterFunctions = { titleFilter, showMyActivities, showFutureActivities, changeCapacity, tagFilter };
+export const FilterFunctions = {
+    titleFilter,
+    showMyActivities,
+    showFutureActivities,
+    changeCapacity,
+    activityLevelFilter,
+    dateToFilter,
+    dateFromFilter,
+    tagFilter
+};

@@ -14,6 +14,7 @@ import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
 import { FilterFunctions } from '../components/FilterComponents/FilterFunctions';
 import axios from '../Axios';
+import ActivityLevels from '../interfaces/ActivityLevels';
 import { UserContext } from '../UserContext';
 
 //Endringer kan forekomme her
@@ -44,6 +45,7 @@ const View = styled.div`
 `;
 
 const Activities = () => {
+    const { user } = useContext(UserContext);
     const [state, setState] = useState({
         mobileView: false,
         drawerOpen: false,
@@ -53,28 +55,60 @@ const Activities = () => {
         ActivityResponse[]
     >([]);
     const [openPopup, setOpenPopup] = useState<boolean>(false);
-
     const [titleSearch, setTitleSearch] = useState<string>('');
-
     const [showMine, setShowMine] = useState<boolean>(false);
     const [showFuture, setShowFuture] = useState<boolean>(false);
     const [distance, setDistance] = useState<number>();
-    const [fromTime, setFromTime] = useState<Date>();
-    const [toTime, setToTime] = useState<Date>();
+    const [fromTime, setFromTime] = useState<Date>(new Date());
+    const [toTime, setToTime] = useState<Date>(new Date());
     const [capacity, setCapacity] = useState<number[]>([0, 20]);
     const [tags, setTags] = useState<string[]>();
-    const [activityLevel] = useState<string[]>();
-    const { user } = useContext(UserContext);
+    const [activityLevel, setActivityLevel] = useState<ActivityLevels>({ Low: true, Medium: true, High: true, }
+    );
+
 
     useEffect(() => {
         setCurrentActivities(activities);
-        let filteredActivities = FilterFunctions.titleFilter(activities, titleSearch);
-        filteredActivities = FilterFunctions.showMyActivities(filteredActivities, showMine, user)
-        filteredActivities = FilterFunctions.showFutureActivities(filteredActivities, showFuture);
-        filteredActivities = FilterFunctions.changeCapacity(filteredActivities, capacity);
-        filteredActivities = FilterFunctions.tagFilter(activities, tags);
+        let filteredActivities = FilterFunctions.titleFilter(
+            activities,
+            titleSearch
+        );
+        filteredActivities = FilterFunctions.showMyActivities(
+            filteredActivities,
+            showMine,
+            user
+        );
+        filteredActivities = FilterFunctions.showFutureActivities(
+            filteredActivities,
+            showFuture
+        );
+        filteredActivities = FilterFunctions.changeCapacity(
+            filteredActivities,
+            capacity
+        );
+        filteredActivities = FilterFunctions.dateToFilter(
+            filteredActivities,
+            new Date(toTime)
+        );
+        filteredActivities = FilterFunctions.dateFromFilter(
+            filteredActivities,
+            new Date(fromTime)
+        );
+        filteredActivities = FilterFunctions.activityLevelFilter(
+            filteredActivities,
+            activityLevel
+        );
         setCurrentActivities(filteredActivities);
-    }, [titleSearch, activities, showFuture, showMine, capacity, tags]);
+    }, [
+        titleSearch,
+        activities,
+        showFuture,
+        showMine,
+        capacity,
+        fromTime,
+        toTime,
+        activityLevel,
+    ]);
 
     const { mobileView, drawerOpen } = state;
 
@@ -110,9 +144,14 @@ const Activities = () => {
             <Container>
                 <div style={{ width: '20%' }}>
                     <SideFilter
+                        onTimeFromChange={(time) => setFromTime(time)}
+                        onTimeToChange={(time) => {
+                            setToTime(time);
+                        }}
                         onTitleSearch={(title) => setTitleSearch(title)}
+                        onLevelChange={(level) => setActivityLevel(level)}
                         onShowFuture={(showFuture) => setShowFuture(showFuture)}
-                        onShowMine={(showMine => setShowMine(showMine))}
+                        onShowMine={(showMine) => setShowMine(showMine)}
                         onCapacityChange={(range) => setCapacity(range)}
                         onTagsChange={(tags) => setTags(tags)}
                     ></SideFilter>
@@ -187,6 +226,12 @@ const Activities = () => {
                             />
                             <div style={{ padding: '10px' }}>
                                 <SideFilter
+                                    onTimeFromChange={(time) =>
+                                        setFromTime(time)
+                                    }
+                                    onTimeToChange={(time) => {
+                                        setToTime(time);
+                                    }}
                                     onTitleSearch={(title) =>
                                         setTitleSearch(title)
                                     }
@@ -194,6 +239,9 @@ const Activities = () => {
                                     onShowMine={(showMine) => setShowMine(showMine)}
                                     onCapacityChange={(range) => setCapacity(range)}
                                     onTagsChange={(tags) => setTags(tags)}
+                                    onLevelChange={(level) =>
+                                        setActivityLevel(level)
+                                    }
                                 ></SideFilter>
                             </div>
                         </Drawer>
@@ -213,7 +261,7 @@ const Activities = () => {
                     </AddAndSort>
                     <ActivityGrid activities={currentActivities}></ActivityGrid>
                 </View>
-            </Container >
+            </Container>
         );
     };
 
