@@ -6,15 +6,13 @@ import SortMenu from '../components/SortingComponents/SortMenu';
 import Activity from '../interfaces/Activity';
 import ActivityResponse from '../interfaces/ActivityResponse';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
-import Popup from '../components/Popup'
-import AddButton from '../components/ActivityComponents/AddButton'; 
-import {Drawer,Button} from '@material-ui/core';
+import Popup from '../components/Popup';
+import AddButton from '../components/ActivityComponents/AddButton';
+import { Drawer, Button } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
-import axios from '../Axios'
-
-
+import axios from '../Axios';
 
 //Endringer kan forekomme her
 
@@ -43,7 +41,6 @@ const View = styled.div`
     margin-right: 3rem;
 `;
 
-
 const Activities = () => {
     const [state, setState] = useState({
         mobileView: false,
@@ -62,9 +59,11 @@ const Activities = () => {
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());
     }, []);
-    
+
     const [activities, setActivities] = useState<ActivityResponse[]>([]);
-    const [currentActivities, setCurrentActivities] = useState<ActivityResponse[]>(activities); 
+    const [currentActivities, setCurrentActivities] = useState<
+        ActivityResponse[]
+    >(activities);
     const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     const onClickAddButton = () => {
@@ -82,100 +81,103 @@ const Activities = () => {
     }, []);
 
     const displayDesktop = () => {
-            return (
-                <Container>
-                    <div style={{width:"20%"}}>
-                        <SideFilter></SideFilter>
-                    </div>
-                    <View>
-                        <AddAndSort>
-                            <SortMenu></SortMenu>
-                            <AddButton onClick={onClickAddButton}></AddButton>
-                            <Popup
-                                title="Legg til aktivitet"
+        return (
+            <Container>
+                <div style={{ width: '20%' }}>
+                    <SideFilter></SideFilter>
+                </div>
+                <View>
+                    <AddAndSort>
+                        <SortMenu></SortMenu>
+                        <AddButton onClick={onClickAddButton}></AddButton>
+                        <Popup
+                            title="Legg til aktivitet"
+                            openPopup={openPopup}
+                            setOpenPopup={setOpenPopup}
+                            maxWidth="lg"
+                        >
+                            <ActivityForm
                                 openPopup={openPopup}
                                 setOpenPopup={setOpenPopup}
-                                maxWidth="lg"
-                                fullWidth={true}
-                            >
-                                <ActivityForm
-                                    openPopup={openPopup}
-                                    setOpenPopup={setOpenPopup}
-                                />
-                            </Popup>
-                        </AddAndSort>
-                        <ActivityGrid activities={activities}></ActivityGrid>
-                    </View>
-                </Container>
-            );
-        };
+                            />
+                        </Popup>
+                    </AddAndSort>
+                    <ActivityGrid activities={activities}></ActivityGrid>
+                </View>
+            </Container>
+        );
+    };
 
-        const displayMobile = () => {
-            const handleDrawerOpen = () =>
+    const displayMobile = () => {
+        const handleDrawerOpen = () =>
             setState((prevState) => ({ ...prevState, drawerOpen: true }));
 
         const handleDrawerClose = () =>
             setState((prevState) => ({ ...prevState, drawerOpen: false }));
-            return (
-                <Container>
-                    <View>
-                        <AddAndSort>
-                            <SortMenu></SortMenu>
-                            <Button style={{border: '1px solid lightgrey', marginTop:'5px'}} onClick={handleDrawerOpen}>Filtrer søk</Button>
-                            <Drawer
-                                style={{width:'50px'}}
-                                {...{
-                                    anchor: 'bottom',
-                                    open: drawerOpen,
-                                    onClose: handleDrawerClose,
-                                }}
-                            >
-                                <br />
-                                <IconButton
-                                    style={{
+        return (
+            <Container>
+                <View>
+                    <AddAndSort>
+                        <SortMenu></SortMenu>
+                        <Button
+                            style={{
+                                border: '1px solid lightgrey',
+                                marginTop: '5px',
+                            }}
+                            onClick={handleDrawerOpen}
+                        >
+                            Filtrer søk
+                        </Button>
+                        <Drawer
+                            style={{ width: '50px' }}
+                            {...{
+                                anchor: 'bottom',
+                                open: drawerOpen,
+                                onClose: handleDrawerClose,
+                            }}
+                        >
+                            <br />
+                            <IconButton
+                                style={{
                                     position: 'absolute',
                                     top: '5px',
                                     right: '0',
-                                    }}
-                                    onClick={handleDrawerClose}
-                                >
+                                }}
+                                onClick={handleDrawerClose}
+                            >
                                 <CloseIcon />
-                                </IconButton>
-                                <b style={{ textAlign: 'center' }}>Fliter</b>
-                                <Divider
-                                    style={{
+                            </IconButton>
+                            <b style={{ textAlign: 'center' }}>Fliter</b>
+                            <Divider
+                                style={{
                                     marginTop: '20px',
                                 }}
-                                />  
-                                <div style={{ padding: '10px' }}>
-                                    <SideFilter></SideFilter>
-                                </div>
-                            </Drawer>
-                            <AddButton onClick={onClickAddButton}></AddButton>
-                            <Popup
-                                title="Legg til aktivitet"
+                            />
+                            <div style={{ padding: '10px' }}>
+                                <SideFilter></SideFilter>
+                            </div>
+                        </Drawer>
+                        <AddButton onClick={onClickAddButton}></AddButton>
+                        <Popup
+                            title="Legg til aktivitet"
+                            openPopup={openPopup}
+                            setOpenPopup={setOpenPopup}
+                            maxWidth="lg"
+                            fullWidth={true}
+                        >
+                            <ActivityForm
                                 openPopup={openPopup}
                                 setOpenPopup={setOpenPopup}
-                                maxWidth="lg"
-                                fullWidth={true}
-                            >
-                                <ActivityForm
-                                    openPopup={openPopup}
-                                    setOpenPopup={setOpenPopup}
-                                />
-                            </Popup>
-                        </AddAndSort>
-                        <ActivityGrid activities={activities}></ActivityGrid>
-                    </View>
-                </Container>
-            );
-        };
+                            />
+                        </Popup>
+                    </AddAndSort>
+                    <ActivityGrid activities={activities}></ActivityGrid>
+                </View>
+            </Container>
+        );
+    };
 
-    return (
-        <div>
-            {mobileView ? displayMobile() : displayDesktop()}
-        </div>
-    );
+    return <div>{mobileView ? displayMobile() : displayDesktop()}</div>;
 };
 
 export default Activities;
