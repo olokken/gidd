@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Tag from '../../interfaces/Tag';
 import axios from '../../Axios';
 
-const TagTextField = () => {
+interface Props {
+    onTagsChange: (tags: string[]) => void;
+}
+
+const TagTextField = ({ onTagsChange }: Props) => {
     const [tags, setTags] = useState<Tag[]>([]);
+    const [currTags, setCurrTags] = useState<string[]>();
 
     useEffect(() => {
         axios.get('/tag').then((data) => {
@@ -13,11 +18,26 @@ const TagTextField = () => {
         });
     }, []);
 
+    useEffect(() => {
+        if (currTags) {
+            onTagsChange(currTags);
+        }
+    }, [currTags]);
+
+    const onChangeTags = (event: ChangeEvent<any>, newInputValue: string[] | undefined) => {
+        console.log(event)
+        console.log(newInputValue);
+        if (newInputValue) {
+            setCurrTags(newInputValue);
+        }
+    }
+
     return (
         <Autocomplete
             id="free-solo-demo"
-            freeSolo
+            multiple
             options={tags.map((option) => option.description)}
+            onChange={onChangeTags}
             renderInput={(params) => (
                 <TextField
                     {...params}

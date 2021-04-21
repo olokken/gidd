@@ -20,9 +20,10 @@ interface Props {
     onShowFuture: (state: boolean) => void;
     onShowMine: (state: boolean) => void;
     onCapacityChange: (range: number[]) => void;
+    onTagsChange: (tags: string[]) => void;
 }
 
-const SideFilter = ({ onTitleSearch, onShowFuture, onShowMine, onCapacityChange }: Props) => {
+const SideFilter = ({ onTitleSearch, onShowFuture, onShowMine, onCapacityChange, onTagsChange }: Props) => {
     const [titleSearch, setTitleSearch] = useState<string>('');
 
 
@@ -53,7 +54,9 @@ const SideFilter = ({ onTitleSearch, onShowFuture, onShowMine, onCapacityChange 
                 headline={'Kapasitet'}
                 onCapacityChange={onCapacityChange}
             ></NumberFilter>
-            <TagTextField></TagTextField>
+            <TagTextField
+            onTagsChange={onTagsChange}>
+            </TagTextField>
             <DifficultLevel></DifficultLevel>
         </StyledContainer>
     );

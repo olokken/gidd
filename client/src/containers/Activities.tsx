@@ -62,7 +62,7 @@ const Activities = () => {
     const [fromTime, setFromTime] = useState<Date>();
     const [toTime, setToTime] = useState<Date>();
     const [capacity, setCapacity] = useState<number[]>([0, 20]);
-    const [tag, setTags] = useState<string>();
+    const [tags, setTags] = useState<string[]>();
     const [activityLevel] = useState<string[]>();
     const { user } = useContext(UserContext);
 
@@ -73,7 +73,7 @@ const Activities = () => {
         filteredActivities = FilterFunctions.showFutureActivities(filteredActivities, showFuture);
         filteredActivities = FilterFunctions.changeCapacity(filteredActivities, capacity);
         setCurrentActivities(filteredActivities);
-    }, [titleSearch, activities, showFuture, showMine, capacity]);
+    }, [titleSearch, activities, showFuture, showMine, capacity, tags]);
 
     const { mobileView, drawerOpen } = state;
 
@@ -113,6 +113,7 @@ const Activities = () => {
                         onShowFuture={(showFuture) => setShowFuture(showFuture)}
                         onShowMine={(showMine => setShowMine(showMine))}
                         onCapacityChange={(range) => setCapacity(range)}
+                        onTagsChange={(tags) => setTags(tags)}
                     ></SideFilter>
                 </div>
                 <View>
@@ -191,6 +192,7 @@ const Activities = () => {
                                     onShowFuture={(showFuture) => setShowFuture(showFuture)}
                                     onShowMine={(showMine) => setShowMine(showMine)}
                                     onCapacityChange={(range) => setCapacity(range)}
+                                    onTagsChange={(tags) => setTags(tags)}
                                 ></SideFilter>
                             </div>
                         </Drawer>

@@ -20,6 +20,7 @@ const NumberFilter = ({ minValue, maxValue, headline, onCapacityChange }: Props)
   useEffect(() => {
     onCapacityChange(value);
   }, [value]);
+  
   const handleChange = (event: any, newValue: number | number[]) => {
     setValue(newValue as number[]);
   };
