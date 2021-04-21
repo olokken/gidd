@@ -35,14 +35,14 @@ public class UserRepo extends GiddRepo {
     }
 
     public boolean addUser(User user){
-        log.info("adding user " + user.toString());
+        log.info("adding a user" + user.getUserId() + " | " + user.getSurname());
         EntityManager em = getEm();
 
         try{
             em.getTransaction().begin();
             em.persist(user);
             em.getTransaction().commit();
-            log.info("added user successfully " + user.toString());
+            log.info("added user successfully " + user.getUserId());
             return true;
         }catch (Exception e){
             log.error("adding user " + user.toString() + "failed due to " + e.getMessage());

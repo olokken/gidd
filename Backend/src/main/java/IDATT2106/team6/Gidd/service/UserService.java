@@ -2,6 +2,7 @@ package IDATT2106.team6.Gidd.service;
 
 import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.ActivityUser;
+import IDATT2106.team6.Gidd.models.Provider;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.repo.UserRepo;
 import IDATT2106.team6.Gidd.util.*;
@@ -16,10 +17,6 @@ public class UserService {
     private Logger log = new Logger(UserService.class.toString());
     @Autowired
     private UserRepo repo;
-
-    public void testNewUser(User user){
-        repo.addUser(user);
-    }
 
     public User getUser(int userId){
         log.info("getting user with id " + userId);
@@ -55,11 +52,13 @@ public class UserService {
         return repo.getAllUsers();
     }
 
-    public User registerUser(int id, String email, String password, String firstname, String surname,
-	    int phoneNumber, ActivityLevel activityLevel){
+    public User registerUser(int id, String email, String password, String firstname,
+                             String surname,
+                             int phoneNumber, ActivityLevel activityLevel,
+                             Provider provider){
 
 		User newUser = new User(id, email, password, firstname, surname, phoneNumber, activityLevel, null);
-        log.info("creating new user: " + newUser.toString());
+        log.info("creating new user: " + newUser.getUserId());
         boolean result = repo.addUser(newUser);
         log.info("adding new user was " + result);
         if(result) return newUser;
