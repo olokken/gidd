@@ -103,6 +103,7 @@ public class ActivityRepo extends GiddRepo {
                 em.remove(temporaryActivity);
                 em.getTransaction().commit();
                 log.info("delete success on id: " + activityId);
+                em.getEntityManagerFactory().getCache().evict(User.class);
                 return true;
             }else {
                 log.error("failed finding activity, cannot delete activity with id: " + activityId);

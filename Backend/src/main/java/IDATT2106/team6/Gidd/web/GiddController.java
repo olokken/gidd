@@ -1022,26 +1022,11 @@ public class GiddController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
-        Map<String, String> body = new HashMap<>();
-
         StringBuilder sb = new StringBuilder();
 
         List<Activity> activities =
             activityUser.stream().map(ActivityUser::getActivity).collect(Collectors.toList());
 
-        for (ActivityUser au : activityUser) {
-
-            sb.append(au.getActivity().getActivityId());
-            sb.append(",");
-        }
-
-        if (!activityUser.isEmpty()) {
-            sb.delete(sb.length() - 1, sb.length());
-        }
-
-        log.debug("Returning activities");
-
-        body.put("activityIds", sb.toString());
         return ResponseEntity
             .ok()
             .headers(header)
@@ -1271,14 +1256,12 @@ public class GiddController {
             header.add("Content-Type", "application/json; charset=UTF-8");
 
             body.put("activityId", String.valueOf(activityId));
-            body.put("users", "");
-            users.stream().forEach(u -> body.put("user", body.get("user") + u.getUserId() + ","));
-            body.put("users", body.get("user").substring(0, body.get("user").length() - 1));
 
+            String bodyJson = formatJson(body);
             return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(formatJson(body));
+                .body(bodyJson.substring(0, bodyJson.length() - 1) + ",\"users\":" + users.toString() + "}");
         }
 
         body.put("error", "no activity was deleted, are you sure the activity exists");
