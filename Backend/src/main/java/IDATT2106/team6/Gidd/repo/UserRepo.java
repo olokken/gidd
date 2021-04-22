@@ -45,7 +45,7 @@ public class UserRepo extends GiddRepo {
             log.info("added user successfully " + user.getUserId());
             return true;
         }catch (Exception e){
-            log.error("adding user " + user.toString() + "failed due to " + e.getMessage());
+            log.error("adding user " + user.getUserId() + "failed due to " + e.getMessage());
             em.getTransaction().rollback();
             return false;
         }finally {
@@ -54,17 +54,17 @@ public class UserRepo extends GiddRepo {
     }
 
     public boolean updateUser(User user){
-        log.info("updating user " + user.toString());
+        log.info("updating user " + user.getUserId());
         EntityManager em = getEm();
 
         try{
             em.getTransaction().begin();
             em.merge(user);
             em.getTransaction().commit();
-            log.info("successfully updated user " + user.toString());
+            log.info("successfully updated user " + user.getUserId());
             return true;
         }catch(Exception e){
-            log.error("updating user: " + user.toString() + " failed due to " + e.getMessage());
+            log.error("updating user: " + user.getUserId() + " failed due to " + e.getMessage());
             return false;
         }finally {
             em.close();
@@ -83,7 +83,7 @@ public class UserRepo extends GiddRepo {
         }finally {
             em.close();
         }
-        log.info("returning found user " + String.valueOf(user));
+        log.info("returning found user with id " + user.getUserId());
         return user;
     }
 
@@ -118,17 +118,17 @@ public class UserRepo extends GiddRepo {
     public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
         ActivityUser activityUser = new ActivityUser(id, activity, user, time);
         user.addActivity(activityUser);
-        log.info("adding user " + id + " to activity " + activity.toString());
+        log.info("adding user " + id + " to activity " + activity.getActivityId());
         EntityManager em = getEm();
 
         try{
             em.getTransaction().begin();
             em.merge(user);
             em.getTransaction().commit();
-            log.info("added user " + id + " successfully to activity " + activity.toString());
+            log.info("added user " + id + " successfully to activity " + activity.getActivityId());
             return true;
         }catch (Exception e){
-            log.error("adding user " + id + " to activity " + activity.toString() + " failed due to " + e.getMessage());
+            log.error("adding user " + id + " to activity " + activity.getActivityId() + " failed due to " + e.getMessage());
             
             em.getTransaction().rollback();
             return false;
@@ -156,7 +156,7 @@ public class UserRepo extends GiddRepo {
 
     public boolean removeActivity(int activityUserId, User user){
         EntityManager em = getEm();
-        log.info("deleting registration of user " + user.toString() + " to activity " + activityUserId);
+        log.info("deleting registration of user " + user.getUserId() + " to activity " + activityUserId);
         try{
             for(ActivityUser as : user.getActivities()){
                 if(as.getId() == activityUserId){
@@ -170,7 +170,7 @@ public class UserRepo extends GiddRepo {
             em.getTransaction().commit();
             return true;
         }catch (Exception e){
-            log.error("deleting registration of user " + user.toString() + " to activity " + activityUserId + " failed due to " + e.getMessage() );
+            log.error("deleting registration of user " + user.getUserId() + " to activity " + activityUserId + " failed due to " + e.getMessage() );
             return false;
         }finally {
             em.close();
@@ -204,7 +204,7 @@ public class UserRepo extends GiddRepo {
             em.getTransaction().commit();
             return true;
         }catch (Exception e){
-            log.error("deleting connection " + activityUser.toString() + " failed due to "+ e.getMessage());
+            log.error("deleting connection " + activityUser.getId() + " failed due to "+ e.getMessage());
             return false;
         }finally {
             em.close();
