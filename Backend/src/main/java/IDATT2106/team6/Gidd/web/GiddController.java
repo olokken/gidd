@@ -644,6 +644,7 @@ public class GiddController {
         }
 
         try {
+            User oldUser = userService.getUser(id);
             boolean result = userService.editUser(
                 id,
                 map.get("newEmail").toString(),
@@ -651,7 +652,8 @@ public class GiddController {
                 map.get("firstName").toString(),
                 map.get("surname").toString(),
                 Integer.parseInt(map.get("phoneNumber").toString()),
-                ActivityLevel.valueOf(map.get("activityLevel").toString()));
+                ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                oldUser.getAuthProvider());
 
             log.info("edited user " + map.toString());
             if (result) {
@@ -685,9 +687,9 @@ public class GiddController {
             .body(formatJson(body));
     }
 
+    @CrossOrigin
     @PutMapping(value = "/user/some/{id}")
-    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map,
-                                       @PathVariable Integer id) {
+    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
         log.debug("Received request at /user/some/" + id);
         // TODO This method NEEDS to control token once that's possible
         Map<String, String> body = new HashMap<>();
@@ -706,6 +708,7 @@ public class GiddController {
 
         try{
             log.debug("Attempting to edit user");
+            User user = userService.getUser(id);
             boolean result = userService.editUser(
                 id,
                 map.get("email").toString(),
@@ -713,7 +716,8 @@ public class GiddController {
                 map.get("firstName").toString(),
                 map.get("surname").toString(),
                 Integer.parseInt(map.get("phoneNumber").toString()),
-                ActivityLevel.valueOf(map.get("activityLevel").toString())
+                ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                user.getAuthProvider()
             );
 
             if (result) {
@@ -744,6 +748,7 @@ public class GiddController {
 
         return ResponseEntity
             .badRequest()
+            .headers(headers)
             .body(formatJson(body));
     }
 
