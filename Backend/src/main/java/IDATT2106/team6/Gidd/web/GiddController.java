@@ -17,10 +17,10 @@ import IDATT2106.team6.Gidd.util.Logger;
 import IDATT2106.team6.Gidd.util.MapTokenRequired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -36,8 +36,6 @@ import java.util.stream.Collectors;
 import javax.naming.directory.InvalidAttributesException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.persistence.exceptions.JSONException;
-//import org.json.JSONException;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +50,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+//import org.json.JSONException;
 
 @CrossOrigin
 @Controller
@@ -161,7 +161,7 @@ public class GiddController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity loginSome(@RequestBody Map<String, Object> map) throws IOException {
+    public ResponseEntity loginSome(@RequestBody Map<String, Object> map) {
         Map<String, String> body = new HashMap<>();
 
         try {
@@ -172,18 +172,23 @@ public class GiddController {
                 return loginUser(map);
             }
 
-            URL url = null;
+            URL url;
 
             if (provider == Provider.FACEBOOK) {
                 log.info("logging in with FACEBOOK");
                 url = new URL("https://graph.facebook.com/debug_token?input_token=" +
                     map.get("accessToken").toString() +
                     "&access_token=124734739639594|mI_etwHdsRvB6s3fVf62yZQldYQ");
-            }
-            if (provider == Provider.GOOGLE) {
+            } else if (provider == Provider.GOOGLE) {
                 log.info("logging in with GOOGLE");
                 url = new URL(
                     "https://oauth2.googleapis.com/tokeninfo?id_token=" + map.get("accessToken"));
+            } else {
+                body.put("error", "invalid provider provided");
+
+                return ResponseEntity
+                    .badRequest()
+                    .body(formatJson(body));
             }
 
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -209,48 +214,13 @@ public class GiddController {
             con.disconnect();
 
             Map resMap;
-            // TODO Should be extracted into per-provider methods to reduce complexity of loginSome
             if (provider == Provider.FACEBOOK) {
                 resMap =
                     new ObjectMapper()
                         .readValue(content.substring(8, content.length() - 1), Map.class);
                 if (Boolean.parseBoolean(resMap.get("is_valid").toString())) {
                     log.info("access token valid");
-                    User user = userService.getUser(map.get("email").toString());
-                    if (user != null) {
-                        log.info("email already found in database, generating JWT");
-                        body.put("token", securityService
-                            .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
-                        body.put("userId", String.valueOf(user.getUserId()));
-
-                        return ResponseEntity
-                            .ok()
-                            .body(formatJson(body));
-                    }
-
-                    log.info("email doesn't exist in database, attempting to create user");
-                    User newUser = userService.registerUser(
-                        getRandomID(),
-                        map.get("email").toString(),
-                        "9djw#ekc<_>a8ZS" + getRandomID(),
-                        map.get("firstName").toString(),
-                        map.get("surname").toString(),
-                        -1,
-                        null,
-                        Provider.FACEBOOK);
-
-                    if (newUser == null) {
-                        throw new NullPointerException();
-                    }
-
-                    body.put("token", securityService
-                        .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 5)));
-                    body.put("userId", String.valueOf(newUser.getUserId()));
-
-                    return ResponseEntity
-                        .created((new URI("/user/" + newUser.getUserId())))
-                        .body(formatJson(body));
-
+                    return someCheckUser(map, body, provider);
 
                 } else {
                     body.put("error", "invalid access token");
@@ -264,7 +234,7 @@ public class GiddController {
             else {
                 // TODO GOOGLE
                 resMap = new ObjectMapper().readValue(content.toString(), Map.class);
-                if (!resMap.containsKey("error")) {
+                if (resMap.containsKey("error")) {
                     body.put("error", "invalid access token");
 
                     return ResponseEntity
@@ -272,7 +242,7 @@ public class GiddController {
                         .body(formatJson(body));
                 }
 
-
+                return someCheckUser(map, body, provider);
             }
         } catch (NullPointerException e) {
             body.put("error", "missing parameter");
@@ -288,12 +258,6 @@ public class GiddController {
                 .unprocessableEntity()
                 .body(formatJson(body));
         }
-
-        body.put("error", "something went wrong");
-
-        return ResponseEntity
-            .unprocessableEntity()
-            .body(formatJson(body));
     }
 
     @PostMapping("/login/old")
@@ -1308,6 +1272,48 @@ public class GiddController {
         log.info("creating new random id");
         int id = new Random().nextInt();
         return (id > 0 ? id : -id);
+    }
+
+
+    private ResponseEntity someCheckUser(Map<String, Object> map,
+                                         Map<String, String> body,
+                                         Provider provider) throws URISyntaxException {
+        User user = userService.getUser(map.get("email").toString());
+        if (user != null) {
+            log.info("email already found in database, generating JWT");
+            body.put("token", securityService
+                .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
+            body.put("userId", String.valueOf(user.getUserId()));
+
+            return ResponseEntity
+                .ok()
+                .body(formatJson(body));
+        }
+
+        log.info("email doesn't exist in database, attempting to create user");
+        User newUser = userService.registerUser(
+            getRandomID(),
+            map.get("email").toString(),
+            "9djw#ekc<_>a8ZS" + getRandomID(),
+            map.get("firstName").toString(),
+            map.get("surname").toString(),
+            -1,
+            null,
+            provider);
+
+        // TODO this segment can be removed once registerUser()
+        //  makes sure the user gets a valid id
+        if (newUser == null) {
+            throw new NullPointerException();
+        }
+
+        body.put("token", securityService
+            .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 5)));
+        body.put("userId", String.valueOf(newUser.getUserId()));
+
+        return ResponseEntity
+            .created((new URI("/user/" + newUser.getUserId())))
+            .body(formatJson(body));
     }
 
     private List<Tag> splitTags(String tagString) {

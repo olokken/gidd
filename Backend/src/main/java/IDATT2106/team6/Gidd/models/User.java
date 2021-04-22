@@ -40,9 +40,9 @@ public class User {
     private String salt;
     @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     private List<User> friendList;
+    @ManyToMany(targetEntity = Group.class, fetch = FetchType.EAGER)
+    private List<Group> groups;
 
-
-    //Konstrutøren må tilpasses
     public User(int id, String email, String password,
                 String firstName, String surname,
                 int phoneNumber, ActivityLevel activityLevel, Provider provider){
@@ -55,7 +55,6 @@ public class User {
         this.authProvider = provider;
         this.activities = new ArrayList<ActivityUser>();
         this.points = 0;
-        System.out.println("nytt passord er " + password);
 
         //generates random salt
         SecureRandom random = new SecureRandom();
@@ -74,6 +73,7 @@ public class User {
         this.password = hashedString;
 
         this.friendList = new ArrayList<>();
+        this.groups = new ArrayList<>();
     }
 
     private byte[] hashPassword(final char[] password, final byte[] salt) {
@@ -155,6 +155,10 @@ public class User {
         return friendList;
     }
 
+    public List<Group> getGroups() {
+        return groups;
+    }
+
     public void setId(int id) {
         this.userId = id;
     }
@@ -207,8 +211,16 @@ public class User {
         this.friendList = friendList;
     }
 
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
+    }
+
     public void addFriend(User user){
         this.friendList.add(user);
+    }
+
+    public void addGroup(Group group){
+        this.groups.add(group);
     }
 
     public String toJSON() {
