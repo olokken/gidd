@@ -258,8 +258,8 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
         );
     };
 
-    const postActivity = () => {
-        const escapedJSONDescription = JSON.stringify(desc)
+    const escapedJSONDescription = () => {
+        return JSON.stringify(desc)
             .replace(/\\n/g, '\\n')
             .replace(/\\'/g, "\\'")
             .replace(/\\"/g, '\\"')
@@ -268,7 +268,9 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
             .replace(/\\t/g, '\\t')
             .replace(/\\b/g, '\\b')
             .replace(/\\f/g, '\\f');
+    };
 
+    const postActivity = () => {
         const activity: Activity2 = {
             title: title,
             time: getTimeFormat(),
@@ -276,7 +278,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
             userId: user,
             capacity: capacity,
             groupId: 0,
-            description: escapedJSONDescription,
+            description: escapedJSONDescription(),
             image: '1111',
             activityLevel: activityLevel.toUpperCase(),
             equipmentList: getEquipmentString(),
@@ -307,7 +309,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
             userId: user,
             capacity: capacity,
             groupId: 0,
-            description: desc,
+            description: escapedJSONDescription(),
             image: '01010101',
             activityLevel: activityLevel,
             equipmentList: getEquipmentString(),
