@@ -139,7 +139,10 @@ const Login = () => {
             surname: response.profileObj.familyName,
             id: response.profileObj.googleID
         }).then(response => {
-            console.log(response);
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('userID', response.data.userId);
+        }).then(() => {
+            history.push('/Activities');
         }).catch(error => {
             console.log(error);
         })
