@@ -27,7 +27,7 @@ const todayStr = new Date().toISOString().replace(/T.*$/, '') + "T" + new Date()
 
 
 const Calender = () => {
-  const { setUser, user } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [activities, setActivities] = useState<EventInput[]>([]);
   const [openPopup, setOpenPopup] = useState<boolean>(false);
   const [activity, setActivity] = useState<ActivityResponse>({
@@ -160,7 +160,7 @@ const Calender = () => {
     </CalendarContainer>
   )
 }
-  
+
 
 export default Calender;
 
