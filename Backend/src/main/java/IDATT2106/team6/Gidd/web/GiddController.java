@@ -621,6 +621,10 @@ public class GiddController {
             map.put("newPassword", map.get("password"));
         }
 
+        if (map.get("newEmail") == null || map.get("newEmail").equals("")) {
+            map.put("newEmail", map.get("email"));
+        }
+
         if (!validateStringMap(map)) {
             log.error(
                 "returning error about null/blank fields in user put mapping " + map.toString());
