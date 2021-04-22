@@ -706,15 +706,13 @@ public class GiddController {
             .body(formatJson(body));
     }
 
-    @CrossOrigin
+
     @PutMapping(value = "/user/some/{id}")
     public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
         log.debug("Received request at /user/some/" + id);
         // TODO This method NEEDS to control token once that's possible
         Map<String, String> body = new HashMap<>();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=UTF-8");
-        headers.add("Access-Control-Allow-Origin", "*");
 
         if(!parsePhone(map, body)) {
             log.error("Could not parse phoneNumber");
@@ -728,6 +726,7 @@ public class GiddController {
         try{
             log.debug("Attempting to edit user");
             User user = userService.getUser(id);
+            log.debug("Found user " + user.toString());
             boolean result = userService.editUser(
                 id,
                 map.get("email").toString(),
@@ -749,6 +748,11 @@ public class GiddController {
                     .body(formatJson(body));
             }
         } catch (NullPointerException npe) {
+            log.error("a nullpointerexception was caught");
+            for (StackTraceElement trace :
+                npe.getStackTrace()) {
+                log.error(trace.toString());
+            }
             body.put("error", "invalid parameter");
 
             return ResponseEntity
