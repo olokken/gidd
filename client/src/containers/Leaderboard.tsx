@@ -1,3 +1,12 @@
+import React from 'react';
+
+function Leaderboard() {
+    return <div></div>;
+}
+
+export default Leaderboard;
+
+/*
 import React, {
     ChangeEvent,
     KeyboardEventHandler,
@@ -56,3 +65,4 @@ const Leaderboard = () => {
 };
 
 export default Leaderboard;
+*/

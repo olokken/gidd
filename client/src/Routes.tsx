@@ -12,7 +12,6 @@ import GroupsAndFriends from './containers/GroupsAndFriends';
 import PrivateRoute from './PrivateRoute';
 import PublicRoute from './PublicRoute';
 
-
 export default (
     <Switch>
         <PublicRoute exact path="/" component={Login} />
@@ -23,7 +22,11 @@ export default (
             <PrivateRoute exact path="/Map" component={Map} />
             <PrivateRoute exact path="/Calendar" component={Calendar} />
             <PrivateRoute exact path="/Leaderboard" component={Leaderboard} />
-            <PrivateRoute exact path="/GroupsAndFriends" component={GroupsAndFriends} />
+            <PrivateRoute
+                exact
+                path="/GroupsAndFriends"
+                component={GroupsAndFriends}
+            />
             <Footer></Footer>
         </div>
     </Switch>
