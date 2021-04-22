@@ -747,10 +747,6 @@ public class GiddController {
             }
         } catch (NullPointerException npe) {
             log.error("a nullpointerexception was caught");
-            for (StackTraceElement trace :
-                npe.getStackTrace()) {
-                log.error(trace.toString());
-            }
             body.put("error", "invalid parameter");
 
             return ResponseEntity
