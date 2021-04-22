@@ -1060,6 +1060,7 @@ public class GiddController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
+        log.debug("Friendship is " + friendship);
         HashMap<String, String> body = new HashMap<>();
         body.put("friendship", friendship.toString());
 

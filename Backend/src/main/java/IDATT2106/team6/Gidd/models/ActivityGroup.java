@@ -5,21 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Group {
+public class ActivityGroup {
     @Id
-    @Column(name = "group_id", unique = true)
+    @Column(name = "group_id")
     private Integer groupId;
     @Column(name = "group_name")
     private String groupName;
     @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     private List<User> users;
 
-    public Group(String groupName){
+    public ActivityGroup(String groupName){
         this.groupName = groupName;
         this.users = new ArrayList<>();
     }
 
-    public Group(){}
+    public ActivityGroup(){}
 
     public Integer getGroupId() {
         return groupId;
