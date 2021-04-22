@@ -227,8 +227,8 @@ public class User {
                 "\n     \"firstName\":" + '\"' + firstName + '\"' +"," +
                 "\n     \"surname\":" + '\"' + surname + '\"' +"," +
                 "\n     \"phoneNumber\":" + phoneNumber +"," +
-                "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
-                "\n     \"points\":" + points +
+                "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' + "," +
+                "\n     \"points\":" + points + "," +
                 "\n     \"provider\":" + '\"' + authProvider + '\"' +
                 "\n }";
     }
