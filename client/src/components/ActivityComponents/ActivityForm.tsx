@@ -7,7 +7,7 @@ import {
     Link,
     Tooltip,
 } from '@material-ui/core';
-import React, { useState, ChangeEvent, useContext } from 'react';
+import React, { useState, ChangeEvent, useContext, useEffect } from 'react';
 import { UserContext } from '../../UserContext';
 import './ActivityForm.css';
 import axios from '../../Axios';
@@ -22,6 +22,7 @@ import Pagination from '@material-ui/lab/Pagination';
 import DefaultCenter from '../../interfaces/DefaultCenter';
 import styled from 'styled-components';
 import InfoIcon from '@material-ui/icons/Info';
+import ActivityResponse from '../../interfaces/ActivityResponse';
 
 const StyledButton = withStyles({
     root: {
@@ -60,11 +61,12 @@ const ButtonsContainer = styled.div`
 interface Props {
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
+    activityResponse?: ActivityResponse;
 }
 
 //TODO:
 //Fix adding image
-const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
+const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
     const [page, setPage] = useState<number>(1);
     const { user, setUser } = useContext(UserContext);
     const [title, setTitle] = useState('');
@@ -314,6 +316,25 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             longitude: 0,
         });
     };
+    useEffect(() => {
+        if (activityResponse !== undefined) {
+            setTitle(activityResponse.title);
+            //setLocation(activityReponse)
+            //setDate(activityResponse.time);
+            setDesc(activityResponse.description);
+            setImage(activityResponse.image);
+            let i = 0;
+            activityResponse.tags.map((tag) => {
+                tagList.push({ tagId: i, description: tag });
+                console.log(i);
+                i++;
+            });
+            setEquipmentList(activityResponse.equipments);
+            setActivityLevel(activityResponse.activityLevel);
+            setCapacity(activityResponse.capacity);
+            setRepetition(activityResponse.daysToRepeat);
+        }
+    }, []);
 
     return (
         <div className="activityform">
