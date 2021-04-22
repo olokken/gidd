@@ -102,6 +102,11 @@ public class UserService {
         return repo.updateUser(user);
     }
 
+    public boolean setPoints(User user, int points) {
+        user.setPoints(points);
+        return repo.updateUser(user);
+    }
+
     public boolean deleteFriendship(User user, User friend){
         log.debug("Deleting friendship between user " + user.getUserId() + " and user " + friend.getUserId());
         Boolean delete1 = null;
