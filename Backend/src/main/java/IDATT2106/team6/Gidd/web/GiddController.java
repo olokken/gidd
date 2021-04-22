@@ -691,7 +691,7 @@ public class GiddController {
             .body(formatJson(body));
     }
 
-    @CrossOrigin
+
     @PutMapping(value = "/user/some/{id}")
     public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
         log.debug("Received request at /user/some/" + id);
