@@ -6,3 +6,13 @@ export default interface User {
     picture:string,
     password:string
 }
+
+export interface User2 {     
+    firstName: string;     
+    surname: string;     
+    userID: string;     
+    email: string;     
+    password: string;     
+    phoneNumber: string;     
+    activityLevel: string; 
+}
