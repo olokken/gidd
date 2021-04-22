@@ -1,13 +1,6 @@
 package IDATT2106.team6.Gidd.web;
 
-import IDATT2106.team6.Gidd.models.Activity;
-import IDATT2106.team6.Gidd.models.ActivityEquipment;
-import IDATT2106.team6.Gidd.models.ActivityLevel;
-import IDATT2106.team6.Gidd.models.ActivityUser;
-import IDATT2106.team6.Gidd.models.Equipment;
-import IDATT2106.team6.Gidd.models.Provider;
-import IDATT2106.team6.Gidd.models.Tag;
-import IDATT2106.team6.Gidd.models.User;
+import IDATT2106.team6.Gidd.models.*;
 import IDATT2106.team6.Gidd.service.ActivityService;
 import IDATT2106.team6.Gidd.service.EquipmentService;
 import IDATT2106.team6.Gidd.service.SecurityService;
@@ -1095,6 +1088,42 @@ public class GiddController {
             .ok()
             .headers(header)
             .body(stringBuilder.toString());
+    }
+
+    @GetMapping("/user/{userId}/user/{friendId}")
+    public ResponseEntity checkFriendship(@PathVariable Integer userId, @PathVariable Integer friendId) {
+        log.debug("Received GetMapping to '/user/{userId}/user/{friendId}'");
+        User user = userService.getUser(userId);
+        User friend = userService.getUser(friendId);
+
+        if (user == null || friend == null) {
+            HttpHeaders header = new HttpHeaders();
+            log.error("The user or the friend is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "The user or the friend does not exist");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        Friendship friendship = userService.checkFriendship(user, friend);
+
+        HttpHeaders header = new HttpHeaders();
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        HashMap<String, String> body = new HashMap<>();
+        body.put("friendship", friendship.toString());
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
     }
 
     @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")

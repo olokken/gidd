@@ -1,13 +1,9 @@
 package IDATT2106.team6.Gidd.service;
 
-import IDATT2106.team6.Gidd.models.Activity;
-import IDATT2106.team6.Gidd.models.ActivityUser;
-import IDATT2106.team6.Gidd.models.Provider;
-import IDATT2106.team6.Gidd.models.User;
+import IDATT2106.team6.Gidd.models.*;
 import IDATT2106.team6.Gidd.repo.UserRepo;
 import IDATT2106.team6.Gidd.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import IDATT2106.team6.Gidd.models.ActivityLevel;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.sql.Timestamp;
@@ -150,5 +146,36 @@ public class UserService {
             return delete1;
         }
         return (delete1 && delete2);
+    }
+
+    public Friendship checkFriendship(User user, User friend){
+        boolean friendshipFromUserToFriend = false;
+        boolean friendshipFromFriendToUser = false;
+
+        ArrayList<Integer> friendIds = new ArrayList<>();
+        for(User u : user.getFriendList()){
+            friendIds.add(u.getUserId());
+        }
+        if(friendIds.contains(friend.getUserId())){
+            friendshipFromUserToFriend = true;
+        }
+
+        ArrayList<Integer> friendIds2 = new ArrayList<>();
+        for(User u : friend.getFriendList()){
+            friendIds2.add(u.getUserId());
+        }
+        if(friendIds2.contains(user.getUserId())){
+            friendshipFromFriendToUser = true;
+        }
+
+        if(friendshipFromFriendToUser && friendshipFromUserToFriend){
+            return Friendship.FRIENDS;
+        }else if(friendshipFromUserToFriend){
+            return Friendship.SENT;
+        }else if(friendshipFromFriendToUser){
+            return Friendship.RECEIVED;
+        }else{
+            return Friendship.NOTHING;
+        }
     }
 }
