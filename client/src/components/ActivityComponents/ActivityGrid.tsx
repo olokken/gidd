@@ -71,7 +71,10 @@ const ActivityGrid = ({ activities }: Props) => {
             <GridList
                 cellHeight={160}
                 cols={3}
-                style={{ display: 'flex', justifyContent: 'center' }}
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                }}
             >
                 {renderActivities}
             </GridList>
