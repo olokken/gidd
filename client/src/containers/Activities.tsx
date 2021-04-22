@@ -36,8 +36,7 @@ const AddAndSort = styled.div`
 
 const View = styled.div`
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction:column; 
     width: 75%;
     margin-left: 3rem;
     margin-top: 10px;
