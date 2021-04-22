@@ -75,8 +75,6 @@ public class ActivityService {
         List<User> participants = new ArrayList<User>();
         if(getActivity(id) != null){
             participants = repo.getUsersFromActivity(id);
-            //add owner first
-            participants.add(0, getActivity(id).getUser());
         }
         return participants;
     }

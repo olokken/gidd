@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.mysql.cj.xdevapi.JsonArray;
 import net.minidev.json.JSONArray;
 import net.minidev.json.parser.JSONParser;
 import org.hamcrest.Matchers;
@@ -201,6 +202,29 @@ public class GiddControllerTest {
 
         JSONObject json2 = (JSONObject) parser.parse(activity2String);
         assertEquals(json.getAsNumber("id"), json2.getAsNumber("activityId"));
+
+        //test that user is registered to own activty
+        String userActivities = mockMvc.perform(get("/user/" + user1.getUserId() + "/activity")
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn()
+                .getResponse().getContentAsString();
+
+        JSONObject user1Activities = (JSONObject) parser.parse(userActivities);
+        assertNotNull(user1Activities.get("activities"));
+        System.out.println(userActivities);
+        assertEquals(activity1.getActivityId(),
+                ((JSONObject)((JSONArray)user1Activities.get("activities")).get(0))
+                        .getAsNumber("activityId").intValue());
+
+        //test that user is registered to own activty
+        String activityString = mockMvc.perform(get("/activity/" + activity1.getActivityId() )
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn()
+                .getResponse().getContentAsString();
+        JSONObject activityJson = (JSONObject) parser.parse(activityString);
+        JSONArray userJsonArray = (JSONArray) (activityJson.get("registeredParticipants"));
+        JSONObject firstParticipant = (JSONObject) userJsonArray.get(0);
+        assertEquals(user1.getUserId(), firstParticipant.getAsNumber("userId").intValue());
+        //only owner signed up
+        assertEquals(1, userJsonArray.size());
     }
 
     @Order(4)
@@ -320,8 +344,8 @@ public class GiddControllerTest {
         assertNotNull(user2Activities.get("activities"));
         System.out.println(userActivities);
         assertEquals(activity1.getActivityId(), 
-        ((JSONObject)((JSONArray)user2Activities.get("activities")).get(0))
-        .getAsNumber("activityId").intValue());
+            ((JSONObject)((JSONArray)user2Activities.get("activities")).get(0))
+            .getAsNumber("activityId").intValue());
     }
     @Order(7)
     @Test
@@ -363,6 +387,7 @@ public class GiddControllerTest {
             "\"activityLevel\":\"" + user3.getActivityLevel() + "\"" +
         "}")).andReturn().getResponse().getContentAsString();
 
+
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(id);
 
@@ -370,22 +395,23 @@ public class GiddControllerTest {
 
         mockMvc.perform(post("/user/activity").contentType(MediaType.APPLICATION_JSON)
         .content("{"+
-                    "\"userId\":" + "\"" + json.getAsNumber("id") + "\"" +
+                    "\"userId\":" + "\"" + json.getAsNumber("id") + "\"," +
                     "\"activityId\":" + "\"" + activity1.getActivityId() + "\"" +
                 "}"
-        ));
+        )).andExpect(status().isOk());
 
         String order = mockMvc.perform(get("/activity/" + activity1.getActivityId() + "/user")
         .accept(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("$.user").exists())
         .andReturn().getResponse().getContentAsString();
 
+        System.out.println("order is " + order);
         JSONObject jsonOrder = (JSONObject) parser.parse(order);
 
         //order is supposed to be user1 -> user2 -> user3
         assertEquals(((JSONObject)((JSONArray)jsonOrder.get("user")).get(0)).get("userId"), user1.getUserId());
-        //assertEquals(Integer.parseInt(csv.split(",")[1]), user2.getUserId());
-        //assertEquals(Integer.parseInt(csv.split(",")[2]), user3.getUserId());
+        assertEquals(((JSONObject)((JSONArray)jsonOrder.get("user")).get(1)).get("userId"), user2.getUserId());
+        assertEquals(((JSONObject)((JSONArray)jsonOrder.get("user")).get(2)).get("userId"), user3.getUserId());
     }
     @Order(9)
     @Test
@@ -407,12 +433,9 @@ public class GiddControllerTest {
 
         String csv = jsonOrder.get("user").toString();
         JSONArray array = (((JSONArray) parser.parse(csv)));
-        System.out.println("csv is: " + csv);
-        //order is supposed to be user1 -> user2
-        assertEquals(1, array.size());
+        assertEquals(2, array.size());
         assertEquals(((JSONObject) array.get(0)).get("userId"), user1.getUserId());
-        //assertEquals(Integer.parseInt(csv.split(",")[1]), user2.getUserId());
-        //todo check order of users
+        assertEquals(((JSONObject) array.get(1)).get("userId"), user3.getUserId());
 
     }
 
