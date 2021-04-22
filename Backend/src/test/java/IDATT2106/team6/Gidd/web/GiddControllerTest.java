@@ -589,6 +589,17 @@ public class GiddControllerTest {
 
     @Test
     @Order(13)
+    public void addFriendTest() throws Exception{
+        mockMvc.perform(post("/user/" + user1.getUserId() + "/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\n\"userId\":" + user1.getUserId() + ",\n" +
+                        "\"friendId\":" + user2.getUserId() + "}"
+                )).andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(14)
     public void tearDown() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/activity/" + activity1.getActivityId()))
