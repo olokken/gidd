@@ -276,6 +276,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     };
 
     const onClickUpdateUser = () => {
+        console.log('hei hei')
         const putUrl = `/user/some/${user}`;
         if (!checkInput(editPass) || !checkInput(confirmPass)) {
             alert('Feil input i passord')
@@ -290,7 +291,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                 activityLevel: activityLevel.toUpperCase(),
                 newPassword: confirmPass
             }).then(response => {
-                console.log(response);
+                console.log('brukerinformasjon oppdatert' + response);
                 setPhone(phone);
                 setOldPassword(confirmPass);
                 setActivityLevel(activityLevel);
@@ -352,7 +353,6 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         async function fetchUser() {
             console.log(user);
             const request = await axios.get(`/user/${user}`);
-            request.data.phoneNumber = -1;
             console.log(typeof request.data.phoneNumber);
             if (request.data.phoneNumber === -1) {
                 setIsFirstTimeLogin(!isFirstTimeLogin);
@@ -449,6 +449,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                             onClick={() => {
                                 setIsFirstTimeLogin(!isFirstTimeLogin);
                                 setShowIsFirstTime(!showIsFirstTime);
+                                onClickUpdateUser()
                             }}
                         >
                             Bekreft
@@ -468,467 +469,467 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                 </div>
             ) : (
                 <div className="myuser">
-                                        <div>
-                                            <Table>
-                                                <TableRow>
-                                                    <TableCell align="left">Navn</TableCell>
-                                                    <TableCell align="center">
-                                                        {currentUser.firstName}{' '}
-                                                        {currentUser.surname}
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <Button
-                                                            onClick={() => {
-                                                                setPopupTitle('Endre navn');
-                                                                setShowChangeName(!showChangeName);
-                                                            }}
-                                                        >
-                                                            Rediger
-                                    </Button>
-                                                        <Popup
-                                                            title={popupTitle}
-                                                            openPopup={showChangeName}
-                                                            setOpenPopup={setShowChangeName}
-                                                        >
-                                                            <div className="myuser__textfields">
-                                                                <TextField
-                                                                    className="myuser__textfield"
-                                                                    label="Endre fornavn"
-                                                                    variant="outlined"
-                                                                    onChange={onChangeFirstName}
-                                                                    value={firstName}
-                                                                />
-                                                                <TextField
-                                                                    className="myuser__textfield"
-                                                                    label="Endre etternavn"
-                                                                    variant="outlined"
-                                                                    onChange={onChangeSurname}
-                                                                    value={surname}
-                                                                />
-                                                                <TextField
-                                                                    className="myuser__textfield"
-                                                                    type={
-                                                                        showPassword
-                                                                            ? 'text'
-                                                                            : 'password'
-                                                                    }
-                                                                    label="Passord*"
-                                                                    variant="outlined"
-                                                                    onChange={onChangePassword}
-                                                                />
-                                                            </div>
-                                                            <div className="myuser__buttons">
-                                                                <StyledButton
-                                                                    className="myuser__button"
-                                                                    onClick={onClickChangeName}
-                                                                >
-                                                                    Bekreft
-                                            </StyledButton>
-                                                                <StyledButton
-                                                                    className="myuser__button"
-                                                                    onClick={() =>
-                                                                        setShowChangeName(
-                                                                            !showChangeName
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Avbryt
-                                            </StyledButton>
-                                                            </div>
-                                                        </Popup>
-                                                    </TableCell>
-                                                </TableRow>
-                                                <TableRow>
-                                                    <TableCell align="left">Email</TableCell>
-                                                    <TableCell align="center">
-                                                        {currentUser.email}
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <Button
-                                                            onClick={() => {
-                                                                setPopupTitle('Endre mail');
-                                                                setShowChangeEmail(
-                                                                    !showChangeEmail
-                                                                );
-                                                            }}
-                                                        >
-                                                            Rediger
-                                    </Button>
-                                                        <Popup
-                                                            openPopup={showChangeEmail}
-                                                            setOpenPopup={setShowChangeEmail}
-                                                            title={popupTitle}
-                                                        >
-                                                            <TextField
-                                                                className="myuser__textfield"
-                                                                label="Gammel mail"
-                                                                variant="outlined"
-                                                                onChange={onChangeOldMail}
-                                                                value={oldMail}
-                                                            />
-                                                            <TextField
-                                                                className="myuser__textfield"
-                                                                label="Ny mail"
-                                                                variant="outlined"
-                                                                onChange={onChangeNewMail}
-                                                                value={newMail}
-                                                            />
-                                                            <TextField
-                                                                className="myuser__textfield"
-                                                                type={
-                                                                    showPassword
-                                                                        ? 'text'
-                                                                        : 'password'
-                                                                }
-                                                                label="Passord*"
-                                                                variant="outlined"
-                                                                onChange={onChangePassword}
-                                                            />
-                                                            <div className="myuser__buttons">
-                                                                <StyledButton
-                                                                    className="myuser__button"
-                                                                    onClick={onClickChangeMail}
-                                                                >
-                                                                    Bekreft
-                                            </StyledButton>
-                                                                <StyledButton
-                                                                    className="myuser__button"
-                                                                    onClick={() => {
-                                                                        setShowChangeEmail(
-                                                                            !showChangeEmail
-                                                                        );
-                                                                    }}
-                                                                >
-                                                                    Avbryt
-                                            </StyledButton>
-                                                            </div>
-                                                        </Popup>
-                                                    </TableCell>
-                                                </TableRow>
-                                                <TableRow>
-                                                    <TableCell align="left">Telefon</TableCell>
-                                                    <TableCell align="center">
-                                                        {currentUser.phoneNumber}
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <Button
-                                                            onClick={() => {
-                                                                setPopupTitle(
-                                                                    'Endre telefonnummer'
-                                                                );
-                                                                setShowChangePhone(
-                                                                    !showChangePhone
-                                                                );
-                                                            }}
-                                                        >
-                                                            Rediger
-                                    </Button>
-                                                        <Popup
-                                                            title={popupTitle}
-                                                            openPopup={showChangePhone}
-                                                            setOpenPopup={setShowChangePhone}
-                                                        >
-                                                            <TextField
-                                                                className="myuser__textfield"
-                                                                label="Endre telefon"
-                                                                variant="outlined"
-                                                                onChange={onChangePhone}
-                                                                value={phone}
-                                                            />
-                                                            <TextField
-                                                                className="myuser__textfield"
-                                                                type={
-                                                                    showPassword
-                                                                        ? 'text'
-                                                                        : 'password'
-                                                                }
-                                                                label="Passord*"
-                                                                variant="outlined"
-                                                                onChange={onChangePassword}
-                                                            />
-                                                            <div className="myuser__buttons">
-                                                                <StyledButton
-                                                                    className="myuser__button"
-                                                                    onClick={onClickChangePhone}
-                                                                >
-                                                                    Bekreft
-                                            </StyledButton>
-                                                                <StyledButton
-                                                                    className="myuser__button"
-                                                                    onClick={() => {
-                                                                        setShowChangePhone(
-                                                                            !showChangePhone
-                                                                        );
-                                                                    }}
-                                                                >
-                                                                    Avbryt
-                                            </StyledButton>
-                                                            </div>
-                                                        </Popup>
-                                                    </TableCell>
-                                                </TableRow>
-                                                <TableRow>
-                                                    <TableCell align="left">
-                                                        Aktivitetsnivå
+                    <div>
+                        <Table>
+                            <TableRow>
+                                <TableCell align="left">Navn</TableCell>
+                                <TableCell align="center">
+                                    {currentUser.firstName}{' '}
+                                    {currentUser.surname}
                                 </TableCell>
-                                                    <TableCell align="center">
-                                                        {currentUser.activityLevel}
-                                                    </TableCell>
-                                                    <TableCell align="right">
-                                                        <Button
-                                                            onClick={() => {
-                                                                setPopupTitle(
-                                                                    'Endre aktivitetsnivå'
-                                                                );
-                                                                setShowChangeActLvl(
-                                                                    !showChangeActLvl
-                                                                );
-                                                            }}
-                                                        >
-                                                            Rediger
+                                <TableCell align="right">
+                                    <Button
+                                        onClick={() => {
+                                            setPopupTitle('Endre navn');
+                                            setShowChangeName(!showChangeName);
+                                        }}
+                                    >
+                                        Rediger
                                     </Button>
-                                                        <Popup
-                                                            title={popupTitle}
-                                                            openPopup={showChangeActLvl}
-                                                            setOpenPopup={setShowChangeActLvl}
-                                                        >
-                                                            <FormLabel component="label">
-                                                                Aktivitetsnivå
-                                        </FormLabel>
-                                                            <RadioGroup>
-                                                                <FormControlLabel
-                                                                    control={<Radio />}
-                                                                    label="Low"
-                                                                    onClick={() =>
-                                                                        setActivityLevel('LOW')
-                                                                    }
-                                                                    value="low"
-                                                                />
-                                                                <FormControlLabel
-                                                                    control={<Radio />}
-                                                                    label="Medium"
-                                                                    onClick={() =>
-                                                                        setActivityLevel('MEDIUM')
-                                                                    }
-                                                                    value="medium"
-                                                                />
-                                                                <FormControlLabel
-                                                                    control={<Radio />}
-                                                                    label="High"
-                                                                    onClick={() =>
-                                                                        setActivityLevel('HIGH')
-                                                                    }
-                                                                    value="high"
-                                                                />
-                                                            </RadioGroup>
-
-                                                            <TextField
-                                                                className="myuser__textfield"
-                                                                type={
-                                                                    showPassword
-                                                                        ? 'text'
-                                                                        : 'password'
-                                                                }
-                                                                label="Passord*"
-                                                                variant="outlined"
-                                                                onChange={onChangePassword}
-                                                            />
-                                                            <div className="myuser__buttons">
-                                                                <StyledButton
-                                                                    className="myuser__button"
-                                                                    onClick={onClickChangeActLvl}
-                                                                >
-                                                                    Bekreft
-                                            </StyledButton>
-                                                                <StyledButton
-                                                                    className="myuser__button"
-                                                                    onClick={() => {
-                                                                        setShowChangeActLvl(
-                                                                            !showChangeActLvl
-                                                                        );
-                                                                    }}
-                                                                >
-                                                                    Avbryt
-                                            </StyledButton>
-                                                            </div>
-                                                        </Popup>
-                                                    </TableCell>
-                                                </TableRow>
-                                                <TableRow>
-                                                    <TableCell align="left">Passord</TableCell>
-                                                    <TableCell></TableCell>
-                                                    <TableCell align="right">
-                                                        <Button
-                                                            onClick={() => {
-                                                                setPopupTitle('Endre passord');
-                                                                setShowChangePass(!showChangePass);
-                                                            }}
-                                                        >
-                                                            Rediger
-                                    </Button>
-                                                        <Popup
-                                                            openPopup={showChangePass}
-                                                            setOpenPopup={setShowChangePass}
-                                                            title={popupTitle}
-                                                        >
-                                                            <div>
-                                                                <TextField
-                                                                    className="myuser__textfield"
-                                                                    type={
-                                                                        showEditPass
-                                                                            ? 'text'
-                                                                            : 'password'
-                                                                    }
-                                                                    label="Endre passord"
-                                                                    variant="outlined"
-                                                                    onChange={onChangePassword1}
-                                                                    value={editPass}
-                                                                />
-                                                                {showEditPass ? (
-                                                                    <VisibilityIcon
-                                                                        className="passwordicon"
-                                                                        onClick={() => {
-                                                                            setShowEditPass(
-                                                                                !showEditPass
-                                                                            );
-                                                                        }}
-                                                                    />
-                                                                ) : (
-                                                                    <VisibilityOffIcon
-                                                                        className="passwordicon"
-                                                                        onClick={() => {
-                                                                            setShowEditPass(
-                                                                                !showEditPass
-                                                                            );
-                                                                        }}
-                                                                    />
-                                                                )}
-                                                                <TextField
-                                                                    className="myuser__textfield"
-                                                                    type={
-                                                                        showConfirmPass
-                                                                            ? 'text'
-                                                                            : 'password'
-                                                                    }
-                                                                    label="Bekreft passord"
-                                                                    variant="outlined"
-                                                                    onChange={onChangePassword2}
-                                                                    value={confirmPass}
-                                                                />
-                                                                {showConfirmPass ? (
-                                                                    <VisibilityIcon
-                                                                        className="passwordicon"
-                                                                        onClick={() => {
-                                                                            setShowConfirmPass(
-                                                                                !showConfirmPass
-                                                                            );
-                                                                        }}
-                                                                    />
-                                                                ) : (
-                                                                    <VisibilityOffIcon
-                                                                        className="passwordicon"
-                                                                        onClick={() => {
-                                                                            setShowConfirmPass(
-                                                                                !showConfirmPass
-                                                                            );
-                                                                        }}
-                                                                    />
-                                                                )}
-                                                                <TextField
-                                                                    className="myuser__textfield"
-                                                                    type={
-                                                                        showPassword
-                                                                            ? 'text'
-                                                                            : 'password'
-                                                                    }
-                                                                    label="Passord*"
-                                                                    variant="outlined"
-                                                                    onChange={onChangePassword}
-                                                                />
-                                                                {showPassword ? (
-                                                                    <VisibilityIcon
-                                                                        className="passwordicon"
-                                                                        onClick={() => {
-                                                                            setShowPassword(
-                                                                                !showPassword
-                                                                            );
-                                                                        }}
-                                                                    />
-                                                                ) : (
-                                                                    <VisibilityOffIcon
-                                                                        className="passwordicon"
-                                                                        onClick={() => {
-                                                                            setShowPassword(
-                                                                                !showPassword
-                                                                            );
-                                                                        }}
-                                                                    />
-                                                                )}
-                                                                <div className="myuser__buttons">
-                                                                    <StyledButton
-                                                                        className="myuser__button"
-                                                                        onClick={onClickChangePass}
-                                                                    >
-                                                                        Bekreft
-                                                </StyledButton>
-                                                                    <StyledButton
-                                                                        className="myuser__button"
-                                                                        onClick={() => {
-                                                                            setShowChangePass(
-                                                                                !showChangePass
-                                                                            );
-                                                                        }}
-                                                                    >
-                                                                        Avbryt
-                                                </StyledButton>
-                                                                </div>
-                                                                <div>
-                                                                    {noMatchPass && (
-                                                                        <h5>
-                                                                            Passordene er ulike!
-                                                                        </h5>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        </Popup>
-                                                    </TableCell>
-                                                </TableRow>
-                                            </Table>
+                                    <Popup
+                                        title={popupTitle}
+                                        openPopup={showChangeName}
+                                        setOpenPopup={setShowChangeName}
+                                    >
+                                        <div className="myuser__textfields">
+                                            <TextField
+                                                className="myuser__textfield"
+                                                label="Endre fornavn"
+                                                variant="outlined"
+                                                onChange={onChangeFirstName}
+                                                value={firstName}
+                                            />
+                                            <TextField
+                                                className="myuser__textfield"
+                                                label="Endre etternavn"
+                                                variant="outlined"
+                                                onChange={onChangeSurname}
+                                                value={surname}
+                                            />
+                                            <TextField
+                                                className="myuser__textfield"
+                                                type={
+                                                    showPassword
+                                                        ? 'text'
+                                                        : 'password'
+                                                }
+                                                label="Passord*"
+                                                variant="outlined"
+                                                onChange={onChangePassword}
+                                            />
                                         </div>
-                                        <div className="myuser__textfields"></div>
                                         <div className="myuser__buttons">
                                             <StyledButton
-                                                className="myuser__deleteButton"
+                                                className="myuser__button"
+                                                onClick={onClickChangeName}
+                                            >
+                                                Bekreft
+                                            </StyledButton>
+                                            <StyledButton
+                                                className="myuser__button"
                                                 onClick={() =>
-                                                    setShowConfirmDelete(!showConfirmDelete)
+                                                    setShowChangeName(
+                                                        !showChangeName
+                                                    )
                                                 }
                                             >
-                                                Slett bruker
-                        </StyledButton>
-                                            <Popup
-                                                title="Er du sikker på at du vil slette brukeren?"
-                                                openPopup={showConfirmDelete}
-                                                setOpenPopup={setShowConfirmDelete}
-                                            >
-                                                <div className="myuser__buttons">
-                                                    <StyledButton
-                                                        className="myuser__button"
-                                                        onClick={onClickDeleteUser}
-                                                    >
-                                                        Bekreft
-                                </StyledButton>
-                                                    <StyledButton
-                                                        className="myuser__button"
-                                                        onClick={() =>
-                                                            setShowConfirmDelete(!showConfirmDelete)
-                                                        }
-                                                    >
-                                                        Avbryt
-                                </StyledButton>
-                                                </div>
-                                            </Popup>
+                                                Avbryt
+                                            </StyledButton>
                                         </div>
-                                    </div>
+                                    </Popup>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell align="left">Email</TableCell>
+                                <TableCell align="center">
+                                    {currentUser.email}
+                                </TableCell>
+                                <TableCell align="right">
+                                    <Button
+                                        onClick={() => {
+                                            setPopupTitle('Endre mail');
+                                            setShowChangeEmail(
+                                                !showChangeEmail
+                                            );
+                                        }}
+                                    >
+                                        Rediger
+                                    </Button>
+                                    <Popup
+                                        openPopup={showChangeEmail}
+                                        setOpenPopup={setShowChangeEmail}
+                                        title={popupTitle}
+                                    >
+                                        <TextField
+                                            className="myuser__textfield"
+                                            label="Gammel mail"
+                                            variant="outlined"
+                                            onChange={onChangeOldMail}
+                                            value={oldMail}
+                                        />
+                                        <TextField
+                                            className="myuser__textfield"
+                                            label="Ny mail"
+                                            variant="outlined"
+                                            onChange={onChangeNewMail}
+                                            value={newMail}
+                                        />
+                                        <TextField
+                                            className="myuser__textfield"
+                                            type={
+                                                showPassword
+                                                    ? 'text'
+                                                    : 'password'
+                                            }
+                                            label="Passord*"
+                                            variant="outlined"
+                                            onChange={onChangePassword}
+                                        />
+                                        <div className="myuser__buttons">
+                                            <StyledButton
+                                                className="myuser__button"
+                                                onClick={onClickChangeMail}
+                                            >
+                                                Bekreft
+                                            </StyledButton>
+                                            <StyledButton
+                                                className="myuser__button"
+                                                onClick={() => {
+                                                    setShowChangeEmail(
+                                                        !showChangeEmail
+                                                    );
+                                                }}
+                                            >
+                                                Avbryt
+                                            </StyledButton>
+                                        </div>
+                                    </Popup>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell align="left">Telefon</TableCell>
+                                <TableCell align="center">
+                                    {currentUser.phoneNumber}
+                                </TableCell>
+                                <TableCell align="right">
+                                    <Button
+                                        onClick={() => {
+                                            setPopupTitle(
+                                                'Endre telefonnummer'
+                                            );
+                                            setShowChangePhone(
+                                                !showChangePhone
+                                            );
+                                        }}
+                                    >
+                                        Rediger
+                                    </Button>
+                                    <Popup
+                                        title={popupTitle}
+                                        openPopup={showChangePhone}
+                                        setOpenPopup={setShowChangePhone}
+                                    >
+                                        <TextField
+                                            className="myuser__textfield"
+                                            label="Endre telefon"
+                                            variant="outlined"
+                                            onChange={onChangePhone}
+                                            value={phone}
+                                        />
+                                        <TextField
+                                            className="myuser__textfield"
+                                            type={
+                                                showPassword
+                                                    ? 'text'
+                                                    : 'password'
+                                            }
+                                            label="Passord*"
+                                            variant="outlined"
+                                            onChange={onChangePassword}
+                                        />
+                                        <div className="myuser__buttons">
+                                            <StyledButton
+                                                className="myuser__button"
+                                                onClick={onClickChangePhone}
+                                            >
+                                                Bekreft
+                                            </StyledButton>
+                                            <StyledButton
+                                                className="myuser__button"
+                                                onClick={() => {
+                                                    setShowChangePhone(
+                                                        !showChangePhone
+                                                    );
+                                                }}
+                                            >
+                                                Avbryt
+                                            </StyledButton>
+                                        </div>
+                                    </Popup>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell align="left">
+                                    Aktivitetsnivå
+                                </TableCell>
+                                <TableCell align="center">
+                                    {currentUser.activityLevel}
+                                </TableCell>
+                                <TableCell align="right">
+                                    <Button
+                                        onClick={() => {
+                                            setPopupTitle(
+                                                'Endre aktivitetsnivå'
+                                            );
+                                            setShowChangeActLvl(
+                                                !showChangeActLvl
+                                            );
+                                        }}
+                                    >
+                                        Rediger
+                                    </Button>
+                                    <Popup
+                                        title={popupTitle}
+                                        openPopup={showChangeActLvl}
+                                        setOpenPopup={setShowChangeActLvl}
+                                    >
+                                        <FormLabel component="label">
+                                            Aktivitetsnivå
+                                        </FormLabel>
+                                        <RadioGroup>
+                                            <FormControlLabel
+                                                control={<Radio />}
+                                                label="Low"
+                                                onClick={() =>
+                                                    setActivityLevel('LOW')
+                                                }
+                                                value="low"
+                                            />
+                                            <FormControlLabel
+                                                control={<Radio />}
+                                                label="Medium"
+                                                onClick={() =>
+                                                    setActivityLevel('MEDIUM')
+                                                }
+                                                value="medium"
+                                            />
+                                            <FormControlLabel
+                                                control={<Radio />}
+                                                label="High"
+                                                onClick={() =>
+                                                    setActivityLevel('HIGH')
+                                                }
+                                                value="high"
+                                            />
+                                        </RadioGroup>
+
+                                        <TextField
+                                            className="myuser__textfield"
+                                            type={
+                                                showPassword
+                                                    ? 'text'
+                                                    : 'password'
+                                            }
+                                            label="Passord*"
+                                            variant="outlined"
+                                            onChange={onChangePassword}
+                                        />
+                                        <div className="myuser__buttons">
+                                            <StyledButton
+                                                className="myuser__button"
+                                                onClick={onClickChangeActLvl}
+                                            >
+                                                Bekreft
+                                            </StyledButton>
+                                            <StyledButton
+                                                className="myuser__button"
+                                                onClick={() => {
+                                                    setShowChangeActLvl(
+                                                        !showChangeActLvl
+                                                    );
+                                                }}
+                                            >
+                                                Avbryt
+                                            </StyledButton>
+                                        </div>
+                                    </Popup>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell align="left">Passord</TableCell>
+                                <TableCell></TableCell>
+                                <TableCell align="right">
+                                    <Button
+                                        onClick={() => {
+                                            setPopupTitle('Endre passord');
+                                            setShowChangePass(!showChangePass);
+                                        }}
+                                    >
+                                        Rediger
+                                    </Button>
+                                    <Popup
+                                        openPopup={showChangePass}
+                                        setOpenPopup={setShowChangePass}
+                                        title={popupTitle}
+                                    >
+                                        <div>
+                                            <TextField
+                                                className="myuser__textfield"
+                                                type={
+                                                    showEditPass
+                                                        ? 'text'
+                                                        : 'password'
+                                                }
+                                                label="Endre passord"
+                                                variant="outlined"
+                                                onChange={onChangePassword1}
+                                                value={editPass}
+                                            />
+                                            {showEditPass ? (
+                                                <VisibilityIcon
+                                                    className="passwordicon"
+                                                    onClick={() => {
+                                                        setShowEditPass(
+                                                            !showEditPass
+                                                        );
+                                                    }}
+                                                />
+                                            ) : (
+                                                <VisibilityOffIcon
+                                                    className="passwordicon"
+                                                    onClick={() => {
+                                                        setShowEditPass(
+                                                            !showEditPass
+                                                        );
+                                                    }}
+                                                />
+                                            )}
+                                            <TextField
+                                                className="myuser__textfield"
+                                                type={
+                                                    showConfirmPass
+                                                        ? 'text'
+                                                        : 'password'
+                                                }
+                                                label="Bekreft passord"
+                                                variant="outlined"
+                                                onChange={onChangePassword2}
+                                                value={confirmPass}
+                                            />
+                                            {showConfirmPass ? (
+                                                <VisibilityIcon
+                                                    className="passwordicon"
+                                                    onClick={() => {
+                                                        setShowConfirmPass(
+                                                            !showConfirmPass
+                                                        );
+                                                    }}
+                                                />
+                                            ) : (
+                                                <VisibilityOffIcon
+                                                    className="passwordicon"
+                                                    onClick={() => {
+                                                        setShowConfirmPass(
+                                                            !showConfirmPass
+                                                        );
+                                                    }}
+                                                />
+                                            )}
+                                            <TextField
+                                                className="myuser__textfield"
+                                                type={
+                                                    showPassword
+                                                        ? 'text'
+                                                        : 'password'
+                                                }
+                                                label="Passord*"
+                                                variant="outlined"
+                                                onChange={onChangePassword}
+                                            />
+                                            {showPassword ? (
+                                                <VisibilityIcon
+                                                    className="passwordicon"
+                                                    onClick={() => {
+                                                        setShowPassword(
+                                                            !showPassword
+                                                        );
+                                                    }}
+                                                />
+                                            ) : (
+                                                <VisibilityOffIcon
+                                                    className="passwordicon"
+                                                    onClick={() => {
+                                                        setShowPassword(
+                                                            !showPassword
+                                                        );
+                                                    }}
+                                                />
+                                            )}
+                                            <div className="myuser__buttons">
+                                                <StyledButton
+                                                    className="myuser__button"
+                                                    onClick={onClickChangePass}
+                                                >
+                                                    Bekreft
+                                                </StyledButton>
+                                                <StyledButton
+                                                    className="myuser__button"
+                                                    onClick={() => {
+                                                        setShowChangePass(
+                                                            !showChangePass
+                                                        );
+                                                    }}
+                                                >
+                                                    Avbryt
+                                                </StyledButton>
+                                            </div>
+                                            <div>
+                                                {noMatchPass && (
+                                                    <h5>
+                                                        Passordene er ulike!
+                                                    </h5>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Popup>
+                                </TableCell>
+                            </TableRow>
+                        </Table>
+                    </div>
+                    <div className="myuser__textfields"></div>
+                    <div className="myuser__buttons">
+                        <StyledButton
+                            className="myuser__deleteButton"
+                            onClick={() =>
+                                setShowConfirmDelete(!showConfirmDelete)
+                            }
+                        >
+                            Slett bruker
+                        </StyledButton>
+                        <Popup
+                            title="Er du sikker på at du vil slette brukeren?"
+                            openPopup={showConfirmDelete}
+                            setOpenPopup={setShowConfirmDelete}
+                        >
+                            <div className="myuser__buttons">
+                                <StyledButton
+                                    className="myuser__button"
+                                    onClick={onClickDeleteUser}
+                                >
+                                    Bekreft
+                                </StyledButton>
+                                <StyledButton
+                                    className="myuser__button"
+                                    onClick={() =>
+                                        setShowConfirmDelete(!showConfirmDelete)
+                                    }
+                                >
+                                    Avbryt
+                                </StyledButton>
+                            </div>
+                        </Popup>
+                    </div>
+                </div>
             )}
         </div>
     );
