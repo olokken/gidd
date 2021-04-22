@@ -280,23 +280,25 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         const putUrl = `/user/some/${user}`
         if (!checkInput(editPass) || !checkInput(confirmPass)) {
             alert('Feil input i passord')
-
         } else if (editPass != confirmPass) {
             alert('Ulike passord')
         } else {
-            axios.post(putUrl, {
+            axios.put(putUrl, {
                 phoneNumber: phone,
                 email: currentUser.email,
                 firstName: currentUser.firstName,
                 surname: currentUser.surname,
-                actvivityLevel: activityLevel.toUpperCase(),
+                activityLevel: activityLevel.toUpperCase(),
                 newPassword: confirmPass
             }).then(response => {
                 console.log(response);
+                setPhone(phone);
+                setOldPassword(confirmPass);
+                setActivityLevel(activityLevel);
                 setIsFirstTimeLogin(!isFirstTimeLogin);
                 setShowIsFirstTime(!showIsFirstTime)
             }).catch(error => {
-                console.log(error)
+                console.log(error.message)
             })
         }
     }
@@ -335,6 +337,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
             .then((response) => {
                 console.log(response);
                 setCurrentUser(response.data);
+                localStorage.clear();
                 history.push('/');
             })
             .catch((error) => {
@@ -362,6 +365,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         }
         fetchUser();
     }, []);
+
 
     if (isFirstTimeLogin) {
         return (
@@ -475,7 +479,6 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
             </Popup>
         )
     } else {
-        console.log('whyyyyyy')
         return (
             <div className="myuser">
                 <div>
