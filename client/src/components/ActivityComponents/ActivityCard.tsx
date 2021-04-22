@@ -6,7 +6,7 @@ import {
     Grid,
     Avatar,
     Tooltip,
-    Chip
+    Chip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
@@ -17,19 +17,21 @@ import { convertToObject } from 'typescript';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 
 const useStyles = makeStyles({
-    cutText:{
+    cutText: {
         textOverflow: 'ellipsis',
         overflow: 'hidden',
         height: '1.2em',
-        whiteSpace: 'nowrap'
-    }
+        whiteSpace: 'nowrap',
+    },
 });
 
 const CardInformation = styled.div`
     height: 100%;
+    transition: transform 450ms;
 
     :hover {
         background-color: #ebebeb;
+        transform: scale(1.08);
     }
 `;
 const TitleArea = styled.div`
@@ -56,18 +58,23 @@ const ActivityCard = ({
     const fullCapacity = new String(activity.capacity);
     const comparison = new String(participants + '/' + fullCapacity);
     const date = new Date(activity.time);
-    const eventTime = new String(date).substring(0,24);
+    const eventTime = new String(date).substring(0, 24);
     const classes = useStyles();
 
     const onClickActivity = () => {
         setOpenPopup(!openPopup);
-        console.log(activity)
+        console.log(activity);
         setActivity(activity);
     };
     return (
         <Card
             onClick={onClickActivity}
-            style={{ minWidth: '200px', maxWidth: '31%', margin: '5px' }}
+            style={{
+                minWidth: '200px',
+                maxWidth: '31%',
+                margin: '5px',
+                padding: '10px',
+            }}
         >
             <CardInformation>
                 <Grid>

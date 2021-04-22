@@ -289,7 +289,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                 email: currentUser.email,
                 firstName: currentUser.firstName,
                 surname: currentUser.surname,
-                actvivityLevel: activityLevel,
+                actvivityLevel: activityLevel.toUpperCase(),
                 newPassword: confirmPass
             }).then(response => {
                 console.log(response);

@@ -7,7 +7,7 @@ import {
     Link,
     Tooltip,
 } from '@material-ui/core';
-import React, { useState, ChangeEvent, useContext } from 'react';
+import React, { useState, ChangeEvent, useContext, useEffect } from 'react';
 import { UserContext } from '../../UserContext';
 import './ActivityForm.css';
 import axios from '../../Axios';
@@ -22,6 +22,7 @@ import Pagination from '@material-ui/lab/Pagination';
 import DefaultCenter from '../../interfaces/DefaultCenter';
 import styled from 'styled-components';
 import InfoIcon from '@material-ui/icons/Info';
+import ActivityResponse from '../../interfaces/ActivityResponse';
 
 const StyledButton = withStyles({
     root: {
@@ -60,11 +61,12 @@ const ButtonsContainer = styled.div`
 interface Props {
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
+    activityResponse?: ActivityResponse;
 }
 
 //TODO:
 //Fix adding image
-const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
+const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
     const [page, setPage] = useState<number>(1);
     const { user, setUser } = useContext(UserContext);
     const [title, setTitle] = useState('');
@@ -102,6 +104,9 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         latitude: 0,
         longitude: 0,
     });
+    const [isActivityResponse, setIsActivityResponse] = useState<boolean>(
+        false
+    );
 
     const onPageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
@@ -122,6 +127,8 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
 
     const onChangeDate = (event: ChangeEvent<HTMLInputElement>): void => {
         const strDate: string = (event.target as HTMLInputElement).value;
+        console.log(strDate);
+        console.log(new Date(strDate));
         setDateDisplay(strDate);
         setDate(new Date(strDate));
     };
@@ -222,15 +229,37 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         }
     };
 
-    const postActivity = () => {
+    const getEquipmentString = () => {
         let equipmentString = '';
         equipmentList.map(
             (equipment) => (equipmentString += equipment.description + ',')
         );
+        return equipmentString;
+    };
+    const getTagString = () => {
         let tagString = '';
         tagList.map((tag) => (tagString += tag.description + ','));
+        return tagString;
+    };
 
-        const escapedJSONDescription = JSON.stringify(desc)
+    const getTimeFormat = (): string => {
+        return (
+            date.getFullYear() +
+            '-' +
+            (+date.getMonth() + 1) +
+            '-' +
+            date.getDate() +
+            ' ' +
+            date.getHours() +
+            ':' +
+            date.getMinutes() +
+            ':' +
+            date.getSeconds()
+        );
+    };
+
+    const escapedJSONDescription = () => {
+        return JSON.stringify(desc)
             .replace(/\\n/g, '\\n')
             .replace(/\\'/g, "\\'")
             .replace(/\\"/g, '\\"')
@@ -239,34 +268,24 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
             .replace(/\\t/g, '\\t')
             .replace(/\\b/g, '\\b')
             .replace(/\\f/g, '\\f');
+    };
 
+    const postActivity = () => {
         const activity: Activity2 = {
             title: title,
-            time:
-                date.getFullYear() +
-                '-' +
-                (+date.getMonth() + 1) +
-                '-' +
-                date.getDate() +
-                ' ' +
-                date.getHours() +
-                ':' +
-                date.getMinutes() +
-                ':' +
-                date.getSeconds(),
+            time: getTimeFormat(),
             repeat: repetition,
             userId: user,
             capacity: capacity,
             groupId: 0,
-            description: escapedJSONDescription,
+            description: escapedJSONDescription(),
             image: '1111',
             activityLevel: activityLevel.toUpperCase(),
-            equipmentList: equipmentString,
-            tags: tagString,
+            equipmentList: getEquipmentString(),
+            tags: getTagString(),
             latitude: location.lat,
             longitude: location.lng,
         };
-
         console.log(activity);
 
         axios
@@ -275,11 +294,37 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                 JSON.stringify(response);
                 console.log(response.data);
             })
+            .then(() => {
+                handleReset();
+                setOpenPopup(!openPopup);
+            })
             .catch((error) =>
                 console.log('Could not post activity: ' + error.message)
             );
-        handleReset();
-        setOpenPopup(!openPopup);
+    };
+
+    const changeActivity = async () => {
+        const sendActivity = {
+            title: title,
+            time: getTimeFormat(),
+            repeat: repetition,
+            userId: user,
+            capacity: capacity,
+            groupId: 0,
+            description: escapedJSONDescription(),
+            image: '01010101',
+            activityLevel: activityLevel,
+            equipmentList: getEquipmentString(),
+            tags: getTagString(),
+            latitude: location.lat,
+            longitude: location.lng,
+        };
+        console.log(sendActivity);
+        const request = await axios.put(
+            `/activity/${activityResponse?.activityId}`,
+            sendActivity
+        );
+        console.log(request);
     };
 
     const handleReset = () => {
@@ -315,6 +360,40 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
         });
     };
 
+    function getPosition(string: string, subString: string, index: number) {
+        return string.split(subString, index).join(subString).length;
+    }
+
+    function getDisplayDate(date: Date): string {
+        return date.toJSON().substring(0, getPosition(date.toJSON(), ':', 2));
+    }
+    useEffect(() => {
+        if (activityResponse !== undefined) {
+            setIsActivityResponse(true);
+            console.log(activityResponse);
+            setTitle(activityResponse.title);
+            setLocation({
+                lat: activityResponse.latitude,
+                lng: activityResponse.longitude,
+            });
+            const date: Date = new Date(activityResponse.time);
+            setDate(date);
+            setDateDisplay(getDisplayDate(date));
+
+            setDesc(activityResponse.description);
+            setImage(activityResponse.image);
+            let i = 0;
+            activityResponse.tags.map((tag) => {
+                tagList.push({ tagId: i, description: tag });
+                i++;
+            });
+            setEquipmentList(activityResponse.equipments);
+            setActivityLevel(activityResponse.activityLevel);
+            setCapacity(activityResponse.capacity);
+            setRepetition(activityResponse.daysToRepeat);
+        }
+    }, []);
+
     return (
         <div className="activityform">
             {page === 1 && (
@@ -342,7 +421,7 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                                 onLocationChange={(location) => {
                                     setLocation(location);
                                 }}
-                            ></GeoSuggest>
+                            />
                         </div>
                         <StyledButton
                             className="activityform__placeButton"
@@ -542,10 +621,14 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                     <ButtonsContainer>
                         <StyledButton
                             className="activityform__add"
-                            onClick={postActivity}
+                            onClick={
+                                isActivityResponse
+                                    ? changeActivity
+                                    : postActivity
+                            }
                             disabled={isDisabled()}
                         >
-                            Opprett Aktivitet
+                            {isActivityResponse ? 'Endre ' : 'Legg til'}
                         </StyledButton>
                         <StyledButton
                             className="activityform__reset"
