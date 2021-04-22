@@ -14,7 +14,7 @@ public class Equipment {
     @OneToMany(mappedBy = "Equipment")
     private List<ActivityEquipment> activities;
 
-    public Equipment( String description){
+    public Equipment(String description){
         this.description = description;
         this.activities = new ArrayList<>();
     }

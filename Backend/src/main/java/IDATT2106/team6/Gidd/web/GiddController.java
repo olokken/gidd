@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -46,7 +48,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 //import org.json.JSONException;
 
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @Controller
 public class GiddController {
     private Logger log = new Logger(GiddController.class.toString());
@@ -632,6 +634,10 @@ public class GiddController {
             map.put("newPassword", map.get("password"));
         }
 
+        if (map.get("newEmail") == null || map.get("newEmail").equals("")) {
+            map.put("newEmail", map.get("email"));
+        }
+
         if (!validateStringMap(map)) {
             log.error(
                 "returning error about null/blank fields in user put mapping " + map.toString());
@@ -655,6 +661,7 @@ public class GiddController {
         }
 
         try {
+            User oldUser = userService.getUser(id);
             boolean result = userService.editUser(
                 id,
                 map.get("newEmail").toString(),
@@ -662,7 +669,8 @@ public class GiddController {
                 map.get("firstName").toString(),
                 map.get("surname").toString(),
                 Integer.parseInt(map.get("phoneNumber").toString()),
-                ActivityLevel.valueOf(map.get("activityLevel").toString()));
+                ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                oldUser.getAuthProvider());
 
             log.info("edited user " + map.toString());
             if (result) {
@@ -696,19 +704,28 @@ public class GiddController {
             .body(formatJson(body));
     }
 
-    // TODO This method NEEDS to control token once that's possible
-    @PutMapping(value = "/user/{id}/setsome")
-    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map,
-                                       @PathVariable Integer id) {
+    @CrossOrigin
+    @PutMapping(value = "/user/some/{id}")
+    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
+        log.debug("Received request at /user/some/" + id);
+        // TODO This method NEEDS to control token once that's possible
         Map<String, String> body = new HashMap<>();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=UTF-8");
+        headers.add("Access-Control-Allow-Origin", "*");
 
         if(!parsePhone(map, body)) {
+            log.error("Could not parse phoneNumber");
+
             return ResponseEntity
                 .badRequest()
+                .headers(headers)
                 .body(formatJson(body));
         }
 
         try{
+            log.debug("Attempting to edit user");
+            User user = userService.getUser(id);
             boolean result = userService.editUser(
                 id,
                 map.get("email").toString(),
@@ -716,7 +733,8 @@ public class GiddController {
                 map.get("firstName").toString(),
                 map.get("surname").toString(),
                 Integer.parseInt(map.get("phoneNumber").toString()),
-                ActivityLevel.valueOf(map.get("activityLevel").toString())
+                ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                user.getAuthProvider()
             );
 
             if (result) {
@@ -725,6 +743,7 @@ public class GiddController {
 
                 return ResponseEntity
                     .ok()
+                    .headers(headers)
                     .body(formatJson(body));
             }
         } catch (NullPointerException npe) {
@@ -746,6 +765,7 @@ public class GiddController {
 
         return ResponseEntity
             .badRequest()
+            .headers(headers)
             .body(formatJson(body));
     }
 
@@ -791,7 +811,8 @@ public class GiddController {
 
         return ResponseEntity
             .ok()
-            .headers(headers).body(formatJson(body));
+            .headers(headers)
+            .body(activity.toString());
     }
 
     @GetMapping(value = "/user", produces = "application/json")
@@ -1066,15 +1087,19 @@ public class GiddController {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{\"users\":[");
 
+        boolean remove = false;
         for (User u : user.getFriendList()) {
             if (u.getFriendList().contains(user)) {
                 friends.add(u);
                 stringBuilder.append(u.toJSON());
                 stringBuilder.append(",");
+                remove = true;
             }
         }
 
-        stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");
+        if(remove) {
+            stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");
+        }
         stringBuilder.append("]}");
 
         HttpHeaders header = new HttpHeaders();
@@ -1340,7 +1365,7 @@ public class GiddController {
         userService.setPoints(user, (int) (user.getPoints() - ADD_FRIEND_BONUS * HIGH_ACTIVITY_LEVEL_MULTIPLIER));
 
         return ResponseEntity
-            .badRequest()
+            .ok()
             .headers(header)
             .body(formatJson(body));
     }
@@ -1410,6 +1435,18 @@ public class GiddController {
         return ResponseEntity
             .created((new URI("/user/" + newUser.getUserId())))
             .body(formatJson(body));
+    }
+
+    private List<Equipment> splitEquipment (String equipString) {
+        /*log.info("splitting equipment");
+        ArrayList<String> equipNames = new ArrayList<>(Arrays.asList(equipString.split(",")));
+        ArrayList<Equipment> equips = new ArrayList<>();
+        for (String name : equipNames) {
+            name = name.toLowerCase();
+            Equipment equipment = new Equipment(name);
+            equipmentService.
+        }*/
+        return null;
     }
 
     private List<Tag> splitTags(String tagString) {
@@ -1495,6 +1532,7 @@ public class GiddController {
 
         log.debug("Checking if the equipment already is registered in the database");
         for (String s : equipmentDescription) {
+
             if (equipmentService.getEquipmentByDescription(s.trim()) == null) {
                 registerEquipment(s.trim());
             }
