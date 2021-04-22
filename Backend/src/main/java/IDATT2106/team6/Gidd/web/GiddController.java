@@ -1070,15 +1070,19 @@ public class GiddController {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{\"users\":[");
 
+        boolean remove = false;
         for (User u : user.getFriendList()) {
             if (u.getFriendList().contains(user)) {
                 friends.add(u);
                 stringBuilder.append(u.toJSON());
                 stringBuilder.append(",");
+                remove = true;
             }
         }
 
-        stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");
+        if(remove) {
+            stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");
+        }
         stringBuilder.append("]}");
 
         HttpHeaders header = new HttpHeaders();
@@ -1331,7 +1335,7 @@ public class GiddController {
         body.put("friendId", String.valueOf(friend.getUserId()));
 
         return ResponseEntity
-            .badRequest()
+            .ok()
             .headers(header)
             .body(formatJson(body));
     }

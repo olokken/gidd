@@ -1,8 +1,7 @@
 package IDATT2106.team6.Gidd.web;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,10 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import IDATT2106.team6.Gidd.GiddApplication;
-import IDATT2106.team6.Gidd.models.Activity;
-import IDATT2106.team6.Gidd.models.ActivityLevel;
-import IDATT2106.team6.Gidd.models.Provider;
-import IDATT2106.team6.Gidd.models.User;
+import IDATT2106.team6.Gidd.models.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,7 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.mysql.cj.xdevapi.JsonArray;
 import net.minidev.json.JSONArray;
 import net.minidev.json.parser.JSONParser;
 import org.hamcrest.Matchers;
@@ -596,10 +591,80 @@ public class GiddControllerTest {
                         "\n\"userId\":" + user1.getUserId() + ",\n" +
                         "\"friendId\":" + user2.getUserId() + "}"
                 )).andExpect(status().isOk());
+
+        String friends1 = mockMvc.perform(get("/user/" + user1.getUserId() + "/user")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+
+        assertEquals("[]", ((JSONObject)(parser.parse(friends1))).get("users").toString());
+
+        String friendship1 = mockMvc.perform(get("/user/" + user1.getUserId() + "/user/" + user2.getUserId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        assertEquals("SENT", ((JSONObject)(parser.parse(friendship1))).get("friendship").toString());
+
+        mockMvc.perform(post("/user/" + user2.getUserId() + "/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\n\"userId\":" + user2.getUserId() + ",\n" +
+                        "\"friendId\":" + user1.getUserId() + "}"
+                )).andExpect(status().isOk());
+
+        String friends2 = mockMvc.perform(get("/user/" + user1.getUserId() + "/user")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONObject jsonOrder  = (JSONObject) parser.parse(friends2);
+
+        String csv = jsonOrder.get("users").toString();
+        JSONArray array = (((JSONArray) parser.parse(csv)));
+
+        assertEquals(user2.getUserId(), ((JSONObject)array.get(0)).get("userId"));
+
+        String friendship2 = mockMvc.perform(get("/user/" + user1.getUserId() + "/user/" + user2.getUserId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        assertEquals("FRIENDS", ((JSONObject)(parser.parse(friendship2))).get("friendship").toString());
     }
 
     @Test
     @Order(14)
+    public void deleteFriend() throws Exception {
+        String friends2 = mockMvc.perform(get("/user/" + user1.getUserId() + "/user")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject jsonOrder  = (JSONObject) parser.parse(friends2);
+
+        String csv = jsonOrder.get("users").toString();
+        JSONArray array = (((JSONArray) parser.parse(csv)));
+
+        assertEquals(user2.getUserId(), ((JSONObject)array.get(0)).get("userId"));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/user/" + user1.getUserId() + "/user/" + user2.getUserId()))
+                .andExpect(status().isOk());
+
+        String friends1 = mockMvc.perform(get("/user/" + user1.getUserId() + "/user")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        assertEquals("[]", ((JSONObject)(parser.parse(friends1))).get("users").toString());
+    }
+
+    @Test
+    @Order(15)
     public void tearDown() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/activity/" + activity1.getActivityId()))
