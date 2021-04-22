@@ -329,6 +329,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
                 console.log(i);
                 i++;
             });
+            console.log(i);
             setEquipmentList(activityResponse.equipments);
             setActivityLevel(activityResponse.activityLevel);
             setCapacity(activityResponse.capacity);
