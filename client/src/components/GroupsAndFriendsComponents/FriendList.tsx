@@ -41,9 +41,10 @@ const FriendList = () => {
     const [selectInput, setSelectInput] = useState<string | null>(null);
     const [searchValue, setSearchValue] = React.useState('');
 
-     const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput((event.target as HTMLInputElement).value);
     };
+    
     const onAddFriendClick = () => {
         console.log("selectInput" + selectInput);
         console.log("searchInput" + searchValue);

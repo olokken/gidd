@@ -12,7 +12,7 @@ export default interface ActivityResponse {
     latitude: number;
     longitude: number;
     registeredParticipants: any[];
-    tags: string;
+    tags: string[];
     time: number;
     timeCreated: number;
     title: string;

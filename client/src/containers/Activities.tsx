@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ActivityForm from '../components/ActivityComponents/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/FilterComponents/SideFilter';
@@ -12,7 +12,10 @@ import { Drawer, Button } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
+import { FilterFunctions } from '../components/FilterComponents/FilterFunctions';
 import axios from '../Axios';
+import ActivityLevels from '../interfaces/ActivityLevels';
+import { UserContext } from '../UserContext';
 
 //Endringer kan forekomme her
 
@@ -42,29 +45,92 @@ const View = styled.div`
 `;
 
 const Activities = () => {
+    const { user } = useContext(UserContext);
     const [state, setState] = useState({
         mobileView: false,
         drawerOpen: false,
     });
+    const [activities, setActivities] = useState<ActivityResponse[]>([]);
+    const [currentActivities, setCurrentActivities] = useState<
+        ActivityResponse[]
+    >([]);
+    const [openPopup, setOpenPopup] = useState<boolean>(false);
+    const [titleSearch, setTitleSearch] = useState<string>('');
+    const [showMine, setShowMine] = useState<boolean>(false);
+    const [showFuture, setShowFuture] = useState<boolean>(false);
+    const [distance, setDistance] = useState<number>();
+    const [fromTime, setFromTime] = useState<Date>(new Date());
+    const [toTime, setToTime] = useState<Date>(new Date());
+    const [capacity, setCapacity] = useState<number[]>([0, 20]);
+    const [tags, setTags] = useState<string[]>();
+    const [activityLevel, setActivityLevel] = useState<ActivityLevels>({ Low: true, Medium: true, High: true, }
+    );
+
+
+    useEffect(() => {
+        setCurrentActivities(activities);
+        console.log(activities)
+        let filteredActivities = FilterFunctions.titleFilter(
+            activities,
+            titleSearch
+        );
+        filteredActivities = FilterFunctions.showMyActivities(
+            filteredActivities,
+            showMine,
+            user
+        );
+        filteredActivities = FilterFunctions.showFutureActivities(
+            filteredActivities,
+            showFuture
+        );
+        filteredActivities = FilterFunctions.changeCapacity(
+            filteredActivities,
+            capacity
+        );
+        filteredActivities = FilterFunctions.dateToFilter(
+            filteredActivities,
+            new Date(toTime)
+        );
+        filteredActivities = FilterFunctions.dateFromFilter(
+            filteredActivities,
+            new Date(fromTime)
+        );
+        filteredActivities = FilterFunctions.activityLevelFilter(
+            filteredActivities,
+            activityLevel
+        );
+        filteredActivities = FilterFunctions.tagFilter(
+            filteredActivities,
+            tags
+        );
+        setCurrentActivities(filteredActivities);
+    }, [
+        titleSearch,
+        activities,
+        showFuture,
+        showMine,
+        capacity,
+        fromTime,
+        toTime,
+        activityLevel,
+        tags
+    ]);
+
     const { mobileView, drawerOpen } = state;
+
     useEffect(() => {
         const setResponsiveness = () => {
             return window.innerWidth < 951
                 ? setState((prevState) => ({ ...prevState, mobileView: true }))
                 : setState((prevState) => ({
-                      ...prevState,
-                      mobileView: false,
-                  }));
+                    ...prevState,
+                    mobileView: false,
+                }));
         };
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());
     }, []);
 
-    const [activities, setActivities] = useState<ActivityResponse[]>([]);
-    const [currentActivities, setCurrentActivities] = useState<
-        ActivityResponse[]
-    >(activities);
-    const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     const onClickAddButton = () => {
         setOpenPopup(!openPopup);
@@ -84,7 +150,18 @@ const Activities = () => {
         return (
             <Container>
                 <div style={{ width: '20%' }}>
-                    <SideFilter></SideFilter>
+                    <SideFilter
+                        onTimeFromChange={(time) => setFromTime(time)}
+                        onTimeToChange={(time) => {
+                            setToTime(time);
+                        }}
+                        onTitleSearch={(title) => setTitleSearch(title)}
+                        onLevelChange={(level) => setActivityLevel(level)}
+                        onShowFuture={(showFuture) => setShowFuture(showFuture)}
+                        onShowMine={(showMine) => setShowMine(showMine)}
+                        onCapacityChange={(range) => setCapacity(range)}
+                        onTagsChange={(tags) => setTags(tags)}
+                    ></SideFilter>
                 </div>
                 <View>
                     <AddAndSort>
@@ -95,6 +172,7 @@ const Activities = () => {
                             openPopup={openPopup}
                             setOpenPopup={setOpenPopup}
                             maxWidth="lg"
+                            fullWidth={true}
                         >
                             <ActivityForm
                                 openPopup={openPopup}
@@ -102,9 +180,9 @@ const Activities = () => {
                             />
                         </Popup>
                     </AddAndSort>
-                    <ActivityGrid activities={activities}></ActivityGrid>
-                </View>
-            </Container>
+                    <ActivityGrid activities={currentActivities}></ActivityGrid>
+                </View >
+            </Container >
         );
     };
 
@@ -154,7 +232,24 @@ const Activities = () => {
                                 }}
                             />
                             <div style={{ padding: '10px' }}>
-                                <SideFilter></SideFilter>
+                                <SideFilter
+                                    onTimeFromChange={(time) =>
+                                        setFromTime(time)
+                                    }
+                                    onTimeToChange={(time) => {
+                                        setToTime(time);
+                                    }}
+                                    onTitleSearch={(title) =>
+                                        setTitleSearch(title)
+                                    }
+                                    onShowFuture={(showFuture) => setShowFuture(showFuture)}
+                                    onShowMine={(showMine) => setShowMine(showMine)}
+                                    onCapacityChange={(range) => setCapacity(range)}
+                                    onTagsChange={(tags) => setTags(tags)}
+                                    onLevelChange={(level) =>
+                                        setActivityLevel(level)
+                                    }
+                                ></SideFilter>
                             </div>
                         </Drawer>
                         <AddButton onClick={onClickAddButton}></AddButton>
@@ -171,9 +266,9 @@ const Activities = () => {
                             />
                         </Popup>
                     </AddAndSort>
-                    <ActivityGrid activities={activities}></ActivityGrid>
-                </View>
-            </Container>
+                    <ActivityGrid activities={currentActivities}></ActivityGrid>
+                </View >
+            </Container >
         );
     };
 
