@@ -23,14 +23,14 @@ function App() {
     const [user, setUser] = useState<string>();
     const value = useMemo(() => ({ user, setUser }), [user, setUser]);
 
+
     useEffect(() => {
         const id = localStorage.getItem('userID')
-        const token = localStorage.getItem('token')
-        const refreshToken = localStorage.getItem('refreshToken')
+
         if (id !== null) {
             setUser(id)
         }
-    })
+    }, [])
 
     return (
         <ThemeProvider theme={theme}>

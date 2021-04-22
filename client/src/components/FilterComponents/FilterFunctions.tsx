@@ -84,32 +84,19 @@ const tagFilter = (
     tags: string[] | undefined
 ): ActivityResponse[] => {
     return activities.filter((act: ActivityResponse) => {
+        let containsTags = false;
         if (!tags || tags.length === 0) {
             return act;
         } else {
-            let containsTags = true;
-            if (tags.length > 1) {
-                containsTags = true;
-                act.tags.forEach((tag) => {
-                    tags.forEach((myTag) => {
-                        console.log('min tag' + myTag + 'din tag ' + tag)
-                        if (tag.indexOf(myTag) === -1) {
-                            containsTags = false;
-                        }
-                    })
+            console.log('mindre enn 1 tag')
+            act.tags.forEach((tag) => {
+                tags.forEach((myTag) => {
+                    console.log('min tag' + myTag + 'din tag ' + tag)
+                    if (tag === myTag) {
+                        containsTags = true;
+                    }
                 })
-            } else {
-                containsTags = false;
-                console.log('mindre enn 1 tag')
-                act.tags.forEach((tag) => {
-                    tags.forEach((myTag) => {
-                        console.log('min tag' + myTag + 'din tag ' + tag)
-                        if (tag === myTag) {
-                            containsTags = true;
-                        }
-                    })
-                })
-            }
+            })
             if (containsTags) {
                 return act;
             }

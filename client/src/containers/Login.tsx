@@ -46,7 +46,6 @@ const Login = () => {
 
     const onLogin = async () => {
         if (!checkPassword() || email !== '') {
-            const user = await login();
             axios
                 .post('/login', {
                     provider: 'LOCAL',
@@ -76,19 +75,6 @@ const Login = () => {
         }
     };
 
-    const login = async () => {
-        const newUser: User = {
-            firstName: firstName,
-            surname: surname,
-            userID: userID,
-            email: email,
-            picture: picture,
-            password: password,
-        };
-        return {
-            newUser,
-        };
-    };
     const checkPassword = () => {
         if (email !== '' && password !== '') {
             return false;
@@ -139,7 +125,13 @@ const Login = () => {
             surname: response.profileObj.familyName,
             id: response.profileObj.googleID
         }).then(response => {
-            console.log(response);
+            console.log(response)
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('userID', response.data.userId);
+            setUser(response.data.userId);
+        }).then(() => {
+            setUser(response.data.userId);
+            history.push('/Activities');
         }).catch(error => {
             console.log(error);
         })
@@ -162,7 +154,9 @@ const Login = () => {
         }).then(response => {
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('userID', response.data.userId);
+            setUser(response.data.userId);
         }).then(() => {
+            setUser(response.data.userId);
             history.push('/Activities');
         }).catch(error => {
             console.log(error.message);
