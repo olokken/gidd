@@ -16,6 +16,7 @@ import { FilterFunctions } from '../components/FilterComponents/FilterFunctions'
 import axios from '../Axios';
 import ActivityLevels from '../interfaces/ActivityLevels';
 import { UserContext } from '../UserContext';
+import DefaultCenter from '../interfaces/DefaultCenter';
 
 //Endringer kan forekomme her
 
@@ -36,7 +37,7 @@ const AddAndSort = styled.div`
 
 const View = styled.div`
     display: flex;
-    flex-direction:column; 
+    flex-direction: column;
     width: 75%;
     margin-left: 3rem;
     margin-top: 10px;
@@ -67,6 +68,7 @@ const Activities = () => {
         Medium: true,
         High: true,
     });
+    const [coordinates, setCoordinates] = useState<DefaultCenter>();
 
     useEffect(() => {
         if (activities) {
@@ -137,7 +139,11 @@ const Activities = () => {
         setOpenPopup(!openPopup);
     };
 
-    useEffect(() => {
+    const deleteActivity = (id: number) => {
+        axios.delete(`/activity/${id}`).then(loadActivities);
+    };
+
+    const loadActivities = () => {
         axios
             .get('/activity')
             .then((response) => {
@@ -145,7 +151,9 @@ const Activities = () => {
                 setActivities(response.data['activities']);
             })
             .catch((error) => console.log(error));
-    }, []);
+    };
+
+    useEffect(loadActivities, [openPopup]);
 
     const displayDesktop = () => {
         return (
@@ -181,7 +189,10 @@ const Activities = () => {
                             />
                         </Popup>
                     </AddAndSort>
-                    <ActivityGrid activities={currentActivities}></ActivityGrid>
+                    <ActivityGrid
+                        deleteActivity={(id) => deleteActivity(id)}
+                        activities={currentActivities}
+                    ></ActivityGrid>
                 </View>
             </Container>
         );
@@ -273,7 +284,10 @@ const Activities = () => {
                             />
                         </Popup>
                     </AddAndSort>
-                    <ActivityGrid activities={currentActivities}></ActivityGrid>
+                    <ActivityGrid
+                        deleteActivity={(id) => deleteActivity(id)}
+                        activities={currentActivities}
+                    ></ActivityGrid>
                 </View>
             </Container>
         );

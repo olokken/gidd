@@ -1,7 +1,6 @@
 import {
     makeStyles,
     createStyles,
-    Theme,
     Grid,
     Typography,
     Paper,
@@ -30,6 +29,7 @@ interface Props {
     activity: ActivityResponse;
     openPopup?: boolean;
     setOpenPopup?: React.Dispatch<React.SetStateAction<boolean>>;
+    deleteActivity?: (id: number) => void;
 }
 
 const useStyles = makeStyles(() =>
@@ -69,7 +69,12 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
+const ActivityInformation = ({
+    activity,
+    deleteActivity,
+    setOpenPopup,
+    openPopup,
+}: Props) => {
     const classes = useStyles();
     const date = new Date(activity.time);
     const eventTime = new String(date);
@@ -83,8 +88,9 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
         setOpenEditPopup(true);
     };
 
-    const deleteActivity = () => {
-        if (setOpenPopup && openPopup) {
+    const onDeleteClick = () => {
+        if (deleteActivity && openPopup && setOpenPopup) {
+            deleteActivity(activity.activityId);
             setOpenPopup(!openPopup);
         }
     };
@@ -109,7 +115,7 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
     };
 
     useEffect(() => {
-        if (activity.user['userId'] === user) {
+        if (activity.user['userId'] == user) {
             setIsOwner(true);
         }
         if (activity.registeredParticipants.length >= activity.capacity) {
@@ -177,7 +183,7 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
             );
         }
     );
-    
+
     const mapParticipants = activity.registeredParticipants.map(
         (par: any, index: number) => {
             return (
@@ -223,7 +229,7 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
                         <Grid item xs={1}>
                             <Tooltip title="Slett denne aktiviteten">
                                 <Button
-                                    onClick={deleteActivity}
+                                    onClick={onDeleteClick}
                                     className={classes.otherButton}
                                 >
                                     <Delete></Delete>
