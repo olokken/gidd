@@ -46,7 +46,6 @@ const Login = () => {
 
     const onLogin = async () => {
         if (!checkPassword() || email !== '') {
-            const user = await login();
             axios
                 .post('/login', {
                     provider: 'LOCAL',
@@ -76,19 +75,6 @@ const Login = () => {
         }
     };
 
-    const login = async () => {
-        const newUser: User = {
-            firstName: firstName,
-            surname: surname,
-            userID: userID,
-            email: email,
-            picture: picture,
-            password: password,
-        };
-        return {
-            newUser,
-        };
-    };
     const checkPassword = () => {
         if (email !== '' && password !== '') {
             return false;
