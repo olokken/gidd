@@ -5,8 +5,7 @@ import styled from 'styled-components';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import Popup from '../Popup';
 import ActivityCard from './ActivityCard';
-import ActivityInformation from './ActivityInformation'; 
-
+import ActivityInformation from './ActivityInformation';
 
 const Container = styled.div`
     display: flex;
@@ -47,7 +46,7 @@ const ActivityGrid = ({ activities }: Props) => {
         time: 1618924200000,
         timeCreated: 1618830691000,
         title: 'Test',
-        user:{},
+        user: {},
     });
 
     const renderActivities = currentActivities.map((act, index: number) => {
@@ -76,8 +75,16 @@ const ActivityGrid = ({ activities }: Props) => {
             >
                 {renderActivities}
             </GridList>
-            <Popup openPopup={openPopup} setOpenPopup={setOpenPopup} maxWidth='md'>
-                <ActivityInformation activity={activity}></ActivityInformation>
+            <Popup
+                openPopup={openPopup}
+                setOpenPopup={setOpenPopup}
+                maxWidth="md"
+            >
+                <ActivityInformation
+                    openPopup={openPopup}
+                    setOpenPopup={setOpenPopup}
+                    activity={activity}
+                ></ActivityInformation>
             </Popup>
             <Pageination
                 style={{ justifyContent: 'center', display: 'flex' }}

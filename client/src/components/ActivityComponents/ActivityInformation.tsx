@@ -18,17 +18,20 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Marker } from 'react-google-maps';
 import hiking from '../../assets/hiking.jpg';
 import MapComponent from '../MapComponents/MapComponent';
-import weather from '../../assets/weather.png';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import { UserContext } from '../../UserContext';
 import Equipment from '../../interfaces/Equipment';
 import axios from '../../Axios';
-import MapMarker from '../MapComponents/MapMarker';
+import Popup from '../Popup';
 import WeatherComponent from '../WeatherComponents/WeatherComponent';
+import ActivityForm from './ActivityForm';
 
 interface Props {
     activity: ActivityResponse;
+    openPopup?: boolean;
+    setOpenPopup?: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
 const useStyles = makeStyles(() =>
     createStyles({
         titlearea: {
@@ -66,13 +69,25 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const ActivityInformation = ({ activity }: Props) => {
+const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
     const classes = useStyles();
     const date = new Date(activity.time);
     const eventTime = new String(date);
     //Registration is 0 if registration is posible, 1 if you are already registered and 2 if the activity is ful
     const [registration, setRegistration] = useState<number>();
+    const [isOwner, setIsOwner] = useState<boolean>(false);
     const { user } = useContext(UserContext);
+    const [openEditPopup, setOpenEditPopup] = useState<boolean>(false);
+
+    const editActivity = () => {
+        setOpenEditPopup(true);
+    };
+
+    const deleteActivity = () => {
+        if (setOpenPopup && openPopup) {
+            setOpenPopup(!openPopup);
+        }
+    };
 
     const register = () => {
         axios
@@ -94,6 +109,9 @@ const ActivityInformation = ({ activity }: Props) => {
     };
 
     useEffect(() => {
+        if (activity.user['userId'] === user) {
+            setIsOwner(true);
+        }
         if (activity.registeredParticipants.length >= activity.capacity) {
             setRegistration(2);
         } else {
@@ -159,6 +177,7 @@ const ActivityInformation = ({ activity }: Props) => {
             );
         }
     );
+    
     const mapParticipants = activity.registeredParticipants.map(
         (par: any, index: number) => {
             return (
@@ -188,20 +207,30 @@ const ActivityInformation = ({ activity }: Props) => {
                             {activity.title}
                         </Typography>
                     </Grid>
-                    <Grid item xs={1}>
-                        <Tooltip title='Rediger denne aktiviteten'>
-                            <Button className={classes.otherButton}>
-                                <Edit></Edit>
-                            </Button>
-                        </Tooltip>
-                    </Grid>
-                    <Grid item xs={1}>
-                        <Tooltip title='Slett denne aktiviteten'>
-                            <Button className={classes.otherButton}>
-                                <Delete></Delete>
-                            </Button>
-                        </Tooltip>
-                    </Grid>
+                    {isOwner && (
+                        <Grid item xs={1}>
+                            <Tooltip title="Rediger denne aktiviteten">
+                                <Button
+                                    onClick={editActivity}
+                                    className={classes.otherButton}
+                                >
+                                    <Edit></Edit>
+                                </Button>
+                            </Tooltip>
+                        </Grid>
+                    )}
+                    {isOwner && (
+                        <Grid item xs={1}>
+                            <Tooltip title="Slett denne aktiviteten">
+                                <Button
+                                    onClick={deleteActivity}
+                                    className={classes.otherButton}
+                                >
+                                    <Delete></Delete>
+                                </Button>
+                            </Tooltip>
+                        </Grid>
+                    )}
                     <Grid item xs={3}>
                         {registerBtn}
                     </Grid>
@@ -303,12 +332,22 @@ const ActivityInformation = ({ activity }: Props) => {
                 </div>
                 <Grid item>
                     <WeatherComponent
-                        lat={activity.latitude} 
+                        lat={activity.latitude}
                         lon={activity.longitude}
                         time={activity.time}
                     />
                 </Grid>
             </Grid>
+            <Popup
+                openPopup={openEditPopup}
+                setOpenPopup={setOpenEditPopup}
+                maxWidth="md"
+            >
+                <ActivityForm
+                    openPopup={openEditPopup}
+                    setOpenPopup={setOpenEditPopup}
+                ></ActivityForm>
+            </Popup>
         </div>
     );
 };

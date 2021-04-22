@@ -84,7 +84,7 @@ const tagFilter = (
     tags: string[] | undefined
 ): ActivityResponse[] => {
     return activities.filter((act: ActivityResponse) => {
-        if (!tags) {
+        if (!tags || tags.length === 0) {
             return act;
         } else {
             let containsTags = true;
