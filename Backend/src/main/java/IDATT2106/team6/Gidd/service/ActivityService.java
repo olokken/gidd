@@ -38,7 +38,7 @@ public class ActivityService {
             new Activity(id, title, time, repeat, userId,
                 capacity, groupId, description, image, activityLevel, tags,
                 latitude, longitude, currentTime);
-        log.info("adding new activity: " + newActivity.toString());
+        log.info("adding new activity: " + newActivity.getActivityId());
         repo.addActivity(newActivity);
     }
 
@@ -48,7 +48,7 @@ public class ActivityService {
     }
 
     public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
-        log.info("adding user " + id + " to activity " + activity.toString());
+        log.info("adding user " + id + " to activity " + activity.getActivityId());
         return this.repo.addUserToActivity(id, activity, user, time);
     }
 
@@ -62,12 +62,12 @@ public class ActivityService {
     }
 
     public boolean removeUserFromActivity(int activityUser, Activity activity){
-        log.info("removing user " + activityUser + " from activity " + activity.toString());
+        log.info("removing user " + activityUser + " from activity " + activity.getActivityId());
         return this.repo.removeUserFromActivity(activityUser, activity);
     }
 
     public boolean editActivity(Activity activity){
-        log.info("editing activity " + activity.toString());
+        log.info("editing activity " + activity.getActivityId());
         return repo.updateActivity(activity);
     }
 

@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -46,7 +48,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 //import org.json.JSONException;
 
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @Controller
 public class GiddController {
     private Logger log = new Logger(GiddController.class.toString());
@@ -135,7 +137,7 @@ public class GiddController {
         HttpHeaders header = new HttpHeaders();
 
         header.add("Content-Type", "application/json; charset=UTF-8");
-        log.info("created user " + result.toString());
+        log.info("created user " + result.getUserId() + " | " + result.getEmail());
         if (result != null) {
             log.info("created user");
             header.add("Status", "201 CREATED");
@@ -636,7 +638,9 @@ public class GiddController {
             log.error("An unexpected message was caught when parsing phoneNumber: " +
                 e.getMessage() + " local: " + e.getLocalizedMessage());
             body.put("Error", "Something went wrong");
-            return ResponseEntity.badRequest().body(formatJson(body));
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
         }
 
         try {
@@ -676,7 +680,71 @@ public class GiddController {
         log.error("User could not be edited, are you sure the user exists");
         header.add("Status", "400 BAD REQUEST");
         body.put("error", "could not edit user are you sure the user exists?");
-        return ResponseEntity.badRequest().body(formatJson(body));
+        return ResponseEntity
+            .badRequest()
+            .body(formatJson(body));
+    }
+
+    @PutMapping(value = "/user/some/{id}")
+    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map,
+                                       @PathVariable Integer id) {
+        log.debug("Received request at /user/some/" + id);
+        // TODO This method NEEDS to control token once that's possible
+        Map<String, String> body = new HashMap<>();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=UTF-8");
+        headers.add("Access-Control-Allow-Origin", "*");
+
+        if(!parsePhone(map, body)) {
+            log.error("Could not parse phoneNumber");
+
+            return ResponseEntity
+                .badRequest()
+                .headers(headers)
+                .body(formatJson(body));
+        }
+
+        try{
+            log.debug("Attempting to edit user");
+            boolean result = userService.editUser(
+                id,
+                map.get("email").toString(),
+                map.get("newPassword").toString(),
+                map.get("firstName").toString(),
+                map.get("surname").toString(),
+                Integer.parseInt(map.get("phoneNumber").toString()),
+                ActivityLevel.valueOf(map.get("activityLevel").toString())
+            );
+
+            if (result) {
+                log.info("created user");
+                body.put("userId", String.valueOf(id));
+
+                return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .body(formatJson(body));
+            }
+        } catch (NullPointerException npe) {
+            body.put("error", "invalid parameter");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        } catch (Exception e) {
+            log.error("An unexpected error was caught while editing user: " + e.getMessage());
+            body.put("error", "an unexpected error occurred");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
+        log.error("Could not edit user for some unexpected reason");
+        body.put("error", "user could not be edited");
+
+        return ResponseEntity
+            .badRequest()
+            .body(formatJson(body));
     }
 
     @PutMapping(value = "/activity/{id}", consumes = "application/json", produces = "application/json")
@@ -721,7 +789,8 @@ public class GiddController {
 
         return ResponseEntity
             .ok()
-            .headers(headers).body(formatJson(body));
+            .headers(headers)
+            .body(activity.toString());
     }
 
     @GetMapping(value = "/user", produces = "application/json")
@@ -961,26 +1030,11 @@ public class GiddController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
-        Map<String, String> body = new HashMap<>();
-
         StringBuilder sb = new StringBuilder();
 
         List<Activity> activities =
             activityUser.stream().map(ActivityUser::getActivity).collect(Collectors.toList());
 
-        for (ActivityUser au : activityUser) {
-
-            sb.append(au.getActivity().getActivityId());
-            sb.append(",");
-        }
-
-        if (!activityUser.isEmpty()) {
-            sb.delete(sb.length() - 1, sb.length());
-        }
-
-        log.debug("Returning activities");
-
-        body.put("activityIds", sb.toString());
         return ResponseEntity
             .ok()
             .headers(header)
@@ -1214,14 +1268,12 @@ public class GiddController {
             header.add("Content-Type", "application/json; charset=UTF-8");
 
             body.put("activityId", String.valueOf(activityId));
-            body.put("users", "");
-            users.stream().forEach(u -> body.put("user", body.get("user") + u.getUserId() + ","));
-            body.put("users", body.get("user").substring(0, body.get("user").length() - 1));
 
+            String bodyJson = formatJson(body);
             return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(formatJson(body));
+                .body(bodyJson.substring(0, bodyJson.length() - 1) + ",\"users\":" + users.toString() + "}");
         }
 
         body.put("error", "no activity was deleted, are you sure the activity exists");
@@ -1350,6 +1402,18 @@ public class GiddController {
             .body(formatJson(body));
     }
 
+    private List<Equipment> splitEquipment (String equipString) {
+        /*log.info("splitting equipment");
+        ArrayList<String> equipNames = new ArrayList<>(Arrays.asList(equipString.split(",")));
+        ArrayList<Equipment> equips = new ArrayList<>();
+        for (String name : equipNames) {
+            name = name.toLowerCase();
+            Equipment equipment = new Equipment(name);
+            equipmentService.
+        }*/
+        return null;
+    }
+
     private List<Tag> splitTags(String tagString) {
         log.info("splitting tags");
         ArrayList<String> tagNames = new ArrayList<>(Arrays.asList(tagString.split(",")));
@@ -1433,6 +1497,7 @@ public class GiddController {
 
         log.debug("Checking if the equipment already is registered in the database");
         for (String s : equipmentDescription) {
+
             if (equipmentService.getEquipmentByDescription(s.trim()) == null) {
                 registerEquipment(s.trim());
             }
@@ -1523,5 +1588,21 @@ public class GiddController {
             return false;
         }
         return false;
+    }
+
+    private boolean parsePhone(Map<String, Object> map, Map<String, String> body) {
+        try {
+            Integer.parseInt(map.get("phoneNumber").toString());
+        } catch (NumberFormatException e) {
+            log.error("phone number cannot be parsed to number " + map.toString());
+            body.put("error", "phone number is not numeric");
+            return false;
+        } catch (Exception e) {
+            log.error("An unexpected message was caught when parsing phoneNumber: " +
+                e.getMessage() + " local: " + e.getLocalizedMessage());
+            body.put("Error", "Something went wrong");
+            return false;
+        }
+        return true;
     }
 }

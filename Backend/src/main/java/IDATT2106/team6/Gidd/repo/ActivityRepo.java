@@ -58,7 +58,7 @@ public class ActivityRepo extends GiddRepo {
 
     public boolean updateActivity(Activity activity){
         EntityManager em = getEm();
-        log.info("updating activity " + activity.toString());
+        log.info("updating activity " + activity.getActivityId());
         try {
             em.getTransaction().begin();
             em.merge(activity);
@@ -103,6 +103,7 @@ public class ActivityRepo extends GiddRepo {
                 em.remove(temporaryActivity);
                 em.getTransaction().commit();
                 log.info("delete success on id: " + activityId);
+                em.getEntityManagerFactory().getCache().evict(User.class);
                 return true;
             }else {
                 log.error("failed finding activity, cannot delete activity with id: " + activityId);
@@ -120,18 +121,18 @@ public class ActivityRepo extends GiddRepo {
     public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
         ActivityUser activityUser = new ActivityUser(id, activity, user, time);
         activity.addParticipant(activityUser);
-        log.info("adding user " + id + " to activity: " + activity.toString());
+        log.info("adding user " + id + " to activity: " + activity.getActivityId());
         EntityManager em = getEm();
 
         try{
             em.getTransaction().begin();
             em.merge(activity);
             em.getTransaction().commit();
-            log.info("successfully adder user " + id + " to activity " + activity.toString());
+            log.info("successfully added user " + id + " to activity " + activity.getActivityId());
             return true;
         }catch (Exception e){
             log.error("adding user " + id + 
-            " to activity " + activity.toString() +
+            " to activity " + activity.getActivityId() +
              " failed due to " + e.getMessage());
             em.getTransaction().rollback();
             return false;
@@ -142,11 +143,11 @@ public class ActivityRepo extends GiddRepo {
 
     public boolean removeUserFromActivity(int activityUserId, Activity activity){
         EntityManager em = getEm();
-        log.info("removing user " + activityUserId + " from activity " + activity.toString());
+        log.info("removing user " + activityUserId + " from activity " + activity.getActivityId());
         try{
             for(ActivityUser as : activity.getRegisteredParticipants()){
                 if(as.getId() == activityUserId){
-                    log.info("found user id " + activityUserId + " in activity " + activity.toString());
+                    log.info("found user id " + activityUserId + " in activity " + activity.getActivityId());
                     activity.getRegisteredParticipants().remove(as);
                     break;
                 }
@@ -155,10 +156,10 @@ public class ActivityRepo extends GiddRepo {
             em.merge(activity);
             em.flush();
             em.getTransaction().commit();
-            log.info("user " + activityUserId + " removed successfully from activity " + activity.toString());
+            log.info("user " + activityUserId + " removed successfully from activity " + activity.getActivityId());
             return true;
         }catch (Exception e){
-            log.error("removing user " + activityUserId + " from activity " + activity.toString() + " failed due to " + e.getMessage());
+            log.error("removing user " + activityUserId + " from activity " + activity.getActivityId() + " failed due to " + e.getMessage());
             return false;
         }finally {
             em.close();
