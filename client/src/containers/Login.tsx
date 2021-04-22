@@ -125,9 +125,12 @@ const Login = () => {
             surname: response.profileObj.familyName,
             id: response.profileObj.googleID
         }).then(response => {
+            console.log(response)
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('userID', response.data.userId);
+            setUser(response.data.userId);
         }).then(() => {
+            setUser(response.data.userId);
             history.push('/Activities');
         }).catch(error => {
             console.log(error);
@@ -151,7 +154,9 @@ const Login = () => {
         }).then(response => {
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('userID', response.data.userId);
+            setUser(response.data.userId);
         }).then(() => {
+            setUser(response.data.userId);
             history.push('/Activities');
         }).catch(error => {
             console.log(error.message);
