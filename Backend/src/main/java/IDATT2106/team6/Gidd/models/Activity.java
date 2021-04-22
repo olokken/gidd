@@ -224,7 +224,7 @@ public class Activity {
             ", \n\"user\":" + user.toJSON() +
             ", \n\"capacity\":" + capacity +
             ", \n\"groupId\":" + groupId +
-            ", \n\"description\":" + "\"" + description + "\"" +
+            ", \n\"description\":" + "" + description + "" +
             ", \n\"image\":" + "\"" +Arrays.toString(image) +"\"" +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
             ", \n\"tags\":" + tags.toString() +
