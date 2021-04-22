@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -213,50 +214,13 @@ public class GiddController {
             con.disconnect();
 
             Map resMap;
-            // TODO Should be extracted into per-provider methods to reduce complexity of loginSome
             if (provider == Provider.FACEBOOK) {
                 resMap =
                     new ObjectMapper()
                         .readValue(content.substring(8, content.length() - 1), Map.class);
                 if (Boolean.parseBoolean(resMap.get("is_valid").toString())) {
                     log.info("access token valid");
-                    User user = userService.getUser(map.get("email").toString());
-                    if (user != null) {
-                        log.info("email already found in database, generating JWT");
-                        body.put("token", securityService
-                            .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
-                        body.put("userId", String.valueOf(user.getUserId()));
-
-                        return ResponseEntity
-                            .ok()
-                            .body(formatJson(body));
-                    }
-
-                    log.info("email doesn't exist in database, attempting to create user");
-                    User newUser = userService.registerUser(
-                        getRandomID(),
-                        map.get("email").toString(),
-                        "9djw#ekc<_>a8ZS" + getRandomID(),
-                        map.get("firstName").toString(),
-                        map.get("surname").toString(),
-                        -1,
-                        null,
-                        Provider.FACEBOOK);
-
-                    // TODO this segment can be removed once registerUser()
-                    //  makes sure the user gets a valid id
-                    if (newUser == null) {
-                        throw new NullPointerException();
-                    }
-
-                    body.put("token", securityService
-                        .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 5)));
-                    body.put("userId", String.valueOf(newUser.getUserId()));
-
-                    return ResponseEntity
-                        .created((new URI("/user/" + newUser.getUserId())))
-                        .body(formatJson(body));
-
+                    return someCheckUser(map, body, provider);
 
                 } else {
                     body.put("error", "invalid access token");
@@ -278,43 +242,7 @@ public class GiddController {
                         .body(formatJson(body));
                 }
 
-                User user = userService.getUser(map.get("email").toString());
-                if (user != null) {
-                    log.info("email already found in database, generating JWT");
-                    body.put("token", securityService
-                        .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
-                    body.put("userId", String.valueOf(user.getUserId()));
-
-                    return ResponseEntity
-                        .ok()
-                        .body(formatJson(body));
-                }
-
-                log.info("email doesn't exist in database, attempting to create user");
-                User newUser = userService.registerUser(
-                    getRandomID(),
-                    map.get("email").toString(),
-                    "9djw#ekc<_>a8ZS" + getRandomID(),
-                    map.get("firstName").toString(),
-                    map.get("surname").toString(),
-                    -1,
-                    null,
-                    Provider.FACEBOOK);
-
-                // TODO this segment can be removed once registerUser()
-                //  makes sure the user gets a valid id
-                if (newUser == null) {
-                    throw new NullPointerException();
-                }
-
-                body.put("token", securityService
-                    .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 5)));
-                body.put("userId", String.valueOf(newUser.getUserId()));
-
-                return ResponseEntity
-                    .created((new URI("/user/" + newUser.getUserId())))
-                    .body(formatJson(body));
-
+                return someCheckUser(map, body, provider);
             }
         } catch (NullPointerException e) {
             body.put("error", "missing parameter");
@@ -1382,6 +1310,48 @@ public class GiddController {
         log.info("creating new random id");
         int id = new Random().nextInt();
         return (id > 0 ? id : -id);
+    }
+
+
+    private ResponseEntity someCheckUser(Map<String, Object> map,
+                                         Map<String, String> body,
+                                         Provider provider) throws URISyntaxException {
+        User user = userService.getUser(map.get("email").toString());
+        if (user != null) {
+            log.info("email already found in database, generating JWT");
+            body.put("token", securityService
+                .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
+            body.put("userId", String.valueOf(user.getUserId()));
+
+            return ResponseEntity
+                .ok()
+                .body(formatJson(body));
+        }
+
+        log.info("email doesn't exist in database, attempting to create user");
+        User newUser = userService.registerUser(
+            getRandomID(),
+            map.get("email").toString(),
+            "9djw#ekc<_>a8ZS" + getRandomID(),
+            map.get("firstName").toString(),
+            map.get("surname").toString(),
+            -1,
+            null,
+            provider);
+
+        // TODO this segment can be removed once registerUser()
+        //  makes sure the user gets a valid id
+        if (newUser == null) {
+            throw new NullPointerException();
+        }
+
+        body.put("token", securityService
+            .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 5)));
+        body.put("userId", String.valueOf(newUser.getUserId()));
+
+        return ResponseEntity
+            .created((new URI("/user/" + newUser.getUserId())))
+            .body(formatJson(body));
     }
 
     private List<Tag> splitTags(String tagString) {
