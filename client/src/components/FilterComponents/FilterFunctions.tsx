@@ -1,5 +1,9 @@
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import ActivityLevels from '../../interfaces/ActivityLevels';
+import DefaultCenter from '../../interfaces/DefaultCenter';
+import { getDistance } from 'geolib';
+import { getOptionLabel } from 'react-select/src/builtins';
+import { LeakRemoveTwoTone } from '@material-ui/icons';
 
 const titleFilter = (
     activities: ActivityResponse[],
@@ -44,7 +48,7 @@ const showMyActivities = (
     console.log(user);
     return activities.filter((act: ActivityResponse) => {
         const registered = act.registeredParticipants
-            .map((par) => par.userId['userId'])
+            .map((par) => par['userId'])
             .filter((userID) => userID == user && userID.length !== 0);
         if (show === false) {
             return act;
@@ -76,8 +80,8 @@ const changeCapacity = (
         if (act.capacity >= capacity[0] && act.capacity <= capacity[1]) {
             return act;
         }
-    })
-}
+    });
+};
 
 const tagFilter = (
     activities: ActivityResponse[],
@@ -92,30 +96,49 @@ const tagFilter = (
                 containsTags = true;
                 act.tags.forEach((tag) => {
                     tags.forEach((myTag) => {
-                        console.log('min tag' + myTag + 'din tag ' + tag)
+                        console.log('min tag' + myTag + 'din tag ' + tag);
                         if (tag.indexOf(myTag) === -1) {
                             containsTags = false;
                         }
-                    })
-                })
+                    });
+                });
             } else {
                 containsTags = false;
-                console.log('mindre enn 1 tag')
+                console.log('mindre enn 1 tag');
                 act.tags.forEach((tag) => {
                     tags.forEach((myTag) => {
-                        console.log('min tag' + myTag + 'din tag ' + tag)
+                        console.log('min tag' + myTag + 'din tag ' + tag);
                         if (tag === myTag) {
                             containsTags = true;
                         }
-                    })
-                })
+                    });
+                });
             }
             if (containsTags) {
                 return act;
             }
         }
-    })
-}
+    });
+};
+
+const distanceFilter = (
+    activities: ActivityResponse[],
+    distance: number,
+    location: DefaultCenter | undefined
+): ActivityResponse[] => {
+    return activities.filter((act) => {
+        if (location) {
+            let dist = getDistance(location, {
+                latitude: act.latitude,
+                longitude: act.longitude,
+            });
+            dist = dist / 1000;
+            if (dist <= distance) {
+                return act;
+            }
+        }
+    });
+};
 
 export const FilterFunctions = {
     titleFilter,
@@ -125,5 +148,6 @@ export const FilterFunctions = {
     activityLevelFilter,
     dateToFilter,
     dateFromFilter,
-    tagFilter
+    tagFilter,
+    distanceFilter,
 };

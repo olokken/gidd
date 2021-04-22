@@ -275,11 +275,13 @@ const ActivityForm = ({ openPopup, setOpenPopup }: Props) => {
                 JSON.stringify(response);
                 console.log(response.data);
             })
+            .then(() => {
+                handleReset();
+                setOpenPopup(!openPopup);
+            })
             .catch((error) =>
                 console.log('Could not post activity: ' + error.message)
             );
-        handleReset();
-        setOpenPopup(!openPopup);
     };
 
     const handleReset = () => {
