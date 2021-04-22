@@ -142,7 +142,7 @@ public class GiddController {
         HttpHeaders header = new HttpHeaders();
 
         header.add("Content-Type", "application/json; charset=UTF-8");
-        log.info("created user " + result.toString());
+        log.info("created user " + result.getUserId() + " | " + result.getEmail());
         if (result != null) {
             log.info("created user");
             header.add("Status", "201 CREATED");
@@ -285,11 +285,14 @@ public class GiddController {
 
     @PostMapping(value = "/activity", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
+
         log.debug("Received new activity: " + map.toString());
         int newId;
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
+
         headers.add("Content-Type", "application/json; charset=UTF-8");
+        Activity newActivity = null;
         try {
             User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
             if (user == null) {
@@ -298,13 +301,27 @@ public class GiddController {
             }
             newId = 0;
 
-            Activity newActivity = mapToActivity(map, newId, user);
+            newActivity = mapToActivity(map, newId, user);
             log.debug("Created new activity: " + newActivity.getActivityId());
             newId = newActivityValidId(newActivity);
             log.debug("new activity id: " + newId);
 
-            map.get("equipment");
+            if(!insertUserActivityCoupling(user, newActivity)){
+                body.put("error", "something went wrong when coupling the user and activiyt");
+                return ResponseEntity
+                        .badRequest()
+                        .headers(headers)
+                        .body(formatJson(body));
+            }
             registerEquipmentToActivity(newId, map.get("equipmentList").toString());
+
+            log.info("Activity created successfully");
+
+            body.put("id", "" + newActivity.getActivityId());
+            return ResponseEntity
+                    .created(URI.create(String.format("/activity/%d", newActivity.getActivityId())))
+                    .body(formatJson(body));
+
         } catch (InvalidAttributesException e) {
             log.error("InvalidattributesException, invalid userID recieved " + e.getMessage());
             body.put("error", e.getMessage());
@@ -312,6 +329,12 @@ public class GiddController {
                 .badRequest()
                 .headers(headers)
                 .body(formatJson(body));
+        } catch (IllegalArgumentException e){
+            log.error("user is already registered to the activity");
+            body.put("error", "user is already registered: " + e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(formatJson(body));
         } catch (Exception e) {
             body.put("error", "unknown error: " + e.getMessage());
             log.error("unexplained error caught " + e + "; local:" + e.getLocalizedMessage());
@@ -319,11 +342,6 @@ public class GiddController {
                 .badRequest()
                 .body(formatJson(body));
         }
-        log.info("Activity created successfully");
-        body.put("id", "" + newId);
-        return ResponseEntity
-            .created(URI.create(String.format("/activity/%d", newId)))
-            .body(formatJson(body));
     }
 
     @PostMapping(value = "/activity/{activityId}/equipment/{equipmentId}/user")
@@ -433,20 +451,18 @@ public class GiddController {
         log.debug("Received PostMapping to '/user/{userId}/activity with userId" +
             Integer.parseInt(map.get("userId").toString()) + " and activityId " +
             Integer.parseInt(map.get("activityId").toString()));
-        Timestamp time = new Timestamp(new Date().getTime());
 
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         Activity activity =
             activityService.findActivity(Integer.parseInt(map.get("activityId").toString()));
 
         HttpHeaders header = new HttpHeaders();
+        Map<String, String> body = new HashMap<>();
 
         if (user == null) {
             log.error("User is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
-
-            Map<String, String> body = new HashMap<>();
 
             body.put("error", "The user does not exist");
 
@@ -461,7 +477,6 @@ public class GiddController {
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
-            Map<String, String> body = new HashMap<>();
 
             body.put("error", "The activity does not exist");
 
@@ -471,93 +486,40 @@ public class GiddController {
                 .body(formatJson(body));
         }
 
-        //Legge inn sjekk om den allerede er registrert
-        List<ActivityUser> activityUser = user.getActivities();
-        ArrayList<Integer> activityIds = new ArrayList<>();
-
-        for (ActivityUser as : activityUser) {
-            activityIds.add(as.getActivity().getActivityId());
-        }
-
-        if (activityIds.contains(activity.getActivityId())) {
-            log.error("The user is already registered to the activity");
-            header.add("Status", "400 BAD REQUEST");
-            header.add("Content-Type", "application/json; charset=UTF-8");
-
-            Map<String, String> body = new HashMap<>();
-
-            body.put("error", "The user is already registered to the activity");
-
-            return ResponseEntity
-                .badRequest()
-                .headers(header)
-                .body(formatJson(body));
-        }
-
-        int id = getRandomID();
-
-        //Kalle insert-metode helt til den blir true
-
-        ArrayList<ActivityUser> activityUsers = new ArrayList<>();
-        ArrayList<Activity> activities = activityService.getAllActivities();
-
-        for (Activity a : activities) {
-            activityUsers.addAll(a.getRegisteredParticipants());
-        }
-
-        log.debug("Generating random id...");
-        ArrayList<Integer> ids = new ArrayList<>();
-
-        for (ActivityUser au : activityUsers) {
-            ids.add(au.getId());
-        }
-
-        while (ids.contains(id)) {
-            id = getRandomID();
-        }
-
-
-        if (userService.addUserToActivity(id, activity, user, time)) {
-            if (activityService.addUserToActivity(id, activity, user, time)) {
+        try {
+            if (insertUserActivityCoupling(user, activity)) {
                 log.debug("The registration was successful");
                 header.add("Status", "200 OK");
                 header.add("Content-Type", "application/json; charset=UTF-8");
-
-                Map<String, String> body = new HashMap<>();
 
                 body.put("userId", String.valueOf(user.getUserId()));
                 body.put("activityId", String.valueOf(activity.getActivityId()));
 
                 return ResponseEntity
-                    .ok()
+                        .ok()
+                        .headers(header)
+                        .body(formatJson(body));
+            } else {
+                log.error("Something wrong happened when trying to register the activity to the user");
+                header.add("Status", "400 BAD REQUEST");
+                header.add("Content-Type", "application/json; charset=UTF-8");
+
+
+                body.put("error", "Something wrong happened registering the coupling between user and activity");
+                return ResponseEntity
+                        .badRequest()
+                        .headers(header)
+                        .body(formatJson(body));
+
+            }
+        } catch(IllegalArgumentException e){
+            log.error("user is already registered to the activity");
+            body.put("error", "user is already registered to the activity: " + e.getMessage());
+            return ResponseEntity
+                    .badRequest()
                     .headers(header)
                     .body(formatJson(body));
-            }
-            log.error("Something wrong happened when trying to register the user to the activity");
-            userService.removeActivity(id, user);
-            header.add("Status", "400 BAD REQUEST");
-            header.add("Content-Type", "application/json; charset=UTF-8");
-
-            Map<String, String> body = new HashMap<>();
-
-            body.put("error", "Something wrong happened with the activity when trying to register");
-
-            return ResponseEntity
-                .badRequest()
-                .headers(header)
-                .body(formatJson(body));
         }
-        log.error("Something wrong happened when trying to register the activity to the user");
-        header.add("Status", "400 BAD REQUEST");
-        header.add("Content-Type", "application/json; charset=UTF-8");
-
-        Map<String, String> body = new HashMap<>();
-
-        body.put("error", "Something wrong happened with the user when trying to register");
-        return ResponseEntity
-            .badRequest()
-            .headers(header)
-            .body(formatJson(body));
     }
 
     @PostMapping(value = "/user/{userId}/user")
@@ -1538,6 +1500,52 @@ public class GiddController {
         }
         log.info("map: " + map.toString() + " validated");
         return true;
+    }
+
+    private boolean insertUserActivityCoupling(User user, Activity activity){
+        //Legge inn sjekk om den allerede er registrert
+        List<ActivityUser> activityUser = user.getActivities();
+        ArrayList<Integer> activityIds = new ArrayList<>();
+        Timestamp time = new Timestamp(new Date().getTime());
+
+        for (ActivityUser as : activityUser) {
+            activityIds.add(as.getActivity().getActivityId());
+        }
+
+        if (activityIds.contains(activity.getActivityId())) {
+            throw new IllegalArgumentException("The user is already registered to the activity");
+        }
+
+        int couplingId = getRandomID();
+
+        //Kalle insert-metode helt til den blir true
+
+        ArrayList<ActivityUser> activityUsers = new ArrayList<>();
+        ArrayList<Activity> activities = activityService.getAllActivities();
+
+        for (Activity a : activities) {
+            activityUsers.addAll(a.getRegisteredParticipants());
+        }
+
+        log.debug("Generating random id...");
+        ArrayList<Integer> couplingIdList = new ArrayList<>();
+
+        for (ActivityUser au : activityUsers) {
+            couplingIdList.add(au.getId());
+        }
+
+        while (couplingIdList.contains(couplingId)) {
+            couplingId = getRandomID();
+        }
+
+        if (userService.addUserToActivity(couplingId, activity, user, time)) {
+            if (activityService.addUserToActivity(couplingId, activity, user, time)) {
+                return true;
+            }
+            userService.removeActivity(couplingId, user);
+            return false;
+        }
+        return false;
     }
 
     private boolean parsePhone(Map<String, Object> map, Map<String, String> body) {
