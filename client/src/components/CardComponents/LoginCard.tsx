@@ -6,9 +6,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin, { ReactFacebookLoginInfo } from 'react-facebook-login';
-
-
-
+import GoogleButton from 'react-google-button';
 
 const LoginCardContainer = styled.div`
   width: 30rem;
@@ -24,14 +22,15 @@ const LoginCardContainer = styled.div`
 
 
 const FacebookContainer = styled.div`
-  width: 85%;
+  width: 95%;
 `;
 
 const GoogleContainer = styled.div`
+  width:100%;
 `;
 
 const SocialMediaContainer = styled.div`
-  width: 90%;
+  width: 100%;
   display:grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows:auto;
@@ -47,13 +46,10 @@ interface Props {
   handleClickShowPassword: () => void;
   showPassword: boolean;
   responseGoogle: (response: any) => void;
-  failureGoogle: (response:any) => void;
+  failureGoogle: (response: any) => void;
   responseFacebook: (response: any) => void;
   componentClicked: (data: any) => void;
 }
-
-
-
 
 const LoginCard = ({
   onLogin,
@@ -123,7 +119,19 @@ const LoginCard = ({
           <GoogleLogin
             clientId='829161936578-7u42ghop2aqmgs3e4n98907euik21jrt.apps.googleusercontent.com'
             buttonText='Login with Google'
-            //fields="name,email,picture"
+            render={renderProps => (
+              <GoogleButton onClick={renderProps.onClick}
+                type='light'
+                style={{
+                  width: '95%',
+                  height: '100%',
+                  fontSize: '18px',
+                  float: 'right'
+                }}
+                label='Login with Google'
+                disabled={renderProps.disabled} />
+            )
+            }
             autoLoad={false}
             onSuccess={responseGoogle}
             onFailure={failureGoogle}

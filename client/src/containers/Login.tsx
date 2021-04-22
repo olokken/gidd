@@ -49,6 +49,7 @@ const Login = () => {
             const user = await login();
             axios
                 .post('/login', {
+                    provider: 'LOCAL',
                     email: email,
                     password: password,
                 })
@@ -73,28 +74,6 @@ const Login = () => {
         } else {
             alert('Vennligst fyll ut alt');
         }
-    };
-
-    const onLoginSoMe = async () => {
-        //TODO fix første login og registrering med backend
-        axios
-            .post('/user', {
-                email: email,
-                password: password,
-                firstName: firstName,
-                surname: surname,
-                phoneNumber: '',
-                activityLevel: '',
-            })
-            .then((response) => {
-                console.log(JSON.stringify(response.data.id));
-                setUser(response.data.id);
-                history.push('/Activites');
-            })
-            .catch((error) => {
-                // handle this error
-                console.log('error: ' + error.message);
-            });
     };
 
     const login = async () => {
@@ -150,17 +129,20 @@ const Login = () => {
     const responseGoogle = (response: any) => {
         const answer = response;
         console.log(answer);
+        const accessToken = response.tokenId;
         console.log('fått svar');
-        const newUser: User = {
+        axios.post('/login', {
+            provider: 'GOOGLE',
+            accessToken: accessToken,
+            email: response.profileObj.email,
             firstName: response.profileObj.givenName,
             surname: response.profileObj.familyName,
-            userID: response.profileObj.googleId,
-            email: response.profileObj.email,
-            picture: response.profileObj.picture,
-            password: '',
-        };
-        setUser(newUser.userID);
-        onLoginSoMe();
+            id: response.profileObj.googleID
+        }).then(response => {
+            console.log(response);
+        }).catch(error => {
+            console.log(error);
+        })
     };
 
     const failureGoogle = (response: any) => {
@@ -170,16 +152,21 @@ const Login = () => {
     const responseFacebook = (response: any) => {
         console.log(response);
         const name: string[] = response.name.split(' ');
-        const newUser: User = {
+        const accessToken = response.accessToken;
+        axios.post('/login', {
+            provider: "FACEBOOK",
+            accessToken: accessToken,
+            email: response.email,
             firstName: name[0],
             surname: name[1],
-            userID: response.id,
-            email: response.email,
-            picture: response.picture,
-            password: '',
-        };
-        setUser(newUser.userID);
-        onLoginSoMe();
+        }).then(response => {
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('userID', response.data.userId);
+        }).then(() => {
+            history.push('/Activities');
+        }).catch(error => {
+            console.log(error.message);
+        })
     };
 
     const componentClicked = async () => {

@@ -27,11 +27,6 @@ function App() {
         const id = localStorage.getItem('userID')
         const token = localStorage.getItem('token')
         const refreshToken = localStorage.getItem('refreshToken')
-
-        console.log('brukerID: ' + id)
-        console.log('token: ' + token)
-        console.log('token: ' + refreshToken)
-
         if (id !== null) {
             setUser(id)
         }

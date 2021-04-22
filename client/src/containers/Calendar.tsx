@@ -50,17 +50,10 @@ const Calender = () => {
   }
   );
 
-  const getMyActivities = () => {
-    const url = `/user/${user}/activity`;
-    axios.get(url).then((response) => {
-      console.log(response.data);
-    }).catch((error) => {
-      console.log('error' + error.message)
-    })
-  }
 
   useEffect(() => {
-    const url = '/activity'
+    const id = localStorage.getItem('userID')
+    const url = `/user/${id}/activity`;
     axios.get(url).then((response) => {
       console.log(response.data['activities'])
       response.data['activities'].forEach((activity: any) => {
@@ -167,5 +160,7 @@ const Calender = () => {
     </CalendarContainer>
   )
 }
+  
 
 export default Calender;
+

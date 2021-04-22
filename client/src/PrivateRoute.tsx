@@ -10,7 +10,6 @@ interface PrivateRouteProps extends RouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ ...rest }) => {
-    const { user } = useContext(UserContext);
     if (localStorage.getItem('token') === null) return <Redirect to='/' />;
     return <Route {...rest} />;
 }
