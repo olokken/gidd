@@ -229,6 +229,7 @@ public class User {
                 "\n     \"phoneNumber\":" + phoneNumber +"," +
                 "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
                 "\n     \"points\":" + points +
+                "\n     \"provider\":" + '\"' + authProvider + '\"' +
                 "\n }";
     }
 }
