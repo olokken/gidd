@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -46,7 +48,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 //import org.json.JSONException;
 
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @Controller
 public class GiddController {
     private Logger log = new Logger(GiddController.class.toString());
@@ -683,10 +685,11 @@ public class GiddController {
             .body(formatJson(body));
     }
 
-    // TODO This method NEEDS to control token once that's possible
+    @CrossOrigin
     @PutMapping(value = "/user/{id}/setsome")
     public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map,
                                        @PathVariable Integer id) {
+        // TODO This method NEEDS to control token once that's possible
         Map<String, String> body = new HashMap<>();
 
         if(!parsePhone(map, body)) {
@@ -778,7 +781,8 @@ public class GiddController {
 
         return ResponseEntity
             .ok()
-            .headers(headers).body(formatJson(body));
+            .headers(headers)
+            .body(activity.toString());
     }
 
     @GetMapping(value = "/user", produces = "application/json")
@@ -1403,6 +1407,18 @@ public class GiddController {
             .body(formatJson(body));
     }
 
+    private List<Equipment> splitEquipment (String equipString) {
+        /*log.info("splitting equipment");
+        ArrayList<String> equipNames = new ArrayList<>(Arrays.asList(equipString.split(",")));
+        ArrayList<Equipment> equips = new ArrayList<>();
+        for (String name : equipNames) {
+            name = name.toLowerCase();
+            Equipment equipment = new Equipment(name);
+            equipmentService.
+        }*/
+        return null;
+    }
+
     private List<Tag> splitTags(String tagString) {
         log.info("splitting tags");
         ArrayList<String> tagNames = new ArrayList<>(Arrays.asList(tagString.split(",")));
@@ -1486,6 +1502,7 @@ public class GiddController {
 
         log.debug("Checking if the equipment already is registered in the database");
         for (String s : equipmentDescription) {
+
             if (equipmentService.getEquipmentByDescription(s.trim()) == null) {
                 registerEquipment(s.trim());
             }
