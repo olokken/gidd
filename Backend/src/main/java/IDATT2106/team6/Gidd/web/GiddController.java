@@ -135,7 +135,7 @@ public class GiddController {
         HttpHeaders header = new HttpHeaders();
 
         header.add("Content-Type", "application/json; charset=UTF-8");
-        log.info("created user " + result.toString());
+        log.info("created user " + result.getUserId() + " | " + result.getEmail());
         if (result != null) {
             log.info("created user");
             header.add("Status", "201 CREATED");
@@ -636,7 +636,9 @@ public class GiddController {
             log.error("An unexpected message was caught when parsing phoneNumber: " +
                 e.getMessage() + " local: " + e.getLocalizedMessage());
             body.put("Error", "Something went wrong");
-            return ResponseEntity.badRequest().body(formatJson(body));
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
         }
 
         try {
@@ -676,7 +678,62 @@ public class GiddController {
         log.error("User could not be edited, are you sure the user exists");
         header.add("Status", "400 BAD REQUEST");
         body.put("error", "could not edit user are you sure the user exists?");
-        return ResponseEntity.badRequest().body(formatJson(body));
+        return ResponseEntity
+            .badRequest()
+            .body(formatJson(body));
+    }
+
+    // TODO This method NEEDS to control token once that's possible
+    @PutMapping(value = "/user/{id}/setsome")
+    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map,
+                                       @PathVariable Integer id) {
+        Map<String, String> body = new HashMap<>();
+
+        if(!parsePhone(map, body)) {
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
+
+        try{
+            boolean result = userService.editUser(
+                id,
+                map.get("email").toString(),
+                map.get("newPassword").toString(),
+                map.get("firstName").toString(),
+                map.get("surname").toString(),
+                Integer.parseInt(map.get("phoneNumber").toString()),
+                ActivityLevel.valueOf(map.get("activityLevel").toString())
+            );
+
+            if (result) {
+                log.info("created user");
+                body.put("userId", String.valueOf(id));
+
+                return ResponseEntity
+                    .ok()
+                    .body(formatJson(body));
+            }
+        } catch (NullPointerException npe) {
+            body.put("error", "invalid parameter");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        } catch (Exception e) {
+            log.error("An unexpected error was caught while editing user: " + e.getMessage());
+            body.put("error", "an unexpected error occurred");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
+        log.error("Could not edit user for some unexpected reason");
+        body.put("error", "user could not be edited");
+
+        return ResponseEntity
+            .badRequest()
+            .body(formatJson(body));
     }
 
     @PutMapping(value = "/activity/{id}", consumes = "application/json", produces = "application/json")
@@ -1045,6 +1102,7 @@ public class GiddController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
+        log.debug("Friendship is " + friendship);
         HashMap<String, String> body = new HashMap<>();
         body.put("friendship", friendship.toString());
 
@@ -1501,5 +1559,21 @@ public class GiddController {
             return false;
         }
         return false;
+    }
+
+    private boolean parsePhone(Map<String, Object> map, Map<String, String> body) {
+        try {
+            Integer.parseInt(map.get("phoneNumber").toString());
+        } catch (NumberFormatException e) {
+            log.error("phone number cannot be parsed to number " + map.toString());
+            body.put("error", "phone number is not numeric");
+            return false;
+        } catch (Exception e) {
+            log.error("An unexpected message was caught when parsing phoneNumber: " +
+                e.getMessage() + " local: " + e.getLocalizedMessage());
+            body.put("Error", "Something went wrong");
+            return false;
+        }
+        return true;
     }
 }

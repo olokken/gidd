@@ -67,7 +67,7 @@ public class UserService {
 	}
 
     public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
-        log.info("adding user with id " + id + " to activity " + activity.toString());
+        log.info("adding user with id " + id + " to activity " + activity.getActivityId());
         return this.repo.addUserToActivity(id, activity, user, time);
     }
 
