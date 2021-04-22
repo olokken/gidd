@@ -8,9 +8,10 @@ import DefaultCenter from '../../interfaces/DefaultCenter';
 interface Props {
     activity: ActivityResponse;
     position: DefaultCenter;
+    deleteActivity: (id: number) => void;
 }
 
-const MapMarker = ({ activity, position }: Props) => {
+const MapMarker = ({ activity, position, deleteActivity }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     const markerOnClick = () => {
         setOpenPopup(!openPopup);
@@ -24,7 +25,12 @@ const MapMarker = ({ activity, position }: Props) => {
                 setOpenPopup={setOpenPopup}
                 maxWidth="md"
             >
-                <ActivityInformation activity={activity} />
+                <ActivityInformation
+                    deleteActivity={deleteActivity}
+                    activity={activity}
+                    setOpenPopup={setOpenPopup}
+                    openPopup={openPopup}
+                />
             </Popup>
         </>
     );

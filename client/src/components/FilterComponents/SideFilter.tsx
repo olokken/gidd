@@ -24,6 +24,7 @@ interface Props {
     onTagsChange: (tags: string[]) => void;
     onTimeFromChange: (searchResult: Date) => void;
     onTimeToChange: (searchResult: Date) => void;
+    onDistanceChange: (distance: number) => void;
 }
 
 const SideFilter = ({
@@ -35,6 +36,7 @@ const SideFilter = ({
     onTagsChange,
     onTimeFromChange,
     onTimeToChange,
+    onDistanceChange,
 }: Props) => {
     const [titleSearch, setTitleSearch] = useState<string>('');
 
@@ -63,7 +65,9 @@ const SideFilter = ({
                 label={'Vis kun påmeldte aktiviteter'}
                 onStateChange={onShowMine}
             ></ViewBox>
-            <DistanceFilter></DistanceFilter>
+            <DistanceFilter
+                onDistanceChange={onDistanceChange}
+            ></DistanceFilter>
             <TimeFilter
                 onTimeFromChange={onTimeFromChange}
                 onTimeToChange={onTimeToChange}
@@ -74,9 +78,7 @@ const SideFilter = ({
                 headline={'Kapasitet'}
                 onCapacityChange={onCapacityChange}
             ></NumberFilter>
-            <TagTextField
-                onTagsChange={onTagsChange}
-            />
+            <TagTextField onTagsChange={onTagsChange} />
             <ActivityLevel onLevelChange={onLevelChange}></ActivityLevel>
         </StyledContainer>
     );

@@ -16,6 +16,7 @@ import { FilterFunctions } from '../components/FilterComponents/FilterFunctions'
 import axios from '../Axios';
 import ActivityLevels from '../interfaces/ActivityLevels';
 import { UserContext } from '../UserContext';
+import DefaultCenter from '../interfaces/DefaultCenter';
 
 //Endringer kan forekomme her
 
@@ -57,7 +58,7 @@ const Activities = () => {
     const [titleSearch, setTitleSearch] = useState<string>('');
     const [showMine, setShowMine] = useState<boolean>(false);
     const [showFuture, setShowFuture] = useState<boolean>(false);
-    const [distance, setDistance] = useState<number>();
+    const [distance, setDistance] = useState<number>(1000000000);
     const [fromTime, setFromTime] = useState<Date>(new Date());
     const [toTime, setToTime] = useState<Date>(new Date());
     const [capacity, setCapacity] = useState<number[]>([0, 20]);
@@ -67,6 +68,7 @@ const Activities = () => {
         Medium: true,
         High: true,
     });
+    const [location, setLocation] = useState<DefaultCenter>();
 
     useEffect(() => {
         if (activities) {
@@ -104,6 +106,11 @@ const Activities = () => {
                 filteredActivities,
                 tags
             );
+            filteredActivities = FilterFunctions.distanceFilter(
+                filteredActivities,
+                distance,
+                location
+            );
             setCurrentActivities(filteredActivities);
         }
     }, [
@@ -116,6 +123,7 @@ const Activities = () => {
         toTime,
         activityLevel,
         tags,
+        distance,
     ]);
 
     const { mobileView, drawerOpen } = state;
@@ -131,13 +139,33 @@ const Activities = () => {
         };
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());
+        setCoordinates();
     }, []);
 
     const onClickAddButton = () => {
         setOpenPopup(!openPopup);
     };
 
-    useEffect(() => {
+    const deleteActivity = (id: number) => {
+        axios.delete(`/activity/${id}`).then(loadActivities);
+    };
+
+    const setCoordinates = () => {
+        fetch(
+            'https://geolocation-db.com/json/ef6c41a0-9d3c-11eb-8f3b-e1f5536499e7'
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                if (data) {
+                    const latitude: number = data.latitude;
+                    const longitude: number = data.longitude;
+                    console.log(latitude + ', ' + longitude);
+                    setLocation({ lat: latitude, lng: longitude });
+                }
+            });
+    };
+
+    const loadActivities = () => {
         axios
             .get('/activity')
             .then((response) => {
@@ -145,13 +173,16 @@ const Activities = () => {
                 setActivities(response.data['activities']);
             })
             .catch((error) => console.log(error));
-    }, []);
+    };
+
+    useEffect(loadActivities, [openPopup]);
 
     const displayDesktop = () => {
         return (
             <Container>
                 <div style={{ width: '20%' }}>
                     <SideFilter
+                        onDistanceChange={(dist) => setDistance(dist)}
                         onTimeFromChange={(time) => setFromTime(time)}
                         onTimeToChange={(time) => {
                             setToTime(time);
@@ -181,7 +212,10 @@ const Activities = () => {
                             />
                         </Popup>
                     </AddAndSort>
-                    <ActivityGrid activities={currentActivities}></ActivityGrid>
+                    <ActivityGrid
+                        deleteActivity={(id) => deleteActivity(id)}
+                        activities={currentActivities}
+                    ></ActivityGrid>
                 </View>
             </Container>
         );
@@ -234,6 +268,9 @@ const Activities = () => {
                             />
                             <div style={{ padding: '10px' }}>
                                 <SideFilter
+                                    onDistanceChange={(dist) =>
+                                        setDistance(dist)
+                                    }
                                     onTimeFromChange={(time) =>
                                         setFromTime(time)
                                     }
@@ -272,7 +309,10 @@ const Activities = () => {
                             />
                         </Popup>
                     </AddAndSort>
-                    <ActivityGrid activities={currentActivities}></ActivityGrid>
+                    <ActivityGrid
+                        deleteActivity={(id) => deleteActivity(id)}
+                        activities={currentActivities}
+                    ></ActivityGrid>
                 </View>
             </Container>
         );

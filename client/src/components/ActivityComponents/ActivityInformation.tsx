@@ -1,7 +1,6 @@
 import {
     makeStyles,
     createStyles,
-    Theme,
     Grid,
     Typography,
     Paper,
@@ -30,6 +29,7 @@ interface Props {
     activity: ActivityResponse;
     openPopup?: boolean;
     setOpenPopup?: React.Dispatch<React.SetStateAction<boolean>>;
+    deleteActivity?: (id: number) => void;
 }
 
 const useStyles = makeStyles(() =>
@@ -69,12 +69,18 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
+const ActivityInformation = ({
+    activity,
+    deleteActivity,
+    setOpenPopup,
+    openPopup,
+}: Props) => {
+    const [currentAct, setCurrentAct] = useState<ActivityResponse>(activity);
     const classes = useStyles();
     const date = new Date(activity.time);
     const eventTime = new String(date);
     //Registration is 0 if registration is posible, 1 if you are already registered and 2 if the activity is ful
-    const [registration, setRegistration] = useState<number>();
+    const [registration, setRegistration] = useState<number>(1);
     const [isOwner, setIsOwner] = useState<boolean>(false);
     const { user } = useContext(UserContext);
     const [openEditPopup, setOpenEditPopup] = useState<boolean>(false);
@@ -83,13 +89,16 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
         setOpenEditPopup(true);
     };
 
-    const deleteActivity = () => {
-        if (setOpenPopup && openPopup) {
+    const onDeleteClick = () => {
+        if (deleteActivity && openPopup && setOpenPopup) {
+            deleteActivity(activity.activityId);
             setOpenPopup(!openPopup);
         }
     };
 
     const register = () => {
+        console.log('prøver å registrere');
+        console.log(user);
         axios
             .post('/user/activity', {
                 userId: user,
@@ -112,11 +121,11 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
         if (activity.user['userId'] == user) {
             setIsOwner(true);
         }
-        if (activity.registeredParticipants.length >= activity.capacity) {
+        if (currentAct.registeredParticipants.length >= currentAct.capacity) {
             setRegistration(2);
         } else {
-            const registered: number = activity.registeredParticipants
-                .map((par) => par.userId['userId'])
+            const registered: number = currentAct.registeredParticipants
+                .map((par) => par['userId'])
                 .filter((num) => num == user).length;
             if (registered >= 1) {
                 setRegistration(1);
@@ -126,36 +135,30 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
         }
     }, []);
 
-    let registerBtn =
-        registration === 2 ? (
-            <Button className={classes.joinButton} disabled>
-                Aktiviteten er allerede fullbooket
-            </Button>
-        ) : registration === 1 ? (
-            <Button onClick={unRegister} className={classes.joinButton}>
-                Meld deg av
-            </Button>
-        ) : (
-            <Button onClick={register} className={classes.joinButton}>
-                Meld deg på
-            </Button>
-        );
-
-    useEffect(() => {
-        registerBtn =
-            registration === 2 ? (
+    const registerBtn = () => {
+        if (registration == 2) {
+            return (
                 <Button className={classes.joinButton} disabled>
                     Aktiviteten er allerede fullbooket
                 </Button>
-            ) : registration === 1 ? (
+            );
+        } else if (registration == 1) {
+            return (
                 <Button onClick={unRegister} className={classes.joinButton}>
                     Meld deg av
                 </Button>
-            ) : (
+            );
+        } else if (registration == 0) {
+            return (
                 <Button onClick={register} className={classes.joinButton}>
                     Meld deg på
                 </Button>
             );
+        }
+    };
+
+    useEffect(() => {
+        console.log('Hore');
     }, [registration]);
 
     const mapEquipments = activity.equipments.map(
@@ -178,13 +181,9 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
         }
     );
 
-    const mapParticipants = activity.registeredParticipants.map(
+    const mapParticipants = currentAct.registeredParticipants.map(
         (par: any, index: number) => {
-            return (
-                <p key={index}>
-                    {par.userId['firstName'] + ' ' + par.userId['surname']}
-                </p>
-            );
+            return <p key={index}>{par['firstName'] + ' ' + par['surname']}</p>;
         }
     );
 
@@ -223,7 +222,7 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
                         <Grid item xs={1}>
                             <Tooltip title="Slett denne aktiviteten">
                                 <Button
-                                    onClick={deleteActivity}
+                                    onClick={onDeleteClick}
                                     className={classes.otherButton}
                                 >
                                     <Delete></Delete>
@@ -232,7 +231,7 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
                         </Grid>
                     )}
                     <Grid item xs={3}>
-                        {registerBtn}
+                        {!isOwner && registerBtn()}
                     </Grid>
                 </Grid>
             </div>
@@ -271,7 +270,11 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
                     <Grid item xs={1}></Grid>
                     <Grid item xs={3}>
                         <Typography>
-                            <b>Påmeldte personer:</b> {mapParticipants}
+                            {registration == 1 && (
+                                <>
+                                    <b>Påmeldte personer:</b> {mapParticipants}
+                                </>
+                            )}
                         </Typography>
                     </Grid>
                 </Grid>
