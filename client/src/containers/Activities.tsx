@@ -63,47 +63,50 @@ const Activities = () => {
     const [toTime, setToTime] = useState<Date>(new Date());
     const [capacity, setCapacity] = useState<number[]>([0, 20]);
     const [tags, setTags] = useState<string[]>();
-    const [activityLevel, setActivityLevel] = useState<ActivityLevels>({ Low: true, Medium: true, High: true, }
-    );
-
+    const [activityLevel, setActivityLevel] = useState<ActivityLevels>({
+        Low: true,
+        Medium: true,
+        High: true,
+    });
 
     useEffect(() => {
-        setCurrentActivities(activities);
-        console.log(activities)
-        let filteredActivities = FilterFunctions.titleFilter(
-            activities,
-            titleSearch
-        );
-        filteredActivities = FilterFunctions.showMyActivities(
-            filteredActivities,
-            showMine,
-            user
-        );
-        filteredActivities = FilterFunctions.showFutureActivities(
-            filteredActivities,
-            showFuture
-        );
-        filteredActivities = FilterFunctions.changeCapacity(
-            filteredActivities,
-            capacity
-        );
-        filteredActivities = FilterFunctions.dateToFilter(
-            filteredActivities,
-            new Date(toTime)
-        );
-        filteredActivities = FilterFunctions.dateFromFilter(
-            filteredActivities,
-            new Date(fromTime)
-        );
-        filteredActivities = FilterFunctions.activityLevelFilter(
-            filteredActivities,
-            activityLevel
-        );
-        filteredActivities = FilterFunctions.tagFilter(
-            filteredActivities,
-            tags
-        );
-        setCurrentActivities(filteredActivities);
+        if (activities) {
+            setCurrentActivities(activities);
+            let filteredActivities = FilterFunctions.titleFilter(
+                activities,
+                titleSearch
+            );
+            filteredActivities = FilterFunctions.showMyActivities(
+                filteredActivities,
+                showMine,
+                user
+            );
+            filteredActivities = FilterFunctions.showFutureActivities(
+                filteredActivities,
+                showFuture
+            );
+            filteredActivities = FilterFunctions.changeCapacity(
+                filteredActivities,
+                capacity
+            );
+            filteredActivities = FilterFunctions.dateToFilter(
+                filteredActivities,
+                new Date(toTime)
+            );
+            filteredActivities = FilterFunctions.dateFromFilter(
+                filteredActivities,
+                new Date(fromTime)
+            );
+            filteredActivities = FilterFunctions.activityLevelFilter(
+                filteredActivities,
+                activityLevel
+            );
+            filteredActivities = FilterFunctions.tagFilter(
+                filteredActivities,
+                tags
+            );
+            setCurrentActivities(filteredActivities);
+        }
     }, [
         titleSearch,
         activities,
@@ -113,7 +116,7 @@ const Activities = () => {
         fromTime,
         toTime,
         activityLevel,
-        tags
+        tags,
     ]);
 
     const { mobileView, drawerOpen } = state;
@@ -123,14 +126,13 @@ const Activities = () => {
             return window.innerWidth < 951
                 ? setState((prevState) => ({ ...prevState, mobileView: true }))
                 : setState((prevState) => ({
-                    ...prevState,
-                    mobileView: false,
-                }));
+                      ...prevState,
+                      mobileView: false,
+                  }));
         };
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());
     }, []);
-
 
     const onClickAddButton = () => {
         setOpenPopup(!openPopup);
@@ -181,8 +183,8 @@ const Activities = () => {
                         </Popup>
                     </AddAndSort>
                     <ActivityGrid activities={currentActivities}></ActivityGrid>
-                </View >
-            </Container >
+                </View>
+            </Container>
         );
     };
 
@@ -242,9 +244,15 @@ const Activities = () => {
                                     onTitleSearch={(title) =>
                                         setTitleSearch(title)
                                     }
-                                    onShowFuture={(showFuture) => setShowFuture(showFuture)}
-                                    onShowMine={(showMine) => setShowMine(showMine)}
-                                    onCapacityChange={(range) => setCapacity(range)}
+                                    onShowFuture={(showFuture) =>
+                                        setShowFuture(showFuture)
+                                    }
+                                    onShowMine={(showMine) =>
+                                        setShowMine(showMine)
+                                    }
+                                    onCapacityChange={(range) =>
+                                        setCapacity(range)
+                                    }
                                     onTagsChange={(tags) => setTags(tags)}
                                     onLevelChange={(level) =>
                                         setActivityLevel(level)
@@ -267,8 +275,8 @@ const Activities = () => {
                         </Popup>
                     </AddAndSort>
                     <ActivityGrid activities={currentActivities}></ActivityGrid>
-                </View >
-            </Container >
+                </View>
+            </Container>
         );
     };
 

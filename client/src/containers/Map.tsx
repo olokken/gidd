@@ -46,16 +46,18 @@ const Map = () => {
             .catch((error) => console.log(error));
     }, [markers]);
 
-    const renderMarkers = (): React.ReactNode[] => {
-        return activities.map((act: ActivityResponse, index: number) => {
-            return (
-                <MapMarker
-                    key={index}
-                    activity={act}
-                    position={{ lat: act.latitude, lng: act.longitude }}
-                ></MapMarker>
-            );
-        });
+    const renderMarkers = (): React.ReactNode[] | undefined => {
+        if (activities) {
+            return activities.map((act: ActivityResponse, index: number) => {
+                return (
+                    <MapMarker
+                        key={index}
+                        activity={act}
+                        position={{ lat: act.latitude, lng: act.longitude }}
+                    ></MapMarker>
+                );
+            });
+        }
     };
 
     return (
