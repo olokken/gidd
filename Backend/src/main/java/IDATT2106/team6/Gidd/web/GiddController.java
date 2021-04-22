@@ -66,8 +66,7 @@ public class GiddController {
     private final int NEW_ACTIVITY_BONUS = 50;
     private final int JOIN_ACTIVITY_BONUS = 20;
     private final int ADD_FRIEND_BONUS = 30;
-    private final double HIGH_ACTIVITY_LEVEL_MULTIPLIER = 1.8;
-    private final double MEDIUM_ACTIVITY_LEVEL_MULTIPLIER = 1.4;
+    private final double MULTIPLIERS[] = new double[]{1, 1.4, 1.8};
 
 
     @GetMapping("/aop/test")
@@ -321,7 +320,9 @@ public class GiddController {
             log.info("Activity created successfully");
 
             body.put("id", "" + newActivity.getActivityId());
-            userService.setPoints(user, (int) (user.getPoints() + NEW_ACTIVITY_BONUS * HIGH_ACTIVITY_LEVEL_MULTIPLIER));
+            userService.setPoints(user,
+                    (int) (user.getPoints() +
+                            NEW_ACTIVITY_BONUS * MULTIPLIERS[newActivity.getActivityLevel().ordinal()]));
             return ResponseEntity
                     .created(URI.create(String.format("/activity/%d", newActivity.getActivityId())))
                     .body(formatJson(body));
@@ -501,7 +502,8 @@ public class GiddController {
                 body.put("activityId", String.valueOf(activity.getActivityId()));
 
                 userService.setPoints(user,
-                        (int) (user.getPoints() + JOIN_ACTIVITY_BONUS * HIGH_ACTIVITY_LEVEL_MULTIPLIER));
+                        (int) (user.getPoints() +
+                                JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
                 return ResponseEntity
                         .ok()
                         .headers(header)
@@ -598,7 +600,7 @@ public class GiddController {
         body.put("userId", String.valueOf(user.getUserId()));
         body.put("friendId", String.valueOf(friend.getUserId()));
 
-        userService.setPoints(user, (int) (user.getPoints() + ADD_FRIEND_BONUS * HIGH_ACTIVITY_LEVEL_MULTIPLIER));
+        userService.setPoints(user, (int) (user.getPoints() + ADD_FRIEND_BONUS));
         return ResponseEntity
             .ok()
             .headers(header)
@@ -1257,8 +1259,10 @@ public class GiddController {
 
         body.put("userId", String.valueOf(user.getUserId()));
         body.put("activityId", String.valueOf(activity.getActivityId()));
-
-        userService.setPoints(user, (int) (user.getPoints() - JOIN_ACTIVITY_BONUS * HIGH_ACTIVITY_LEVEL_MULTIPLIER));
+        //todo bug hvor man kan få minuspoeng dersom man joiner en aktivitet, aktiviteten endres til høyere activity
+        // level, og man leaver denne
+        userService.setPoints(user, (int) (user.getPoints() -
+                JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
         return ResponseEntity
             .ok()
             .headers(header)
@@ -1292,9 +1296,10 @@ public class GiddController {
     @DeleteMapping(value = "/activity/{activityId}")
     public ResponseEntity deleteActivity(@PathVariable Integer activityId) {
         List<User> users = activityService.getUserFromActivity(activityId);
-        User user = activityService.getActivity(activityId).getUser();
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
+        int bonusPoints = (int) (NEW_ACTIVITY_BONUS *
+                        MULTIPLIERS[activityService.getActivity(activityId).getActivityLevel().ordinal()]);
         if (activityService.deleteActivity(activityId)) {
             log.debug("The deletion was successful");
             header.add("Status", "200 OK");
@@ -1303,7 +1308,10 @@ public class GiddController {
             body.put("activityId", String.valueOf(activityId));
 
             String bodyJson = formatJson(body);
-            userService.setPoints(user, (int) (user.getPoints() - NEW_ACTIVITY_BONUS * HIGH_ACTIVITY_LEVEL_MULTIPLIER));
+            
+            //owner s included in getUserFromActivity() result
+            users.forEach(u -> u.setPoints(u.getPoints() - bonusPoints));
+
             return ResponseEntity
                 .ok()
                 .headers(header)
@@ -1362,7 +1370,7 @@ public class GiddController {
 
         body.put("userId", String.valueOf(user.getUserId()));
         body.put("friendId", String.valueOf(friend.getUserId()));
-        userService.setPoints(user, (int) (user.getPoints() - ADD_FRIEND_BONUS * HIGH_ACTIVITY_LEVEL_MULTIPLIER));
+        userService.setPoints(user, (int) (user.getPoints() - ADD_FRIEND_BONUS));
 
         return ResponseEntity
             .ok()
