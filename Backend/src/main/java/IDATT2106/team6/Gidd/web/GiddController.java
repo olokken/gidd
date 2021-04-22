@@ -685,8 +685,7 @@ public class GiddController {
             .body(formatJson(body));
     }
 
-    @CrossOrigin
-    @PutMapping(value = "/user/{id}/setsome")
+    @PutMapping(value = "/user/some/{id}")
     public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map,
                                        @PathVariable Integer id) {
         // TODO This method NEEDS to control token once that's possible
