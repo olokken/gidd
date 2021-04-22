@@ -36,7 +36,7 @@ const AddAndSort = styled.div`
 
 const View = styled.div`
     display: flex;
-    flex-direction:column; 
+    flex-direction: column;
     width: 75%;
     margin-left: 3rem;
     margin-top: 10px;
@@ -264,8 +264,7 @@ const Activities = () => {
                             title="Legg til aktivitet"
                             openPopup={openPopup}
                             setOpenPopup={setOpenPopup}
-                            maxWidth="lg"
-                            fullWidth={true}
+                            maxWidth="md"
                         >
                             <ActivityForm
                                 openPopup={openPopup}

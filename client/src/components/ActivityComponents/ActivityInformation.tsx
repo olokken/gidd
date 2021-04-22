@@ -109,7 +109,7 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
     };
 
     useEffect(() => {
-        if (activity.user['userId'] === user) {
+        if (activity.user['userId'] == user) {
             setIsOwner(true);
         }
         if (activity.registeredParticipants.length >= activity.capacity) {
@@ -177,7 +177,7 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
             );
         }
     );
-    
+
     const mapParticipants = activity.registeredParticipants.map(
         (par: any, index: number) => {
             return (
@@ -344,6 +344,7 @@ const ActivityInformation = ({ activity, openPopup, setOpenPopup }: Props) => {
                 maxWidth="md"
             >
                 <ActivityForm
+                    activityResponse={activity}
                     openPopup={openEditPopup}
                     setOpenPopup={setOpenEditPopup}
                 ></ActivityForm>
