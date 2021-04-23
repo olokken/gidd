@@ -1,7 +1,17 @@
 import React from 'react';
+import { GroupLeaderboard } from '../components/LeaderboardComponents/GroupLeaderboard';
 
 function Leaderboard() {
-    return <div></div>;
+    return (
+        <div style={{ margin: '1rem' }}>
+            <GroupLeaderboard />
+            <GroupLeaderboard />
+            <GroupLeaderboard />
+            <GroupLeaderboard />
+            <GroupLeaderboard />
+            <GroupLeaderboard />
+        </div>
+    );
 }
 
 export default Leaderboard;
