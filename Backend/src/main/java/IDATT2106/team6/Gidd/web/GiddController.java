@@ -1628,14 +1628,22 @@ public class GiddController {
 
     private List<Equipment> newEquipment (Activity activity, String equipList) {
         List<ActivityEquipment> oldEquips = activity.getEquipments();
+        List<Equipment> equips = toEquipList(equipList);
 
+        List<ActivityEquipment> res = new ArrayList<>();
+        ActivityEquipment temp = new ActivityEquipment();
+        for (Equipment e : equips) {
+            for (ActivityEquipment con: oldEquips) {
+
+            }
+        }
         return null;
     }
 
-    private List<ActivityEquipment> toEquipList(String equipString, Activity activity) {
+    private List<Equipment> toEquipList(String equipString) {
         log.info("splitting equipment");
         ArrayList<Equipment> equips = new ArrayList<>();
-        for (String name : Arrays.asList(equipString.split(","))) {
+        for (String name : equipString.split(",")) {
             name = name.toLowerCase();
             Equipment equipment = equipmentService.getEquipmentByDescription(name);
 
@@ -1647,16 +1655,9 @@ public class GiddController {
 
             equips.add(equipment);
         }
-        List<ActivityEquipment> res = new ArrayList<>();
+
         log.debug("final equip list: " + equips.toString());
-
-        for (Equipment e :
-            equips) {
-            res.add(new ActivityEquipment(activity, e));
-        }
-
-        log.debug("final activity equip list: " + res.toString());
-        return res;
+        return equips;
     }
 
     private List<Tag> splitTags(String tagString) {
@@ -1681,6 +1682,7 @@ public class GiddController {
 
     private byte[] baseToByte(String base) {
         log.info("decoding from " + base);
+        base = base.split(",")[1];
         return Base64.getDecoder().decode(base);
     }
 
