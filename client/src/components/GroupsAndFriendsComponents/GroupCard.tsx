@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import logo from '../../assets/logo.png';
 import User  from '../../interfaces/User';
 import Popup from '../Popup';
+import GroupProfile from './GroupProfile';
 import UserProfile from './UserProfile';
 
 const CardInformation = styled.div`
@@ -31,11 +32,18 @@ const TitleArea = styled.div`
 `;
 
 interface Props {
-    friend: User;
+    group: Group;
+}
+
+interface Group{
+    owner: User;
+    groupName: string;
+    groupId: string;
+    users: User[];
 }
 
 
-const FriendCard = ({friend}: Props) =>{
+const GroupCard = ({group}: Props) =>{
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     return (
         <div>
@@ -61,25 +69,25 @@ const FriendCard = ({friend}: Props) =>{
                         variant="subtitle2"
                         component="h3"
                     >
-                        {friend.firstName + ' ' + friend.surname}
+                        {group.groupName}
                     </Typography>
                 </Grid>
                 </Grid>
             </CardInformation>
-        </Card>
-         <Popup
-        title={friend.firstName + ' ' + friend.surname}
+        </Card> 
+        <Popup
+        title={group.groupName}
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
-    >
-        <UserProfile
+        >
+        <GroupProfile
             openPopup={openPopup}
             setOpenPopup={setOpenPopup}
-            friend={friend}
+            group={group}
         />
-    </Popup>
+        </Popup>
     </div>
     );
 };
 
-export default FriendCard;
+export default GroupCard;
