@@ -86,7 +86,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
     const [tagList, setTagList] = useState<Tag[]>([]);
     const [tagsDesc, setTagsDesc] = useState<string>('');
     const [activityLevel, setActivityLevel] = useState<string>('');
-    const [capacity, setCapacity] = useState<number>(0);
+    const [capacity, setCapacity] = useState<number>(1);
     const [repetition, setRepetition] = useState<number>(0);
     const [image, setImage] = useState<string>('');
     const [activity, setActivity] = useState<Activity2>({
@@ -152,7 +152,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
     const onChangeCapacity = (event: ChangeEvent<HTMLInputElement>) => {
         const str: string = (event.target as HTMLInputElement).value;
         try {
-            setCapacity(+str < 0 ? 0 : +str);
+            setCapacity(+str < 1 ? 1 : +str);
         } catch (error) {
             alert('Skriv inn et tall');
             console.log('Could not convert string to number: ' + error.message);
