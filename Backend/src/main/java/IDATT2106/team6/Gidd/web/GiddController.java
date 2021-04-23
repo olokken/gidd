@@ -631,6 +631,8 @@ public class GiddController {
             }
         }
 
+        existingUsers.add(owner);
+
         ArrayList<Integer> groupIds = new ArrayList<>();
         for(FriendGroup friendGroup : friendGroupService.getAllFriendGroups()){
             groupIds.add(friendGroup.getGroupId());
@@ -658,6 +660,52 @@ public class GiddController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
         Map<String, String> body = new HashMap<>();
+
+        body.put("groupId", String.valueOf(groupId));
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
+    }
+
+    @PostMapping("/group/{groupId}")
+    public ResponseEntity addUserToGroup(@RequestBody HashMap<String, Object> map) {
+        int groupId = Integer.parseInt(map.get("groupId").toString());
+        int userId = Integer.parseInt(map.get("userId").toString());
+
+        User user = userService.getUser(userId);
+        FriendGroup friendGroup = friendGroupService.getFriendGroup(groupId);
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+        if(user == null || friendGroup == null){
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The friend group or the user does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        if(!friendGroupService.addUserToFriendGroup(friendGroup, user)){
+            log.error("Something wrong happened when trying to add user to friend group");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "Something wrong happened when trying to add user to friend group");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
 
         body.put("groupId", String.valueOf(groupId));
 

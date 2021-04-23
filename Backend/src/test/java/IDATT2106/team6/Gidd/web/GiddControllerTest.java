@@ -718,10 +718,10 @@ public class GiddControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
                         "\n\"groupName\": \"" + group1.getGroupName() + "\",\n" +
-                        "\"userIds\": \"" + user1.getUserId() + "," + user2.getUserId() + "\"," +
+                        "\"userIds\": \"" + user3.getUserId() + "," + user2.getUserId() + "\"," +
                         "\"userId\": \"" + user1.getUserId() + "\"" +
                         "}"
-                )).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+                )).andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString();
 
         JSONParser parser = new JSONParser();
         JSONObject JSONid = (JSONObject) parser.parse(groupId);
@@ -736,7 +736,7 @@ public class GiddControllerTest {
 
         JSONObject JSONgroup = (JSONObject) parser.parse(group);
 
-        System.out.println(JSONgroup);
+        System.out.println(JSONgroup.toString());
 
         assertEquals(group1.getGroupName(), JSONgroup.get("groupName").toString());
         assertEquals(String.valueOf(group1.getGroupId()), JSONgroup.get("groupId").toString());
