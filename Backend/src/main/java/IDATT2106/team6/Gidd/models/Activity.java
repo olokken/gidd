@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
@@ -225,7 +226,7 @@ public class Activity {
             ", \n\"capacity\":" + capacity +
             ", \n\"groupId\":" + groupId +
             ", \n\"description\":" + "" + description + "" +
-            ", \n\"image\":" + "\"" +Arrays.toString(image) +"\"" +
+            ", \n\"image\":" + "\"" + Base64.getEncoder().encodeToString(image) +"\"" +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
             ", \n\"tags\":" + tags.toString() +
             ", \n\"equipments\":" + equipments.toString() +
