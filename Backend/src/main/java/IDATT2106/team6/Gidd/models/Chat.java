@@ -1,6 +1,10 @@
 package IDATT2106.team6.Gidd.models;
 
+import org.eclipse.persistence.jpa.jpql.parser.DateTime;
+
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 public class Chat {
@@ -14,11 +18,13 @@ public class Chat {
     @ManyToOne(targetEntity = User.class)
     private User user;
     private String message;
+    private Timestamp timeStamp;
 
     public Chat(FriendGroup group, User user, String message){
         this.group = group;
         this.user = user;
         this.message = message;
+        this.timeStamp =  new Timestamp(new Date().getTime());
     }
 
     public Chat(){}

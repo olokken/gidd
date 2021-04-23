@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,17 +20,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import javax.naming.directory.InvalidAttributesException;
-import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.persistence.exceptions.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,8 +45,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 //import org.json.JSONException;
 
@@ -64,6 +64,9 @@ public class GiddController {
     private SecurityService securityService;
     @Autowired
     private FriendGroupService friendGroupService;
+    @Autowired
+    private SimpMessagingTemplate template;
+
 
     private final int NEW_ACTIVITY_BONUS = 50;
     private final int JOIN_ACTIVITY_BONUS = 20;
@@ -1560,6 +1563,39 @@ public class GiddController {
                 .ok()
                 .headers(header)
                 .body(formatJson(body));
+    }
+
+
+    @MessageMapping("/chat/{groupId}")
+    public void sendMessage(@DestinationVariable Integer groupId, @Payload Message message) {
+        // Set the message time as now before sending it back to the topic
+        System.out.println("message is " + message.toString());
+        template.convertAndSend("/topic/" + groupId, message);
+        //todo save in database
+        // if(messageService.saveMessage(groupId, message)){
+        //}
+    }
+
+    @GetMapping("/chat/{groupId}/message")
+    public ResponseEntity sendMessageLog(@PathVariable Integer groupId){
+        ArrayList<Chat> messages = new ArrayList<>();
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<String, String>();
+        //todo get a list of all messages in messageservice
+        /*
+         ArrayList<List> messageList = messageService.getAllMessages(groupId);
+         if(messageList != null){
+            return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(messages.toString();
+        }
+        return ResponseEntity
+            .badRequest()
+            .headers(header)
+            .body(formatJson(body));
+         */
+        return null;
     }
 
     private int newActivityValidId(Activity activity) {
