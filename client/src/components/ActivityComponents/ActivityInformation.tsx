@@ -84,6 +84,9 @@ const ActivityInformation = ({
     const [isOwner, setIsOwner] = useState<boolean>(false);
     const { user } = useContext(UserContext);
     const [openEditPopup, setOpenEditPopup] = useState<boolean>(false);
+    const [numRegistered, setNumRegistered] = useState<number>(
+        activity.registeredParticipants.length
+    );
 
     const editActivity = () => {
         setOpenEditPopup(true);
@@ -108,13 +111,15 @@ const ActivityInformation = ({
                 if (data) {
                     setRegistration(1);
                 }
-            });
+            })
+            .then(() => setNumRegistered(numRegistered + 1));
     };
 
     const unRegister = () => {
         axios
             .delete(`/user/${user}/activity/${activity.activityId}`)
-            .then(() => setRegistration(0));
+            .then(() => setRegistration(0))
+            .then(() => setNumRegistered(numRegistered - 1));
     };
 
     useEffect(() => {
@@ -156,10 +161,6 @@ const ActivityInformation = ({
             );
         }
     };
-
-    useEffect(() => {
-        console.log('Hore');
-    }, [registration]);
 
     const mapEquipments = activity.equipments.map(
         (eq: Equipment, index: number) => {
@@ -253,8 +254,7 @@ const ActivityInformation = ({
                     <Grid item xs={8}>
                         <Grid item>
                             <Typography>
-                                <b>Kapasitet:</b>{' '}
-                                {activity.registeredParticipants.length} /{' '}
+                                <b>Kapasitet:</b> {numRegistered} /{' '}
                                 {activity.capacity}
                             </Typography>
                             <Typography>
