@@ -15,9 +15,10 @@ const Container = styled.div`
 
 interface Props {
     activities: ActivityResponse[];
+    deleteActivity: (id: number) => void;
 }
 
-const ActivityGrid = ({ activities }: Props) => {
+const ActivityGrid = ({ activities, deleteActivity }: Props) => {
     const [page, setPage] = useState<number>(1);
     const [currentActivities, setCurrentActivities] = useState<
         ActivityResponse[]
@@ -84,6 +85,7 @@ const ActivityGrid = ({ activities }: Props) => {
                 maxWidth="md"
             >
                 <ActivityInformation
+                    deleteActivity={deleteActivity}
                     openPopup={openPopup}
                     setOpenPopup={setOpenPopup}
                     activity={activity}
