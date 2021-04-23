@@ -15,11 +15,6 @@ public class ActivityService {
     @Autowired
     private ActivityRepo repo;
 
-    public void doNothing(){
-        repo.doNothing();
-    }
-
-
     public boolean addActivity(Activity activity) {
         Timestamp currentTime = new Timestamp(new Date().getTime());
         activity.setTimeCreated(currentTime);

@@ -8,14 +8,14 @@ public class Chat {
     @Column(name = "chat_id", unique = true)
     private Integer chatId;
     @JoinColumn(name = "group_id")
-    @ManyToOne(targetEntity = ActivityGroup.class)
-    private ActivityGroup group;
+    @ManyToOne(targetEntity = FriendGroup.class)
+    private FriendGroup group;
     @JoinColumn(name = "user_sent_id")
     @ManyToOne(targetEntity = User.class)
     private User user;
     private String message;
 
-    public Chat(ActivityGroup group, User user, String message){
+    public Chat(FriendGroup group, User user, String message){
         this.group = group;
         this.user = user;
         this.message = message;
@@ -27,7 +27,7 @@ public class Chat {
         return chatId;
     }
 
-    public ActivityGroup getGroup() {
+    public FriendGroup getGroup() {
         return group;
     }
 
@@ -43,7 +43,7 @@ public class Chat {
         this.chatId = chatId;
     }
 
-    public void setGroup(ActivityGroup group) {
+    public void setGroup(FriendGroup group) {
         this.group = group;
     }
 

@@ -11,7 +11,7 @@
         <class>IDATT2106.team6.Gidd.models.User</class>
         <class>IDATT2106.team6.Gidd.models.ActivityUser</class>
         <class>IDATT2106.team6.Gidd.models.ActivityEquipment</class>
-        <class>IDATT2106.team6.Gidd.models.ActivityGroup</class>
+        <class>IDATT2106.team6.Gidd.models.FriendGroup</class>
         <class>IDATT2106.team6.Gidd.models.Chat</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />

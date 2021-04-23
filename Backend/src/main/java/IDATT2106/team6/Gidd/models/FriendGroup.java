@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class ActivityGroup {
+@Table(name = "FRIEND_GROUP")
+public class FriendGroup {
     @Id
     @Column(name = "group_id")
     private Integer groupId;
@@ -14,12 +15,13 @@ public class ActivityGroup {
     @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     private List<User> users;
 
-    public ActivityGroup(String groupName){
+    public FriendGroup(int groupId, String groupName){
+        this.groupId = groupId;
         this.groupName = groupName;
         this.users = new ArrayList<>();
     }
 
-    public ActivityGroup(){}
+    public FriendGroup(){}
 
     public Integer getGroupId() {
         return groupId;
@@ -47,5 +49,14 @@ public class ActivityGroup {
 
     public void addUser(User user){
         this.users.add(user);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"groupId\":\"" + groupId + "\"," +
+                "\"groupName\":\"" + groupName + "\"," +
+                "\" users\":" + users.toString() +
+                '}';
     }
 }

@@ -77,14 +77,13 @@ public class UserRepo extends GiddRepo {
         User user = null;
 
         try {
-            user = em.find(User.class, userId);
+            return user = em.find(User.class, userId);
         }catch (Exception e){
             log.error("finding user " + userId + " failed due to " + e.getMessage());
+            return null;
         }finally {
             em.close();
         }
-        log.info("returning found user with id " + user.getUserId());
-        return user;
     }
 
     public boolean deleteUser(int userId){

@@ -1,11 +1,7 @@
 package IDATT2106.team6.Gidd.web;
 
 import IDATT2106.team6.Gidd.models.*;
-import IDATT2106.team6.Gidd.service.ActivityService;
-import IDATT2106.team6.Gidd.service.EquipmentService;
-import IDATT2106.team6.Gidd.service.SecurityService;
-import IDATT2106.team6.Gidd.service.TagService;
-import IDATT2106.team6.Gidd.service.UserService;
+import IDATT2106.team6.Gidd.service.*;
 import IDATT2106.team6.Gidd.util.Logger;
 import IDATT2106.team6.Gidd.util.MapTokenRequired;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,15 +58,8 @@ public class GiddController {
     private TagService tagService;
     @Autowired
     private SecurityService securityService;
-
-    @GetMapping("/aop/test")
-    @MapTokenRequired
-    public ResponseEntity home() {
-        activityService.doNothing();
-        return ResponseEntity
-            .ok()
-            .body("hi");
-    }
+    @Autowired
+    private FriendGroupService friendGroupService;
 
     @ResponseBody
     @MapTokenRequired
@@ -590,6 +579,57 @@ public class GiddController {
             .ok()
             .headers(header)
             .body(formatJson(body));
+    }
+
+    @PostMapping("/group")
+    public ResponseEntity addNewGroup(@RequestBody Map<String, Object> map){
+        //TODO bruker som lager gruppen legges automatisk til?
+        //Ta inn streng med medlemsIder
+        String groupName = map.get("groupName").toString();
+        String[] userIdsString = (map.get("userIds").toString()).split(",");
+
+        ArrayList<User> existingUsers = new ArrayList<>();
+        for(String s : userIdsString){
+            User user = userService.getUser(Integer.parseInt(s));
+            if(!(user == null)){
+                existingUsers.add(user);
+            }
+        }
+
+        ArrayList<Integer> groupIds = new ArrayList<>();
+        for(FriendGroup friendGroup : friendGroupService.getAllFriendGroups()){
+            groupIds.add(friendGroup.getGroupId());
+        }
+
+        int groupId = getRandomID();
+        while(groupIds.contains(groupId)){
+            groupId = getRandomID();
+        }
+
+        if(!(friendGroupService.addFriendGroup(groupId, groupName, existingUsers))){
+            HttpHeaders header = new HttpHeaders();
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "Something wrong happened when trying to add");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+        HttpHeaders header = new HttpHeaders();
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        Map<String, String> body = new HashMap<>();
+
+        body.put("groupId", String.valueOf(groupId));
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
     }
 
     @PutMapping(value = "/user/{id}")
@@ -1128,6 +1168,51 @@ public class GiddController {
                 .body(formatJson(body));
     }
 
+    @GetMapping("/group")
+    public ResponseEntity getAllGroups(){
+        log.debug("Received GetMapping to '/group'");
+        List<FriendGroup> friendGroups = friendGroupService.getAllFriendGroups();
+
+        HttpHeaders header = new HttpHeaders();
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        log.debug("Returning all groups");
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body("{\"groups\":" + friendGroups.toString() + "}");
+    }
+
+    @GetMapping(value = "/group/{groupId}")
+    public ResponseEntity getFriendGroup(@PathVariable Integer groupId){
+        log.debug("Received GetMapping to '/group/{groupId}'");
+        FriendGroup friendGroup = friendGroupService.getFriendGroup(groupId);
+
+        HttpHeaders header = new HttpHeaders();
+        if(friendGroup == null){
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "The friend group does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(friendGroup.toString());
+    }
+
     @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivityToUser(@PathVariable Integer userId,
                                                @PathVariable Integer activityId) {
@@ -1333,6 +1418,33 @@ public class GiddController {
             .ok()
             .headers(header)
             .body(formatJson(body));
+    }
+
+    @DeleteMapping(value = "/group/{groupId}")
+    public ResponseEntity deleteGroup(@PathVariable Integer groupId){
+        log.debug("Received DeleteMapping to '/group/{groupId}");
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+        if(!friendGroupService.deleteFriendGroup(groupId)){
+            log.error("Something went wrong when trying to delete");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The deleting went wrong");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
     }
 
     private int newActivityValidId(Activity activity) {

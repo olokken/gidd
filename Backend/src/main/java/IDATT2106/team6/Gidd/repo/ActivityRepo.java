@@ -24,10 +24,6 @@ public class ActivityRepo extends GiddRepo {
         connect();
     }
 
-    public void doNothing(){
-        System.out.println("haha i did something");
-    }
-
     public EntityManager getEm(){
         return super.emf.createEntityManager();
     }
@@ -49,7 +45,6 @@ public class ActivityRepo extends GiddRepo {
             return true;
         }catch (Exception e){
             log.error("adding activity failed due to: " + e.getMessage());
-            em.getTransaction().rollback();
             return false;
         }finally {
             em.close();
@@ -67,7 +62,6 @@ public class ActivityRepo extends GiddRepo {
             return true;
         }catch (Exception e){
             log.error("updating activity failed due to: " + e.getMessage());
-            em.getTransaction().rollback();
             return false;
         }finally {
             em.close();
@@ -107,7 +101,6 @@ public class ActivityRepo extends GiddRepo {
                 return true;
             }else {
                 log.error("failed finding activity, cannot delete activity with id: " + activityId);
-                em.getTransaction().rollback();
                 return false;
             }
         }catch (Exception e){
@@ -134,7 +127,6 @@ public class ActivityRepo extends GiddRepo {
             log.error("adding user " + id + 
             " to activity " + activity.getActivityId() +
              " failed due to " + e.getMessage());
-            em.getTransaction().rollback();
             return false;
         }finally {
             em.close();
