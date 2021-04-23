@@ -11,6 +11,9 @@ public class ActivityGroup {
     private Integer groupId;
     @Column(name = "group_name")
     private String groupName;
+    @OneToOne(targetEntity = User.class)
+    @JoinColumn(name = "owner_id")
+    private User owner;
     @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     private List<User> users;
 
