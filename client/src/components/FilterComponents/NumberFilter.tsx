@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { Slider, TextField } from '@material-ui/core';
+import { Slider, TextField, Button } from '@material-ui/core';
 import styled from 'styled-components';
 
 const SliderContainer = styled.div`
@@ -20,12 +20,11 @@ const NumberFilter = ({
     headline,
     onCapacityChange,
 }: Props) => {
-    const [value, setValue] = useState<number[]>([0, 20]);
+    const [value, setValue] = useState<number[]>([0, 10000]);
 
     useEffect(() => {
         onCapacityChange(value);
     }, [value]);
-
 
     useEffect(() => {
         onCapacityChange(value);
@@ -47,6 +46,10 @@ const NumberFilter = ({
             setValue(newValue);
         }
     };
+
+    const reset = () => {
+        setValue([0, 10000]); 
+    }
 
     return (
         <SliderContainer>
@@ -93,6 +96,7 @@ const NumberFilter = ({
                 min={minValue}
                 max={maxValue}
             />
+            <Button onClick={reset}>Nullstill</Button>
         </SliderContainer>
     );
 };
