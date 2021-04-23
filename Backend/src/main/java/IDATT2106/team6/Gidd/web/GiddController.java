@@ -1581,16 +1581,37 @@ public class GiddController {
             .body(formatJson(body));
     }
 
-    private List<Equipment> splitEquipment (String equipString) {
-        /*log.info("splitting equipment");
-        ArrayList<String> equipNames = new ArrayList<>(Arrays.asList(equipString.split(",")));
-        ArrayList<Equipment> equips = new ArrayList<>();
-        for (String name : equipNames) {
-            name = name.toLowerCase();
-            Equipment equipment = new Equipment(name);
-            equipmentService.
-        }*/
+    private List<Equipment> newEquipment (Activity activity, String equipList) {
+        List<ActivityEquipment> oldEquips = activity.getEquipments();
+
         return null;
+    }
+
+    private List<ActivityEquipment> toEquipList(String equipString, Activity activity) {
+        log.info("splitting equipment");
+        ArrayList<Equipment> equips = new ArrayList<>();
+        for (String name : Arrays.asList(equipString.split(","))) {
+            name = name.toLowerCase();
+            Equipment equipment = equipmentService.getEquipmentByDescription(name);
+
+            if(equipment == null) {
+                log.debug("equipment " + name + " did not exist, creating");
+                equipment = new Equipment(name);
+                equipmentService.addEquipment(equipment);
+            }
+
+            equips.add(equipment);
+        }
+        List<ActivityEquipment> res = new ArrayList<>();
+        log.debug("final equip list: " + equips.toString());
+
+        for (Equipment e :
+            equips) {
+            res.add(new ActivityEquipment(activity, e));
+        }
+
+        log.debug("final activity equip list: " + res.toString());
+        return res;
     }
 
     private List<Tag> splitTags(String tagString) {
