@@ -52,7 +52,7 @@ public class User {
         this.activityLevel = activityLevel;
         this.authProvider = provider;
         this.activities = new ArrayList<ActivityUser>();
-        this.points = 0;
+        this.points = 100;
 
         //generates random salt
         SecureRandom random = new SecureRandom();
@@ -228,7 +228,7 @@ public class User {
                 "\n     \"surname\":" + '\"' + surname + '\"' +"," +
                 "\n     \"phoneNumber\":" + phoneNumber +"," +
                 "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
-                "\n     \"points\":" + points +
+                "\n     \"points\":" + points + "," +
                 "\n     \"provider\":" + '\"' + authProvider + '\"' +
                 "\n }";
     }

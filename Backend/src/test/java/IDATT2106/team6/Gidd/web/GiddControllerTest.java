@@ -53,6 +53,11 @@ public class GiddControllerTest {
     private User user3;
     private User user4;
     private Activity activity1;
+    private final int NEW_ACTIVITY_BONUS = 50;
+    private final int JOIN_ACTIVITY_BONUS = 20;
+    private final int ADD_FRIEND_BONUS = 30;
+    private final double MULTIPLIERS[] = new double[]{1, 1.4, 1.8};
+
     
    /* @Before
     public void initialize() throws Exception {
@@ -166,6 +171,7 @@ public class GiddControllerTest {
     public void newActivityTest() throws Exception {
         System.out.println("test 3");
         //create new activity
+        int initialPoints = user1.getPoints();
         String id = mockMvc.perform(MockMvcRequestBuilders
                 .post("/activity").contentType(MediaType.APPLICATION_JSON)
                 .content("{\n" +
@@ -214,10 +220,20 @@ public class GiddControllerTest {
         String activityString = mockMvc.perform(get("/activity/" + activity1.getActivityId() )
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn()
                 .getResponse().getContentAsString();
+
+        String user1Response = mockMvc.perform(get("/user/" + user1.getUserId()))
+                .andReturn().getResponse().getContentAsString();
+
+        JSONObject user1Json = (JSONObject) parser.parse(user1Response);
+
         JSONObject activityJson = (JSONObject) parser.parse(activityString);
         JSONArray userJsonArray = (JSONArray) (activityJson.get("registeredParticipants"));
         JSONObject firstParticipant = (JSONObject) userJsonArray.get(0);
         assertEquals(user1.getUserId(), firstParticipant.getAsNumber("userId").intValue());
+        assertEquals(initialPoints + NEW_ACTIVITY_BONUS
+        * MULTIPLIERS[activity1.getActivityLevel().ordinal()],
+                user1Json.getAsNumber("points").intValue()
+                );
         //only owner signed up
         assertEquals(1, userJsonArray.size());
     }
@@ -297,7 +313,6 @@ public class GiddControllerTest {
     public void registerUserToActivity() throws Exception{
         // register user 2
         System.out.println("test 6");
-
         String id = mockMvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
                         "\"email\":\"" + user2.getEmail() + "\"," +
@@ -311,10 +326,7 @@ public class GiddControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty())
                 .andReturn().getResponse().getContentAsString();
 
-        String user2String = mockMvc.perform(get("/user/email/" + user1.getEmail())
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        int initialPoints = user2.getPoints();
 
         JSONParser parser = new JSONParser();
         JSONObject idJson = (JSONObject) parser.parse(id);
@@ -341,6 +353,14 @@ public class GiddControllerTest {
         assertEquals(activity1.getActivityId(), 
             ((JSONObject)((JSONArray)user2Activities.get("activities")).get(0))
             .getAsNumber("activityId").intValue());
+
+        String user2AfterRegistering = mockMvc.perform(get("/user/" + user2.getUserId()))
+                .andReturn().getResponse().getContentAsString();
+
+        JSONObject user2Json = (JSONObject) parser.parse(user2AfterRegistering);
+        //points
+        assertEquals(initialPoints + JOIN_ACTIVITY_BONUS
+                * MULTIPLIERS[activity1.getActivityLevel().ordinal()], user2Json.getAsNumber("points").intValue());
     }
     @Order(7)
     @Test
@@ -413,6 +433,12 @@ public class GiddControllerTest {
     public void deleteActivityToUserTest() throws Exception{
         //remove activity from user 3
         System.out.println("test 9");
+        JSONParser parser = new JSONParser();
+        int initialPoints = user2.getPoints();
+        String user2BeforeDeleting = mockMvc.perform(get("/user/" + user2.getUserId()))
+                .andReturn().getResponse().getContentAsString();
+
+        JSONObject user2PreDeleteJson = (JSONObject) parser.parse(user2BeforeDeleting);
 
         mockMvc.perform(MockMvcRequestBuilders
         .delete("/user/" + user2.getUserId() + "/activity/" + activity1.getActivityId()))
@@ -423,7 +449,6 @@ public class GiddControllerTest {
         .andExpect(MockMvcResultMatchers.jsonPath("$.user").exists())
         .andReturn().getResponse().getContentAsString();
 
-        JSONParser parser = new JSONParser();
         JSONObject jsonOrder  = (JSONObject) parser.parse(order);
 
         String csv = jsonOrder.get("user").toString();
@@ -432,6 +457,15 @@ public class GiddControllerTest {
         assertEquals(((JSONObject) array.get(0)).get("userId"), user1.getUserId());
         assertEquals(((JSONObject) array.get(1)).get("userId"), user3.getUserId());
 
+        String user2AfterRegistering = mockMvc.perform(get("/user/" + user2.getUserId()))
+                .andReturn().getResponse().getContentAsString();
+
+        JSONObject user2PostDeleteJson = (JSONObject) parser.parse(user2AfterRegistering);
+
+        //points
+        assertEquals(user2PreDeleteJson.getAsNumber("points").intValue() -
+                        JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity1.getActivityLevel().ordinal()],
+                user2PostDeleteJson.getAsNumber("points").intValue());
     }
 
     @Order(10)
@@ -508,21 +542,32 @@ public class GiddControllerTest {
                         "}")).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
 
         JSONParser parser = new JSONParser();
-        JSONObject json = (JSONObject) parser.parse(id);
+        JSONObject initialPost = (JSONObject) parser.parse(id);
 
-        String activity2String = mockMvc.perform(get("/activity/" + json.getAsNumber("id"))
+        String initialGet = mockMvc.perform(get("/activity/" + initialPost.getAsNumber("id"))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-        JSONObject json2 = (JSONObject) parser.parse(activity2String);
-        assertEquals(json.getAsNumber("id"), json2.getAsNumber("activityId"));
+        JSONObject initialGetJson = (JSONObject) parser.parse(initialGet);
+        assertEquals(initialPost.getAsNumber("id"), initialGetJson.getAsNumber("activityId"));
 
-        String response = mockMvc.perform(MockMvcRequestBuilders
-                .delete("/activity/" + json.getAsNumber("id")))
+        String deletedResponse = mockMvc.perform(MockMvcRequestBuilders
+                .delete("/activity/" + initialPost.getAsNumber("id")))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-        mockMvc.perform(get("/activity/" + json.getAsNumber("id"))
+        JSONObject deletedActivity = (JSONObject) parser.parse(deletedResponse);
+
+        JSONArray participantsFromDeleted = (JSONArray) deletedActivity.get("users");
+        for (int i = 0; i < participantsFromDeleted.size(); i++) {
+            assertEquals(((JSONObject) participantsFromDeleted.get(i)).getAsNumber("points").intValue(),
+                    ((JSONObject)(((JSONArray)initialGetJson.get("registeredParticipants")).get(i)))
+                            .getAsNumber("points").intValue() - (i == 0 ? NEW_ACTIVITY_BONUS : JOIN_ACTIVITY_BONUS)
+                    * MULTIPLIERS[activity1.getActivityLevel().ordinal()]
+                    );
+        }
+                //todo test
+        mockMvc.perform(get("/activity/" + initialPost.getAsNumber("id"))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())

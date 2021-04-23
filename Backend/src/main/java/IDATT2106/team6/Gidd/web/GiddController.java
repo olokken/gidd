@@ -1371,7 +1371,8 @@ public class GiddController {
         body.put("userId", String.valueOf(user.getUserId()));
         body.put("friendId", String.valueOf(friend.getUserId()));
         userService.setPoints(user, (int) (user.getPoints() - ADD_FRIEND_BONUS));
-
+        user.setPoints(user.getPoints() - ADD_FRIEND_BONUS);
+        friend.setPoints(friend.getPoints() - ADD_FRIEND_BONUS);
         return ResponseEntity
             .ok()
             .headers(header)

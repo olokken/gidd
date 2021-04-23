@@ -46,6 +46,7 @@ public class ActivityRepo extends GiddRepo {
             em.persist(activity);
             em.getTransaction().commit();
             log.info("added activity successfully");
+            em.getEntityManagerFactory().getCache().evict(User.class);
             return true;
         }catch (Exception e){
             log.error("adding activity failed due to: " + e.getMessage());
@@ -129,6 +130,7 @@ public class ActivityRepo extends GiddRepo {
             em.merge(activity);
             em.getTransaction().commit();
             log.info("successfully added user " + id + " to activity " + activity.getActivityId());
+            em.getEntityManagerFactory().getCache().evict(User.class);
             return true;
         }catch (Exception e){
             log.error("adding user " + id + 
@@ -157,6 +159,7 @@ public class ActivityRepo extends GiddRepo {
             em.flush();
             em.getTransaction().commit();
             log.info("user " + activityUserId + " removed successfully from activity " + activity.getActivityId());
+            em.getEntityManagerFactory().getCache().evict(User.class);
             return true;
         }catch (Exception e){
             log.error("removing user " + activityUserId + " from activity " + activity.getActivityId() + " failed due to " + e.getMessage());
