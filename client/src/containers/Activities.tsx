@@ -204,7 +204,6 @@ const Activities = () => {
                             openPopup={openPopup}
                             setOpenPopup={setOpenPopup}
                             maxWidth="lg"
-                            fullWidth={true}
                         >
                             <ActivityForm
                                 openPopup={openPopup}
