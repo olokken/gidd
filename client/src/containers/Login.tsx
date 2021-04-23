@@ -84,6 +84,9 @@ const Login = () => {
             email: email,
             picture: picture,
             password: password,
+            phoneNumber: '',
+            activityLevel: '',
+            points:'',
         };
         return {
             newUser,

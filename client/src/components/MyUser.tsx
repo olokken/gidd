@@ -19,7 +19,7 @@ import { UserContext } from '../UserContext';
 import axios from '../Axios';
 import { useHistory } from 'react-router-dom';
 import Popup from './Popup';
-import { User2 } from '../interfaces/User';
+import User  from '../interfaces/User';
 
 const StyledButton = withStyles({
     root: {
@@ -42,14 +42,16 @@ const StyledButton = withStyles({
 const MyUser: React.FC = () => {
     const history = useHistory();
     const { user, setUser } = useContext(UserContext);
-    const [currentUser, setCurrentUser] = useState<User2>({
+    const [currentUser, setCurrentUser] = useState<User>({
         firstName: '',
         surname: '',
         userID: '',
         email: '',
+        picture: '',
         password: '',
         phoneNumber: '',
         activityLevel: '',
+        points:'',
     });
     const [firstName, setFirstName] = useState<string>('');
     const [surname, setSurname] = useState<string>('');
@@ -126,7 +128,7 @@ const MyUser: React.FC = () => {
 
     const onClickChangeName = () => {
         const putUrl = `/user/${user}`;
-        const sendUser: User2 = currentUser;
+        const sendUser: User = currentUser;
         if (checkInput(oldPassword) === false) {
             alert('Skriv inn gammelt passord for å endre brukeren');
             return;
@@ -206,7 +208,7 @@ const MyUser: React.FC = () => {
 
     const onClickChangePhone = () => {
         const putUrl = `/user/${user}`;
-        const sendUser: User2 = currentUser;
+        const sendUser: User = currentUser;
 
         if (checkInput(oldPassword) === false) {
             alert('Skriv inn gammelt passord for å endre brukeren');
@@ -232,7 +234,7 @@ const MyUser: React.FC = () => {
 
     const onClickChangeActLvl = () => {
         const putUrl = `/user/${user}`;
-        const sendUser: User2 = currentUser;
+        const sendUser: User = currentUser;
 
         if (checkInput(oldPassword) === false) {
             alert('Skriv inn gammelt passord for å endre brukeren');
@@ -267,7 +269,7 @@ const MyUser: React.FC = () => {
 
     const onClickChangePass = () => {
         const putUrl = `/user/${user}`;
-        const sendUser: User2 = currentUser;
+        const sendUser: User = currentUser;
 
         if (checkInput(oldPassword) === false) {
             alert('Skriv inn gammelt passord for å endre brukeren');
