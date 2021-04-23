@@ -47,18 +47,6 @@ export const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
         return ((+user.points / getTotalPoints()) * 52) % 52;
     };
 
-    /*
-    const getPoints = async () => {
-        const request = await axios.get(`/group/${group.groupId}`);
-        console.log(request);
-        return request;
-    };
-
-    useEffect(() => {
-        getPoints();
-    }, []);
-    */
-
     return (
         <Card className={classes.root}>
             <div className="groupleaderboard__header">
