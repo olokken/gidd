@@ -39,6 +39,10 @@ public class FriendGroup {
         return users;
     }
 
+    public User getOwner() {
+        return owner;
+    }
+
     public void setGroupId(Integer groupId) {
         this.groupId = groupId;
     }
@@ -51,8 +55,16 @@ public class FriendGroup {
         this.users = users;
     }
 
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
     public void addUser(User user){
         this.users.add(user);
+    }
+
+    public void removeUser(User user) {
+        users.removeIf(u -> u.getUserId() == user.getUserId());
     }
 
     @Override
@@ -60,7 +72,7 @@ public class FriendGroup {
         return "{" +
                 "\"groupId\":\"" + groupId + "\"," +
                 "\"groupName\":\"" + groupName + "\"," +
-                "\" users\":" + users.toString() + "," +
+                "\"users\":" + users.toString() + "," +
                 "\"owner\":" + owner.toString() +
                 '}';
     }

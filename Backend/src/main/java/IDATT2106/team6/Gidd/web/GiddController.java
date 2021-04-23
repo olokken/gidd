@@ -623,15 +623,19 @@ public class GiddController {
                     .body(formatJson(body));
         }
 
+        ArrayList<Integer> addedIds = new ArrayList<>();
         ArrayList<User> existingUsers = new ArrayList<>();
         for(String s : userIdsString){
             User user = userService.getUser(Integer.parseInt(s));
-            if(!(user == null)){
+            if(!(user == null || addedIds.contains(user.getUserId()))){
                 existingUsers.add(user);
+                addedIds.add(user.getUserId());
             }
         }
 
-        existingUsers.add(owner);
+        if(!addedIds.contains(owner.getUserId())) {
+            existingUsers.add(owner);
+        }
 
         ArrayList<Integer> groupIds = new ArrayList<>();
         for(FriendGroup friendGroup : friendGroupService.getAllFriendGroups()){
@@ -669,8 +673,9 @@ public class GiddController {
                 .body(formatJson(body));
     }
 
-    @PostMapping("/group/{groupId}")
+    @PostMapping("/group/{groupId}/user")
     public ResponseEntity addUserToGroup(@RequestBody HashMap<String, Object> map) {
+        log.info("Received PostMapping to '/group/{groupId}/user'");
         int groupId = Integer.parseInt(map.get("groupId").toString());
         int userId = Integer.parseInt(map.get("userId").toString());
 
@@ -680,6 +685,7 @@ public class GiddController {
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
         if(user == null || friendGroup == null){
+            log.error("The user or the friend group is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -704,6 +710,7 @@ public class GiddController {
                     .body(formatJson(body));
         }
 
+        log.info("User added to friend group");
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
@@ -1562,6 +1569,65 @@ public class GiddController {
                 .body(formatJson(body));
     }
 
+    @DeleteMapping("/group/{groupId}/user/{userId}")
+    public ResponseEntity removeUserFromGroup(@PathVariable Integer groupId, @PathVariable Integer userId){
+        FriendGroup friendGroup = friendGroupService.getFriendGroup(groupId);
+        User user = userService.getUser(userId);
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+
+        if(user == null || friendGroup == null){
+            log.error("The user or the friend group is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The friend group or the user does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        if(user.getUserId() == friendGroup.getOwner().getUserId()){
+            log.error("The owner can not be removed");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The owner can not be removed");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        if(!friendGroupService.removeUserFromFriendGroup(friendGroup, user)){
+            log.error("Something wrong happened when trying to remove the user from friend group");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "Something wrong happened when trying to remove the user from friend group");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        log.info("User was removed");
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        body.put("groupId", String.valueOf(groupId));
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
+    }
+
     private int newActivityValidId(Activity activity) {
         log.info("finding new valid id for an activity");
         boolean created;
@@ -1574,7 +1640,7 @@ public class GiddController {
             }
             activity.setActivityId(endId);
             created = activityService.addActivity(activity);
-            log.debug("creating activity was " + created + " successfull");
+            log.debug("creating activity was " + created + " successful");
         }
         while (!created);
         log.info("final new activity id: " + endId);
