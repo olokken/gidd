@@ -39,6 +39,7 @@ const NewUser = () => {
     const [emailList, setEmailList] = useState<string[]>([]);
     const correctEmailFormat = email.indexOf('@') > -1 ? true : false;
     const { user, setUser } = useContext(UserContext);
+    const [visualActivityLevel, setVisualActivityLevel] = useState<string>('');
 
     const emailCheck = (email: string) => {
         if (emailList.indexOf(email) > -1) {
@@ -77,11 +78,11 @@ const NewUser = () => {
                         const token = response.data.result;
                         localStorage.setItem('token', token);
                         localStorage.setItem('userID', id);
+                        setUser(id);
+                        history.push('/Activities');
                     }).catch(error => {
                         console.log('Feil med token: ' + error.message)
                     })
-                    setUser(response.data.id);
-                    history.push('/Activities');
                 })
                 .catch((error) => {
                     // handle this error
@@ -109,7 +110,16 @@ const NewUser = () => {
     };
 
     const onChangeActivityLevel = (event: ChangeEvent<HTMLInputElement>) => {
-        setActivityLevel((event.target as HTMLInputElement).value);
+        setVisualActivityLevel((event.target as HTMLInputElement).value)
+        let actLevel = (event.target as HTMLInputElement).value
+        if (actLevel === 'Lav') {
+            actLevel = 'Low'
+        } else if (actLevel === 'Middels') {
+            actLevel = 'Medium'
+        } else {
+            actLevel = 'High'
+        }
+        setActivityLevel(actLevel);
     };
 
     const onChangePassword1 = (event: ChangeEvent<HTMLInputElement>) => {
@@ -134,6 +144,7 @@ const NewUser = () => {
                 onChangeSurname={onChangeSurname}
                 onChangeActivityLevel={onChangeActivityLevel}
                 activityLevel={activityLevel}
+                visualActivityLevel={visualActivityLevel}
                 onChangeEmail={onChangeEmail}
                 onChangeNumber={onChangeNumber}
                 onChangePassword1={onChangePassword1}

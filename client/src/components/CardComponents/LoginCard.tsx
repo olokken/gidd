@@ -66,7 +66,7 @@ const LoginCard = ({
 }: Props) => {
   return (
     <LoginCardContainer>
-      <h2>LOG IN</h2>
+      <h2>LOGG INN</h2>
       <TextField
         style={{ width: '100%', marginBottom: 24 }}
         label="E-mail"
@@ -76,7 +76,7 @@ const LoginCard = ({
         onKeyDown={onKeyDown}
       />
       <TextField
-        label="Password"
+        label="Passord"
         variant="outlined"
         color="secondary"
         style={{ width: '100%', marginBottom: 24 }}
@@ -97,7 +97,7 @@ const LoginCard = ({
         color="primary"
         onClick={onLogin}
       >
-        LOG IN
+        LOGG IN
       </Button>
       <Button
         style={{ width: '100%', marginTop: '15px', height: '50px' }}
@@ -105,8 +105,7 @@ const LoginCard = ({
         color="primary"
         onClick={onNewUser}
       >
-        CREATE NEW USER
-      </Button>
+        LAG NY BRUKER      </Button>
       <SocialMediaContainer>
         <FacebookContainer>
           <FacebookLogin
@@ -114,11 +113,13 @@ const LoginCard = ({
             autoLoad={false}
             fields="name,email,picture"
             onClick={componentClicked}
-            callback={responseFacebook} /></FacebookContainer>
+            callback={responseFacebook}
+            textButton='Logg inn med Facebook'
+          />
+        </FacebookContainer>
         <GoogleContainer>
           <GoogleLogin
             clientId='829161936578-7u42ghop2aqmgs3e4n98907euik21jrt.apps.googleusercontent.com'
-            buttonText='Login with Google'
             render={renderProps => (
               <GoogleButton onClick={renderProps.onClick}
                 type='light'
@@ -128,7 +129,7 @@ const LoginCard = ({
                   fontSize: '18px',
                   float: 'right'
                 }}
-                label='Login with Google'
+                label='Logg inn med Google'
                 disabled={renderProps.disabled} />
             )
             }

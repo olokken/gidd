@@ -133,9 +133,9 @@ const Activities = () => {
             return window.innerWidth < 951
                 ? setState((prevState) => ({ ...prevState, mobileView: true }))
                 : setState((prevState) => ({
-                      ...prevState,
-                      mobileView: false,
-                  }));
+                    ...prevState,
+                    mobileView: false,
+                }));
         };
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());
@@ -169,7 +169,6 @@ const Activities = () => {
         axios
             .get('/activity')
             .then((response) => {
-                console.log(response.data);
                 setActivities(response.data['activities']);
             })
             .catch((error) => console.log(error));
