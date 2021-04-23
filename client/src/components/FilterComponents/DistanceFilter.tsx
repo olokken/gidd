@@ -28,8 +28,8 @@ const DistanceFilter = ({ onDistanceChange }: Props) => {
     };
 
     const reset = () => {
-        setMaxDistance(undefined); 
-    } 
+        setMaxDistance(undefined);
+    }
 
     return (
         <Container>
@@ -47,6 +47,7 @@ const DistanceFilter = ({ onDistanceChange }: Props) => {
                 />
                 <TextField
                     style={{ minWidth: '45px', width: '4rem' }}
+                    inputProps={{ min: 0 }}
                     value={maxDistance}
                     type="number"
                     onChange={changeValue}
