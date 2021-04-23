@@ -129,7 +129,6 @@ const Activities = () => {
     const { mobileView, drawerOpen } = state;
 
     useEffect(() => {
-        console.log('BRUKER: §!!"! ' + localStorage.getItem('userID'))
         const setResponsiveness = () => {
             return window.innerWidth < 951
                 ? setState((prevState) => ({ ...prevState, mobileView: true }))
@@ -170,7 +169,6 @@ const Activities = () => {
         axios
             .get('/activity')
             .then((response) => {
-                console.log(response.data);
                 setActivities(response.data['activities']);
             })
             .catch((error) => console.log(error));

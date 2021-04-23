@@ -20,7 +20,7 @@ import { UserContext } from '../UserContext';
 import axios from '../Axios';
 import { useHistory } from 'react-router-dom';
 import Popup from './Popup';
-import User  from '../interfaces/User';
+import User from '../interfaces/User';
 
 const StyledButton = withStyles({
     root: {
@@ -57,7 +57,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         password: '',
         phoneNumber: '',
         activityLevel: '',
-        points:'',
+        points: '',
     });
     const [firstName, setFirstName] = useState<string>('');
     const [surname, setSurname] = useState<string>('');
@@ -159,7 +159,6 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
             axios
                 .put(putUrl, sendUser)
                 .then((response) => {
-                    console.log(response);
                     setCurrentUser({ ...currentUser, firstName: firstName });
                 })
                 .catch((error) =>
@@ -309,6 +308,9 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                 setActivityLevel(activityLevel);
                 setIsFirstTimeLogin(!isFirstTimeLogin);
                 setShowIsFirstTime(!showIsFirstTime)
+                setCurrentUser({ ...currentUser, phoneNumber: phone, activityLevel: activityLevel })
+                setIsFirstTimeLogin(!isFirstTimeLogin);
+                setShowIsFirstTime(!showIsFirstTime);
             }).catch(error => {
                 console.log(error.message)
             })
@@ -399,7 +401,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                             select
                             color="secondary"
                             label="Velg ditt aktivitetsnivå"
-                            value={activityLevel}
+                            value={visualActivityLevel}
                             onChange={onChangeActivityLevel}
                             variant="outlined"
                         >
@@ -460,8 +462,6 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                         <StyledButton
                             className="myuser__button"
                             onClick={() => {
-                                setIsFirstTimeLogin(!isFirstTimeLogin);
-                                setShowIsFirstTime(!showIsFirstTime);
                                 onClickUpdateUser()
                             }}
                         >
@@ -470,7 +470,6 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                         <StyledButton
                             className="myuser__button"
                             onClick={() => {
-                                //setOpenPopup(!openPopup);
                                 setIsFirstTimeLogin(!isFirstTimeLogin);
                                 setShowIsFirstTime(!showIsFirstTime);
                                 setOpenPopup(!openPopup);
@@ -712,7 +711,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                         <RadioGroup>
                                             <FormControlLabel
                                                 control={<Radio />}
-                                                label="Low"
+                                                label="Lavt"
                                                 onClick={() =>
                                                     setActivityLevel('LOW')
                                                 }
@@ -720,7 +719,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                             />
                                             <FormControlLabel
                                                 control={<Radio />}
-                                                label="Medium"
+                                                label="Middels"
                                                 onClick={() =>
                                                     setActivityLevel('MEDIUM')
                                                 }
@@ -728,7 +727,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                             />
                                             <FormControlLabel
                                                 control={<Radio />}
-                                                label="High"
+                                                label="Høyt"
                                                 onClick={() =>
                                                     setActivityLevel('HIGH')
                                                 }
