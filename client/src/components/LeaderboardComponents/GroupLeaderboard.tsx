@@ -1,8 +1,7 @@
-import axios from '../../Axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Group from '../../interfaces/Group';
 import User from '../../interfaces/User';
-import { Avatar, Card, CardContent, makeStyles } from '@material-ui/core';
+import { Avatar, Card, makeStyles } from '@material-ui/core';
 import './GroupLeaderboard.css';
 
 const useStyles = makeStyles({
@@ -26,12 +25,75 @@ interface Props {
     group: Group;
 }
 
-export const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
-    const classes = useStyles();
-    const [users, setUsers] = useState<User[]>([]);
+interface Placements {
+    user: User;
+    position: number;
+}
 
-    const filterPoints = (): User[] => {
-        return users.sort((u1, u2) => +u1.points - +u2.points);
+const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
+    const [users, setUsers] = useState<User[]>(group.users);
+    const classes = useStyles();
+
+    const greatest = () => {
+        let index = 0;
+        for (let i = 0; i < users.length; i++) {
+            for (let y = i + 1; y < users.length; y++) {
+                if (+users[i].points > +users[y].points) index = i;
+            }
+        }
+        return index;
+    };
+
+    /*
+    const getPlacements = () => {
+        let arr: Placements[] = [];
+        let indexes: number[] = [];
+        let index = 0;
+        let max = 1000000000;
+        let nextPlacement = 0;
+        for (let i = 0; i < users.length; i++) {
+            for (let y = i + 1; y < users.length; y++) {
+                if (+users[i].points > +users[y].points) {
+                    index = i;
+                } 
+                if(y === users.length-1) {
+                    for(let k=y-1; k >=0; k--) {
+                        let ind = 0;
+                        let arr1: Placements[] = [];
+                        if(+users[index].points === +users[k].points) {
+                            nextPlacement++;
+                            arr1[ind++] = 
+                        }
+                        if(k===0)
+                    }
+                }
+            }
+        }
+    };
+    */
+
+    const filterPoints = () => {
+        const sortArray = users.map(function (data, index) {
+            return { index: index, data: data };
+        });
+
+        sortArray.sort(function (a, b) {
+            if (a.data < b.data) return -1;
+            if (a.data > b.data) return 1;
+            return a.index - b.index;
+        });
+
+        return sortArray.map(function (val) {
+            return val.data;
+        });
+    };
+
+    const getPosition = (user: User): number => {
+        console.log(Object.values(user)[0]);
+        const filtered = filterPoints();
+        filtered.forEach((f) => console.log(f));
+        return filtered.indexOf(user);
+        //return -1;
     };
 
     const getTotalPoints = (): number => {
@@ -47,46 +109,47 @@ export const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
         return ((+user.points / getTotalPoints()) * 52) % 52;
     };
 
-    /*
-    const getPoints = async () => {
-        const request = await axios.get(`/group/${group.groupId}`);
-        console.log(request);
-        return request;
-    };
-
-    useEffect(() => {
-        getPoints();
-    }, []);
-    */
-
-    return (
-        <Card className={classes.root}>
-            <div className="groupleaderboard__header">
-                <h1>{group.name}</h1>
-            </div>
-            {users.map((user) => {
-                <hr className="groupleaderboard__line" />;
+    const renderPlayers = group.users.map((user, index: number) => {
+        return (
+            <div className="groupleaderboard__players" key={index}>
+                <hr className="groupleaderboard__line" />
                 <div className="groupleaderboard__player">
                     <div
                         /* The max margin-left is 52rem*/
                         style={{
-                            margin: `0.7rem 0.5rem 0.5rem ${getMarginLeft(
-                                user
-                            )}rem`,
+                            margin: `0.7rem 0.5rem 0.5rem `,
+                            marginLeft: `${getMarginLeft(user)}rem`,
+                            display: 'flex',
                             flex: '1',
                         }}
                     >
-                        <div className="groupleaderboard__logo">
-                            <h6 className="groupleaderboard__name">William</h6>
-                            <Avatar />
-                        </div>
+                        <h6 className="groupleaderboard__name">
+                            {user.firstName}
+                        </h6>
+                        <Avatar />
                     </div>
                     <div className="groupleaderboard__stats">
-                        <h5 className="groupleaderboard__stat1">3rd Place</h5>
-                        <h5 className="groupleaderboard__stat2">100 points</h5>
+                        <h5 className="groupleaderboard__stat1">
+                            {getPosition(user)}rd Place
+                        </h5>
+                        <h5 className="groupleaderboard__stat2">
+                            {user.points} points
+                        </h5>
                     </div>
-                </div>;
-            })}
+                </div>
+            </div>
+        );
+    });
+
+    return (
+        <Card className={classes.root}>
+            <div className="groupleaderboard__header">
+                <h1>{group.groupName}</h1>
+            </div>
+            {renderPlayers}
+            <hr className="groupleaderboard__line" />
         </Card>
     );
 };
+
+export default GroupLeaderboard;
