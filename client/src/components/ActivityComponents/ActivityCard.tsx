@@ -25,11 +25,9 @@ const useStyles = makeStyles({
 
 const CardInformation = styled.div`
     height: 100%;
-    transition: transform 450ms;
 
     :hover {
         background-color: #ebebeb;
-        transform: scale(1.08);
     }
 `;
 const TitleArea = styled.div`
@@ -75,10 +73,7 @@ const ActivityCard = ({
         <Card
             onClick={onClickActivity}
             style={{
-                minWidth: '200px',
-                maxWidth: '31%',
-                margin: '5px',
-                padding: '10px',
+                height: '20rem',
             }}
         >
             <CardInformation>
