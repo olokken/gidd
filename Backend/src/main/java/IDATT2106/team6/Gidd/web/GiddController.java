@@ -1644,7 +1644,7 @@ public class GiddController {
     public void sendMessage(@DestinationVariable Integer groupId, @Payload Message message) {
         // Set the message time as now before sending it back to the topic
         System.out.println("message is " + message.toString());
-        template.convertAndSend("/topic/" + groupId, message);
+        template.convertAndSend("/topic/public", message);
         //todo save in database
         // if(messageService.saveMessage(groupId, message)){
         //}
