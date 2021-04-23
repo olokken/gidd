@@ -11,6 +11,6 @@ public class ImageService {
     private ImageRepo repo;
 
     public boolean newImage(Image image) {
-        repo.addImage(image);
+        return repo.addImage(image);
     }
 }

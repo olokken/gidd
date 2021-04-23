@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -39,12 +40,12 @@ public class Activity {
     private int groupId;
     private String description;
     @CascadeOnDelete
-    @OneToOne(targetEntity = Image.class, fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = Image.class, fetch = FetchType.EAGER)
     private Image image;
     @Column(name = "activity_level")
     private ActivityLevel activityLevel;
     @CascadeOnDelete
-    @ManyToMany(targetEntity = Tag.class, fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = Tag.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private List<Tag> tags;
     @CascadeOnDelete
     @OneToMany(mappedBy = "Activity", fetch = FetchType.EAGER)

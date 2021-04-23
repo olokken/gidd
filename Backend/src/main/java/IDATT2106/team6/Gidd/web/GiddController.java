@@ -31,10 +31,10 @@ import org.eclipse.persistence.exceptions.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
+/*import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;*/
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -66,14 +66,15 @@ public class GiddController {
     @Autowired
     private FriendGroupService friendGroupService;
     @Autowired
-    private SimpMessagingTemplate template;
+    private ImageService imageService;
+    /*@Autowired
+    private SimpMessagingTemplate template;*/
 
 
     private final int NEW_ACTIVITY_BONUS = 50;
     private final int JOIN_ACTIVITY_BONUS = 20;
     private final int ADD_FRIEND_BONUS = 30;
-    private final double MULTIPLIERS[] = new double[]{1, 1.4, 1.8};
-
+    private final double MULTIPLIERS[] = new double[] {1, 1.4, 1.8};
 
 
     @ResponseBody
@@ -264,7 +265,8 @@ public class GiddController {
         Map<String, String> body = new HashMap<>();
         if (result) {
             log.info("logged in user with email " + map.get("email").toString());
-            String id = String.valueOf(userService.getUser(map.get("email").toString()).getUserId());
+            String id =
+                String.valueOf(userService.getUser(map.get("email").toString()).getUserId());
             body.put("id",
                 id);
             body.put("token", String.valueOf(securityService.createToken(id, (1000 * 60 * 5))));
@@ -280,6 +282,19 @@ public class GiddController {
             .headers(header).body(formatJson(body));
     }
 
+    @PostMapping(value = "/imageTest")
+    public String justMakeTheDamnImage(@RequestBody Map<String, Object> map) {
+        try {
+            log.info("receive mapping blablabl");
+            createImage(map.get("image").toString());
+        } catch (Exception e) {
+            log.info("exception");
+            e.printStackTrace();
+            return "nope";
+        }
+        return "yeah";
+    }
+
     @PostMapping(value = "/activity", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
 
@@ -289,7 +304,7 @@ public class GiddController {
         HashMap<String, String> body = new HashMap<>();
 
         headers.add("Content-Type", "application/json; charset=UTF-8");
-        Activity newActivity = null;
+        Activity newActivity;
         try {
             User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
 
@@ -299,17 +314,24 @@ public class GiddController {
             }
             newId = 0;
 
-            newActivity = mapToActivity(map, newId, user);
+            Image image = createImage(map.get("image").toString());
+            if (image == null) {
+                return ResponseEntity
+                    .badRequest()
+                    .body("nope");
+            }
+
+            newActivity = mapToActivity(map, newId, user, image);
             log.debug("Created new activity: " + newActivity.getActivityId());
             newId = newActivityValidId(newActivity);
             log.debug("new activity id: " + newId);
 
-            if(!insertUserActivityCoupling(user, newActivity)){
+            if (!insertUserActivityCoupling(user, newActivity)) {
                 body.put("error", "something went wrong when coupling the user and activiyt");
                 return ResponseEntity
-                        .badRequest()
-                        .headers(headers)
-                        .body(formatJson(body));
+                    .badRequest()
+                    .headers(headers)
+                    .body(formatJson(body));
             }
             registerEquipmentToActivity(newId, map.get("equipmentList").toString());
 
@@ -317,11 +339,11 @@ public class GiddController {
 
             body.put("id", "" + newActivity.getActivityId());
             userService.setPoints(user,
-                    (int) (user.getPoints() +
-                            NEW_ACTIVITY_BONUS * MULTIPLIERS[newActivity.getActivityLevel().ordinal()]));
+                (int) (user.getPoints() +
+                    NEW_ACTIVITY_BONUS * MULTIPLIERS[newActivity.getActivityLevel().ordinal()]));
             return ResponseEntity
-                    .created(URI.create(String.format("/activity/%d", newActivity.getActivityId())))
-                    .body(formatJson(body));
+                .created(URI.create(String.format("/activity/%d", newActivity.getActivityId())))
+                .body(formatJson(body));
 
         } catch (InvalidAttributesException e) {
             log.error("InvalidattributesException, invalid userID recieved " + e.getMessage());
@@ -330,12 +352,12 @@ public class GiddController {
                 .badRequest()
                 .headers(headers)
                 .body(formatJson(body));
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             log.error("user is already registered to the activity");
             body.put("error", "user is already registered: " + e.getMessage());
             return ResponseEntity
-                    .badRequest()
-                    .body(formatJson(body));
+                .badRequest()
+                .body(formatJson(body));
         } catch (Exception e) {
             body.put("error", "unknown error: " + e.getMessage());
             log.error("unexplained error caught " + e + "; local:" + e.getLocalizedMessage());
@@ -498,32 +520,34 @@ public class GiddController {
                 body.put("activityId", String.valueOf(activity.getActivityId()));
 
                 userService.setPoints(user,
-                        (int) (user.getPoints() +
-                                JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
+                    (int) (user.getPoints() +
+                        JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
                 return ResponseEntity
-                        .ok()
-                        .headers(header)
-                        .body(formatJson(body));
+                    .ok()
+                    .headers(header)
+                    .body(formatJson(body));
             } else {
-                log.error("Something wrong happened when trying to register the activity to the user");
+                log.error(
+                    "Something wrong happened when trying to register the activity to the user");
                 header.add("Status", "400 BAD REQUEST");
                 header.add("Content-Type", "application/json; charset=UTF-8");
 
 
-                body.put("error", "Something wrong happened registering the coupling between user and activity");
+                body.put("error",
+                    "Something wrong happened registering the coupling between user and activity");
                 return ResponseEntity
-                        .badRequest()
-                        .headers(header)
-                        .body(formatJson(body));
-
-            }
-        } catch(IllegalArgumentException e){
-            log.error("user is already registered to the activity");
-            body.put("error", "user is already registered to the activity: " + e.getMessage());
-            return ResponseEntity
                     .badRequest()
                     .headers(header)
                     .body(formatJson(body));
+
+            }
+        } catch (IllegalArgumentException e) {
+            log.error("user is already registered to the activity");
+            body.put("error", "user is already registered to the activity: " + e.getMessage());
+            return ResponseEntity
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
     }
 
@@ -604,7 +628,7 @@ public class GiddController {
     }
 
     @PostMapping("/group")
-    public ResponseEntity addNewGroup(@RequestBody Map<String, Object> map){
+    public ResponseEntity addNewGroup(@RequestBody Map<String, Object> map) {
         //TODO bruker som lager gruppen legges automatisk til?
         //Ta inn streng med medlemsIder
         String groupName = map.get("groupName").toString();
@@ -612,7 +636,7 @@ public class GiddController {
         int userId = Integer.parseInt(map.get("userId").toString());
 
         User owner = userService.getUser(userId);
-        if(owner == null){
+        if (owner == null) {
             log.error("The owner is null");
             HttpHeaders header = new HttpHeaders();
             header.add("Status", "400 BAD REQUEST");
@@ -622,36 +646,36 @@ public class GiddController {
             body.put("error", "The owner does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         ArrayList<Integer> addedIds = new ArrayList<>();
         ArrayList<User> existingUsers = new ArrayList<>();
-        for(String s : userIdsString){
+        for (String s : userIdsString) {
             User user = userService.getUser(Integer.parseInt(s));
-            if(!(user == null || addedIds.contains(user.getUserId()))){
+            if (!(user == null || addedIds.contains(user.getUserId()))) {
                 existingUsers.add(user);
                 addedIds.add(user.getUserId());
             }
         }
 
-        if(!addedIds.contains(owner.getUserId())) {
+        if (!addedIds.contains(owner.getUserId())) {
             existingUsers.add(owner);
         }
 
         ArrayList<Integer> groupIds = new ArrayList<>();
-        for(FriendGroup friendGroup : friendGroupService.getAllFriendGroups()){
+        for (FriendGroup friendGroup : friendGroupService.getAllFriendGroups()) {
             groupIds.add(friendGroup.getGroupId());
         }
 
         int groupId = getRandomID();
-        while(groupIds.contains(groupId)){
+        while (groupIds.contains(groupId)) {
             groupId = getRandomID();
         }
 
-        if(!(friendGroupService.addFriendGroup(groupId, groupName, existingUsers, owner))){
+        if (!(friendGroupService.addFriendGroup(groupId, groupName, existingUsers, owner))) {
             HttpHeaders header = new HttpHeaders();
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -660,9 +684,9 @@ public class GiddController {
             body.put("error", "Something wrong happened when trying to add");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
         HttpHeaders header = new HttpHeaders();
         header.add("Status", "200 OK");
@@ -672,9 +696,9 @@ public class GiddController {
         body.put("groupId", String.valueOf(groupId));
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
     @PostMapping("/group/{groupId}/user")
@@ -688,7 +712,7 @@ public class GiddController {
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
-        if(user == null || friendGroup == null){
+        if (user == null || friendGroup == null) {
             log.error("The user or the friend group is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -696,12 +720,12 @@ public class GiddController {
             body.put("error", "The friend group or the user does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(!friendGroupService.addUserToFriendGroup(friendGroup, user)){
+        if (!friendGroupService.addUserToFriendGroup(friendGroup, user)) {
             log.error("Something wrong happened when trying to add user to friend group");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -709,9 +733,9 @@ public class GiddController {
             body.put("error", "Something wrong happened when trying to add user to friend group");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         log.info("User added to friend group");
@@ -721,9 +745,9 @@ public class GiddController {
         body.put("groupId", String.valueOf(groupId));
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
     @PathTwoTokenRequired
@@ -828,13 +852,14 @@ public class GiddController {
 
     @PathTwoTokenRequired
     @PutMapping(value = "/user/some/{id}")
-    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
+    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map,
+                                       @PathVariable Integer id) {
         log.debug("Received request at /user/some/" + id);
         // TODO This method NEEDS to control token once that's possible
         Map<String, String> body = new HashMap<>();
         HttpHeaders headers = new HttpHeaders();
 
-        if(!parsePhone(map, body)) {
+        if (!parsePhone(map, body)) {
             log.error("Could not parse phoneNumber");
 
             return ResponseEntity
@@ -843,7 +868,7 @@ public class GiddController {
                 .body(formatJson(body));
         }
 
-        try{
+        try {
             log.debug("Attempting to edit user");
             User user = userService.getUser(id);
             log.debug("Found user " + user.toString());
@@ -922,7 +947,7 @@ public class GiddController {
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
         activity.setImage(new Image());
-        activity.setEquipments(newEquipment(activity,map.get("equipmentList").toString()));
+        activity.setEquipments(newEquipment(activity, map.get("equipmentList").toString()));
         log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
         if (!edited) {
@@ -1222,7 +1247,7 @@ public class GiddController {
             }
         }
 
-        if(remove) {
+        if (remove) {
             stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");
         }
         stringBuilder.append("]}");
@@ -1239,7 +1264,8 @@ public class GiddController {
     }
 
     @GetMapping("/user/{userId}/user/{friendId}")
-    public ResponseEntity checkFriendship(@PathVariable Integer userId, @PathVariable Integer friendId) {
+    public ResponseEntity checkFriendship(@PathVariable Integer userId,
+                                          @PathVariable Integer friendId) {
         log.debug("Received GetMapping to '/user/{userId}/user/{friendId}'");
         User user = userService.getUser(userId);
         User friend = userService.getUser(friendId);
@@ -1254,9 +1280,9 @@ public class GiddController {
 
             body.put("error", "The user or the friend does not exist");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         Friendship friendship = userService.checkFriendship(user, friend);
@@ -1270,13 +1296,13 @@ public class GiddController {
         body.put("friendship", friendship.toString());
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
     @GetMapping("/group")
-    public ResponseEntity getAllGroups(){
+    public ResponseEntity getAllGroups() {
         log.debug("Received GetMapping to '/group'");
         List<FriendGroup> friendGroups = friendGroupService.getAllFriendGroups();
 
@@ -1287,18 +1313,18 @@ public class GiddController {
         log.debug("Returning all groups");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body("{\"groups\":" + friendGroups.toString() + "}");
+            .ok()
+            .headers(header)
+            .body("{\"groups\":" + friendGroups.toString() + "}");
     }
 
     @GetMapping(value = "/group/{groupId}")
-    public ResponseEntity getFriendGroup(@PathVariable Integer groupId){
+    public ResponseEntity getFriendGroup(@PathVariable Integer groupId) {
         log.debug("Received GetMapping to '/group/{groupId}'");
         FriendGroup friendGroup = friendGroupService.getFriendGroup(groupId);
 
         HttpHeaders header = new HttpHeaders();
-        if(friendGroup == null){
+        if (friendGroup == null) {
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
             HashMap<String, String> body = new HashMap<>();
@@ -1306,18 +1332,18 @@ public class GiddController {
             body.put("error", "The friend group does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(friendGroup.toString());
+            .ok()
+            .headers(header)
+            .body(friendGroup.toString());
     }
 
     /*@GetMapping("user/{userId}/group")
@@ -1402,13 +1428,13 @@ public class GiddController {
                 .body(formatJson(body));
         }
         //if the user being deleted is the owner
-        if(activity.getUser().getUserId() == user.getUserId()){
+        if (activity.getUser().getUserId() == user.getUserId()) {
             body.put("error", "cannot delete owner from own activity");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         if (!userService.deleteConnection(activityUser) ||
@@ -1435,7 +1461,7 @@ public class GiddController {
         //todo bug hvor man kan få minuspoeng dersom man joiner en aktivitet, aktiviteten endres til høyere activity
         // level, og man leaver denne
         userService.setPoints(user, (int) (user.getPoints() -
-                JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
+            JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
         return ResponseEntity
             .ok()
             .headers(header)
@@ -1472,7 +1498,7 @@ public class GiddController {
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
         int bonusPoints = (int) (NEW_ACTIVITY_BONUS *
-                        MULTIPLIERS[activityService.getActivity(activityId).getActivityLevel().ordinal()]);
+            MULTIPLIERS[activityService.getActivity(activityId).getActivityLevel().ordinal()]);
         if (activityService.deleteActivity(activityId)) {
             log.debug("The deletion was successful");
             header.add("Status", "200 OK");
@@ -1488,7 +1514,8 @@ public class GiddController {
             return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(bodyJson.substring(0, bodyJson.length() - 1) + ",\"users\":" + users.toString() + "}");
+                .body(bodyJson.substring(0, bodyJson.length() - 1) + ",\"users\":" +
+                    users.toString() + "}");
         }
 
         body.put("error", "no activity was deleted, are you sure the activity exists");
@@ -1554,12 +1581,12 @@ public class GiddController {
     }
 
     @DeleteMapping(value = "/group/{groupId}")
-    public ResponseEntity deleteGroup(@PathVariable Integer groupId){
+    public ResponseEntity deleteGroup(@PathVariable Integer groupId) {
         log.debug("Received DeleteMapping to '/group/{groupId}");
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
-        if(!friendGroupService.deleteFriendGroup(groupId)){
+        if (!friendGroupService.deleteFriendGroup(groupId)) {
             log.error("Something went wrong when trying to delete");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -1567,28 +1594,29 @@ public class GiddController {
             body.put("error", "The deleting went wrong");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
     @DeleteMapping("/group/{groupId}/user/{userId}")
-    public ResponseEntity removeUserFromGroup(@PathVariable Integer groupId, @PathVariable Integer userId){
+    public ResponseEntity removeUserFromGroup(@PathVariable Integer groupId,
+                                              @PathVariable Integer userId) {
         FriendGroup friendGroup = friendGroupService.getFriendGroup(groupId);
         User user = userService.getUser(userId);
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
 
-        if(user == null || friendGroup == null){
+        if (user == null || friendGroup == null) {
             log.error("The user or the friend group is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -1596,12 +1624,12 @@ public class GiddController {
             body.put("error", "The friend group or the user does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(user.getUserId() == friendGroup.getOwner().getUserId()){
+        if (user.getUserId() == friendGroup.getOwner().getUserId()) {
             log.error("The owner can not be removed");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -1609,22 +1637,23 @@ public class GiddController {
             body.put("error", "The owner can not be removed");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(!friendGroupService.removeUserFromFriendGroup(friendGroup, user)){
+        if (!friendGroupService.removeUserFromFriendGroup(friendGroup, user)) {
             log.error("Something wrong happened when trying to remove the user from friend group");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
-            body.put("error", "Something wrong happened when trying to remove the user from friend group");
+            body.put("error",
+                "Something wrong happened when trying to remove the user from friend group");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         log.info("User was removed");
@@ -1634,13 +1663,13 @@ public class GiddController {
         body.put("groupId", String.valueOf(groupId));
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
 
-    @MessageMapping("/chat/{groupId}")
+    /*@MessageMapping("/chat/{groupId}")
     public void sendMessage(@DestinationVariable Integer groupId, @Payload Message message) {
         // Set the message time as now before sending it back to the topic
         System.out.println("message is " + message.toString());
@@ -1648,10 +1677,10 @@ public class GiddController {
         //todo save in database
         // if(messageService.saveMessage(groupId, message)){
         //}
-    }
+    }*/
 
     @GetMapping("/chat/{groupId}/message")
-    public ResponseEntity sendMessageLog(@PathVariable Integer groupId){
+    public ResponseEntity sendMessageLog(@PathVariable Integer groupId) {
         ArrayList<Chat> messages = new ArrayList<>();
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<String, String>();
@@ -1745,7 +1774,7 @@ public class GiddController {
         removed.removeAll(newEquips);
     }*/
 
-    private List<ActivityEquipment> newEquipment (Activity activity, String equipList) {
+    private List<ActivityEquipment> newEquipment(Activity activity, String equipList) {
         List<ActivityEquipment> oldEquips = activity.getEquipments();
         List<Equipment> equips = toEquipList(equipList);
 
@@ -1754,14 +1783,14 @@ public class GiddController {
         boolean match;
         for (Equipment e : equips) {
             match = false;
-            for (ActivityEquipment con: oldEquips) {
-                if (con.getEquipment().equals(e)){
+            for (ActivityEquipment con : oldEquips) {
+                if (con.getEquipment().equals(e)) {
                     res.add(con);
                     match = true;
                     break;
                 }
             }
-            if(!match) {
+            if (!match) {
                 temp = new ActivityEquipment(activity, e);
                 res.add(temp);
             }
@@ -1777,7 +1806,7 @@ public class GiddController {
             name = name.toLowerCase();
             Equipment equipment = equipmentService.getEquipmentByDescription(name);
 
-            if(equipment == null) {
+            if (equipment == null) {
                 log.debug("equipment " + name + " did not exist, creating");
                 equipment = new Equipment(name);
                 equipmentService.addEquipment(equipment);
@@ -1811,17 +1840,23 @@ public class GiddController {
     }
 
     private Image createImage(String base) {
-        if(base.length()<32){
+        if (base.length() < 32) {
+            System.out.println("BASE SMOL");
             return new Image();
         }
-        String[] res = base.split("");
-        Image img = new Image(res[0], baseToByte(res[1]));
-        return img;
+        String[] res = base.split(",");
+        Image img = new Image(res[0], Base64.getDecoder().decode(res[1]));
+        if (imageService.newImage(img)) {
+            System.out.println("NEW IMAGE WAS CREATED");
+            return img;
+        }
+        System.out.println("IMAGE WAS NOT CREATED");
+        return null;
     }
 
     private byte[] baseToByte(String base) {
-        if(base.length()<32){
-            return new byte[]{};
+        if (base.length() < 32) {
+            return new byte[] {};
         }
         log.info("decoding from " + base);
         base = base.split(",")[1];
@@ -1854,7 +1889,7 @@ public class GiddController {
         return result.substring(0, result.length() - (result.length() > 1 ? 2 : 0)) + "}";
     }
 
-    private Activity mapToActivity(Map<String, Object> map, int actId, User user) {
+    private Activity mapToActivity(Map<String, Object> map, int actId, User user, Image image) {
         log.debug("map: " + map.toString() + " to activity");
         String title = map.get("title").toString().trim();
         Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
@@ -1862,7 +1897,7 @@ public class GiddController {
         int capacity = Integer.parseInt(map.get("capacity").toString());
         int groupId = Integer.parseInt(map.get("groupId").toString());
         String description = map.get("description").toString();
-        Image image = createImage(map.get("image").toString());
+        //  image
         ActivityLevel activityLevel =
             ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
         List<Tag> tags = splitTags(map.get("tags").toString());
@@ -1930,7 +1965,7 @@ public class GiddController {
         return true;
     }
 
-    private boolean insertUserActivityCoupling(User user, Activity activity){
+    private boolean insertUserActivityCoupling(User user, Activity activity) {
         //Legge inn sjekk om den allerede er registrert
         List<ActivityUser> activityUser = user.getActivities();
         ArrayList<Integer> activityIds = new ArrayList<>();
