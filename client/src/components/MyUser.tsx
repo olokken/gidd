@@ -385,7 +385,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                             }}
                             select
                             color="secondary"
-                            label="Select your activity level"
+                            label="Velg ditt aktivitetsnivå"
                             value={activityLevel}
                             onChange={onChangeActivityLevel}
                             variant="outlined"
