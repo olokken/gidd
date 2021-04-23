@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
-const SortMenu = (props: any) => {
+const SortMenu = () => {
+    const [sortValue, setSortValue] = useState<number>(5);
+
+    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setSortValue(event.target.value as number);
+    };
+
     return (
         <FormControl
             style={{ marginRight: '10px', width: '100%', maxWidth: '500px' }}
@@ -11,19 +17,12 @@ const SortMenu = (props: any) => {
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                //value={age}
-                //onChange={handleChange}
+                onChange={handleChange}
             >
-                <MenuItem value={10}>Ny - Gammel</MenuItem>
-                <MenuItem value={20}>Gammel - Ny</MenuItem>
-                <MenuItem value={10}>Kort avstand - Lang avstand</MenuItem>
-                <MenuItem value={20}>Lang avstand - Kort avstand</MenuItem>
-                <MenuItem value={30}>Liten kapasitet - Stor kapasitet</MenuItem>
-                <MenuItem value={40}>Stor kapasitet - Liten kapasitet</MenuItem>
-                <MenuItem value={50}>
-                    Høy Vanskelighetsgrad - Lav vanskelighetsgrad
-                </MenuItem>
-                <MenuItem value={60}>
+                <MenuItem value={1}>Kommende</MenuItem>
+                <MenuItem value={3}>Kort avstand - Lang avstand</MenuItem>
+                <MenuItem value={5}>Liten kapasitet - Stor kapasitet</MenuItem>
+                <MenuItem value={8}>
                     Lav Vanskelighetsgrad - Høy vanskelighetsgrad
                 </MenuItem>
             </Select>

@@ -1,10 +1,13 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useContext, useState } from 'react';
 import styled from 'styled-components';
 import { TextField, Button } from '@material-ui/core';
 import Select from 'react-select';
 import FriendCard from './FriendCard';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddBox from '@material-ui/icons/AddBox';
+import User from '../../interfaces/User';
+import axios from '../../Axios'
+import { UserContext } from '../../UserContext';
 
 const StyledContainer = styled.div`
     margin-left: 1rem;
@@ -18,29 +21,23 @@ const StyledUl = styled.ul`
    padding: 0;
 `;
 
-const friends = [
-    {name: 'Mathias',value: '1',label:'Mathias'},
-    {name: 'bob1',value: '2',label:'bob1'},
-    {name: 'bob2',value: '3',label:'bob2'},
-    {name: 'bob3',value: '4',label:'bob3'},
-    {name: 'bob4',value: '5',label:'bob4'},
-    {name: 'bob5',value: '6',label:'bob5'},
-    {name: 'bob6',value: '7',label:'bob6'},
-    {name: 'bob7',value: '8',label:'bob7'},
-]
+interface Props {
+    friends: User[];
+}
 
 
-const GroupList = () => {
+const GroupList = ( {friends} : Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
-    const [selectInput, setSelectInput] = useState<string[] | undefined>([]);
-    const [searchValue, setSearchValue] = useState('');
+    const [selectInput, setSelectInput] = useState<User[]>([]);
+    const [searchValue, setSearchValue] = React.useState('');
+    const {user, setUser} = useContext(UserContext);
 
      const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput((event.target as HTMLInputElement).value);
     };
 
      const onAddGroupClick = () => {
-        console.log("selectInput: " + selectInput);
+        console.log(selectInput);
         console.log("searchInput: " + searchValue);
         setSelectInput([]);
         setSearchValue('');
@@ -50,21 +47,22 @@ const GroupList = () => {
         <StyledContainer>
            <Autocomplete
                 id="free-solo-demo"
+                value={selectInput}
                 multiple
                 noOptionsText="ingen valg"
-                value={selectInput}
-                onChange={(event: any, newValue: string[] | undefined) => {
+                onChange={(event: any, newValue: User[]) => {
                     setSelectInput(newValue);
                 }}
                 inputValue={searchValue}
                 onInputChange={(event, newInputValue) => {
                     setSearchValue(newInputValue);
                 }}
-                options={friends.map((friend) => friend.name)}
+                options={friends}
+                getOptionLabel={(options) => options.firstName + ' ' + options.surname}
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        label="Lag din egen gruppe"
+                        label="Legg til ny venn"
                         margin="normal"
                         variant="outlined"
                     />
@@ -89,13 +87,7 @@ const GroupList = () => {
             />
             <h2>Dine grupper</h2>
             <StyledUl >
-                {friends.filter((friend: { name: string}) => {
-                if(searchInput == ""){
-                    return friend
-                }else if(friend.name != null && friend.name.toLowerCase().includes(searchInput.toLocaleLowerCase())){
-                    return friend
-                }
-                }).map((friend: { name: string; }) => <FriendCard key={friend.name} friend={friend}/>)}
+               
             </StyledUl> 
         </StyledContainer>
     );

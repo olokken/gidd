@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useState, useEffect } from 'react';
-import { Slider, TextField } from '@material-ui/core';
+import { Button, Slider, TextField } from '@material-ui/core';
 import styled from 'styled-components';
 
 const Inputs = styled.div`
@@ -11,10 +11,9 @@ const Container = styled.div``;
 interface Props {
     onDistanceChange: (dist: number) => void;
 }
+
 const DistanceFilter = ({ onDistanceChange }: Props) => {
-    const [maxDistance, setMaxDistance] = useState<number>(
-        Number.MAX_SAFE_INTEGER
-    );
+    const [maxDistance, setMaxDistance] = useState<any>();
 
     const changeValue = (event: ChangeEvent<HTMLInputElement>) => {
         setMaxDistance(parseInt(event.target.value));
@@ -27,6 +26,10 @@ const DistanceFilter = ({ onDistanceChange }: Props) => {
     const handleChange = (event: any, newValue: number | number[]) => {
         setMaxDistance(newValue as number);
     };
+
+    const reset = () => {
+        setMaxDistance(undefined); 
+    } 
 
     return (
         <Container>
@@ -49,6 +52,7 @@ const DistanceFilter = ({ onDistanceChange }: Props) => {
                     onChange={changeValue}
                 />
             </Inputs>
+            <Button onClick={reset}>Nullstill</Button>
         </Container>
     );
 };

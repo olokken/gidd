@@ -11,7 +11,7 @@ import {
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import logo from '../../assets/logo.png';
-import { User2 } from '../../interfaces/User';
+import User  from '../../interfaces/User';
 import Popup from '../Popup';
 import UserProfile from './UserProfile';
 
@@ -30,8 +30,12 @@ const TitleArea = styled.div`
     background-color: #f44336;
 `;
 
+interface Props {
+    friend: User;
+}
 
-const FriendCard = ({friend}: any) =>{
+
+const FriendCard = ({friend}: Props) =>{
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     return (
         <div>

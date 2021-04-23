@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { TextField } from '@material-ui/core';
+import { Slider, TextField, Button } from '@material-ui/core';
+
 const Container = styled.div``;
 
 interface Props {
@@ -28,6 +29,11 @@ const TimeFilter = ({ onTimeFromChange, onTimeToChange }: Props) => {
         setTo(event.target.value as Date);
     };
 
+    const reset = () => {
+        setFrom(new Date(0)); 
+        setTo(new Date(2050,0,0)); 
+    }
+
     return (
         <Container>
             <h3>Tidspunkt</h3>
@@ -48,6 +54,7 @@ const TimeFilter = ({ onTimeFromChange, onTimeToChange }: Props) => {
                     shrink: true,
                 }}
             />
+            <Button onClick={reset}>Nullstill</Button>
         </Container>
     );
 };

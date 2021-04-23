@@ -58,7 +58,7 @@ const Activities = () => {
     const [titleSearch, setTitleSearch] = useState<string>('');
     const [showMine, setShowMine] = useState<boolean>(false);
     const [showFuture, setShowFuture] = useState<boolean>(false);
-    const [distance, setDistance] = useState<number>(1000000000);
+    const [distance, setDistance] = useState<number>();
     const [fromTime, setFromTime] = useState<Date>(new Date());
     const [toTime, setToTime] = useState<Date>(new Date());
     const [capacity, setCapacity] = useState<number[]>([0, 20]);

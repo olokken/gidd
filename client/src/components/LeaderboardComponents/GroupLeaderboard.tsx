@@ -1,7 +1,7 @@
 import axios from '../../Axios';
 import React, { useState } from 'react';
 import Group from '../../interfaces/Group';
-import { User2 } from '../../interfaces/User';
+import User from '../../interfaces/User';
 import { Avatar, Card, CardContent, makeStyles } from '@material-ui/core';
 import './GroupLeaderboard.css';
 
@@ -28,7 +28,7 @@ interface Props {
 
 export const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
     const classes = useStyles();
-    const [members, setMembers] = useState<User2[]>([]);
+    const [members, setMembers] = useState<User[]>([]);
     //TODO work with this method.
     const getPoints = async () => {
         //TODO: the url get the group.
