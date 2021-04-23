@@ -26,7 +26,7 @@ interface Props {
 }
 
 interface Placements {
-    userId: string;
+    user: User;
     position: number;
 }
 
@@ -34,7 +34,7 @@ const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
     const [users, setUsers] = useState<User[]>(group.users);
     const classes = useStyles();
 
-    const most = () => {
+    const greatest = () => {
         let index = 0;
         for (let i = 0; i < users.length; i++) {
             for (let y = i + 1; y < users.length; y++) {
@@ -43,6 +43,7 @@ const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
         }
         return index;
     };
+
     /*
     const getPlacements = () => {
         let arr: Placements[] = [];
@@ -69,6 +70,7 @@ const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
             }
         }
     };
+    */
 
     const filterPoints = () => {
         const sortArray = users.map(function (data, index) {

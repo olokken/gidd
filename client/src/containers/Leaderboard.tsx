@@ -52,9 +52,9 @@ function Leaderboard() {
     };
 
     useEffect(() => {
-        //getAllGroups();
-        getGroupId();
-        getGroup();
+        getAllGroups();
+        //getGroupId();
+        //getGroup();
     }, []);
 
     const renderGroups = groups.map((group, index: number) => {
