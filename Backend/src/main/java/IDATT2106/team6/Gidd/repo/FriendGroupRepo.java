@@ -96,4 +96,21 @@ public class FriendGroupRepo extends GiddRepo {
             em.close();
         }
     }
+
+    public boolean updateFriendGroup(FriendGroup friendGroup){
+        log.info("Updating friend group " + friendGroup.getGroupId());
+        EntityManager em = getEm();
+
+        try {
+            em.getTransaction().begin();
+            em.merge(friendGroup);
+            em.getTransaction().commit();
+            return true;
+        }catch (Exception e){
+            log.error("Updating friend group failed due : " + e.getMessage());
+            return false;
+        }finally {
+            em.close();
+        }
+    }
 }

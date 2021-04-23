@@ -36,4 +36,9 @@ public class FriendGroupService {
     public boolean deleteFriendGroup(int friendGroupId){
         return this.repo.deleteFriendGroup(friendGroupId);
     }
+
+    public boolean addUserToFriendGroup(FriendGroup friendGroup, User user){
+        friendGroup.addUser(user);
+        return repo.updateFriendGroup(friendGroup);
+    }
 }

@@ -60,7 +60,8 @@ public class FriendGroup {
         return "{" +
                 "\"groupId\":\"" + groupId + "\"," +
                 "\"groupName\":\"" + groupName + "\"," +
-                "\" users\":" + users.toString() +
+                "\" users\":" + users.toString() + "," +
+                "\"owner\":" + owner.toString() +
                 '}';
     }
 }
