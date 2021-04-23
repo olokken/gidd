@@ -20,7 +20,8 @@ interface Props {
   onChangeFirstName: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeSurname: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeActivityLevel: (e: ChangeEvent<HTMLInputElement>) => void;
-  activityLevel:string;
+  activityLevel: string;
+  visualActivityLevel: string;
   onChangeEmail: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangeNumber: (e: ChangeEvent<HTMLInputElement>) => void;
   onChangePassword1: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -32,22 +33,23 @@ interface Props {
 }
 
 
-const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel, activityLevel, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email }: Props) => {
-  const activityLevels:string[] = ['Low', 'Medium', 'High']
+const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel, activityLevel, visualActivityLevel, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email }: Props) => {
+  const activityLevels: string[] = ['Lav', 'Middels', 'Høyt']
+
   return (
     <RegisterContainer>
-      <h2>Register a new user</h2>
+      <h2>Registrer en ny bruker</h2>
       <form>
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
-          label="First name"
+          label="Fornavn"
           color="secondary"
           variant="outlined"
           onChange={onChangeFirstName}
         />
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
-          label="Surname"
+          label="Etternavn"
           color="secondary"
           variant="outlined"
           onChange={onChangeSurname}
@@ -64,16 +66,16 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel
                 fontSize: '10px',
                 color: '#f44336'
               }}>
-                {email !== '' && correctEmailFormat === false && <a>Email must include a @</a>}
+                {email !== '' && correctEmailFormat === false && <a>E-mail må inneholde en @</a>}
               </InputAdornment>
           }}
         />
-          <TextField
-          style = {{width: '100%', marginBottom: 24}}
+        <TextField
+          style={{ width: '100%', marginBottom: 24 }}
           select
-          color = 'secondary'
-          label="Select your activity level"
-          value= {activityLevel}
+          color='secondary'
+          label="Velg ditt aktivitetsnivå"
+          value={visualActivityLevel}
           onChange={onChangeActivityLevel}
           variant="outlined"
         >
@@ -85,35 +87,35 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel
         </TextField>
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
-          label="Telephone"
+          label="Telefonnummer"
           color="secondary"
           variant="outlined"
           onChange={onChangeNumber}
         />
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
-          label="Password"
+          label="Passord"
           color="secondary"
           variant="outlined"
-          type="password"
+          type="paswsord"
           onChange={onChangePassword1}
         />
         <TextField
           style={{ width: '100%', marginBottom: 5 }}
-          label="Password"
+          label="Passord"
           color="secondary"
           variant="outlined"
           type="password"
           onChange={onChangePassword2}
         />
-        {equalPasswords === false && <a>Passwords do not match</a>}
+        {equalPasswords === false && <a>Passordene er ulike!</a>}
         <Button
           style={{ width: '100%', height: '50px' }}
           variant="contained"
           color="primary"
           onClick={onClick}
         >
-          CREATE NEW USER
+          OPPRETT BRUKER
         </Button>
       </form>
     </RegisterContainer>

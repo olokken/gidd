@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, Grid, Typography} from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import React from 'react';
 import styled from 'styled-components';
 import Weather from '../../interfaces/Weather';
@@ -8,8 +8,8 @@ interface Props{
 }
 
 const Main = styled.div`
-background: rgb(62,62,62);
-background: linear-gradient(0deg, rgba(62,62,62,1) 0%, rgba(184,184,184,1) 100%);
+background: rgb(25,141,145);
+background: linear-gradient(0deg, rgba(25,141,145,1) 0%, rgba(99,163,221,1) 100%);
   padding: 15px;
   color: white;
 `;
@@ -58,7 +58,7 @@ const CardExampleCard = ({weatherData}: Props) => {
                     <Grid item xs={8}>
                     <TextBox>
                       <Grid item>
-                        <FirstDescription>{weatherData.description}</FirstDescription>
+                        <FirstDescription>{weatherData.main}, {weatherData.description}</FirstDescription>
                       </Grid>
                       <br></br>
                       <Grid container wrap="nowrap" spacing={2}>

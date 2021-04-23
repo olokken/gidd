@@ -1,0 +1,47 @@
+.groupleaderboard {
+    border: 2px solid blue;
+    border-radius: 2%;
+}
+
+.groupleaderboard__header {
+    display: flex;
+    justify-content: center;
+}
+
+.groupleaderboard__player {
+    display: flex;
+    height: 4rem;
+}
+
+.groupleaderboard__logo {
+    display: flex;
+}
+
+.groupleaderboard__name {
+    margin: 1rem 0.3rem 1rem 1rem;
+}
+
+.groupleaderboard__line {
+    border: 0.2vw dashed #ffd433;
+    border-style: none none dashed;
+    color: #fff;
+    background-color: #fff;
+}
+
+.groupleaderboard__stats {
+    display: flex;
+    flex-direction: column;
+    margin: 0.5rem;
+    height: 3rem;
+}
+
+.groupleaderboard__stat1 {
+    font-size: 10px;
+    margin: 0.5rem 0.5rem 0.5rem 1rem;
+}
+
+.groupleaderboard__stat2 {
+    font-size: 12px;
+    font-weight: 800;
+    margin: 0 0.5rem 2rem 1rem;
+}

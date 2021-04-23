@@ -46,7 +46,6 @@ const Login = () => {
 
     const onLogin = async () => {
         if (!checkPassword() || email !== '') {
-            const user = await login();
             axios
                 .post('/login', {
                     provider: 'LOCAL',
@@ -57,10 +56,11 @@ const Login = () => {
                     console.log(JSON.stringify(response.data));
                     const id = response.data.id
                     setUser(id);
-                    axios.get(`/security/generate/token?subject=${id}`).then(response => {
+                    axios.get(`/security/token/generate?subject=${id}`).then(response => {
                         const token = response.data.result;
                         localStorage.setItem('token', token);
                         localStorage.setItem('userID', id);
+                        console.log('Fikk logget inn')
                     }).then(() => {
                         history.push('/Activities');
                     }).catch(error => {
@@ -76,22 +76,6 @@ const Login = () => {
         }
     };
 
-    const login = async () => {
-        const newUser: User = {
-            firstName: firstName,
-            surname: surname,
-            userID: userID,
-            email: email,
-            picture: picture,
-            password: password,
-            phoneNumber: '',
-            activityLevel: '',
-            points:'',
-        };
-        return {
-            newUser,
-        };
-    };
     const checkPassword = () => {
         if (email !== '' && password !== '') {
             return false;
@@ -142,7 +126,12 @@ const Login = () => {
             surname: response.profileObj.familyName,
             id: response.profileObj.googleID
         }).then(response => {
-            console.log(response);
+            console.log(response)
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('userID', response.data.userId);
+            setUser(response.data.userId);
+        }).then(() => {
+            history.push('/Activities');
         }).catch(error => {
             console.log(error);
         })
@@ -163,8 +152,13 @@ const Login = () => {
             firstName: name[0],
             surname: name[1],
         }).then(response => {
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('userID', response.data.userId);
+            if (response.data.error) {
+                console.log(response.data.error)
+            } else {
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('userID', response.data.userId);
+            }
+            setUser(response.data.userId);
         }).then(() => {
             history.push('/Activities');
         }).catch(error => {

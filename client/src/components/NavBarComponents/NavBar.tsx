@@ -75,9 +75,9 @@ const Navbar = () => {
             return window.innerWidth < 951
                 ? setState((prevState) => ({ ...prevState, mobileView: true }))
                 : setState((prevState) => ({
-                      ...prevState,
-                      mobileView: false,
-                  }));
+                    ...prevState,
+                    mobileView: false,
+                }));
         };
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());
@@ -432,7 +432,9 @@ const Navbar = () => {
                     openPopup={openUser}
                     setOpenPopup={setOpenUser}
                 >
-                    <MyUser />
+                    <MyUser
+                        openPopup={openUser}
+                        setOpenPopup={setOpenUser} />
                 </Popup>
                 <StyledMenuItem onClick={changeToSettings}>
                     <ListItemIcon>

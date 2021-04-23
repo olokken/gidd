@@ -35,27 +35,28 @@ const todayStr =
     new Date().toLocaleTimeString();
 
 const Calender = () => {
-    const { setUser, user } = useContext(UserContext);
-    const [activities, setActivities] = useState<EventInput[]>([]);
-    const [openPopup, setOpenPopup] = useState<boolean>(false);
-    const [activity, setActivity] = useState<ActivityResponse>({
-        activityId: 0,
-        activityLevel: 'MEDIUM',
-        capacity: 0,
-        daysToRepeat: 0,
-        description: 'test',
-        equipments: [],
-        groupId: 0,
-        image: '',
-        latitude: 0,
-        longitude: 0,
-        registeredParticipants: [],
-        tags: ['SII'],
-        time: 1618924200000,
-        timeCreated: 1618830691000,
-        title: 'Test',
-        user: 1231323,
-    });
+  const { user } = useContext(UserContext);
+  const [activities, setActivities] = useState<EventInput[]>([]);
+  const [openPopup, setOpenPopup] = useState<boolean>(false);
+  const [activity, setActivity] = useState<ActivityResponse>({
+    activityId: 0,
+    activityLevel: 'MEDIUM',
+    capacity: 0,
+    daysToRepeat: 0,
+    description: 'test',
+    equipments: [],
+    groupId: 0,
+    image: '',
+    latitude: 0,
+    longitude: 0,
+    registeredParticipants: [],
+    tags: ['SII'],
+    time: 1618924200000,
+    timeCreated: 1618830691000,
+    title: 'Test',
+    user: 1231323
+  }
+  );
 
     useEffect(() => {
         const id = localStorage.getItem('userID');

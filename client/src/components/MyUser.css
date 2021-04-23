@@ -29,10 +29,8 @@
 }
 
 .myuser__deleteButton {
-    margin-left: auto !important;
-    margin-right: 0 !important;
+    margin: 3vh 0 0 auto !important;
     width: 6rem !important;
-    margin-top: 2vh;
 }
 
 .passwordicon {
