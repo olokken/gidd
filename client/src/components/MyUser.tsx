@@ -335,10 +335,14 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         axios
             .delete(`user/${user}`)
             .then((response) => {
-                console.log(response);
-                setCurrentUser(response.data);
-                localStorage.clear();
-                history.push('/');
+                if (response.data.error) {
+                    console.log(response.data.error)
+                } else {
+                    console.log(response);
+                    setCurrentUser(response.data);
+                    localStorage.clear();
+                    history.push('/');
+                }
             })
             .catch((error) => {
                 console.log('Could not delete user: ' + error.message);

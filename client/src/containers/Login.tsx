@@ -152,8 +152,12 @@ const Login = () => {
             firstName: name[0],
             surname: name[1],
         }).then(response => {
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('userID', response.data.userId);
+            if (response.data.error) {
+                console.log(response.data.error)
+            } else {
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('userID', response.data.userId);
+            }
             setUser(response.data.userId);
         }).then(() => {
             setUser(response.data.userId);
