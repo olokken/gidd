@@ -1641,7 +1641,7 @@ public class GiddController {
 
 
     @MessageMapping("/chat/{groupId}")
-    public void sendMessage(@DestinationVariable Integer groupId, @Payload Message message) {
+    public void sendMessage(@DestinationVariable Integer groupId, @Payload String message) {
         // Set the message time as now before sending it back to the topic
         log.info("recieved message to group " + groupId);
         template.convertAndSend("/client/chat/" + groupId, message);
