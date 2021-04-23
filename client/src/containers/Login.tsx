@@ -131,7 +131,6 @@ const Login = () => {
             localStorage.setItem('userID', response.data.userId);
             setUser(response.data.userId);
         }).then(() => {
-            setUser(response.data.userId);
             history.push('/Activities');
         }).catch(error => {
             console.log(error);
@@ -161,7 +160,6 @@ const Login = () => {
             }
             setUser(response.data.userId);
         }).then(() => {
-            setUser(response.data.userId);
             history.push('/Activities');
         }).catch(error => {
             console.log(error.message);

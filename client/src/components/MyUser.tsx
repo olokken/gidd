@@ -289,6 +289,12 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const onClickUpdateUser = () => {
         console.log('hei hei')
         const putUrl = `/user/some/${user}`;
+        const token = localStorage.getItem('token')
+        const config = {
+            headers: {
+                token: token
+            }
+        }
         if (!checkInput(editPass) || !checkInput(confirmPass)) {
             alert('Feil input i passord')
         } else if (editPass != confirmPass) {
@@ -301,19 +307,20 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                 surname: currentUser.surname,
                 activityLevel: activityLevel.toUpperCase(),
                 newPassword: confirmPass
-            }).then(response => {
-                console.log('brukerinformasjon oppdatert' + response);
-                setPhone(phone);
-                setOldPassword(confirmPass);
-                setActivityLevel(activityLevel);
-                setIsFirstTimeLogin(!isFirstTimeLogin);
-                setShowIsFirstTime(!showIsFirstTime)
-                setCurrentUser({ ...currentUser, phoneNumber: phone, activityLevel: activityLevel })
-                setIsFirstTimeLogin(!isFirstTimeLogin);
-                setShowIsFirstTime(!showIsFirstTime);
-            }).catch(error => {
-                console.log(error.message)
-            })
+            },
+                config).then(response => {
+                    console.log('brukerinformasjon oppdatert' + response);
+                    setPhone(phone);
+                    setOldPassword(confirmPass);
+                    setActivityLevel(activityLevel);
+                    setIsFirstTimeLogin(!isFirstTimeLogin);
+                    setShowIsFirstTime(!showIsFirstTime)
+                    setCurrentUser({ ...currentUser, phoneNumber: phone, activityLevel: activityLevel })
+                    setIsFirstTimeLogin(!isFirstTimeLogin);
+                    setShowIsFirstTime(!showIsFirstTime);
+                }).catch(error => {
+                    console.log(error.message)
+                })
         }
     };
     const onClickChangePass = () => {

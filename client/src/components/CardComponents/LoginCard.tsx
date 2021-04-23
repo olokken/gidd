@@ -66,7 +66,7 @@ const LoginCard = ({
 }: Props) => {
   return (
     <LoginCardContainer>
-      <h2>LOGG IN</h2>
+      <h2>LOGG INN</h2>
       <TextField
         style={{ width: '100%', marginBottom: 24 }}
         label="E-mail"
