@@ -17,6 +17,8 @@ import axios from '../Axios';
 import ActivityLevels from '../interfaces/ActivityLevels';
 import { UserContext } from '../UserContext';
 import DefaultCenter from '../interfaces/DefaultCenter';
+import { resolve } from 'node:path';
+import { rejects } from 'node:assert';
 
 //Endringer kan forekomme her
 
@@ -69,6 +71,28 @@ const Activities = () => {
         High: true,
     });
     const [location, setLocation] = useState<DefaultCenter>();
+
+    const register = (activityId: number): Promise<void> => {
+        console.log(activityId + ' ' + user);
+        return new Promise((resolve, reject) => {
+            axios
+                .post('/user/activity', {
+                    userId: user,
+                    activityId: activityId,
+                })
+                .then(() => loadActivities());
+            resolve();
+        });
+    };
+
+    const unRegister = (activityId: number): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            axios
+                .delete(`/user/${user}/activity/${activityId}`)
+                .then(() => loadActivities());
+            resolve();
+        });
+    };
 
     useEffect(() => {
         if (activities) {
@@ -213,6 +237,8 @@ const Activities = () => {
                         </Popup>
                     </AddAndSort>
                     <ActivityGrid
+                        register={register}
+                        unRegister={unRegister}
                         deleteActivity={(id) => deleteActivity(id)}
                         activities={currentActivities}
                     ></ActivityGrid>
@@ -310,6 +336,8 @@ const Activities = () => {
                         </Popup>
                     </AddAndSort>
                     <ActivityGrid
+                        register={register}
+                        unRegister={unRegister}
                         deleteActivity={(id) => deleteActivity(id)}
                         activities={currentActivities}
                     ></ActivityGrid>

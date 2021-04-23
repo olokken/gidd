@@ -30,6 +30,8 @@ interface Props {
     openPopup?: boolean;
     setOpenPopup?: React.Dispatch<React.SetStateAction<boolean>>;
     deleteActivity?: (id: number) => void;
+    register: (id: number) => Promise<void>;
+    unRegister: (id: number) => Promise<void>;
 }
 
 const useStyles = makeStyles(() =>
@@ -74,6 +76,8 @@ const ActivityInformation = ({
     deleteActivity,
     setOpenPopup,
     openPopup,
+    register,
+    unRegister,
 }: Props) => {
     const [currentAct, setCurrentAct] = useState<ActivityResponse>(activity);
     const classes = useStyles();
@@ -88,6 +92,20 @@ const ActivityInformation = ({
         activity.registeredParticipants.length
     );
 
+    const onRegisterClick = () => {
+        register(activity.activityId).then(() => {
+            setRegistration(1);
+            setNumRegistered(numRegistered + 1);
+        });
+    };
+
+    const onUnRegisterClick = () => {
+        unRegister(activity.activityId).then(() => {
+            setRegistration(0);
+            setNumRegistered(numRegistered - 1);
+        });
+    };
+
     const editActivity = () => {
         setOpenEditPopup(true);
     };
@@ -99,63 +117,49 @@ const ActivityInformation = ({
         }
     };
 
-    const register = () => {
-        console.log('prøver å registrere');
-        console.log(user);
-        axios
-            .post('/user/activity', {
-                userId: user,
-                activityId: activity.activityId,
-            })
-            .then((data) => {
-                if (data) {
-                    setRegistration(1);
-                }
-            })
-            .then(() => setNumRegistered(numRegistered + 1));
-    };
-
-    const unRegister = () => {
-        axios
-            .delete(`/user/${user}/activity/${activity.activityId}`)
-            .then(() => setRegistration(0))
-            .then(() => setNumRegistered(numRegistered - 1));
-    };
-
     useEffect(() => {
+        let value = -1;
         if (activity.user['userId'] == user) {
             setIsOwner(true);
         }
-        if (currentAct.registeredParticipants.length >= currentAct.capacity) {
+        const registered: number = currentAct.registeredParticipants
+            .map((par) => par['userId'])
+            .filter((num) => num == user).length;
+        if (registered >= 1) {
+            value = 1;
+            setRegistration(1);
+        } else if (
+            currentAct.registeredParticipants.length >= currentAct.capacity &&
+            value != 1
+        ) {
             setRegistration(2);
         } else {
-            const registered: number = currentAct.registeredParticipants
-                .map((par) => par['userId'])
-                .filter((num) => num == user).length;
-            if (registered >= 1) {
-                setRegistration(1);
-            } else {
-                setRegistration(0);
-            }
+            setRegistration(0);
         }
     }, []);
 
     const registerBtn = () => {
-        if (registration == 2) {
+        if (registration == 1) {
+            return (
+                <Button
+                    onClick={onUnRegisterClick}
+                    className={classes.joinButton}
+                >
+                    Meld deg av
+                </Button>
+            );
+        } else if (registration == 2) {
             return (
                 <Button className={classes.joinButton} disabled>
                     Aktiviteten er allerede fullbooket
                 </Button>
             );
-        } else if (registration == 1) {
-            return (
-                <Button onClick={unRegister} className={classes.joinButton}>
-                    Meld deg av
-                </Button>
-            );
         } else if (registration == 0) {
             return (
-                <Button onClick={register} className={classes.joinButton}>
+                <Button
+                    onClick={onRegisterClick}
+                    className={classes.joinButton}
+                >
                     Meld deg på
                 </Button>
             );
@@ -352,6 +356,9 @@ const ActivityInformation = ({
                     setOpenPopup={setOpenEditPopup}
                 ></ActivityForm>
             </Popup>
+            <Button onClick={() => console.log(registration)}>
+                Få fram registraioninfo
+            </Button>
         </div>
     );
 };

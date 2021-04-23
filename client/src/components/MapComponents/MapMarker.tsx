@@ -9,9 +9,17 @@ interface Props {
     activity: ActivityResponse;
     position: DefaultCenter;
     deleteActivity: (id: number) => void;
+    register: (id: number) => Promise<void>;
+    unRegister: (id: number) => Promise<void>;
 }
 
-const MapMarker = ({ activity, position, deleteActivity }: Props) => {
+const MapMarker = ({
+    activity,
+    position,
+    deleteActivity,
+    register,
+    unRegister,
+}: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     const markerOnClick = () => {
         setOpenPopup(!openPopup);
@@ -26,6 +34,8 @@ const MapMarker = ({ activity, position, deleteActivity }: Props) => {
                 maxWidth="md"
             >
                 <ActivityInformation
+                    register={register}
+                    unRegister={unRegister}
                     deleteActivity={deleteActivity}
                     activity={activity}
                     setOpenPopup={setOpenPopup}
