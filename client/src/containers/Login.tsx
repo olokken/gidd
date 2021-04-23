@@ -57,7 +57,7 @@ const Login = () => {
                     console.log(JSON.stringify(response.data));
                     const id = response.data.id
                     setUser(id);
-                    axios.get(`/security/generate/token?subject=${id}`).then(response => {
+                    axios.get(`/security/token/generate?subject=${id}`).then(response => {
                         const token = response.data.result;
                         localStorage.setItem('token', token);
                         localStorage.setItem('userID', id);

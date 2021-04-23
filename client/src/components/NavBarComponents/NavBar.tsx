@@ -280,6 +280,7 @@ const Navbar = () => {
                     <MenuIcon />
                 </IconButton>
                 <Drawer
+                    //variant="persistent"
                     {...{
                         anchor: 'right',
                         open: drawerOpen,
