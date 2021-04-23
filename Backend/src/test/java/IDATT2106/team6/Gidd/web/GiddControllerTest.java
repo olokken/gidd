@@ -736,6 +736,8 @@ public class GiddControllerTest {
 
         JSONObject JSONgroup = (JSONObject) parser.parse(group);
 
+        System.out.println(JSONgroup);
+
         assertEquals(group1.getGroupName(), JSONgroup.get("groupName").toString());
         assertEquals(String.valueOf(group1.getGroupId()), JSONgroup.get("groupId").toString());
     }
