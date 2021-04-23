@@ -61,6 +61,11 @@ public class GiddController {
     @Autowired
     private FriendGroupService friendGroupService;
 
+    private final int NEW_ACTIVITY_BONUS = 50;
+    private final int JOIN_ACTIVITY_BONUS = 20;
+    private final int ADD_FRIEND_BONUS = 30;
+    private final double MULTIPLIERS[] = new double[]{1, 1.4, 1.8};
+
     @ResponseBody
     @MapTokenRequired
     @GetMapping(value = "/tokenTestAOP")
@@ -279,6 +284,7 @@ public class GiddController {
         Activity newActivity = null;
         try {
             User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+
             if (user == null) {
                 log.error("User is null, throwing exception");
                 throw new InvalidAttributesException("User does not exist");
@@ -302,6 +308,9 @@ public class GiddController {
             log.info("Activity created successfully");
 
             body.put("id", "" + newActivity.getActivityId());
+            userService.setPoints(user,
+                    (int) (user.getPoints() +
+                            NEW_ACTIVITY_BONUS * MULTIPLIERS[newActivity.getActivityLevel().ordinal()]));
             return ResponseEntity
                     .created(URI.create(String.format("/activity/%d", newActivity.getActivityId())))
                     .body(formatJson(body));
@@ -437,6 +446,7 @@ public class GiddController {
             Integer.parseInt(map.get("activityId").toString()));
 
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+
         Activity activity =
             activityService.findActivity(Integer.parseInt(map.get("activityId").toString()));
 
@@ -479,6 +489,9 @@ public class GiddController {
                 body.put("userId", String.valueOf(user.getUserId()));
                 body.put("activityId", String.valueOf(activity.getActivityId()));
 
+                userService.setPoints(user,
+                        (int) (user.getPoints() +
+                                JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
                 return ResponseEntity
                         .ok()
                         .headers(header)
@@ -575,6 +588,7 @@ public class GiddController {
         body.put("userId", String.valueOf(user.getUserId()));
         body.put("friendId", String.valueOf(friend.getUserId()));
 
+        userService.setPoints(user, (int) (user.getPoints() + ADD_FRIEND_BONUS));
         return ResponseEntity
             .ok()
             .headers(header)
@@ -661,6 +675,10 @@ public class GiddController {
             map.put("newPassword", map.get("password"));
         }
 
+        if (map.get("newEmail") == null || map.get("newEmail").equals("")) {
+            map.put("newEmail", map.get("email"));
+        }
+
         if (!validateStringMap(map)) {
             log.error(
                 "returning error about null/blank fields in user put mapping " + map.toString());
@@ -684,6 +702,7 @@ public class GiddController {
         }
 
         try {
+            User oldUser = userService.getUser(id);
             boolean result = userService.editUser(
                 id,
                 map.get("newEmail").toString(),
@@ -691,7 +710,8 @@ public class GiddController {
                 map.get("firstName").toString(),
                 map.get("surname").toString(),
                 Integer.parseInt(map.get("phoneNumber").toString()),
-                ActivityLevel.valueOf(map.get("activityLevel").toString()));
+                ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                oldUser.getAuthProvider());
 
             log.info("edited user " + map.toString());
             if (result) {
@@ -726,14 +746,11 @@ public class GiddController {
     }
 
     @PutMapping(value = "/user/some/{id}")
-    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map,
-                                       @PathVariable Integer id) {
+    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
         log.debug("Received request at /user/some/" + id);
         // TODO This method NEEDS to control token once that's possible
         Map<String, String> body = new HashMap<>();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=UTF-8");
-        headers.add("Access-Control-Allow-Origin", "*");
 
         if(!parsePhone(map, body)) {
             log.error("Could not parse phoneNumber");
@@ -746,6 +763,8 @@ public class GiddController {
 
         try{
             log.debug("Attempting to edit user");
+            User user = userService.getUser(id);
+            log.debug("Found user " + user.toString());
             boolean result = userService.editUser(
                 id,
                 map.get("email").toString(),
@@ -753,7 +772,8 @@ public class GiddController {
                 map.get("firstName").toString(),
                 map.get("surname").toString(),
                 Integer.parseInt(map.get("phoneNumber").toString()),
-                ActivityLevel.valueOf(map.get("activityLevel").toString())
+                ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                user.getAuthProvider()
             );
 
             if (result) {
@@ -766,6 +786,7 @@ public class GiddController {
                     .body(formatJson(body));
             }
         } catch (NullPointerException npe) {
+            log.error("a nullpointerexception was caught");
             body.put("error", "invalid parameter");
 
             return ResponseEntity
@@ -784,6 +805,7 @@ public class GiddController {
 
         return ResponseEntity
             .badRequest()
+            .headers(headers)
             .body(formatJson(body));
     }
 
@@ -1272,6 +1294,7 @@ public class GiddController {
                 .headers(header)
                 .body(formatJson(body));
         }
+        Map<String, String> body = new HashMap<>();
 
         int activityUserId = userService.getActivityUser(activity, user);
 
@@ -1281,7 +1304,6 @@ public class GiddController {
             header.add("Status", "400 REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
-            Map<String, String> body = new HashMap<>();
 
             body.put("error", "The user is not registered to the activity");
             return ResponseEntity
@@ -1289,6 +1311,16 @@ public class GiddController {
                 .headers(header)
                 .body(formatJson(body));
         }
+        //if the user being deleted is the owner
+        if(activity.getUser().getUserId() == user.getUserId()){
+            body.put("error", "cannot delete owner from own activity");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
         if (!userService.deleteConnection(activityUser) ||
             !userService.removeActivity(activityUserId, user) ||
             !activityService.removeUserFromActivity(activityUserId, activity)) {
@@ -1296,7 +1328,6 @@ public class GiddController {
             header.add("Status", "400 REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
-            Map<String, String> body = new HashMap<>();
 
             body.put("error", "Something went wrong when trying to delete");
             return ResponseEntity
@@ -1309,9 +1340,12 @@ public class GiddController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
-        Map<String, String> body = new HashMap<>();
         body.put("userId", String.valueOf(user.getUserId()));
         body.put("activityId", String.valueOf(activity.getActivityId()));
+        //todo bug hvor man kan få minuspoeng dersom man joiner en aktivitet, aktiviteten endres til høyere activity
+        // level, og man leaver denne
+        userService.setPoints(user, (int) (user.getPoints() -
+                JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
         return ResponseEntity
             .ok()
             .headers(header)
@@ -1347,6 +1381,8 @@ public class GiddController {
         List<User> users = activityService.getUserFromActivity(activityId);
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
+        int bonusPoints = (int) (NEW_ACTIVITY_BONUS *
+                        MULTIPLIERS[activityService.getActivity(activityId).getActivityLevel().ordinal()]);
         if (activityService.deleteActivity(activityId)) {
             log.debug("The deletion was successful");
             header.add("Status", "200 OK");
@@ -1355,6 +1391,10 @@ public class GiddController {
             body.put("activityId", String.valueOf(activityId));
 
             String bodyJson = formatJson(body);
+
+            //owner s included in getUserFromActivity() result
+            users.forEach(u -> u.setPoints(u.getPoints() - bonusPoints));
+
             return ResponseEntity
                 .ok()
                 .headers(header)
@@ -1413,6 +1453,9 @@ public class GiddController {
 
         body.put("userId", String.valueOf(user.getUserId()));
         body.put("friendId", String.valueOf(friend.getUserId()));
+        userService.setPoints(user, (int) (user.getPoints() - ADD_FRIEND_BONUS));
+        user.setPoints(user.getPoints() - ADD_FRIEND_BONUS);
+        friend.setPoints(friend.getPoints() - ADD_FRIEND_BONUS);
 
         return ResponseEntity
             .ok()

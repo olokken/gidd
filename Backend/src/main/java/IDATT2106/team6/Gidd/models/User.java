@@ -38,6 +38,7 @@ public class User {
     @OneToMany(mappedBy = "User", fetch = FetchType.EAGER)
     private List<ActivityUser> activities;
     private String salt;
+    @CascadeOnDelete
     @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     private List<User> friendList;
 
@@ -52,7 +53,7 @@ public class User {
         this.activityLevel = activityLevel;
         this.authProvider = provider;
         this.activities = new ArrayList<ActivityUser>();
-        this.points = 0;
+        this.points = 100;
 
         //generates random salt
         SecureRandom random = new SecureRandom();
@@ -228,7 +229,8 @@ public class User {
                 "\n     \"surname\":" + '\"' + surname + '\"' +"," +
                 "\n     \"phoneNumber\":" + phoneNumber +"," +
                 "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
-                "\n     \"points\":" + points +
+                "\n     \"points\":" + points + "," +
+                "\n     \"provider\":" + '\"' + authProvider + '\"' +
                 "\n }";
     }
 }
