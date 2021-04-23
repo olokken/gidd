@@ -226,7 +226,7 @@ public class Activity {
             ", \n\"capacity\":" + capacity +
             ", \n\"groupId\":" + groupId +
             ", \n\"description\":" + "" + description + "" +
-            ", \n\"image\":" + "\"" + Base64.getEncoder().encodeToString(image) +"\"" +
+            ", \n\"image\":" + "\"" + "data:image/png;base64," + Base64.getEncoder().encodeToString(image) +"\"" +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
             ", \n\"tags\":" + tags.toString() +
             ", \n\"equipments\":" + equipments.toString() +
