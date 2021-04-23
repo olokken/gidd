@@ -70,7 +70,8 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const [showEditPass, setShowEditPass] = useState<boolean>(false);
     const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
     const [noMatchPass, setNoMatchPass] = useState<boolean>(false);
-    const activityLevels: string[] = ['Low', 'Medium', 'High'];
+    const activityLevels: string[] = ['Lav', 'Middels', 'Høy'];
+    const [visualActivityLevel, setVisualActivityLevel] = useState<string>();
 
     const [popupTitle, setPopupTitle] = useState<string>('');
     const [showChangeName, setShowChangeName] = useState<boolean>(false);
@@ -112,9 +113,18 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         setPhone(input);
     };
 
-    const onChangeAcitivityLevel = (event: ChangeEvent<HTMLInputElement>) => {
+    const onChangeActivityLevel = (event: ChangeEvent<HTMLInputElement>) => {
         const input: string = (event.target as HTMLInputElement).value;
-        setActivityLevel(input);
+        setVisualActivityLevel(input);
+        let actLevel = input;
+        if (actLevel === 'Lav') {
+            actLevel = 'Low'
+        } else if (actLevel === 'Middels') {
+            actLevel = 'Medium'
+        } else {
+            actLevel = 'High'
+        }
+        setActivityLevel(actLevel);
     };
     const onChangePassword = (event: ChangeEvent<HTMLInputElement>) => {
         const input: string = (event.target as HTMLInputElement).value;
@@ -349,9 +359,6 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
             });
     };
 
-    const onChangeActivityLevel = (event: ChangeEvent<HTMLInputElement>) => {
-        setActivityLevel((event.target as HTMLInputElement).value);
-    };
 
     useEffect(() => {
         async function fetchUser() {

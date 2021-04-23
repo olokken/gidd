@@ -119,7 +119,6 @@ const NewUser = () => {
         } else {
             actLevel = 'High'
         }
-        console.log(actLevel)
         setActivityLevel(actLevel);
     };
 
