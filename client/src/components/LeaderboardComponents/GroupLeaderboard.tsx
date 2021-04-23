@@ -69,7 +69,6 @@ const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
             }
         }
     };
-    */
 
     const filterPoints = () => {
         const sortArray = users.map(function (data, index) {
