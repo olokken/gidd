@@ -320,9 +320,16 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
             longitude: location.lng,
         };
         console.log(sendActivity);
+        const token = localStorage.getItem('token');
+        const config = {
+            headers: {
+                token: token,
+            }
+        }
         const request = await axios.put(
             `/activity/${activityResponse?.activityId}`,
-            sendActivity
+            sendActivity,
+            config
         );
         console.log(request);
     };
