@@ -4,17 +4,35 @@ import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
 import { Button, Card, CardContent, CardMedia, Typography } from '@material-ui/core';
 import logo from '../../assets/logo.png';
-import ChatIcon from '@material-ui/icons/Chat';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { UserContext } from '../../UserContext';
-import { User2 } from '../../interfaces/User';
+import User from '../../interfaces/User';
+import axios from '../../Axios'
 
+interface Props {
+    friend: User;
+}
 
-const UserProfile = ({friend}: any) => {
+const UserProfile = ({friend}: Props) => {
     const {user, setUser} = useContext(UserContext);
 
     const deleteFriend = () =>{
-        console.log(Object.values(friend)[0])
-        console.log(user)
+        console.log(Object.values(friend)[0]);
+        //du må endre på interface
+        //console.log(friend.userID);
+        deleteAxFriend(Object.values(friend)[0]);
+    }
+
+    const deleteAxFriend = (friendId: string) => {
+        axios
+            .delete(`user/${user}/user/${friendId}`) 
+            .then((response) => {
+                JSON.stringify(response);
+                console.log(response.data);
+            })
+            .catch((error) =>
+                console.log('Could not delete friend: ' + error.message)
+            );
     }
 
 
@@ -39,23 +57,20 @@ const UserProfile = ({friend}: any) => {
                 <Typography variant="body2" color="textSecondary" component="p">
                     Aktivitetsgrad: {friend.activityLevel}
                 </Typography>
+                <Typography variant="body2" color="textSecondary" component="p">
+                    Poeng: {friend.points}
+                </Typography>
                 <div style={{marginTop: "5px"}}>
-                    <Button style={{marginRight: "5px"}}  
+                    <Button 
+                        fullWidth
                         onClick={deleteFriend} 
                         variant="contained" 
                         color="primary"
-                    >  Fjern venn
-                    </Button>
-                    <Button   
-                        variant="contained" 
-                        color="primary"
-                        >Chat <ChatIcon style={{ marginLeft: '8px'}}/>
+                    >  Fjern venn <DeleteIcon style={{marginLeft:"8px"}}/>
                     </Button>
                 </div>
             </CardContent>
         </Card>
-
-       
   );
 }
 

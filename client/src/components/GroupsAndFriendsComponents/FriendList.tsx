@@ -5,7 +5,7 @@ import Select from 'react-select';
 import FriendCard from './FriendCard';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddBox from '@material-ui/icons/AddBox';
-import User2 from '../../interfaces/User';
+import User from '../../interfaces/User';
 import axios from '../../Axios'
 import { UserContext } from '../../UserContext';
 
@@ -21,14 +21,14 @@ const StyledUl = styled.ul`
    padding: 0;
 `;
 
+interface Props {
+    users: User[];
+    friends: User[];
+}
 
-
-const FriendList = () => {
+const FriendList = ({users, friends} : Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
-    const [firends, setFriends] = useState<User2[]>([]);
-    const [users, setUsers] = useState<User2[]>([]);
-    const [userToAdd, setUserToAdd] = useState<User2 | null>(null);
-    const [selectInput, setSelectInput] = useState<User2 | null>(null);
+    const [selectInput, setSelectInput] = useState<User | null>(null);
     const [searchValue, setSearchValue] = React.useState('');
     const {user, setUser} = useContext(UserContext);
 
@@ -38,47 +38,29 @@ const FriendList = () => {
     
     const onAddFriendClick = () => {
         if(selectInput === null){
-            console.log('ingen bruker valgt')
+            console.log('ingen bruker valgt ')
         } else{
             postFriend(Object.values(selectInput)[0]);
-            //console.log(selectInput.userID)
             setSelectInput(null);
             setSearchValue('');
         }
         
     }
     const postFriend = (friendId: string) => {
-        console.log(friendId);
-        console.log(user);
-        
-        
-        /*const friend: User2 = {
-
-        }
         axios
-            .post('/friend', friend)
+            .post(`/user/${user}/user`, {
+                "userId": user,
+                "friendId": friendId
+                }) 
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
             })
-            .catch((error) =>
-                console.log('Could not post activity: ' + error.message)
-            );*/
+            .catch((error) => {
+                console.log('Could not post friend: ' + error.message);
+                alert('Du er allerede venn med denne brukeren');
+            });
     }
-
-
-    //henter alle users
-    useEffect(() => {
-        
-        axios
-            .get('/user')
-            .then((response) => {
-                console.log(response.data);
-                setUsers(response.data.filter((test: { userID: string; }) => Object.values(test)[0] != user));
-                //.filter((test: { userID: string; }) => test.userID !== user)
-            })
-            .catch((error) => console.log(error));
-    }, []);
     
     return (
         <StyledContainer>
@@ -86,7 +68,7 @@ const FriendList = () => {
                 id="free-solo-demo"
                 value={selectInput}
                 noOptionsText="ingen valg"
-                onChange={(event: any, newValue: User2 | null) => {
+                onChange={(event: any, newValue: User | null) => {
                     setSelectInput(newValue);
                 }}
                 inputValue={searchValue}
@@ -123,13 +105,13 @@ const FriendList = () => {
             />
             <h2>Dine venner</h2>
             <StyledUl >
-                {users.filter((friend: { firstName: string, surname: string, userID: string}) => {
+                {friends.filter((friend : User) => {
                 if(searchInput === ""){
                     return friend
                 }else if(friend.firstName + ' ' + friend.surname != null && (friend.firstName + ' ' + friend.surname).toLowerCase().includes(searchInput.toLocaleLowerCase())){
                     return friend
                 }
-                }).map((friend: { firstName: string, surname: string, userID: string}) => 
+                }).map((friend : User ) => 
                     <FriendCard  key={friend.userID} friend={friend}/>)
                 }
             </StyledUl> 
