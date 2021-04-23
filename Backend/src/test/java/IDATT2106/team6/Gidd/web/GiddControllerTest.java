@@ -189,7 +189,7 @@ public class GiddControllerTest {
                         "    \"capacity\" : " + activity1.getCapacity() + ",\n" +
                         "    \"groupId\" : " + activity1.getGroupId() + ",\n" +
                         "    \"description\" : \"" + activity1.getDescription() + "\",\n" +
-                        "    \"image\" : \"" + 1101 + "\",\n" +
+                        "    \"image\" : \"data:image/png;base64,dweiodj9F0EJf90EJFFWPEfej9f30JF90jfJ3290FJ2930fj930==\",\n" +
                         "    \"activityLevel\" : \"" + activity1.getActivityLevel() + "\",\n" +
                         "    \"tags\" : " + "\"Fisk\"" + ",\n" +
                         "    \"latitude\" : " + activity1.getLatitude() + ",\n" +

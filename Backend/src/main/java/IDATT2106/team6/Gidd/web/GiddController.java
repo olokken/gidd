@@ -1311,6 +1311,11 @@ public class GiddController {
                 .body(friendGroup.toString());
     }
 
+    /*@GetMapping("user/{userId}/group")
+    public ResponseEntity getGroupsForUser(@PathVariable Integer userId){
+        User user =
+    }*/
+
     @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivityToUser(@PathVariable Integer userId,
                                                @PathVariable Integer activityId) {
