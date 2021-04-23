@@ -123,11 +123,11 @@ const tagFilter = (
 
 const distanceFilter = (
     activities: ActivityResponse[],
-    distance: number,
+    distance: number | undefined,
     location: DefaultCenter | undefined
 ): ActivityResponse[] => {
     return activities.filter((act) => {
-        if (location) {
+        if (location && distance) {
             let dist = getDistance(location, {
                 latitude: act.latitude,
                 longitude: act.longitude,
@@ -136,6 +136,8 @@ const distanceFilter = (
             if (dist <= distance) {
                 return act;
             }
+        } else {
+            return act;
         }
     });
 };
