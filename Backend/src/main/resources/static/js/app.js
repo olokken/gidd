@@ -1,25 +1,23 @@
 var stompClient = null;
-let groupId = 15;
-var e = new SockJS("/websocket");
-stompClient = Stomp.over(e);
+let groupId;
 
-stompClient.connect({}, function(e) {
+function openConnection(group){
+    groupId = group;
+    var e = new SockJS("/websocket");
+    stompClient = Stomp.over(e);
 
-// First subscribe to the public topic.
-    stompClient.subscribe("/topic/public", function(e) {
-        var message = JSON.parse(e.body);
-        console.log(message);
-    });
+    stompClient.connect({}, function(e) {
+        stompClient.subscribe("/client/chat/" + groupId , function(e) {
+            var message = JSON.parse(e.body);
+            console.log(message);
+        });
+    })
 
-    // Then notify everyone (including yourself) that you joined the public topic.
-})
-
-
+}
 
 // Send message to the connection
 function sendMessage(userId, message) {
-
-    stompClient.send("/app/chat/15", {}, JSON.stringify({
+    stompClient.send("/server/chat/" + groupId, {}, JSON.stringify({
         user: userId,
         text: message,
     }));
