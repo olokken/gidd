@@ -166,6 +166,13 @@ const ActivityInformation = ({
         }
     };
 
+    const picture = () : any => {
+        if (activity.image.length > 40) {
+            return activity.image; 
+        }
+            return hiking; 
+    }; 
+
     const mapEquipments = activity.equipments.map(
         (eq: Equipment, index: number) => {
             return (
@@ -200,7 +207,7 @@ const ActivityInformation = ({
                         component="img"
                         alt={'Image related to the activity' + activity.title}
                         height="200"
-                        image={hiking} // her skal bildet egentlig hentast for aktiviteta
+                        image={picture()} // her skal bildet egentlig hentast for aktiviteta
                     />
                 </Grid>
             </Grid>

@@ -10,19 +10,26 @@ import User from '../../interfaces/User';
 import axios from '../../Axios'
 
 interface Props {
-    friend: User;
+    group: Group;
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const UserProfile = ({friend, openPopup, setOpenPopup}: Props) => {
+interface Group{
+    owner: User;
+    groupName: string;
+    groupId: string;
+    users: User[];
+}
+
+const GroupProfile = ({group, openPopup, setOpenPopup}: Props) => {
     const {user, setUser} = useContext(UserContext);
 
     const deleteFriend = () =>{
-        deleteAxFriend(Object.values(friend)[0]);
+        //deleteAxFriend(Object.values(friend)[0]);
         setOpenPopup(!openPopup);
     }
-
+/*
     const deleteAxFriend = (friendId: string) => {
         axios
             .delete(`user/${user}/user/${friendId}`) 
@@ -34,7 +41,7 @@ const UserProfile = ({friend, openPopup, setOpenPopup}: Props) => {
                 console.log('Could not delete friend: ' + error.message)
             );
     }
-
+*/
 
   return (
         <Card>
@@ -46,19 +53,19 @@ const UserProfile = ({friend, openPopup, setOpenPopup}: Props) => {
             />
             <CardContent>
                 <Typography gutterBottom variant="h5" component="h2">
-                    {friend.firstName + ' ' + friend.surname}
+                    {group.groupName}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    Epost: {friend.email}
+                    Epost: {group.groupName}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    Tlf: {friend.phoneNumber}
+                    Tlf: {group.groupName}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    Aktivitetsgrad: {friend.activityLevel}
+                    Aktivitetsgrad: {group.groupName}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
-                    Poeng: {friend.points}
+                    Poeng: {group.groupName}
                 </Typography>
                 <div style={{marginTop: "5px"}}>
                     <Button 
@@ -66,7 +73,7 @@ const UserProfile = ({friend, openPopup, setOpenPopup}: Props) => {
                         onClick={deleteFriend} 
                         variant="contained" 
                         color="primary"
-                    >  Fjern venn <DeleteIcon style={{marginLeft:"8px"}}/>
+                    >  Meld deg ut av gruppe <DeleteIcon style={{marginLeft:"8px"}}/>
                     </Button>
                 </div>
             </CardContent>
@@ -74,4 +81,4 @@ const UserProfile = ({friend, openPopup, setOpenPopup}: Props) => {
   );
 }
 
-export default UserProfile;
+export default GroupProfile;

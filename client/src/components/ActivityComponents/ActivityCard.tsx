@@ -64,6 +64,13 @@ const ActivityCard = ({
         console.log(activity);
         setActivity(activity);
     };
+
+    const picture = () : any => {
+        if (activity.image.length > 40) {
+            return activity.image; 
+        }
+            return hiking; 
+    }; 
     return (
         <Card
             onClick={onClickActivity}
@@ -83,7 +90,7 @@ const ActivityCard = ({
                                 'Image related to the activity' + activity.title
                             }
                             height="140"
-                            image={hiking} // hente bildet frå aktiviteta
+                            image={picture()} // hente bildet frå aktiviteta
                         />
                     </Grid>
                 </Grid>
