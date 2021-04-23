@@ -11,9 +11,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Activity from '../../interfaces/Activity';
 import hiking from '../../assets/hiking.jpg';
-import { convertToObject } from 'typescript';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 
 const useStyles = makeStyles({
