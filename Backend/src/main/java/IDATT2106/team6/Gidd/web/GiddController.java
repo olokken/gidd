@@ -8,6 +8,7 @@ import IDATT2106.team6.Gidd.service.TagService;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
 import IDATT2106.team6.Gidd.util.MapTokenRequired;
+import IDATT2106.team6.Gidd.util.PathTwoTokenRequired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -270,8 +271,10 @@ public class GiddController {
         Map<String, String> body = new HashMap<>();
         if (result) {
             log.info("logged in user with email " + map.get("email").toString());
+            String id = String.valueOf(userService.getUser(map.get("email").toString()).getUserId());
             body.put("id",
-                String.valueOf(userService.getUser(map.get("email").toString()).getUserId()));
+                id);
+            body.put("token", String.valueOf(securityService.createToken(id, (1000 * 60 * 5))));
             header.add("Status", "200 OK");
             return ResponseEntity.ok()
                 .headers(header)
@@ -607,6 +610,7 @@ public class GiddController {
             .body(formatJson(body));
     }
 
+    @PathTwoTokenRequired
     @PutMapping(value = "/user/{id}")
     public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
         log.info("recieved a put mapping for user with id: " + id + " and map " + map.toString());

@@ -1,2 +1,11 @@
-package IDATT2106.team6.Gidd.util;public interface PathTwoTokenRequired {
+package IDATT2106.team6.Gidd.util;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface PathTwoTokenRequired {
 }

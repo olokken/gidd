@@ -23,13 +23,21 @@ public class TokenRequiredAspect {
     private final SecurityServiceImpl securityService = new SecurityServiceImpl();
 
     @Around("@annotation(mapTokenRequired)")
-    public Object mapTokenRequiredWithAnnotation(ProceedingJoinPoint pjp, MapTokenRequired mapTokenRequired) throws Throwable {
+    public Object mapTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
+                                                 MapTokenRequired mapTokenRequired)
+        throws Throwable {
         log.info("Around mapTokenRequiredWithAnnotation");
         Object[] args = pjp.getArgs();
         String subject = "";
-        if(args[0] instanceof Map){
+        for (Object arg : args) {
+            Map map = (Map) arg;
+            if (map.containsKey("userId")) {
+                subject = map.get("userId").toString();
+            }
+        }
+        if (args[0] instanceof Map) {
             Map map = (Map) args[0];
-            if(map.containsKey("userId")) {
+            if (map.containsKey("userId")) {
                 subject = map.get("userId").toString();
             }
         }
@@ -38,36 +46,55 @@ public class TokenRequiredAspect {
 
     @Around("@annotation(pathTokenRequired)")
     public Object pathTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
-                                                  PathTokenRequired pathTokenRequired) {
-        return null;
+                                                  PathTokenRequired pathTokenRequired)
+        throws Throwable {
+        log.info("Around pathTokenRequiredWithAnnotation");
+        Object[] args = pjp.getArgs();
+        String subject = "";
+        if (args[0] instanceof Integer) {
+            subject = String.valueOf(args[0]);
+        }
+        return handleToken(pjp, subject);
+    }
+
+    @Around("@annotation(pathTwoTokenRequired)")
+    public Object pathTwoTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
+                                                     PathTwoTokenRequired pathTwoTokenRequired)
+        throws Throwable {
+        log.info("Around pathTwoTokenRequiredWithAnnotation");
+        Object[] args = pjp.getArgs();
+        String subject = "";
+        if (args[1] instanceof Integer) {
+            subject = String.valueOf(args[0]);
+        }
+        return handleToken(pjp, subject);
     }
 
     private Object handleToken(ProceedingJoinPoint pjp, String subject) throws Throwable {
-        if(subject==null || subject.equals("")){
+        if (subject == null || subject.equals("")) {
             log.error("No subject");
             return false;
         }
         ServletRequestAttributes reqAttributes =
             (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest request =  reqAttributes.getRequest();
+        HttpServletRequest request = reqAttributes.getRequest();
         // checks for token in request header
         String tokenInHeader = request.getHeader("token");
-        if (StringUtils.isEmpty(tokenInHeader)){
+        if (StringUtils.isEmpty(tokenInHeader)) {
             log.error("No token was passed in header");
             throw new IllegalArgumentException("Token Empty");
         }
         Claims claims = Jwts.parser()
             .setSigningKey(DatatypeConverter.parseBase64Binary(securityService.getSecretKey()))
             .parseClaimsJws(tokenInHeader).getBody();
-        if(claims == null || claims.getSubject() == null) {
+        if (claims == null || claims.getSubject() == null) {
             log.error("Claims was found to be null");
             throw new IllegalArgumentException("Token Error: Claim is null");
         }
-        if(!claims.getSubject().equalsIgnoreCase(subject)){
+        if (!claims.getSubject().equalsIgnoreCase(subject)) {
             log.error("Subject does not match token");
             throw new IllegalArgumentException("Subject doesn't match in the token");
-        }
-        else {
+        } else {
             return pjp.proceed();
         }
     }
