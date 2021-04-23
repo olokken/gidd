@@ -12,21 +12,19 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.Array;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import javax.naming.directory.InvalidAttributesException;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.persistence.exceptions.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +41,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 //import org.json.JSONException;
 
@@ -910,6 +906,7 @@ public class GiddController {
         activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
+        activity.setImage(baseToByte(map.get("image").toString()));
         log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
         if (!edited) {
@@ -1682,16 +1679,13 @@ public class GiddController {
         return tags;
     }
 
-    private byte[] binaryToByte(String bin) {
-        log.debug("binary to byte array");
-        List<Byte> list = new ArrayList<>();
+    private byte[] baseToByte(String base) {
+        log.info("decoding from " + base);
+        return Base64.getDecoder().decode(base);
+    }
 
-        for (String str : bin.split("(?<=\\G.{8})")) {
-            list.add((byte) Integer.parseInt(str, 2));
-        }
-
-        Byte[] bytes = list.toArray(new Byte[list.size()]);
-        return ArrayUtils.toPrimitive(bytes);
+    private String byteToBase(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
     private String formatJson(Map values) {
@@ -1724,7 +1718,7 @@ public class GiddController {
         int capacity = Integer.parseInt(map.get("capacity").toString());
         int groupId = Integer.parseInt(map.get("groupId").toString());
         String description = map.get("description").toString();
-        byte[] image = binaryToByte(map.get("image").toString());
+        byte[] image = baseToByte(map.get("image").toString());
         ActivityLevel activityLevel =
             ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
         List<Tag> tags = splitTags(map.get("tags").toString());
