@@ -113,7 +113,7 @@ public class GiddControllerTest {
                 0, user1, 50, 5, "det som du gjør nå", new byte[]{-5},
                 ActivityLevel.HIGH, new ArrayList<>(), 0.001, 0.005, null);
 
-        group1 = new FriendGroup(1, "GruppeTest");
+        group1 = new FriendGroup(1, "GruppeTest", user1);
     }
 
   //  @Test
@@ -718,7 +718,9 @@ public class GiddControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
                         "\n\"groupName\": \"" + group1.getGroupName() + "\",\n" +
-                        "\"userIds\": \"" + user1.getUserId() + "," + user2.getUserId() + "\"}"
+                        "\"userIds\": \"" + user1.getUserId() + "," + user2.getUserId() + "\"," +
+                        "\"userId\": \"" + user1.getUserId() + "\"" +
+                        "}"
                 )).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         JSONParser parser = new JSONParser();

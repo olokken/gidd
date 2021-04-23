@@ -601,6 +601,23 @@ public class GiddController {
         //Ta inn streng med medlemsIder
         String groupName = map.get("groupName").toString();
         String[] userIdsString = (map.get("userIds").toString()).split(",");
+        int userId = Integer.parseInt(map.get("userId").toString());
+
+        User owner = userService.getUser(userId);
+        if(owner == null){
+            log.error("The owner is null");
+            HttpHeaders header = new HttpHeaders();
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "The owner does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
 
         ArrayList<User> existingUsers = new ArrayList<>();
         for(String s : userIdsString){
@@ -620,7 +637,7 @@ public class GiddController {
             groupId = getRandomID();
         }
 
-        if(!(friendGroupService.addFriendGroup(groupId, groupName, existingUsers))){
+        if(!(friendGroupService.addFriendGroup(groupId, groupName, existingUsers, owner))){
             HttpHeaders header = new HttpHeaders();
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");

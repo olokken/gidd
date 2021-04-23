@@ -12,15 +12,16 @@ public class FriendGroup {
     private Integer groupId;
     @Column(name = "group_name")
     private String groupName;
-    @OneToOne(targetEntity = User.class)
+    @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "owner_id")
     private User owner;
     @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     private List<User> users;
 
-    public FriendGroup(int groupId, String groupName){
+    public FriendGroup(int groupId, String groupName, User owner){
         this.groupId = groupId;
         this.groupName = groupName;
+        this.owner = owner;
         this.users = new ArrayList<>();
     }
 

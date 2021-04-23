@@ -17,8 +17,8 @@ public class FriendGroupService {
     @Autowired
     private FriendGroupRepo repo;
 
-    public boolean addFriendGroup(int groupId, String groupName, ArrayList<User> users){
-        FriendGroup friendGroup = new FriendGroup(groupId, groupName);
+    public boolean addFriendGroup(int groupId, String groupName, ArrayList<User> users, User owner){
+        FriendGroup friendGroup = new FriendGroup(groupId, groupName, owner);
         for(User u : users){
             friendGroup.addUser(u);
         }
