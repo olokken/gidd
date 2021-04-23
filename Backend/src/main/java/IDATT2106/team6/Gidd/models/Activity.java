@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 @Entity
@@ -38,7 +38,9 @@ public class Activity {
     @Column(name = "group_id")
     private int groupId;
     private String description;
-    private byte[] image;
+    @CascadeOnDelete
+    @OneToOne(targetEntity = Image.class, fetch = FetchType.LAZY)
+    private Image image;
     @Column(name = "activity_level")
     private ActivityLevel activityLevel;
     @CascadeOnDelete
@@ -56,7 +58,7 @@ public class Activity {
     private Timestamp timeCreated;
 
     public Activity(int id, String title, Timestamp time, int repeat, User user, int capacity,
-                    int groupId, String description, byte[] image, ActivityLevel activityLevel,
+                    int groupId, String description, Image image, ActivityLevel activityLevel,
                     List<Tag> tags, double latitude, double longitude, Timestamp timeCreated){
         this.activityId = id;
         this.title = title;
@@ -142,11 +144,11 @@ public class Activity {
         this.description = description;
     }
 
-    public byte[] getImage() {
+    public Image getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(Image image) {
         this.image = image;
     }
 
@@ -226,7 +228,7 @@ public class Activity {
             ", \n\"capacity\":" + capacity +
             ", \n\"groupId\":" + groupId +
             ", \n\"description\":" + "" + description + "" +
-            ", \n\"image\":" + "\"" + "data:image/png;base64," + Base64.getEncoder().encodeToString(image) +"\"" +
+            ", \n\"image\":" + "\"" + image.getDatatype() + Base64.getEncoder().encodeToString(image.getBytes()) +"\"" +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
             ", \n\"tags\":" + tags.toString() +
             ", \n\"equipments\":" + equipments.toString() +
@@ -235,6 +237,27 @@ public class Activity {
             ", \n\"registeredParticipants\": " + registeredParticipants.toString() +
             ", \n\"timeCreated\":" + (timeCreated == null ? "null" : timeCreated.getTime()) +
                 "}";
+    }
+
+    public String toLog() {
+        return "{" +
+            "\n\"activityId\": " + activityId +
+            ", \n\"title\": " + "\"" + title.trim() + "\"" +
+            ", \n\"time\":" + time.getTime() +
+            ", \n\"repeat\":" + repeat +
+            ", \n\"user\":" + user.toJSON() +
+            ", \n\"capacity\":" + capacity +
+            ", \n\"groupId\":" + groupId +
+            ", \n\"description\":" + "" + description + "" +
+            ", \n\"image\":" + image.getId() +
+            ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
+            ", \n\"tags\":" + tags.toString() +
+            ", \n\"equipments\":" + equipments.toString() +
+            ", \n\"latitude\":" + latitude +
+            ", \n\"longitude\":" + longitude +
+            ", \n\"registeredParticipants\": " + registeredParticipants.toString() +
+            ", \n\"timeCreated\":" + (timeCreated == null ? "null" : timeCreated.getTime()) +
+            "}";
     }
 
     private String getDate(long timeStamp){

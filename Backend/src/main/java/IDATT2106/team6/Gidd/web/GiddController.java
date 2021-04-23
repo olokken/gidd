@@ -921,7 +921,7 @@ public class GiddController {
         activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
-        activity.setImage(baseToByte(map.get("image").toString()));
+        activity.setImage(new Image());
         activity.setEquipments(newEquipment(activity,map.get("equipmentList").toString()));
         log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
@@ -1810,6 +1810,15 @@ public class GiddController {
         return tags;
     }
 
+    private Image createImage(String base) {
+        if(base.length()<32){
+            return new Image();
+        }
+        String[] res = base.split("");
+        Image img = new Image(res[0], baseToByte(res[1]));
+        return img;
+    }
+
     private byte[] baseToByte(String base) {
         if(base.length()<32){
             return new byte[]{};
@@ -1853,7 +1862,7 @@ public class GiddController {
         int capacity = Integer.parseInt(map.get("capacity").toString());
         int groupId = Integer.parseInt(map.get("groupId").toString());
         String description = map.get("description").toString();
-        byte[] image = baseToByte(map.get("image").toString());
+        Image image = createImage(map.get("image").toString());
         ActivityLevel activityLevel =
             ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
         List<Tag> tags = splitTags(map.get("tags").toString());
