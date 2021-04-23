@@ -914,6 +914,7 @@ public class GiddController {
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
         activity.setImage(baseToByte(map.get("image").toString()));
+        activity.setEquipments(newEquipment(activity,map.get("equipmentList").toString()));
         log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
         if (!edited) {
@@ -1697,18 +1698,35 @@ public class GiddController {
             .body(formatJson(body));
     }
 
-    private List<Equipment> newEquipment (Activity activity, String equipList) {
+    /*private boolean delRemoved (List<ActivityEquipment> newEquips,
+                                List<ActivityEquipment> oldEquips) {
+        List<ActivityEquipment> removed = new ArrayList<>(oldEquips);
+        removed.removeAll(newEquips);
+    }*/
+
+    private List<ActivityEquipment> newEquipment (Activity activity, String equipList) {
         List<ActivityEquipment> oldEquips = activity.getEquipments();
         List<Equipment> equips = toEquipList(equipList);
 
         List<ActivityEquipment> res = new ArrayList<>();
-        ActivityEquipment temp = new ActivityEquipment();
+        ActivityEquipment temp;
+        boolean match;
         for (Equipment e : equips) {
+            match = false;
             for (ActivityEquipment con: oldEquips) {
-
+                if (con.getEquipment().equals(e)){
+                    res.add(con);
+                    match = true;
+                    break;
+                }
+            }
+            if(!match) {
+                temp = new ActivityEquipment(activity, e);
+                res.add(temp);
             }
         }
-        return null;
+        log.info("final newEquipment list: " + res);
+        return res;
     }
 
     private List<Equipment> toEquipList(String equipString) {
@@ -1752,6 +1770,9 @@ public class GiddController {
     }
 
     private byte[] baseToByte(String base) {
+        if(base.length()<16){
+            return new byte[]{};
+        }
         log.info("decoding from " + base);
         base = base.split(",")[1];
         return Base64.getDecoder().decode(base);
