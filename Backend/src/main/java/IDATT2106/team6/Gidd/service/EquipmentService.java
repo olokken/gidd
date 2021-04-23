@@ -18,6 +18,11 @@ public class EquipmentService {
         return this.repo.addEquipment(new Equipment(description));
     }
 
+    public boolean addEquipment(Equipment equipment) {
+        log.info("Adding equipment with description " + equipment.getDescription());
+        return this.repo.addEquipment(equipment);
+    }
+
     public Equipment getEquipmentByDescription(String description){
         log.info("Getting equipment with description " + description);
         return this.repo.findEquipmentByDescription(description);
