@@ -4,6 +4,7 @@ import IDATT2106.team6.Gidd.models.*;
 import IDATT2106.team6.Gidd.service.*;
 import IDATT2106.team6.Gidd.util.Logger;
 import IDATT2106.team6.Gidd.util.MapTokenRequired;
+import IDATT2106.team6.Gidd.util.PathTwoTokenRequired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import javax.naming.directory.InvalidAttributesException;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.persistence.exceptions.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 //import org.json.JSONException;
 
@@ -66,17 +70,10 @@ public class GiddController {
     private final int ADD_FRIEND_BONUS = 30;
     private final double MULTIPLIERS[] = new double[]{1, 1.4, 1.8};
 
-    @ResponseBody
-    @MapTokenRequired
-    @GetMapping(value = "/tokenTestAOP")
-    public Map<String, Object> tokenTestAOP(@RequestParam(value = "userid") String userid) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("result", "worked?!");
-        return map;
-    }
+
 
     @ResponseBody
-    @RequestMapping("/security/generate/token")
+    @RequestMapping("/security/token/generate")
     public Map<String, Object> generateToken(@RequestParam(value = "subject") String subject) {
         String token = securityService.createToken(subject, (2 * 1000 * 60));
         Map<String, Object> map = new LinkedHashMap<>();
@@ -85,21 +82,26 @@ public class GiddController {
         return map;
     }
 
+    @MapTokenRequired
+    @ResponseBody
+    @RequestMapping("/security/token/validate")
+    public ResponseEntity validateToken(@RequestBody Map<String, Object> map) {
+        log.info("received request at /security/token/validate with valid token");
+        Map<String, String> body = new HashMap<>();
+
+        body.put("result", "true");
+
+        return ResponseEntity
+            .ok()
+            .body(formatJson(body));
+    }
+
     @ResponseBody
     @RequestMapping("/security/get/subject")
     public Map<String, Object> getSubject(@RequestParam(value = "token") String token) {
         String subject = securityService.getSubject(token);
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("result", subject);
-        return map;
-    }
-
-    @ResponseBody
-    @GetMapping("/hello2")
-    @MapTokenRequired
-    public Map<String, Object> testAOPAnnotation() {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("result", "Aloha");
         return map;
     }
 
@@ -258,8 +260,10 @@ public class GiddController {
         Map<String, String> body = new HashMap<>();
         if (result) {
             log.info("logged in user with email " + map.get("email").toString());
+            String id = String.valueOf(userService.getUser(map.get("email").toString()).getUserId());
             body.put("id",
-                String.valueOf(userService.getUser(map.get("email").toString()).getUserId()));
+                id);
+            body.put("token", String.valueOf(securityService.createToken(id, (1000 * 60 * 5))));
             header.add("Status", "200 OK");
             return ResponseEntity.ok()
                 .headers(header)
@@ -663,6 +667,7 @@ public class GiddController {
                 .body(formatJson(body));
     }
 
+    @PathTwoTokenRequired
     @PutMapping(value = "/user/{id}")
     public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
         log.info("recieved a put mapping for user with id: " + id + " and map " + map.toString());
@@ -762,6 +767,7 @@ public class GiddController {
             .body(formatJson(body));
     }
 
+    @PathTwoTokenRequired
     @PutMapping(value = "/user/some/{id}")
     public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
         log.debug("Received request at /user/some/" + id);
@@ -826,6 +832,7 @@ public class GiddController {
             .body(formatJson(body));
     }
 
+    @MapTokenRequired
     @PutMapping(value = "/activity/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity editActivity(@RequestBody Map<String, Object> map,
                                        @PathVariable("id") int actId) {
