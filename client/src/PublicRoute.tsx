@@ -27,7 +27,6 @@ const PrivateRoute: React.FC<PublicRouteProps> = ({ component: Component, ...res
                         userId: id
                     }, config
                 ).then(response => {
-                    console.log(response.data)
                     if (response.data.result === 'true') {
                         setAuthenticated(true);
                     } else {
