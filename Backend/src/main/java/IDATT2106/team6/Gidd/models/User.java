@@ -38,6 +38,7 @@ public class User {
     @OneToMany(mappedBy = "User", fetch = FetchType.EAGER)
     private List<ActivityUser> activities;
     private String salt;
+    @CascadeOnDelete
     @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     private List<User> friendList;
 
