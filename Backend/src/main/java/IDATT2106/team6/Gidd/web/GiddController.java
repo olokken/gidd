@@ -1664,7 +1664,7 @@ public class GiddController {
         if (user != null) {
             log.info("email already found in database, generating JWT");
             body.put("token", securityService
-                .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
+                .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 60 * 24)));
             body.put("userId", String.valueOf(user.getUserId()));
 
             return ResponseEntity
@@ -1690,7 +1690,7 @@ public class GiddController {
         }
 
         body.put("token", securityService
-            .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 5)));
+            .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 60 * 24)));
         body.put("userId", String.valueOf(newUser.getUserId()));
 
         return ResponseEntity
