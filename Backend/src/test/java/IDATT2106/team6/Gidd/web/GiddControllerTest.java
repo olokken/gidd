@@ -48,10 +48,12 @@ public class GiddControllerTest {
     @Autowired
     private GiddController controller;
 
+    private String token;
     private User user1;
     private User user2;
     private User user3;
     private User user4;
+    private User user5;
     private Activity activity1;
     private FriendGroup group1;
     private final int NEW_ACTIVITY_BONUS = 50;
@@ -108,6 +110,9 @@ public class GiddControllerTest {
         user4 = new User(44, "4@4", "pass4", "Jonas", "Støhre", 1234,
                 ActivityLevel.HIGH, Provider.LOCAL);
 
+        user5 = new User(55, "5@5", "pass5", "Erna", "Solberg", 1235,
+                ActivityLevel.LOW, Provider.LOCAL);
+
         activity1 = new Activity(121, "skrive tester",
                 new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
                 0, user1, 50, 5, "det som du gjør nå", new byte[]{-5},
@@ -160,13 +165,18 @@ public class GiddControllerTest {
     public void loginTest() throws Exception {
         //login user from order 1
         System.out.println("test 2");
-        mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON)
+        String tolken = mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON)
         .content("{" +
                 "\"email\":\"" + user1.getEmail() + "\"," +
                 "\"password\":\"" + 123 + "\"," +
                 "\"provider\": \"" + "LOCAL\"" +
                 "}"))
-                .andExpect(status().isOk()).andExpect((MockMvcResultMatchers.jsonPath("$.id").exists()));
+                .andExpect(status().isOk()).andExpect((MockMvcResultMatchers.jsonPath("$.id").exists()))
+                .andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(tolken);
+        token = jsonObject.get("token").toString();
     }
 
     @Order(3)
@@ -185,7 +195,7 @@ public class GiddControllerTest {
                         "    \"capacity\" : " + activity1.getCapacity() + ",\n" +
                         "    \"groupId\" : " + activity1.getGroupId() + ",\n" +
                         "    \"description\" : \"" + activity1.getDescription() + "\",\n" +
-                        "    \"image\" : \"" + 1101 + "\",\n" +
+                        "    \"image\" : \"\",\n" +
                         "    \"activityLevel\" : \"" + activity1.getActivityLevel() + "\",\n" +
                         "    \"tags\" : " + "\"Fisk\"" + ",\n" +
                         "    \"latitude\" : " + activity1.getLatitude() + ",\n" +
@@ -253,11 +263,12 @@ public class GiddControllerTest {
         newValues.put("userId", user1.getUserId());
         newValues.put("capacity", 5);
         newValues.put("description", "changed description");
-        newValues.put("image", 1101);
+        newValues.put("image", "data:image/png;base64");
         newValues.put("activityLevel", "HIGH");
       //newValues.put("tags", "fotball");
         newValues.put("latitude", 2.0);
         newValues.put("longitude", 0.1);
+        newValues.put("equipments", "fish");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/activity/" + activity1.getActivityId()).content("{" +
         "\"title\" :" + "\"" + newValues.get("title") + "\"" +
@@ -271,19 +282,22 @@ public class GiddControllerTest {
         ",\"tags\" : \"" + newValues.get("tags") + "\"" +
         ",\"latitude\" :" + newValues.get("latitude") +
         ",\"longitude\":" + newValues.get("longitude") +
-    "}"  ).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+        ",\"equipmentList\": \"" + newValues.get("equipments") + "\"" +
+    "}"  ).contentType(MediaType.APPLICATION_JSON).header("token", token)).andExpect(status().isOk());
 
         String getActivityString = mockMvc.perform(get("/activity/" + activity1.getActivityId())).andDo(print())
         .andReturn().getResponse().getContentAsString();
 
         JSONParser parser = new JSONParser();
         JSONObject activity1Json = (JSONObject) parser.parse(getActivityString);
+        String equipments = activity1Json.get("equipments").toString();
+        JSONArray array = (((JSONArray) parser.parse(equipments)));
 
         Iterator it = newValues.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             if(pair.getKey().equals("image")){
-                assertEquals(String.valueOf(Integer.parseInt(String.valueOf(pair.getValue()), 2)),
+                assertEquals(String.valueOf((String.valueOf(pair.getValue()))),
                         String.valueOf(activity1Json.get(pair.getKey())).replaceAll("\\]|\\[|,",""));
             }else if(pair.getKey().equals("time")){
                 assertEquals((Timestamp.valueOf(pair.getValue().toString())).getTime(), activity1Json.get(pair.getKey()));
@@ -291,8 +305,10 @@ public class GiddControllerTest {
             }else if(pair.getKey().equals("userId")){
                 JSONObject user = (JSONObject) parser.parse(activity1Json.get("user").toString());
                 assertEquals(pair.getValue(), user.get(pair.getKey()));
+            }else if(pair.getKey().equals("equipments")){
+                assertEquals(pair.getValue(), ((JSONObject)array.get(0)).get("description"));
             }
-            else{;
+            else{
                 assertEquals(pair.getValue(), activity1Json.get(pair.getKey()));
             }
         }
@@ -580,10 +596,10 @@ public class GiddControllerTest {
     @Order(12)
     @Test
     public void editUserTest() throws Exception {
-        //edit user2
+        //edit user1
         System.out.println("test 12");
         HashMap<String, Object> newValues = new HashMap<String, Object>();
-        newValues.put("email", user2.getEmail());
+        newValues.put("email", user1.getEmail());
         newValues.put("newEmail", "ikhovind@mail.com");
         newValues.put("surname", "Sungsletta");
         newValues.put("firstName", "Erling");
@@ -594,7 +610,7 @@ public class GiddControllerTest {
         newValues.put("newPassword", "321");
 
         String id = mockMvc.perform(MockMvcRequestBuilders
-                .put("/user/" + user2.getUserId()).contentType(MediaType.APPLICATION_JSON)
+                .put("/user/" + user1.getUserId()).contentType(MediaType.APPLICATION_JSON)
                 .content("{\n" +
                         "    \"email\" : \"" + newValues.get("email") + "\",\n" +
                         "    \"surname\" : \"" + newValues.get("surname") + "\",\n" +
@@ -605,9 +621,9 @@ public class GiddControllerTest {
                         "    \"password\" : \"" + newValues.get("password") + "\",\n" +
                         "    \"activityLevel\" : \"" + newValues.get("activityLevel") + "\",\n" +
                         "    \"newPassword\" : \"" + newValues.get("newPassword") + "\"\n" +
-                        "}")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+                        "}").header("token", token)).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         
-         String userString = mockMvc.perform(get("/user/" + user2.getUserId())
+         String userString = mockMvc.perform(get("/user/" + user1.getUserId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -721,7 +737,7 @@ public class GiddControllerTest {
                         "\"userIds\": \"" + user3.getUserId() + "," + user2.getUserId() + "\"," +
                         "\"userId\": \"" + user1.getUserId() + "\"" +
                         "}"
-                )).andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString();
+                )).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         JSONParser parser = new JSONParser();
         JSONObject JSONid = (JSONObject) parser.parse(groupId);
@@ -736,14 +752,90 @@ public class GiddControllerTest {
 
         JSONObject JSONgroup = (JSONObject) parser.parse(group);
 
-        System.out.println(JSONgroup.toString());
-
         assertEquals(group1.getGroupName(), JSONgroup.get("groupName").toString());
         assertEquals(String.valueOf(group1.getGroupId()), JSONgroup.get("groupId").toString());
     }
 
     @Test
     @Order(16)
+    public void addUserToGroup() throws Exception {
+        String id = mockMvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\"email\":\"" + user5.getEmail() + "\"," +
+                        "\"password\":\"" + 1235 + "\"," +
+                        "\"firstName\":\"" + user5.getFirstName() + "\"," +
+                        "\"surname\":\"" + user5.getSurname() + "\"," +
+                        "\"phoneNumber\":\"" + user5.getPhoneNumber() + "\"," +
+                        "\"activityLevel\":\"" + user5.getActivityLevel() + "\"" +
+                        "}"))
+                .andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNotEmpty())
+                .andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject idJson = (JSONObject) parser.parse(id);
+        user5.setId(idJson.getAsNumber("id").intValue());
+
+        String groupId = mockMvc.perform(post("/group/" + group1.getGroupId() + "/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\"groupId\":\"" + group1.getGroupId() + "\"," +
+                        "\"userId\":\"" + user5.getUserId() + "\"}"))
+                .andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.groupId").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.groupId").isNotEmpty())
+                .andReturn().getResponse().getContentAsString();
+
+        JSONObject friendGroupId = (JSONObject) parser.parse(groupId);
+
+        String group = mockMvc.perform(get("/group/" + friendGroupId.get("groupId"))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONObject friendGroup = (JSONObject) parser.parse(group);
+        String members = friendGroup.get("users").toString();
+        JSONArray array = (((JSONArray) parser.parse(members)));
+
+        assertTrue(array.size() == 4);
+    }
+
+    @Test
+    @Order(17)
+    public void removeUserFromGroupTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/group/" + group1.getGroupId() + "/user/" + user3.getUserId()))
+                .andExpect(status().isOk());
+
+        String group = mockMvc.perform(get("/group/" + group1.getGroupId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject friendGroup = (JSONObject) parser.parse(group);
+        String members = friendGroup.get("users").toString();
+        JSONArray array = (((JSONArray) parser.parse(members)));
+
+        assertTrue(array.size() == 3);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/group/" + group1.getGroupId() + "/user/" + user1.getUserId()))
+                .andExpect(status().isBadRequest());
+
+        String group2 = mockMvc.perform(get("/group/" + group1.getGroupId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONObject friendGroup2 = (JSONObject) parser.parse(group2);
+        String members2 = friendGroup2.get("users").toString();
+        JSONArray array2 = (((JSONArray) parser.parse(members2)));
+
+        assertTrue(array2.size() == 3);
+    }
+
+    @Test
+    @Order(18)
     public void deleteFriendGroupTest() throws Exception {
         String group = mockMvc.perform(get("/group/" + group1.getGroupId())
                 .accept(MediaType.APPLICATION_JSON)
@@ -771,7 +863,7 @@ public class GiddControllerTest {
     }
 
     @Test
-    @Order(17)
+    @Order(19)
     public void tearDown() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/activity/" + activity1.getActivityId()))
@@ -784,6 +876,9 @@ public class GiddControllerTest {
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/user/" + user3.getUserId()))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/user/" + user5.getUserId()))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
     }
 

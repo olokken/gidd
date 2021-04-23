@@ -17,7 +17,7 @@ public class FriendGroupService {
     @Autowired
     private FriendGroupRepo repo;
 
-    public boolean addFriendGroup(int groupId, String groupName, ArrayList<User> users, User owner){
+    public boolean addFriendGroup(int groupId, String groupName, ArrayList<User> users, User owner) {
         FriendGroup friendGroup = new FriendGroup(groupId, groupName, owner);
         for(User u : users){
             friendGroup.addUser(u);
@@ -29,16 +29,21 @@ public class FriendGroupService {
         return this.repo.getAllFriendGroups();
     }
 
-    public FriendGroup getFriendGroup(int friendGroupId){
+    public FriendGroup getFriendGroup(int friendGroupId) {
         return this.repo.findFriendGroup(friendGroupId);
     }
 
-    public boolean deleteFriendGroup(int friendGroupId){
+    public boolean deleteFriendGroup(int friendGroupId) {
         return this.repo.deleteFriendGroup(friendGroupId);
     }
 
-    public boolean addUserToFriendGroup(FriendGroup friendGroup, User user){
+    public boolean addUserToFriendGroup(FriendGroup friendGroup, User user) {
         friendGroup.addUser(user);
+        return repo.updateFriendGroup(friendGroup);
+    }
+
+    public boolean removeUserFromFriendGroup(FriendGroup friendGroup, User user) {
+        friendGroup.removeUser(user);
         return repo.updateFriendGroup(friendGroup);
     }
 }
