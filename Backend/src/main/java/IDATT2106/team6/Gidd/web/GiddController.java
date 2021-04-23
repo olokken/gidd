@@ -1770,7 +1770,7 @@ public class GiddController {
     }
 
     private byte[] baseToByte(String base) {
-        if(base.length()<16){
+        if(base.length()<32){
             return new byte[]{};
         }
         log.info("decoding from " + base);
