@@ -22,11 +22,12 @@ const LoginCardContainer = styled.div`
 
 
 const FacebookContainer = styled.div`
-  width: 95%;
+  width: 100%;
 `;
 
 const GoogleContainer = styled.div`
   width:100%;
+  border: 1 rem;
 `;
 
 const SocialMediaContainer = styled.div`
@@ -114,7 +115,7 @@ const LoginCard = ({
             fields="name,email,picture"
             onClick={componentClicked}
             callback={responseFacebook}
-            textButton='Logg inn med Facebook'
+            textButton='FACEBOOK LOGIN'
           />
         </FacebookContainer>
         <GoogleContainer>
@@ -123,13 +124,14 @@ const LoginCard = ({
             render={renderProps => (
               <GoogleButton onClick={renderProps.onClick}
                 type='light'
+                label='GOOGLE LOGIN'
                 style={{
                   width: '95%',
-                  height: '100%',
-                  fontSize: '18px',
-                  float: 'right'
+                  minHeight: '100%',
+                  maxHeight: '100%',
+                  fontSize: '15px',
+                  border: '1px'
                 }}
-                label='Logg inn med Google'
                 disabled={renderProps.disabled} />
             )
             }
