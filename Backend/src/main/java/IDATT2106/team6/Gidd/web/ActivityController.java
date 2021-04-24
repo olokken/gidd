@@ -1,0 +1,622 @@
+package IDATT2106.team6.Gidd.web;
+
+import IDATT2106.team6.Gidd.models.*;
+import IDATT2106.team6.Gidd.service.*;
+import IDATT2106.team6.Gidd.util.Logger;
+import IDATT2106.team6.Gidd.util.MapTokenRequired;
+import org.eclipse.persistence.exceptions.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.naming.directory.InvalidAttributesException;
+import javax.naming.ldap.Control;
+import java.net.URI;
+import java.sql.Timestamp;
+import java.util.*;
+
+import static IDATT2106.team6.Gidd.Constants.MULTIPLIERS;
+import static IDATT2106.team6.Gidd.Constants.NEW_ACTIVITY_BONUS;
+import static IDATT2106.team6.Gidd.web.GiddController.formatJson;
+import static IDATT2106.team6.Gidd.web.GiddController.getRandomID;
+
+@CrossOrigin(origins = "*")
+@Controller
+@RequestMapping("/activity")
+public class ActivityController {
+    private static Logger log = new Logger(ActivityController.class.toString());
+    @Autowired
+    private ActivityService activityService;
+    @Autowired
+    private EquipmentService equipmentService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private TagService tagService;
+    @Autowired
+    private SecurityService securityService;
+    @Autowired
+    private FriendGroupService friendGroupService;
+    @Autowired
+    private SimpMessagingTemplate template;
+
+    @PostMapping(value = "", consumes = "application/json", produces = "application/json")
+    public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
+
+        log.debug("Received new activity: " + map.toString());
+        int newId;
+        HttpHeaders headers = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+
+        headers.add("Content-Type", "application/json; charset=UTF-8");
+        Activity newActivity = null;
+        try {
+            User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+
+            if (user == null) {
+                log.error("User is null, throwing exception");
+                throw new InvalidAttributesException("User does not exist");
+            }
+            newId = 0;
+
+            newActivity = mapToActivity(map, newId, user);
+            log.debug("Created new activity: " + newActivity.getActivityId());
+            newId = newActivityValidId(newActivity);
+            log.debug("new activity id: " + newId);
+
+            if(!insertUserActivityCoupling(user, newActivity)){
+                body.put("error", "something went wrong when coupling the user and activiyt");
+                return ResponseEntity
+                        .badRequest()
+                        .headers(headers)
+                        .body(formatJson(body));
+            }
+            registerEquipmentToActivity(newId, map.get("equipmentList").toString());
+
+            log.info("Activity created successfully");
+
+            body.put("id", "" + newActivity.getActivityId());
+            userService.setPoints(user,
+                    (int) (user.getPoints() +
+                            NEW_ACTIVITY_BONUS * MULTIPLIERS[newActivity.getActivityLevel().ordinal()]));
+            return ResponseEntity
+                    .created(URI.create(String.format("/activity/%d", newActivity.getActivityId())))
+                    .body(formatJson(body));
+
+        } catch (InvalidAttributesException e) {
+            log.error("InvalidattributesException, invalid userID recieved " + e.getMessage());
+            body.put("error", e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .headers(headers)
+                    .body(formatJson(body));
+        } catch (IllegalArgumentException e){
+            log.error("user is already registered to the activity");
+            body.put("error", "user is already registered: " + e.getMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(formatJson(body));
+        } catch (Exception e) {
+            body.put("error", "unknown error: " + e.getMessage());
+            e.printStackTrace();
+            log.error("unexplained error caught " + e + "; local:" + e.getLocalizedMessage());
+            return ResponseEntity
+                    .badRequest()
+                    .body(formatJson(body));
+        }
+    }
+
+    @PostMapping(value = "/{activityId}/equipment/{equipmentId}/user")
+    public ResponseEntity registerUserToEquipment(@RequestBody HashMap<String, Object> map) {
+        log.debug("Received PostMapping to '/activity/{activityId}/equipment/{equipmentId}/user'");
+        int activityId = Integer.parseInt(map.get("activityId").toString());
+        Activity activity = activityService.getActivity(activityId);
+
+        log.debug("Finding activity with id " + activityId);
+        if (activity == null) {
+            log.error("The activity is null");
+            HttpHeaders header = new HttpHeaders();
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "The activity does not exist");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            log.debug("Returning error message");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+
+        int equipmentId = Integer.parseInt(map.get("equipmentId").toString());
+        Equipment equipment = equipmentService.getEquipment(equipmentId);
+
+        log.debug("Finding equipment with id " + equipmentId);
+        if (equipment == null) {
+            log.error("The equipment is null");
+            HttpHeaders header = new HttpHeaders();
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "The equipment does not exist");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            log.debug("Returning error message");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        int userId = Integer.parseInt(map.get("userId").toString());
+        User user = userService.getUser(userId);
+
+        log.debug("Finding user with id " + userId);
+        if (user == null) {
+            log.error("The user is null");
+            HttpHeaders header = new HttpHeaders();
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "The user does not exist");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            log.debug("Returning error message");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        List<ActivityEquipment> equipments = activity.getEquipments();
+
+        log.debug("Finding connection between activity and equipment");
+        for (ActivityEquipment ae : equipments) {
+            if (ae.getEquipment().getEquipmentId() == equipmentId) {
+                log.debug("Registering user to equipment in activity");
+                activity.getEquipments().remove(ae);
+                ae.setBringerId(userId);
+                activity.addEquipment(ae);
+                activityService.updateEquipment(ae, activity);
+
+                HttpHeaders header = new HttpHeaders();
+                HashMap<String, String> body = new HashMap<>();
+
+                body.put("activityId", String.valueOf(activityId));
+                body.put("equipmentId", String.valueOf(equipmentId));
+                body.put("userId", String.valueOf(userId));
+                header.add("Status", "200 OK");
+                header.add("Content-Type", "application/json; charset=UTF-8");
+                log.debug(
+                        "Returning the id of activity: " + activityId + ", equipment: " + equipment +
+                                ", user: " + userId);
+                return ResponseEntity
+                        .ok()
+                        .headers(header)
+                        .body(formatJson(body));
+            }
+        }
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+
+        body.put("error", "The equipment is not registered to the activity");
+        header.add("Status", "400 BAD REQUEST");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        log.error("The equipment is not registered to the activity");
+        return ResponseEntity
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
+    }
+
+    @MapTokenRequired
+    @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity editActivity(@RequestBody Map<String, Object> map,
+                                       @PathVariable("id") int actId) {
+        log.info("recieved putmapping to /activity/{id}");
+        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+        log.debug("User with id recieved");
+        Activity activity = activityService.getActivity(actId);
+        HttpHeaders headers = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+        headers.add("Content-Type", "application/json; charset=UTF-8");
+        log.info("old activity " + activity.getActivityId());
+        if (activity == null || user == null) {
+            body.put("error", "user or activity is null");
+            log.error("activity or user is null, returning error");
+            log.debug("Activity: " + (activity == null));
+            log.debug("User: " + (user == null));
+            return ResponseEntity
+                    .badRequest()
+                    .headers(headers)
+                    .body(formatJson(body));
+        }
+
+        activity.setTitle(map.get("title").toString());
+        activity.setTime(Timestamp.valueOf(map.get("time").toString()));
+        activity.setDescription(map.get("description").toString());
+        activity.setCapacity(Integer.parseInt(map.get("capacity").toString()));
+        activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
+        activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
+        activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
+        activity.setImage(baseToByte(map.get("image").toString()));
+        activity.setEquipments(newEquipment(activity,map.get("equipmentList").toString()));
+        log.info("new activity: " + activity.getActivityId());
+        boolean edited = activityService.editActivity(activity);
+        if (!edited) {
+            body.put("error", "activity was not edited");
+            log.info("activity is not edited returning error");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(headers)
+                    .body("didnt work here either sad");
+        }
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(activity.toString());
+    }
+
+    @GetMapping(value = "/{activityId}", produces = "application/json")
+    public ResponseEntity getActivity(@PathVariable Integer activityId) throws JSONException {
+        log.debug("Received GetMapping to '/activity/{activityId}' with activityId " + activityId);
+        Activity activity = activityService.getActivity(activityId);
+
+        if (activity == null) {
+            log.error("The activity is null");
+            HttpHeaders header = new HttpHeaders();
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "The activity does not exist");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            log.debug("Returning error message");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        HttpHeaders header = new HttpHeaders();
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        log.debug("Returning activity object " + activity.getActivityId());
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(activity.toString());
+    }
+
+    @GetMapping(value = "")
+    public ResponseEntity getActivities(
+            @RequestParam(value = "searchWord", required = false) String searchValue,
+            @RequestParam(value = "activityLevel", required = false) Integer activityLevel,
+            @RequestParam(value = "tagDescription", required = false) String tagDescription)
+            throws JSONException {
+        log.debug("Received GetMapping to '/activity' with Query Params");
+        List<Activity> activities;
+        if (searchValue == null && activityLevel == null && tagDescription == null) {
+            activities = activityService.getAllActivities();
+        } else if (searchValue == null && tagDescription == null) {
+            log.debug("Searching for activity level to activity");
+            log.debug("Activity level is " + activityLevel);
+            activities = activityService.filterByActivityLevel(activityLevel);
+        } else if (tagDescription == null && activityLevel == null) {
+            log.debug("Searching for title to activity");
+            log.debug("Search word is " + searchValue);
+            activities = activityService.searchForActivityByTitle(searchValue);
+        } else {
+            log.debug("Filtering activities with tag " + tagDescription);
+            Tag tag = tagService.getTag(tagDescription);
+            if (tag == null) {
+                log.error("The tag is null");
+                HttpHeaders header = new HttpHeaders();
+                HashMap<String, String> body = new HashMap<>();
+
+                body.put("error", "The tag does not exist");
+                header.add("Status", "400 BAD REQUEST");
+                header.add("Content-Type", "application/json; charset=UTF-8");
+                log.debug("Returning error message");
+                return ResponseEntity
+                        .badRequest()
+                        .headers(header)
+                        .body(formatJson(body));
+            }
+            int tagId = tag.getTagId();
+            List<Object> activityIds = activityService.filterByTag(tagId);
+            activities = new ArrayList<>();
+            for (Object i : activityIds) {
+                if (!(activityService.getActivity((Integer) i) == null)) {
+                    activities.add(activityService.getActivity((Integer) i));
+                }
+            }
+        }
+
+        if (activities == null) {
+            log.error("The activities are null");
+            HttpHeaders header = new HttpHeaders();
+            HashMap<String, String> body = new HashMap<>();
+
+            body.put("error", "An error occurred when trying to filter");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+            log.debug("Returning error message");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        log.debug(String.format("There are %d activities", activities.size()));
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+
+        body.put("activity", activities.toString());
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+        log.debug(String.format("Returning %d activities", activities.size()));
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body("{\"activities\": \n" + activities.toString() + "\n}");
+    }
+
+    @GetMapping(value = "/{id}/user", produces = "application/json")
+    public ResponseEntity getAllUsersFromActivity(@PathVariable Integer id) {
+        log.info("recieved get mapping /activity/" + id + "/user");
+        HttpHeaders headers = new HttpHeaders();
+        HashMap<String, String> userMap = new HashMap<>();
+        HashMap<String, String> errorCode = new HashMap<>();
+        List<User> users = activityService.getUserFromActivity(id);
+        if (users.size() != 0) {
+            log.info("users found for activity with id " + id);
+            userMap.put("user", "");
+
+            users.stream()
+                    .forEach(u -> userMap.put("user", userMap.get("user") + u.getUserId() + ","));
+            //remove trailing comma
+            userMap.put("user", userMap.get("user").substring(0, userMap.get("user").length() - 1));
+            return ResponseEntity.ok().headers(headers).body("{\"user\":" + users.toString() + "}");
+        }
+        log.error("no activity was found with id: " + id);
+        errorCode.put("error", "no activity found");
+        return ResponseEntity.badRequest().headers(headers).body(formatJson(errorCode));
+    }
+
+    //todo - error code when giving too long numbers or strings ?
+    @DeleteMapping(value = "/{activityId}")
+    public ResponseEntity deleteActivity(@PathVariable Integer activityId) {
+        List<User> users = activityService.getUserFromActivity(activityId);
+        Map<String, String> body = new HashMap<>();
+        HttpHeaders header = new HttpHeaders();
+        int bonusPoints = (int) (NEW_ACTIVITY_BONUS *
+                MULTIPLIERS[activityService.getActivity(activityId).getActivityLevel().ordinal()]);
+        if (activityService.deleteActivity(activityId)) {
+            log.debug("The deletion was successful");
+            header.add("Status", "200 OK");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("activityId", String.valueOf(activityId));
+
+            String bodyJson = formatJson(body);
+
+            //owner s included in getUserFromActivity() result
+            users.forEach(u -> u.setPoints(u.getPoints() - bonusPoints));
+
+            return ResponseEntity
+                    .ok()
+                    .headers(header)
+                    .body(bodyJson.substring(0, bodyJson.length() - 1) + ",\"users\":" + users.toString() + "}");
+        }
+
+        body.put("error", "no activity was deleted, are you sure the activity exists");
+        return ResponseEntity.badRequest().headers(header).body(formatJson(body));
+    }
+
+    private int newActivityValidId(Activity activity) {
+        log.info("finding new valid id for an activity");
+        boolean created;
+        int endId;
+        do {
+            endId = getRandomID();
+            log.debug("attempting id: " + endId);
+            if (endId < 0) {
+                endId = -endId;
+            }
+            activity.setActivityId(endId);
+            created = activityService.addActivity(activity);
+            log.debug("creating activity was " + created + " successful");
+        }
+        while (!created);
+        log.info("final new activity id: " + endId);
+        return endId;
+    }
+
+    private boolean registerEquipmentToActivity(int activityId, String equipment) {
+        log.debug("Registering " + equipment + " to activity with activity id " + activityId);
+        String[] equipmentDescription = equipment.split(",");
+
+        ArrayList<Equipment> equipments = new ArrayList<>();
+
+        log.debug("Checking if the equipment already is registered in the database");
+        for (String s : equipmentDescription) {
+
+            if (equipmentService.getEquipmentByDescription(s.trim()) == null) {
+                registerEquipment(s.trim());
+            }
+            equipments.add(equipmentService.getEquipmentByDescription(s.trim()));
+        }
+
+        Activity activity = activityService.getActivity(activityId);
+
+        for (Equipment e : equipments) {
+            log.debug("Adding [" + e.getEquipmentId() + ":" + e.getDescription() + "] to " +
+                    activity.getActivityId());
+            ActivityEquipment activityEquipment = new ActivityEquipment(activity, e);
+            activity.addEquipment(activityEquipment);
+        }
+        if (!activityService.addEquipmentToActivity(activity)) {
+            log.error("The registration failed");
+            return false;
+        }
+        log.debug("The registration was successful");
+        return true;
+    }
+
+    private void registerEquipment(String description) {
+        log.debug("Registering " + description + " to equipment");
+        equipmentService.registerEquipment(description.toLowerCase());
+    }
+
+    private Activity mapToActivity(Map<String, Object> map, int actId, User user) {
+        log.debug("map: " + map.toString() + " to activity");
+        String title = map.get("title").toString().trim();
+        Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
+        int repeat = Integer.parseInt(map.get("repeat").toString());
+        int capacity = Integer.parseInt(map.get("capacity").toString());
+        int groupId = Integer.parseInt(map.get("groupId").toString());
+        String description = map.get("description").toString();
+        byte[] image = baseToByte(map.get("image").toString());
+        ActivityLevel activityLevel =
+                ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
+        List<Tag> tags = splitTags(map.get("tags").toString());
+        double latitude = Double.parseDouble(map.get("latitude").toString());
+        double longitude = Double.parseDouble(map.get("longitude").toString());
+
+        return new Activity(actId,
+                title, newTime, repeat, user,
+                capacity, groupId, description, image,
+                activityLevel, tags, latitude, longitude, null);
+    }
+
+    private List<Tag> splitTags(String tagString) {
+        log.info("splitting tags");
+        ArrayList<String> tagNames = new ArrayList<>(Arrays.asList(tagString.split(",")));
+        ArrayList<Tag> tags = new ArrayList<>();
+        for (String name : tagNames) {
+            name = name.toLowerCase();
+            Tag tag = tagService.getTag(name);
+
+            if (tag == null) {
+                log.debug("tag: " + name + " did not exist creating new tag");
+                tag = new Tag(-1, name);
+                tagService.addTag(tag);
+            }
+            log.debug("adding tag " + tag.toString());
+            tags.add(tag);
+        }
+        log.debug("final tag list " + tags.toString());
+        return tags;
+    }
+
+    private byte[] baseToByte(String base) {
+        if(base.length()<32){
+            return new byte[]{};
+        }
+        log.info("decoding from " + base);
+        base = base.split(",")[1];
+        return Base64.getDecoder().decode(base);
+    }
+
+    private String byteToBase(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    private List<ActivityEquipment> newEquipment (Activity activity, String equipList) {
+        List<ActivityEquipment> oldEquips = activity.getEquipments();
+        List<Equipment> equips = toEquipList(equipList);
+
+        List<ActivityEquipment> res = new ArrayList<>();
+        ActivityEquipment temp;
+        boolean match;
+        for (Equipment e : equips) {
+            match = false;
+            for (ActivityEquipment con: oldEquips) {
+                if (con.getEquipment().equals(e)){
+                    res.add(con);
+                    match = true;
+                    break;
+                }
+            }
+            if(!match) {
+                temp = new ActivityEquipment(activity, e);
+                res.add(temp);
+            }
+        }
+        log.info("final newEquipment list: " + res);
+        return res;
+    }
+
+    private List<Equipment> toEquipList(String equipString) {
+        log.info("splitting equipment");
+        ArrayList<Equipment> equips = new ArrayList<>();
+        for (String name : equipString.split(",")) {
+            name = name.toLowerCase();
+            Equipment equipment = equipmentService.getEquipmentByDescription(name);
+
+            if(equipment == null) {
+                log.debug("equipment " + name + " did not exist, creating");
+                equipment = new Equipment(name);
+                equipmentService.addEquipment(equipment);
+            }
+
+            equips.add(equipment);
+        }
+
+        log.debug("final equip list: " + equips.toString());
+        return equips;
+    }
+
+    boolean insertUserActivityCoupling(User user, Activity activity){
+        //Legge inn sjekk om den allerede er registrert
+        List<ActivityUser> activityUser = user.getActivities();
+        ArrayList<Integer> activityIds = new ArrayList<>();
+        Timestamp time = new Timestamp(new Date().getTime());
+
+        for (ActivityUser as : activityUser) {
+            activityIds.add(as.getActivity().getActivityId());
+        }
+
+        if (activityIds.contains(activity.getActivityId())) {
+            throw new IllegalArgumentException("The user is already registered to the activity");
+        }
+
+        int couplingId = getRandomID();
+
+        //Kalle insert-metode helt til den blir true
+
+        ArrayList<ActivityUser> activityUsers = new ArrayList<>();
+        System.out.println("is null " + activityService == null);
+        ArrayList<Activity> activities = activityService.getAllActivities();
+        System.out.println("activity null " + activities == null);
+        for (Activity a : activities) {
+            activityUsers.addAll(a.getRegisteredParticipants());
+        }
+
+        ArrayList<Integer> couplingIdList = new ArrayList<>();
+
+        for (ActivityUser au : activityUsers) {
+            couplingIdList.add(au.getId());
+        }
+
+        while (couplingIdList.contains(couplingId)) {
+            couplingId = getRandomID();
+        }
+
+        if (userService.addUserToActivity(couplingId, activity, user, time)) {
+            if (activityService.addUserToActivity(couplingId, activity, user, time)) {
+                return true;
+            }
+            userService.removeActivity(couplingId, user);
+            return false;
+        }
+        return false;
+    }
+
+}
