@@ -51,7 +51,7 @@ public class MessageRepo extends GiddRepo {
         List<Chat> groupMessages = null;
 
         try {
-            PreparedStatement statement = new
+            
             Query q = em.createQuery("SELECT a FROM Chat a where a.activity =?1", Chat.class);
             q.setParameter(1, activity);
             System.out.println("query is " + q.toString());
