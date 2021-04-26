@@ -10,10 +10,12 @@ import IDATT2106.team6.Gidd.models.ActivityEquipment;
 import IDATT2106.team6.Gidd.models.ActivityLevel;
 import IDATT2106.team6.Gidd.models.ActivityUser;
 import IDATT2106.team6.Gidd.models.Equipment;
+import IDATT2106.team6.Gidd.models.Image;
 import IDATT2106.team6.Gidd.models.Tag;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.ActivityService;
 import IDATT2106.team6.Gidd.service.EquipmentService;
+import IDATT2106.team6.Gidd.service.ImageService;
 import IDATT2106.team6.Gidd.service.TagService;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
@@ -56,6 +58,8 @@ public class ActivityController {
     private UserService userService;
     @Autowired
     private TagService tagService;
+    @Autowired
+    private ImageService imageService;
 
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
@@ -66,7 +70,7 @@ public class ActivityController {
         HashMap<String, String> body = new HashMap<>();
 
         headers.add("Content-Type", "application/json; charset=UTF-8");
-        Activity newActivity = null;
+        Activity newActivity;
         try {
             User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
 
@@ -76,7 +80,14 @@ public class ActivityController {
             }
             newId = 0;
 
-            newActivity = mapToActivity(map, newId, user);
+            Image image = createImage(map.get("image").toString());
+            if (image == null) {
+                return ResponseEntity
+                    .badRequest()
+                    .body("nope");
+            }
+
+            newActivity = mapToActivity(map, newId, user, image);
             log.debug("Created new activity: " + newActivity.getActivityId());
             newId = newActivityValidId(newActivity);
             log.debug("new activity id: " + newId);
@@ -256,7 +267,7 @@ public class ActivityController {
         activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
-        activity.setImage(baseToByte(map.get("image").toString()));
+        activity.setImage(new Image());  // TODO Edit image
         activity.setEquipments(newEquipment(activity,map.get("equipmentList").toString()));
         log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
@@ -488,7 +499,7 @@ public class ActivityController {
         equipmentService.registerEquipment(description.toLowerCase());
     }
 
-    private Activity mapToActivity(Map<String, Object> map, int actId, User user) {
+    private Activity mapToActivity(Map<String, Object> map, int actId, User user, Image image) {
         log.debug("map: " + map.toString() + " to activity");
         String title = map.get("title").toString().trim();
         Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
@@ -496,18 +507,19 @@ public class ActivityController {
         int capacity = Integer.parseInt(map.get("capacity").toString());
         int groupId = Integer.parseInt(map.get("groupId").toString());
         String description = map.get("description").toString();
-        byte[] image = baseToByte(map.get("image").toString());
+        //  image
         ActivityLevel activityLevel =
-                ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
+            ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
         List<Tag> tags = splitTags(map.get("tags").toString());
         double latitude = Double.parseDouble(map.get("latitude").toString());
         double longitude = Double.parseDouble(map.get("longitude").toString());
 
         return new Activity(actId,
-                title, newTime, repeat, user,
-                capacity, groupId, description, image,
-                activityLevel, tags, latitude, longitude, null);
+            title, newTime, repeat, user,
+            capacity, groupId, description, image,
+            activityLevel, tags, latitude, longitude, null);
     }
+
 
     private List<Tag> splitTags(String tagString) {
         log.info("splitting tags");
@@ -527,6 +539,20 @@ public class ActivityController {
         }
         log.debug("final tag list " + tags.toString());
         return tags;
+    }
+
+    private Image createImage(String base) {
+        Image img = new Image();
+        if (base.length() > 32) {
+            String[] res = base.split(",");
+            img = new Image(res[0], Base64.getDecoder().decode(res[1]));
+        }
+        if (imageService.newImage(img)) {
+            System.out.println("IMAGE WAS ADDED");
+            return img;
+        }
+        System.out.println("IMAGE WAS NOT ADDED");
+        return null;
     }
 
     private byte[] baseToByte(String base) {
