@@ -157,9 +157,9 @@ const Activities = () => {
             return window.innerWidth < 951
                 ? setState((prevState) => ({ ...prevState, mobileView: true }))
                 : setState((prevState) => ({
-                    ...prevState,
-                    mobileView: false,
-                }));
+                      ...prevState,
+                      mobileView: false,
+                  }));
         };
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());

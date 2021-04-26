@@ -24,6 +24,7 @@ import axios from '../../Axios';
 import Popup from '../Popup';
 import WeatherComponent from '../WeatherComponents/WeatherComponent';
 import ActivityForm from './ActivityForm';
+import Chat from '../ChatComponents/Chat';
 
 interface Props {
     activity: ActivityResponse;
@@ -79,6 +80,7 @@ const ActivityInformation = ({
     register,
     unRegister,
 }: Props) => {
+    const [openChat, setOpenChat] = useState<boolean>(false);
     const [currentAct, setCurrentAct] = useState<ActivityResponse>(activity);
     const classes = useStyles();
     const date = new Date(activity.time);
@@ -238,6 +240,11 @@ const ActivityInformation = ({
                     <Grid item xs={3}>
                         {!isOwner && registerBtn()}
                     </Grid>
+                    {registration == 1 && (
+                        <Button onClick={() => setOpenChat(true)}>
+                            Åpen chat
+                        </Button>
+                    )}
                 </Grid>
             </div>
             <div className={classes.publisher}>
@@ -356,9 +363,7 @@ const ActivityInformation = ({
                     setOpenPopup={setOpenEditPopup}
                 ></ActivityForm>
             </Popup>
-            <Button onClick={() => console.log(registration)}>
-                Få fram registraioninfo
-            </Button>
+            <Chat open={openChat} close={() => setOpenChat(false)}></Chat>
         </div>
     );
 };
