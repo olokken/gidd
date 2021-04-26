@@ -113,4 +113,22 @@ public class FriendGroupRepo extends GiddRepo {
             em.close();
         }
     }
+
+
+
+    public List<Activity> getActivitiesForGroup(int groupId){
+        log.debug("Finding activities for group " + groupId);
+        EntityManager em = getEm();
+
+        try {
+            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY WHERE group_id = ?1", Activity.class)
+                    .setParameter(1, groupId);
+            return q.getResultList();
+        }catch (Exception e){
+            log.error("An error has occurred: " + e.getMessage());
+            return null;
+        }finally {
+            em.close();
+        }
+    }
 }

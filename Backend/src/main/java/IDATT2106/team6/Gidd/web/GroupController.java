@@ -3,6 +3,7 @@ package IDATT2106.team6.Gidd.web;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
 
+import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.FriendGroup;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.FriendGroupService;
@@ -45,6 +46,18 @@ public class GroupController {
 
             return ResponseEntity
                     .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        if(friendGroup.getUsers().size() <= 2){
+            deleteGroup(groupId);
+            log.info("The group was deleted");
+            header.add("Status", "200 OK");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            return ResponseEntity
+                    .ok()
                     .headers(header)
                     .body(formatJson(body));
         }
@@ -299,6 +312,38 @@ public class GroupController {
                 .ok()
                 .headers(header)
                 .body(friendGroup.toString());
+    }
+
+    @GetMapping("/{groupId}/activity")
+    public ResponseEntity getActivitiesForGroup(@PathVariable Integer groupId){
+        log.debug("Received GetMapping to '/group/{groupId}/activity'");
+        FriendGroup friendGroup = friendGroupService.getFriendGroup(groupId);
+
+        HttpHeaders header = new HttpHeaders();
+
+        if(friendGroup == null){
+            log.error("The friend group is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            HashMap<String, String> body = new HashMap<>();
+            body.put("error", "The friend group does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        List<Activity> activities = friendGroupService.getActivitiesForGroup(friendGroup);
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body("{\"activities\"" + activities.toString() + "}");
     }
 
     @DeleteMapping(value = "/{groupId}")

@@ -1,5 +1,6 @@
 package IDATT2106.team6.Gidd.service;
 
+import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.FriendGroup;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.repo.FriendGroupRepo;
@@ -50,5 +51,9 @@ public class FriendGroupService {
     public boolean updateOwner(FriendGroup friendGroup, User user){
         friendGroup.setOwner(user);
         return repo.updateFriendGroup(friendGroup);
+    }
+
+    public List<Activity> getActivitiesForGroup(FriendGroup friendGroup){
+        return repo.getActivitiesForGroup(friendGroup.getGroupId());
     }
 }

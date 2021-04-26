@@ -17,6 +17,7 @@ import IDATT2106.team6.Gidd.models.Provider;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.ActivityService;
 import IDATT2106.team6.Gidd.service.FriendGroupService;
+import IDATT2106.team6.Gidd.service.RatingService;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
 import IDATT2106.team6.Gidd.util.PathTwoTokenRequired;
@@ -51,6 +52,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private FriendGroupService friendGroupService;
+    @Autowired
+    private RatingService ratingService;
 
     @GetMapping(value = "", produces = "application/json")
     public ResponseEntity getAllUsers() {
@@ -532,6 +535,40 @@ public class UserController {
                 .body("{ \"groups\" : " + friendGroups.toString() + "}");
     }
 
+    @GetMapping("/{userId}/rating")
+    public ResponseEntity getRating(@PathVariable Integer userId){
+        log.debug("Received GetMapping to '/user/{userId}/rating'");
+        User user = userService.getUser(userId);
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+
+        if(user == null){
+            log.error("The user is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The user does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        double averageRating = ratingService.getRating(user);
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        body.put("averageRating", String.valueOf(averageRating));
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
+    }
+
     @PathTwoTokenRequired
     @PutMapping(value = "/some/{id}")
     public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
@@ -897,6 +934,66 @@ public class UserController {
         body.put("error", "Created user is null, does the user already exist?");
         return ResponseEntity.ok()
                 .headers(header).body(formatJson(body));
+    }
+
+    @PostMapping("/{userId}/rating")
+    public ResponseEntity giveRating(@RequestBody HashMap<String, Object> map){
+        log.debug("Received mapping to 'user/{userId}/rating'");
+        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
+        int rating = Integer.parseInt(map.get("rating").toString());
+
+        HttpHeaders header = new HttpHeaders();
+        Map<String, String> body = new HashMap<>();
+
+        if (user == null) {
+            log.error("User is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The user does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        if(rating <= 0 || rating > 5){
+            log.error("The rating is " + rating);
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The rating is not between 1 and 5");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        if(!ratingService.addRating(rating, user)){
+            log.error("Something wrong happened when trying to add rating");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "Something wrong happened when trying to add rating");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        log.info("Rating added");
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        body.put("userId", String.valueOf(user.getUserId()));
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
     }
 
     boolean insertUserActivityCoupling(User user, Activity activity){
