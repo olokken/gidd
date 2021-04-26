@@ -18,5 +18,3 @@ export default interface User {
     activityLevel: string;
     points: string;
 }
-
-

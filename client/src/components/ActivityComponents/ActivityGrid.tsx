@@ -13,12 +13,31 @@ const Container = styled.div`
     justify-content: center;
 `;
 
+const TransformDiv = styled.div`
+    transition: transform 450ms;
+    min-width: 200px;
+    max-width: 29%;
+    margin: 5px;
+    margin-bottom: 11rem;
+
+    :hover {
+        transform: scale(1.08);
+    }
+`;
+
 interface Props {
     activities: ActivityResponse[];
     deleteActivity: (id: number) => void;
+    register: (id: number) => Promise<void>;
+    unRegister: (id: number) => Promise<void>;
 }
 
-const ActivityGrid = ({ activities, deleteActivity }: Props) => {
+const ActivityGrid = ({
+    activities,
+    deleteActivity,
+    register,
+    unRegister,
+}: Props) => {
     const [page, setPage] = useState<number>(1);
     const [currentActivities, setCurrentActivities] = useState<
         ActivityResponse[]
@@ -52,13 +71,14 @@ const ActivityGrid = ({ activities, deleteActivity }: Props) => {
 
     const renderActivities = currentActivities.map((act, index: number) => {
         return (
-            <ActivityCard
-                key={index}
-                activity={act}
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
-                setActivity={setActivity}
-            ></ActivityCard>
+            <TransformDiv key={index}>
+                <ActivityCard
+                    activity={act}
+                    openPopup={openPopup}
+                    setOpenPopup={setOpenPopup}
+                    setActivity={setActivity}
+                ></ActivityCard>
+            </TransformDiv>
         );
     });
 
@@ -75,6 +95,7 @@ const ActivityGrid = ({ activities, deleteActivity }: Props) => {
                 style={{
                     display: 'flex',
                     justifyContent: 'center',
+                    marginBottom: '2rem',
                 }}
             >
                 {renderActivities}
@@ -85,6 +106,8 @@ const ActivityGrid = ({ activities, deleteActivity }: Props) => {
                 maxWidth="md"
             >
                 <ActivityInformation
+                    register={register}
+                    unRegister={unRegister}
                     deleteActivity={deleteActivity}
                     openPopup={openPopup}
                     setOpenPopup={setOpenPopup}
@@ -92,7 +115,10 @@ const ActivityGrid = ({ activities, deleteActivity }: Props) => {
                 ></ActivityInformation>
             </Popup>
             <Pageination
-                style={{ justifyContent: 'center', display: 'flex' }}
+                style={{
+                    justifyContent: 'center',
+                    display: 'flex',
+                }}
                 onChange={onPageChange}
                 count={Math.ceil(activities.length / 24)}
                 size="large"

@@ -17,6 +17,7 @@ import axios from '../Axios';
 import ActivityLevels from '../interfaces/ActivityLevels';
 import { UserContext } from '../UserContext';
 import DefaultCenter from '../interfaces/DefaultCenter';
+import { SortFunctions } from '../components/SortingComponents/SortingFunctions';
 
 //Endringer kan forekomme her
 
@@ -69,6 +70,29 @@ const Activities = () => {
         High: true,
     });
     const [location, setLocation] = useState<DefaultCenter>();
+    const [sortValue, setSortValue] = useState<number>(-1);
+
+    const register = (activityId: number): Promise<void> => {
+        console.log(activityId + ' ' + user);
+        return new Promise((resolve, reject) => {
+            axios
+                .post('/user/activity', {
+                    userId: user,
+                    activityId: activityId,
+                })
+                .then(() => loadActivities());
+            resolve();
+        });
+    };
+
+    const unRegister = (activityId: number): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            axios
+                .delete(`/user/${user}/activity/${activityId}`)
+                .then(() => loadActivities());
+            resolve();
+        });
+    };
 
     useEffect(() => {
         if (activities) {
@@ -165,6 +189,10 @@ const Activities = () => {
             });
     };
 
+    const reverse = () => {
+        setCurrentActivities([...currentActivities].reverse());
+    };
+
     const loadActivities = () => {
         axios
             .get('/activity')
@@ -173,6 +201,29 @@ const Activities = () => {
             })
             .catch((error) => console.log(error));
     };
+
+    useEffect(() => {
+        if (sortValue == 1) {
+            console.log('velger sort 1');
+            const sortert = SortFunctions.comingSort(currentActivities);
+            setCurrentActivities(sortert);
+        } else if (sortValue == 2) {
+            console.log('velger sort 2');
+            const sortert = SortFunctions.distanceSort(
+                currentActivities,
+                location
+            );
+            setCurrentActivities(sortert);
+        } else if (sortValue == 3) {
+            console.log('velger sort 3');
+            const sortert = SortFunctions.capacitySort(currentActivities);
+            setCurrentActivities(sortert);
+        } else if (sortValue == 4) {
+            console.log('velger sort 4');
+            const sortert = SortFunctions.activityLevelSort(currentActivities);
+            setCurrentActivities(sortert);
+        }
+    }, [sortValue]);
 
     useEffect(loadActivities, [openPopup]);
 
@@ -196,14 +247,21 @@ const Activities = () => {
                 </div>
                 <View>
                     <AddAndSort>
-                        <SortMenu></SortMenu>
+                        <SortMenu
+                            onSortChange={(val) => {
+                                setSortValue(val);
+                            }}
+                        >
+                            <Button onClick={reverse}>
+                                Reverser nåværende liste
+                            </Button>
+                        </SortMenu>
                         <AddButton onClick={onClickAddButton}></AddButton>
                         <Popup
                             title="Legg til aktivitet"
                             openPopup={openPopup}
                             setOpenPopup={setOpenPopup}
                             maxWidth="lg"
-                            fullWidth={true}
                         >
                             <ActivityForm
                                 openPopup={openPopup}
@@ -212,6 +270,8 @@ const Activities = () => {
                         </Popup>
                     </AddAndSort>
                     <ActivityGrid
+                        register={register}
+                        unRegister={unRegister}
                         deleteActivity={(id) => deleteActivity(id)}
                         activities={currentActivities}
                     ></ActivityGrid>
@@ -230,7 +290,11 @@ const Activities = () => {
             <Container>
                 <View>
                     <AddAndSort>
-                        <SortMenu></SortMenu>
+                        <SortMenu onSortChange={(val) => setSortValue(val)}>
+                            <Button onClick={reverse}>
+                                Reverser nåværende liste
+                            </Button>
+                        </SortMenu>
                         <Button
                             style={{
                                 border: '1px solid lightgrey',
@@ -309,6 +373,8 @@ const Activities = () => {
                         </Popup>
                     </AddAndSort>
                     <ActivityGrid
+                        register={register}
+                        unRegister={unRegister}
                         deleteActivity={(id) => deleteActivity(id)}
                         activities={currentActivities}
                     ></ActivityGrid>

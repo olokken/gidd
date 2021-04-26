@@ -8,7 +8,7 @@ import React, {
 import styled from 'styled-components';
 import FriendList from '../components/GroupsAndFriendsComponents/FriendList';
 import GroupList from '../components/GroupsAndFriendsComponents/GroupList';
-import User2 from '../interfaces/User';
+import User from '../interfaces/User';
 import axios from '../Axios'
 import { UserContext } from '../UserContext';
 
@@ -23,10 +23,30 @@ const Container = styled.div`
     width: 100%;
 `;
 
+interface Groups{
+    owner: User;
+    groupName: string;
+    groupId: string;
+    users: User[];
+}
+
 const GroupsAndFriends = () => {
-    const [friends, setFriends] = useState<User2[]>([]);
-    const [users, setUsers] = useState<User2[]>([]);
+    const [friends, setFriends] = useState<User[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
+    const [groups, setGroups] = useState<Groups[]>([]);
     const {user, setUser} = useContext(UserContext);
+
+     //henter alle users
+    useEffect(() => {
+        axios
+            .get('/group')
+            .then((response) => {
+                console.log(response.data);
+                setGroups(response.data['groups']);
+            })
+            .catch((error) => console.log(error));
+    }, [friends, user]);
+
 
 
      //henter alle users
@@ -76,7 +96,7 @@ const GroupsAndFriends = () => {
             </div>
 
             <div style={{width:'20%'}}>
-                <GroupList friends={friends}/>
+                <GroupList friends={friends} groups={groups}/>
             </div>
         </Container>
     );

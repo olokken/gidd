@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import MapComponent from '../components/MapComponents/MapComponent';
 import MapMarker from '../components/MapComponents/MapMarker';
@@ -8,6 +8,7 @@ import axios from '../Axios';
 import ActivityResponse from '../interfaces/ActivityResponse';
 import { Button } from '@material-ui/core';
 import { WorkRounded } from '@material-ui/icons';
+import { UserContext } from '../UserContext';
 
 const Container = styled.div`
     justify-content: center;
@@ -17,7 +18,7 @@ const Map = () => {
     const [activities, setActivities] = useState<ActivityResponse[]>([]);
     const [defaultCenter, setDefaultCenter] = useState<DefaultCenter>();
     const [markers, setMarkers] = useState<React.ReactNode>();
-    const [rendered, setRendered] = useState<boolean>(false);
+    const { user } = useContext(UserContext);
 
     const getCoordinates = () => {
         fetch(
@@ -37,7 +38,6 @@ const Map = () => {
     };
 
     const deleteActivity = (id: number) => {
-        console.log('no ska den egentlig slette :' + id);
         axios
             .delete(`/activity/${id}`)
             .then(loadActivities)
@@ -54,6 +54,23 @@ const Map = () => {
             .catch((error) => console.log(error));
     };
 
+    const register = (activityId: number): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            axios.delete(`/user/${user}/activity/${activityId}`);
+            resolve();
+        });
+    };
+
+    const unRegister = (activityId: number): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            axios.post('/user/activity', {
+                userId: user,
+                activityId: activityId,
+            });
+            resolve();
+        });
+    };
+
     useEffect(() => {
         getCoordinates();
     }, []);
@@ -67,6 +84,8 @@ const Map = () => {
             return activities.map((act: ActivityResponse, index: number) => {
                 return (
                     <MapMarker
+                        register={register}
+                        unRegister={unRegister}
                         deleteActivity={(id) => deleteActivity(id)}
                         key={index}
                         activity={act}

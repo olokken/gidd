@@ -11,9 +11,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Activity from '../../interfaces/Activity';
 import hiking from '../../assets/hiking.jpg';
-import { convertToObject } from 'typescript';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 
 const useStyles = makeStyles({
@@ -27,11 +25,9 @@ const useStyles = makeStyles({
 
 const CardInformation = styled.div`
     height: 100%;
-    transition: transform 450ms;
 
     :hover {
         background-color: #ebebeb;
-        transform: scale(1.08);
     }
 `;
 const TitleArea = styled.div`
@@ -66,14 +62,18 @@ const ActivityCard = ({
         console.log(activity);
         setActivity(activity);
     };
+
+    const picture = () : any => {
+        if (activity.image.length > 40) {
+            return activity.image; 
+        }
+            return hiking; 
+    }; 
     return (
         <Card
             onClick={onClickActivity}
             style={{
-                minWidth: '200px',
-                maxWidth: '31%',
-                margin: '5px',
-                padding: '10px',
+                height: '20rem',
             }}
         >
             <CardInformation>
@@ -85,7 +85,7 @@ const ActivityCard = ({
                                 'Image related to the activity' + activity.title
                             }
                             height="140"
-                            image={hiking} // hente bildet frå aktiviteta
+                            image={picture()} // hente bildet frå aktiviteta
                         />
                     </Grid>
                 </Grid>
