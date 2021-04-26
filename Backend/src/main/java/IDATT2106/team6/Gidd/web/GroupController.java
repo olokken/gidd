@@ -16,13 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -216,6 +210,51 @@ public class GroupController {
                 .body(formatJson(body));
     }
 
+    @PutMapping("/{groupId}")
+    public ResponseEntity changeOwner(@RequestBody HashMap<String, Object> map){
+        FriendGroup friendGroup = friendGroupService.getFriendGroup(Integer.parseInt(map.get("groupId").toString()));
+        User owner = userService.getUser(Integer.parseInt(map.get("newOwner").toString()));
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+        if(owner == null || friendGroup == null){
+            log.error("The user or the friend group is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The friend group or the user does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        if(!friendGroupService.updateOwner(friendGroup, owner)){
+            log.error("Something wrong happened when trying to change the owner");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "Something wrong happened when trying to change the owner");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        log.debug("The owner to group " + friendGroup.getGroupId() + " is now user " + owner.getUserId());
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        body.put("groupId", friendGroup.getGroupId().toString());
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
+    }
+
     @GetMapping("")
     public ResponseEntity getAllGroups(){
         log.debug("Received GetMapping to '/group'");
@@ -261,11 +300,6 @@ public class GroupController {
                 .headers(header)
                 .body(friendGroup.toString());
     }
-
-    /*@GetMapping("user/{userId}/group")
-    public ResponseEntity getGroupsForUser(@PathVariable Integer userId){
-        User user =
-    }*/
 
     @DeleteMapping(value = "/{groupId}")
     public ResponseEntity deleteGroup(@PathVariable Integer groupId){
