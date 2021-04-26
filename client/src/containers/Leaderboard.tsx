@@ -10,7 +10,7 @@ function Leaderboard() {
     const { user, seUser } = useContext(UserContext);
     const [groupId, setGroupId] = useState<string>('');
     const [group, setGroup] = useState<Group>({
-        groupId: 0,
+        groupId: '0',
         groupName: '',
         owner: {
             firstName: '',

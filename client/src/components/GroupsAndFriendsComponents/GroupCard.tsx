@@ -11,7 +11,7 @@ import {
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import logo from '../../assets/logo.png';
-import User  from '../../interfaces/User';
+import User from '../../interfaces/User';
 import Popup from '../Popup';
 import GroupProfile from './GroupProfile';
 import UserProfile from './UserProfile';
@@ -35,7 +35,7 @@ interface Props {
     group: Group;
 }
 
-interface Group{
+interface Group {
     owner: User;
     groupName: string;
     groupId: string;
@@ -43,50 +43,50 @@ interface Group{
 }
 
 
-const GroupCard = ({group}: Props) =>{
+const GroupCard = ({ group }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     return (
         <div>
-        <Card
-            style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
-            onClick={() => setOpenPopup(!openPopup)}
-        >
-           
-            <CardInformation>
-                <Grid container spacing={2}>
-                <Grid item xs={3}>
-                    <CardMedia
-                        component="img"
-                        alt={'Image related to the activity' }
-                        height="40px"
-                        width="40px"
-                        image={logo} // hente bildet frå aktiviteta
-                    />
-                </Grid>
-                <Grid item >
-                    <Typography
-                        gutterBottom
-                        variant="subtitle2"
-                        component="h3"
-                    >
-                        {group.groupName}
-                    </Typography>
-                </Grid>
-                </Grid>
-            </CardInformation>
-        </Card> 
-        <Popup
-        title={group.groupName}
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
-        >
-        <GroupProfile
-            openPopup={openPopup}
-            setOpenPopup={setOpenPopup}
-            group={group}
-        />
-        </Popup>
-    </div>
+            <Card
+                style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
+                onClick={() => console.log(group)}
+            >
+
+                <CardInformation>
+                    <Grid container spacing={2}>
+                        <Grid item xs={3}>
+                            <CardMedia
+                                component="img"
+                                alt={'Image related to the activity'}
+                                height="40px"
+                                width="40px"
+                                image={logo} // hente bildet frå aktiviteta
+                            />
+                        </Grid>
+                        <Grid item >
+                            <Typography
+                                gutterBottom
+                                variant="subtitle2"
+                                component="h3"
+                            >
+                                {group.groupName}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                </CardInformation>
+            </Card>
+            <Popup
+                title={group.groupName}
+                openPopup={openPopup}
+                setOpenPopup={setOpenPopup}
+            >
+                <GroupProfile
+                    openPopup={openPopup}
+                    setOpenPopup={setOpenPopup}
+                    group={group}
+                />
+            </Popup>
+        </div>
     );
 };
 

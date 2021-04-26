@@ -9,6 +9,7 @@ import AddBox from '@material-ui/icons/AddBox';
 import User from '../../interfaces/User';
 import axios from '../../Axios'
 import { UserContext } from '../../UserContext';
+import Group from '../../interfaces/Group'
 
 const StyledContainer = styled.div`
     margin-left: 1rem;
@@ -27,12 +28,7 @@ interface Props {
     groups: Group[];
 }
 
-interface Group {
-    owner: User;
-    groupName: string;
-    groupId: string;
-    users: User[];
-}
+
 
 
 const GroupList = ({ friends, groups }: Props) => {
