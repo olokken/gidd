@@ -1,26 +1,47 @@
 package IDATT2106.team6.Gidd.web;
 
-import IDATT2106.team6.Gidd.models.*;
-import IDATT2106.team6.Gidd.service.*;
+import static IDATT2106.team6.Gidd.Constants.MULTIPLIERS;
+import static IDATT2106.team6.Gidd.Constants.NEW_ACTIVITY_BONUS;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
+
+import IDATT2106.team6.Gidd.models.Activity;
+import IDATT2106.team6.Gidd.models.ActivityEquipment;
+import IDATT2106.team6.Gidd.models.ActivityLevel;
+import IDATT2106.team6.Gidd.models.ActivityUser;
+import IDATT2106.team6.Gidd.models.Equipment;
+import IDATT2106.team6.Gidd.models.Tag;
+import IDATT2106.team6.Gidd.models.User;
+import IDATT2106.team6.Gidd.service.ActivityService;
+import IDATT2106.team6.Gidd.service.EquipmentService;
+import IDATT2106.team6.Gidd.service.TagService;
+import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
 import IDATT2106.team6.Gidd.util.MapTokenRequired;
+import java.net.URI;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.naming.directory.InvalidAttributesException;
 import org.eclipse.persistence.exceptions.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import javax.naming.directory.InvalidAttributesException;
-import javax.naming.ldap.Control;
-import java.net.URI;
-import java.sql.Timestamp;
-import java.util.*;
-
-import static IDATT2106.team6.Gidd.Constants.MULTIPLIERS;
-import static IDATT2106.team6.Gidd.Constants.NEW_ACTIVITY_BONUS;
-import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -35,12 +56,6 @@ public class ActivityController {
     private UserService userService;
     @Autowired
     private TagService tagService;
-    @Autowired
-    private SecurityService securityService;
-    @Autowired
-    private FriendGroupService friendGroupService;
-    @Autowired
-    private SimpMessagingTemplate template;
 
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {

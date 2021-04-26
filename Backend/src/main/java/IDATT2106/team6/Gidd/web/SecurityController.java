@@ -28,7 +28,7 @@ public class SecurityController {
     @ResponseBody
     @RequestMapping("/token/generate")
     public Map<String, Object> generateToken(@RequestParam(value = "subject") String subject) {
-        String token = securityService.createToken(subject, (2 * 1000 * 60));
+        String token = securityService.createToken(subject, (1000 * 60 * 60 * 24));
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("result", token);
         //TODO Return JSON

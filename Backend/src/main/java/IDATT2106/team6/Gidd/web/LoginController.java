@@ -1,21 +1,14 @@
 package IDATT2106.team6.Gidd.web;
 
+import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
+
 import IDATT2106.team6.Gidd.models.Provider;
 import IDATT2106.team6.Gidd.models.User;
-import IDATT2106.team6.Gidd.service.*;
+import IDATT2106.team6.Gidd.service.SecurityService;
+import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.persistence.sessions.Login;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -24,8 +17,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -33,19 +32,9 @@ import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
 public class LoginController {
     private static Logger log = new Logger(LoginController.class.toString());
     @Autowired
-    private ActivityService activityService;
-    @Autowired
-    private EquipmentService equipmentService;
-    @Autowired
     private UserService userService;
     @Autowired
-    private TagService tagService;
-    @Autowired
     private SecurityService securityService;
-    @Autowired
-    private FriendGroupService friendGroupService;
-    @Autowired
-    private SimpMessagingTemplate template;
 
     @PostMapping("")
     public ResponseEntity loginSome(@RequestBody Map<String, Object> map) {
