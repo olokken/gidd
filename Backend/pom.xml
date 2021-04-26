@@ -42,6 +42,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-messaging</artifactId>
+			<version>5.2.12.RELEASE</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api -->
@@ -123,7 +124,11 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.11.0</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+        </dependency>
+    </dependencies>
 
 
 

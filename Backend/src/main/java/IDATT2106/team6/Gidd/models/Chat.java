@@ -12,16 +12,16 @@ public class Chat {
     @Column(name = "chat_id", unique = true)
     private Integer chatId;
     @JoinColumn(name = "group_id")
-    @ManyToOne(targetEntity = FriendGroup.class)
-    private FriendGroup group;
+    @ManyToOne(targetEntity = Activity.class)
+    private Activity activity;
     @JoinColumn(name = "user_sent_id")
     @ManyToOne(targetEntity = User.class)
     private User user;
     private String message;
     private Timestamp timeStamp;
 
-    public Chat(FriendGroup group, User user, String message){
-        this.group = group;
+    public Chat(Activity toActivity, User user, String message){
+        this.activity = toActivity;
         this.user = user;
         this.message = message;
         this.timeStamp =  new Timestamp(new Date().getTime());
@@ -33,8 +33,8 @@ public class Chat {
         return chatId;
     }
 
-    public FriendGroup getGroup() {
-        return group;
+    public Activity getGroup() {
+        return activity;
     }
 
     public User getUser() {
@@ -49,8 +49,8 @@ public class Chat {
         this.chatId = chatId;
     }
 
-    public void setGroup(FriendGroup group) {
-        this.group = group;
+    public void setGroup(Activity activity) {
+        this.activity = activity;
     }
 
     public void setUser(User user) {
