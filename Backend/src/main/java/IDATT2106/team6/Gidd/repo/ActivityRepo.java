@@ -237,6 +237,48 @@ public class ActivityRepo extends GiddRepo {
         }
     }
 
+    public ActivityEquipment findActivityEquipmentConnection(int id) {
+        EntityManager em = getEm();
+        ActivityEquipment ae;
+        log.info("finding activity_equipment with id " + id);
+        try {
+            ae = em.find(ActivityEquipment.class, id);
+        }catch (Exception e){
+            log.error("returning null, finding activityequipment failed due to " + e.getMessage());
+            return null;
+        }finally {
+            em.close();
+        }
+        log.info("activity found successfully");
+        return ae;
+    }
+
+    public boolean removeActivityEquipmentConnection(ActivityEquipment ae) {
+        EntityManager em = getEm();
+        log.info("deleting activity equipment id: " + ae.getId());
+        try{
+            ActivityEquipment activityEquipment = findActivityEquipmentConnection(ae.getId());
+
+            if(activityEquipment != null){
+                log.info("activity_equip found, attempting delete");
+                em.getTransaction().begin();
+                ActivityEquipment tempAE = em.merge(activityEquipment);
+                em.remove(tempAE);
+                em.getTransaction().commit();
+                log.info("delete success on id: " + ae.getId());
+                return true;
+            }else {
+                log.error("failed finding activity_equip, cannot delete activity_equip with id: " + ae.getId());
+                return false;
+            }
+        }catch (Exception e){
+            log.info("deleting activity_equip: " + ae.getId() + " failed due to " + e.getMessage());
+            return false;
+        }finally {
+            em.close();
+        }
+    }
+
     public boolean updateActivityEquipmentConnection(ActivityEquipment activityEquipment){
         log.debug("Updating activity-equipment connection");
         EntityManager em = getEm();
