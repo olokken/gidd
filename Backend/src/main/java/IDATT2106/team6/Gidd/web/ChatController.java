@@ -1,8 +1,14 @@
 package IDATT2106.team6.Gidd.web;
 
+import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.Chat;
+import IDATT2106.team6.Gidd.models.FriendGroup;
+import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.*;
 import IDATT2106.team6.Gidd.util.Logger;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -25,32 +31,36 @@ import java.util.HashMap;
 public class ChatController {
     private static Logger log = new Logger(ChatController.class.toString());
     @Autowired
-    private ActivityService activityService;
+    private ChatService chatService;
     @Autowired
-    private EquipmentService equipmentService;
+    private SimpMessagingTemplate template;
     @Autowired
     private UserService userService;
     @Autowired
-    private TagService tagService;
-    @Autowired
-    private SecurityService securityService;
+    private ActivityService activityService;
     @Autowired
     private FriendGroupService friendGroupService;
-    @Autowired
-    private SimpMessagingTemplate template;
-
-    @MessageMapping("/{groupId}")
-    public void sendMessage(@DestinationVariable Integer groupId, @Payload String message) {
+    @MessageMapping("/{activityId}")
+    public void sendMessage(@DestinationVariable Integer groupId, @Payload String message) throws ParseException {
         // Set the message time as now before sending it back to the topic
         log.info("recieved message to group " + groupId);
+        JSONParser parser = new JSONParser();
+        JSONObject chatJson = (JSONObject) parser.parse(message);
+        Activity activity = activityService.getActivity(chatJson.getAsNumber("activityId").intValue());
+        User user = userService.getUser(chatJson.getAsNumber("userId").intValue());
+
+        Chat newChat = new Chat(activity, user, String.valueOf(chatJson.get("message")));
         template.convertAndSend("/client/chat/" + groupId, message);
-        //todo save in database
-        // if(messageService.saveMessage(groupId, message)){
-        //}
+        if(chatService.saveChat(newChat)){
+            template.convertAndSend("/client/chat/" + groupId, message);
+        }
+        else {
+            template.convertAndSend("{\"error\":\"could not save chat message\"");
+        }
     }
 
     @GetMapping("/{groupId}/message")
-    public ResponseEntity sendMessageLog(@PathVariable Integer groupId){
+    public ResponseEntity getMessageLog(@PathVariable Integer groupId){
         ArrayList<Chat> messages = new ArrayList<>();
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<String, String>();

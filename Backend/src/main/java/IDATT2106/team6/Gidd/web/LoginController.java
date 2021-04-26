@@ -25,8 +25,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import static IDATT2106.team6.Gidd.web.GiddController.formatJson;
-import static IDATT2106.team6.Gidd.web.GiddController.getRandomID;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
 
 @CrossOrigin(origins = "*")
 @Controller

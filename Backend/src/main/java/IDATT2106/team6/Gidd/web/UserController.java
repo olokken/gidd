@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static IDATT2106.team6.Gidd.Constants.*;
-import static IDATT2106.team6.Gidd.web.GiddController.*;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -116,7 +116,7 @@ public class UserController {
                 .body(formatJson(body));
     }
 
-    @DeleteMapping("user/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteUser(@PathVariable Integer id) {
         //todo return activity-objects and user id's affected by this user being deleted
         // aka the activities this user has created
