@@ -978,6 +978,18 @@ public class GiddControllerTest {
 
     @Test
     @Order(23)
+    public void giveRatingTest() throws Exception {
+        //TODO
+    }
+
+    @Test
+    @Order(24)
+    public void findAverageRatingTest() throws Exception {
+        //TODO
+    }
+
+    @Test
+    @Order(25)
     public void tearDown() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/group/" + group2.getGroupId()))

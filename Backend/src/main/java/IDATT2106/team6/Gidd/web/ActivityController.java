@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.naming.directory.InvalidAttributesException;
+import org.apache.coyote.Response;
 import org.eclipse.persistence.exceptions.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -260,6 +261,12 @@ public class ActivityController {
                     .body(formatJson(body));
         }
 
+        Image newImage = activity.getImage();
+        String[] imgInfo = splitBase(map.get("image").toString());
+        newImage.setDatatype(imgInfo[0]);
+        newImage.setBytes(Base64.getDecoder().decode(imgInfo[1]));
+        imageService.editImage(newImage);
+
         activity.setTitle(map.get("title").toString());
         activity.setTime(Timestamp.valueOf(map.get("time").toString()));
         activity.setDescription(map.get("description").toString());
@@ -267,8 +274,14 @@ public class ActivityController {
         activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
-        activity.setImage(new Image());  // TODO Edit image
-        activity.setEquipments(newEquipment(activity,map.get("equipmentList").toString()));
+        activity.setImage(newImage);
+        // equipment
+        List<ActivityEquipment> oldEquips = activity.getEquipments();
+        System.out.println("OLD : " + oldEquips.toString());
+        List<ActivityEquipment> newEquips = newEquipment(activity,map.get("equipmentList").toString());
+        System.out.println("NEW : " + newEquips.toString());
+        activity.setEquipments(newEquips);
+
         log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
         if (!edited) {
@@ -278,6 +291,13 @@ public class ActivityController {
                     .badRequest()
                     .headers(headers)
                     .body("didnt work here either sad");
+        }
+
+        if(!removeEquipment(oldEquips, newEquips)){
+            body.put("error", "could not remove old equipment");
+            return ResponseEntity
+                .status(500)
+                .body(formatJson(body));
         }
 
         return ResponseEntity
@@ -420,8 +440,9 @@ public class ActivityController {
         List<User> users = activityService.getUserFromActivity(activityId);
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
+        Activity activity = activityService.getActivity(activityId);
         int bonusPoints = (int) (NEW_ACTIVITY_BONUS *
-                MULTIPLIERS[activityService.getActivity(activityId).getActivityLevel().ordinal()]);
+                MULTIPLIERS[activity.getActivityLevel().ordinal()]);
         if (activityService.deleteActivity(activityId)) {
             log.debug("The deletion was successful");
             header.add("Status", "200 OK");
@@ -429,6 +450,7 @@ public class ActivityController {
 
             body.put("activityId", String.valueOf(activityId));
 
+            imageService.removeImage(activity.getImage());
             String bodyJson = formatJson(body);
 
             //owner s included in getUserFromActivity() result
@@ -544,28 +566,22 @@ public class ActivityController {
     private Image createImage(String base) {
         Image img = new Image();
         if (base.length() > 32) {
-            String[] res = base.split(",");
+            String[] res = splitBase(base);
             img = new Image(res[0], Base64.getDecoder().decode(res[1]));
         }
         if (imageService.newImage(img)) {
-            System.out.println("IMAGE WAS ADDED");
             return img;
         }
-        System.out.println("IMAGE WAS NOT ADDED");
         return null;
     }
 
-    private byte[] baseToByte(String base) {
-        if(base.length()<32){
-            return new byte[]{};
+    private String[] splitBase(String base) {
+        if(base.length()>32) {
+            String[] res = base.split(",");
+            res[0] += ",";
+            return res;
         }
-        log.info("decoding from " + base);
-        base = base.split(",")[1];
-        return Base64.getDecoder().decode(base);
-    }
-
-    private String byteToBase(byte[] bytes) {
-        return Base64.getEncoder().encodeToString(bytes);
+        return new String[]{"",""};
     }
 
     private List<ActivityEquipment> newEquipment (Activity activity, String equipList) {
@@ -578,8 +594,9 @@ public class ActivityController {
         for (Equipment e : equips) {
             match = false;
             for (ActivityEquipment con: oldEquips) {
-                if (con.getEquipment().equals(e)){
+                if (con.getEquipment().getEquipmentId() == e.getEquipmentId()){
                     res.add(con);
+                    System.out.println("Equipment match, adding to result list");
                     match = true;
                     break;
                 }
@@ -593,13 +610,36 @@ public class ActivityController {
         return res;
     }
 
+    private boolean removeEquipment (List<ActivityEquipment> oldEquips,
+                                                     List<ActivityEquipment> newEquips) {
+        List<ActivityEquipment> differences = new ArrayList<>(oldEquips);
+        differences.removeAll(newEquips);
+
+        System.out.println("DIFF : " + differences);
+
+        try {
+            boolean worked = true;
+            for (ActivityEquipment activityEquipment: differences) {
+                worked = activityService.removeEquipmentFromActivity(activityEquipment);
+            }
+            if(worked) {
+                log.debug("All differences were removed successfully");
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            log.error("An exception occurred while removing equipment from activity");
+            return false;
+        }
+    }
+
     private List<Equipment> toEquipList(String equipString) {
         log.info("splitting equipment");
         ArrayList<Equipment> equips = new ArrayList<>();
         for (String name : equipString.split(",")) {
             name = name.toLowerCase();
             Equipment equipment = equipmentService.getEquipmentByDescription(name);
-
+            System.out.println("Found equipment with name ["+name+"]");
             if(equipment == null) {
                 log.debug("equipment " + name + " did not exist, creating");
                 equipment = new Equipment(name);

@@ -45,7 +45,7 @@ public class Activity {
     @Column(name = "activity_level")
     private ActivityLevel activityLevel;
     @CascadeOnDelete
-    @ManyToMany(targetEntity = Tag.class, fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(targetEntity = Tag.class, fetch = FetchType.EAGER)
     private List<Tag> tags;
     @CascadeOnDelete
     @OneToMany(mappedBy = "Activity", fetch = FetchType.EAGER)
