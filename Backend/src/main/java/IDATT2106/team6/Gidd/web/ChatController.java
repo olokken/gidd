@@ -25,18 +25,6 @@ import java.util.HashMap;
 public class ChatController {
     private static Logger log = new Logger(ChatController.class.toString());
     @Autowired
-    private ActivityService activityService;
-    @Autowired
-    private EquipmentService equipmentService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private TagService tagService;
-    @Autowired
-    private SecurityService securityService;
-    @Autowired
-    private FriendGroupService friendGroupService;
-    @Autowired
     private SimpMessagingTemplate template;
 
     @MessageMapping("/{groupId}")

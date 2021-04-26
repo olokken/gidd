@@ -1,22 +1,28 @@
 package IDATT2106.team6.Gidd.web;
 
+import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
+
 import IDATT2106.team6.Gidd.models.FriendGroup;
 import IDATT2106.team6.Gidd.models.User;
-import IDATT2106.team6.Gidd.service.*;
+import IDATT2106.team6.Gidd.service.FriendGroupService;
+import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -24,19 +30,9 @@ import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
 public class GroupController {
     private static Logger log = new Logger(GroupController.class.toString());
     @Autowired
-    private ActivityService activityService;
-    @Autowired
-    private EquipmentService equipmentService;
-    @Autowired
     private UserService userService;
     @Autowired
-    private TagService tagService;
-    @Autowired
-    private SecurityService securityService;
-    @Autowired
     private FriendGroupService friendGroupService;
-    @Autowired
-    private SimpMessagingTemplate template;
 
     @DeleteMapping("/{groupId}/user/{userId}")
     public ResponseEntity removeUserFromGroup(@PathVariable Integer groupId, @PathVariable Integer userId){
