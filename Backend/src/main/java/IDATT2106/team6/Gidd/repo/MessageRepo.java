@@ -1,9 +1,11 @@
 package IDATT2106.team6.Gidd.repo;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
+import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.Chat;
 import IDATT2106.team6.Gidd.models.Tag;
 import org.springframework.stereotype.Repository;
@@ -43,17 +45,19 @@ public class MessageRepo extends GiddRepo {
         }
     }
 
-    public ArrayList<Chat> getAllChats(int groupId){
+    public ArrayList<Chat> getAllChats(Activity activity){
         log.info("getting all tags");
         EntityManager em = getEm();
         List<Chat> groupMessages = null;
 
         try {
-            Query q = em.createQuery("SELECT a FROM Chat a where a.group_id =?1");
-            q.setParameter(1, groupId);
+            PreparedStatement statement = new
+            Query q = em.createQuery("SELECT a FROM Chat a where a.activity =?1", Chat.class);
+            q.setParameter(1, activity);
+            System.out.println("query is " + q.toString());
             groupMessages = q.getResultList();
         }catch (Exception e){
-            log.error("getting all tags failed due to " + e.getMessage());
+            log.error("getting all chats failed due to " + e.getMessage());
         }finally {
             em.close();
         }

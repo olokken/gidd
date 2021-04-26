@@ -1,5 +1,6 @@
 package IDATT2106.team6.Gidd.service;
 
+import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.Chat;
 import IDATT2106.team6.Gidd.repo.MessageRepo;
 import IDATT2106.team6.Gidd.util.Logger;
@@ -18,8 +19,8 @@ public class ChatService {
         return repo.saveMessage(chat);
     }
 
-    public ArrayList<Chat> getMessages(int groupId){
+    public ArrayList<Chat> getMessages(Activity activity) {
         //todo check if groupId exists, return false if not
-        return repo.getAllChats(groupId);
+        return repo.getAllChats(activity);
     }
 }

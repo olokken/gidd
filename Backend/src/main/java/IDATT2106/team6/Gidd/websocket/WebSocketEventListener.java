@@ -13,14 +13,13 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 @Component
 public class WebSocketEventListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
+    private static final Logger log = LoggerFactory.getLogger(WebSocketEventListener.class);
     @Autowired
     SimpMessagingTemplate template;
 
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        // Increment the new user count.
-        System.out.println("Received a new web socket connection");
+        log.info("recieved a new websocket connection");
     }
 
 }

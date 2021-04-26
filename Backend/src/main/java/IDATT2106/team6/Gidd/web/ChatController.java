@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
 
 @CrossOrigin(origins = "*")
@@ -41,9 +42,38 @@ public class ChatController {
     private ActivityService activityService;
     @Autowired
     private FriendGroupService friendGroupService;
+
+    @GetMapping("/chat/{groupId}")
+    public ResponseEntity getMessageLog(@PathVariable Integer groupId){
+        log.info("den kommer inn hit pog");
+        ArrayList<Chat> messages = new ArrayList<>();
+        HttpHeaders header = new HttpHeaders();
+        Activity activity = activityService.getActivity(groupId);
+        HashMap<String, String> body = new HashMap<>();
+        if(activity != null) {
+            ArrayList<Chat> messageList = chatService.getMessages(activity);
+            if (messageList != null) {
+                return ResponseEntity
+                        .ok()
+                        .headers(header)
+                        .body(messages.toString());
+            }
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+        body.put("error", "the activity does not exist");
+        return ResponseEntity
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
+    }
+
+
     @MessageMapping("/chat/{activityId}")
     public void sendMessage(@DestinationVariable Integer activityId, @Payload String message) throws ParseException {
-        log.info("recieved message to group " + activityId);
+        log.info("received message to group " + activityId);
         JSONParser parser = new JSONParser();
         System.out.println("message is: " + message);
         JSONObject chatJson = (JSONObject) parser.parse(message);
@@ -61,26 +91,5 @@ public class ChatController {
         }
     }
 
-    @GetMapping("/{groupId}/message")
-    public ResponseEntity getMessageLog(@PathVariable Integer groupId){
-        ArrayList<Chat> messages = new ArrayList<>();
-        HttpHeaders header = new HttpHeaders();
-        HashMap<String, String> body = new HashMap<String, String>();
-        //todo get a list of all messages in messageservice
-        /*
-         ArrayList<List> messageList = messageService.getAllMessages(groupId);
-         if(messageList != null){
-            return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(messages.toString();
-        }
-        return ResponseEntity
-            .badRequest()
-            .headers(header)
-            .body(formatJson(body));
-         */
-        return null;
-    }
 
 }

@@ -8,14 +8,9 @@ import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.parsePhone;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.validateStringMap;
 
-import IDATT2106.team6.Gidd.models.Activity;
-import IDATT2106.team6.Gidd.models.ActivityLevel;
-import IDATT2106.team6.Gidd.models.ActivityUser;
-import IDATT2106.team6.Gidd.models.FriendGroup;
-import IDATT2106.team6.Gidd.models.Friendship;
-import IDATT2106.team6.Gidd.models.Provider;
-import IDATT2106.team6.Gidd.models.User;
+import IDATT2106.team6.Gidd.models.*;
 import IDATT2106.team6.Gidd.service.ActivityService;
+import IDATT2106.team6.Gidd.service.ChatService;
 import IDATT2106.team6.Gidd.service.FriendGroupService;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
@@ -51,6 +46,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private FriendGroupService friendGroupService;
+    @Autowired
+    private ChatService chatService;
 
     @GetMapping(value = "", produces = "application/json")
     public ResponseEntity getAllUsers() {
