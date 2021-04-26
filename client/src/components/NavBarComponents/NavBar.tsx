@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import styled from 'styled-components';
 import IconButton from '@material-ui/core/IconButton';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import logo from '../../assets/logo.png';
 import ChatIcon from '@material-ui/icons/Chat';
@@ -33,6 +33,11 @@ import EmojiEventsIcon from '@material-ui/icons/EmojiEvents';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import Popup from '../Popup';
 import MyUser from '../MyUser';
+import User from '../../interfaces/User';
+import axios from '../../Axios'
+import { UserContext } from '../../UserContext';
+import CheckIcon from '@material-ui/icons/Check';
+import Badge from '@material-ui/core/Badge';
 
 const StyledMenu = withStyles({
     paper: {
@@ -64,7 +69,12 @@ const StyledMenuItem = withStyles((theme) => ({
 }))(MenuItem);
 
 const Navbar = () => {
+    const {user, setUser} = useContext(UserContext);
+    const [friendRequests, setFriendRequests] = useState<User[]>([]);
+    const [pendingFriendRequests, setPendingFriendRequests] = useState<User[]>([]);
     const [openUser, setOpenUser] = useState<boolean>(false);
+    const [invisible, setInvisible] = useState<boolean>(false);
+    const [notifications, setNotifications] = useState<number>(0);
     const [state, setState] = useState({
         mobileView: false,
         drawerOpen: false,
@@ -101,11 +111,6 @@ const Navbar = () => {
 
     const handleOpenProfileMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElProfile(event.currentTarget);
-    };
-
-    const onClickAnnouncements = (hvor: string) => {
-        handleCloseMenu();
-        history.push('/' + hvor);
     };
 
     const handleCloseProfileMenu = () => {
@@ -150,21 +155,103 @@ const Navbar = () => {
     const changeToGroupsAndFriends = () => {
         history.push('/GroupsAndFriends');
     };
+         //henter alle pending *angre
+     const loadPending = () => {
+         axios
+            .get(`/user/${user}/pending`)
+            .then((response) => {
+                console.log('PendingVenneforespørsler:')
+                console.log(response.data['users']);
+                setPendingFriendRequests(response.data['users']);
+            })
+            .catch((error) => console.log(error));
+    }
+    const loadRequest = () =>{
+        //henter alle reqest ja/nei
+        axios
+            .get(`/user/${user}/request`)
+            .then((response) => {
+                console.log('Venneforespørsler:')
+                console.log(response.data['users']);
+                setFriendRequests(response.data['users']);
+            })
+            .catch((error) => console.log(error));
+    }
 
-    const notifications = [
-        {
-            description: 'Det er tid for tur igjen. Være klar 18.00',
-            title: 'Tur til fjellet',
-        },
-        {
-            description: 'gøttaa',
-            title: 'asdasdds',
-        },
-        {
-            description: 'gøttaa',
-            title: 'asdasdds',
-        },
-    ];
+      useEffect(() => {
+        loadRequest();
+    }, [user]);
+
+     //henter alle sendte venneforespørsler
+     useEffect(() => {
+        loadPending();
+    }, [user]);
+    
+   /* const setNotificationData = () => {
+        setNotifications(friendRequests.length + pendingFriendRequests.length)
+        if(notifications > 0){
+            setInvisible(false)
+        }else{setInvisible(true)}
+    }*/
+
+    const declineRequest = (request : User) => {
+        setNotifications(notifications-1)
+        deleteFriend(Object.values(request)[0])
+    }
+
+    const addFriend = (request : User) => {
+        setNotifications(notifications-1)
+        postFriend(Object.values(request)[0])
+    }
+    //godkjenner forespørsel
+    const postFriend = (friendId: string) => {
+        console.log(friendId)
+        axios
+            .post(`/user/${user}/user`, {
+                "userId": user,
+                "friendId": friendId
+                }) 
+            .then((response) => {
+                JSON.stringify(response);
+                console.log(response.data);
+            }).then(() => {loadPending(); loadRequest();})
+            .catch((error) => {
+                console.log('Could not post friend: ' + error.message);
+                alert('Du er allerede venn med denne brukeren');
+            });
+    }
+        //sletter forespørsel
+     const deleteFriend = (friendId: string) => {
+        axios
+            .delete(`user/${user}/user/${friendId}`) 
+            .then((response) => {
+                JSON.stringify(response);
+                console.log(response.data);
+            }).then(() => {loadPending(); loadRequest();})
+            .catch((error) =>
+                console.log('Could not delete friend: ' + error.message)
+            );
+    }
+
+    const getDefault = () => {
+        if(friendRequests.length < 1 && pendingFriendRequests.length < 1){
+            return(
+                <StyledMenuItem
+                    style={{
+                        whiteSpace: 'normal',
+                        display: 'block',
+                        textAlign: 'center',
+                        width: '300px',
+                        fontSize: '15px',
+                    }}
+                    onClick={handleCloseMenu}
+                >
+                    <b style={{marginTop:'50px', paddingTop:'100px'}}>Du har ingen varsler</b>
+                </StyledMenuItem>
+            )
+        }
+    }
+
 
     const displayMobile = () => {
         const getDrawerChoices = () => {
@@ -179,35 +266,35 @@ const Navbar = () => {
                     <br />
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToHomePageDrawer}
+                        onClick={changeToHomePage}
                     >
                         <DirectionsRunIcon />
                         Aktiviteter
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToMapDrawer}
+                        onClick={changeToMap}
                     >
                         <MapIcon />
                         Kart
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToCalenderDrawer}
+                        onClick={changeToCalender}
                     >
                         {' '}
                         <CalendarTodayIcon /> Kalender
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToGroupsAndFriendsDrawer}
+                        onClick={changeToGroupsAndFriends}
                     >
                         <PeopleIcon />
                         Grupper og venner
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToLeaderboardDrawer}
+                        onClick={changeToLeaderboard}
                     >
                         <EmojiEventsIcon />
                         Leaderboard
@@ -216,28 +303,6 @@ const Navbar = () => {
             );
         };
 
-        const changeToLeaderboardDrawer = () => {
-            history.push('/Leaderboard');
-            handleDrawerClose();
-        };
-
-        const changeToCalenderDrawer = () => {
-            history.push('/Calendar');
-            handleDrawerClose();
-        };
-
-        const changeToGroupsAndFriendsDrawer = () => {
-            history.push('/GroupsAndFriends');
-            handleDrawerClose();
-        };
-        const changeToHomePageDrawer = () => {
-            history.push('/Activities');
-            handleDrawerClose();
-        };
-        const changeToMapDrawer = () => {
-            history.push('/Map');
-            handleDrawerClose();
-        };
 
         const handleDrawerOpen = () =>
             setState((prevState) => ({ ...prevState, drawerOpen: true }));
@@ -266,7 +331,9 @@ const Navbar = () => {
                         aria-haspopup="true"
                         onClick={handleOpenMenu}
                     >
-                        <NotificationsIcon />
+                        <Badge badgeContent={notifications} color="primary" invisible={invisible}>
+                            <NotificationsIcon />
+                        </Badge>
                     </IconButton>
                     <IconButton
                         aria-controls="dropdownProfile"
@@ -354,7 +421,9 @@ const Navbar = () => {
                         aria-haspopup="true"
                         onClick={handleOpenMenu}
                     >
-                        <NotificationsIcon />
+                        <Badge badgeContent={notifications} color="primary" invisible={invisible}>
+                            <NotificationsIcon />
+                        </Badge>
                     </IconButton>
                     <IconButton
                         aria-controls="dropdownProfile"
@@ -381,7 +450,10 @@ const Navbar = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleCloseMenu}
             >
-                {notifications.map((notification, index) => {
+                {getDefault()}
+                
+                {friendRequests.map((request : User) => {
+                    setNotifications(notifications+1)
                     return (
                         <StyledMenuItem
                             style={{
@@ -391,23 +463,48 @@ const Navbar = () => {
                                 width: '300px',
                                 fontSize: '15px',
                             }}
-                            key={index}
+                            key={request.userID}
                             onClick={handleCloseMenu}
                         >
                             <div>
-                                <b>{notification.title}</b>
-                                <p>{notification.description}</p>
-                                <p
-                                    style={{
-                                        position: 'relative',
-                                        bottom: '0',
-                                        right: '0',
-                                        color: 'grey',
-                                        opacity: '50%',
-                                    }}
-                                >
-                                    Mandag 12.04.2012 kl 20.00
+                                <b>Venneforespørsel fra:</b>
+                                <p style={{marginTop:'2px'}}>{request.firstName + ' ' + request.surname}</p>
+                                <IconButton style= {{color:'green', marginTop:'-15px'}}>
+                                    <CheckIcon onClick={() => addFriend(request)} />
+                                </IconButton>
+                                <IconButton style={{color:'red' , marginTop:'-15px'}}>
+                                    <CloseIcon onClick={() => declineRequest(request)}/>
+                                </IconButton>
+                            </div>
+                            <hr />
+                        </StyledMenuItem>
+                    );
+                })}
+
+                {pendingFriendRequests.map((pending : User) => {
+                    setNotifications(notifications+1)
+                    return (
+                        <StyledMenuItem
+                            style={{
+                                whiteSpace: 'normal',
+                                display: 'block',
+                                textAlign: 'center',
+                                width: '300px',
+                                fontSize: '15px',
+                            }}
+                            key={pending.userID}
+                            onClick={handleCloseMenu}
+                        >
+                            <div>
+                                <b>Du har sendt en venneforspørsel til:</b>
+                                <p style={{marginTop:'-5px',}}>
+                                    {pending.firstName + ' ' + pending.surname}
+                                    <IconButton style={{color:'red'}}>
+                                        <CloseIcon onClick={() => declineRequest(pending)}/>
+                                    </IconButton>
+                                    
                                 </p>
+                               
                             </div>
                             <hr />
                         </StyledMenuItem>

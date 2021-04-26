@@ -56,7 +56,7 @@ const GroupsAndFriends = () => {
         window.addEventListener('resize', () => setResponsiveness());
     }, []);
 
-    //henter alle users
+    //henter alle dine grupper
     useEffect(() => {
         const url = `user/${user}/group`
         axios.get(url).then(response => { setGroups(response.data['groups']) }).catch(error => {
@@ -90,9 +90,8 @@ const GroupsAndFriends = () => {
         return a;
     }
 
-    //henter ut alle venner
-    useEffect(() => {
-        axios
+    const updateFriends = () => {
+         axios
             .get(`/user/${user}/user`)
             .then((response) => {
                 console.log('Venner:')
@@ -100,6 +99,10 @@ const GroupsAndFriends = () => {
                 setFriends(response.data['users']);
             })
             .catch((error) => console.log(error));
+    }
+    //henter ut alle venner
+    useEffect(() => {
+        updateFriends()
     }, [user]);
 
 
@@ -107,7 +110,7 @@ const GroupsAndFriends = () => {
         return (
             <Container>
             <div style={{ width: '20%', minWidth:'200px' }}>
-                <FriendList users={users} friends={friends} />
+                <FriendList updateFriends={updateFriends} users={users} friends={friends} />
             </div>
             <div style={{ width: '57%' }}>
 
@@ -168,7 +171,7 @@ const GroupsAndFriends = () => {
                 </IconButton>
                     <b style={{ textAlign: 'center' }}>Dine venner</b>
                     <Divider style={{marginTop: '20px'}}/>
-                <FriendList onClick={handleDrawerClose} users={users} friends={friends} />
+                <FriendList updateFriends={updateFriends} users={users} friends={friends} />
             </Drawer>
 
             <Button
