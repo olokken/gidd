@@ -10,6 +10,7 @@ import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -73,21 +74,7 @@ public class LoginController {
             con.setConnectTimeout(5000);
             con.setReadTimeout(5000);
 
-            int status = con.getResponseCode();
-            BufferedReader in;
-            if (status > 299) {
-                in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
-            } else {
-                in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            }
-
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-            in.close();
-            con.disconnect();
+            StringBuilder content = getContent(con);
 
             Map resMap;
             if (provider == Provider.FACEBOOK) {
@@ -105,12 +92,12 @@ public class LoginController {
                             .body(formatJson(body));
                 }
             }
-            // Provider must be GOOGLE if not FACEBOOK or LOCAL. Add if,
-            // if more SoMe logins are added
+            // Provider must be GOOGLE if not FACEBOOK or LOCAL.
+            // Add more if's or switch if more SoMe logins are added
             else {
-                // TODO GOOGLE
                 resMap = new ObjectMapper().readValue(content.toString(), Map.class);
                 if (resMap.containsKey("error")) {
+                    // if the map cointains "error", the token is invalid
                     body.put("error", "invalid access token");
 
                     return ResponseEntity
@@ -202,5 +189,24 @@ public class LoginController {
                 .body(formatJson(body));
     }
 
+    private StringBuilder getContent(HttpURLConnection con) throws IOException {
+        int status = con.getResponseCode();
+        BufferedReader in;
+        if (status > 299) {
+            in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+        } else {
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        }
+
+        String inputLine;
+        StringBuilder content = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        con.disconnect();
+
+        return content;
+    }
 
 }
