@@ -6,7 +6,7 @@ backend-build:
       - backend-dev
   script:
     - cd Backend
-    - "mvn install -B"
+    - "mvn compile"
 
 backend-test:
   stage: test
@@ -28,3 +28,4 @@ deploy:
     - ssh app@13.51.58.86 ./runjava.sh
   only:
     - backend-dev
+  needs: ["backend-build"]
