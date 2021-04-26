@@ -101,16 +101,19 @@ const GroupLeaderboard: React.FC<Props> = ({ title, propUsers }: Props) => {
                     <div
                         /* The max margin-left is 52rem*/
                         style={{
-                            margin: `0.7rem 0.5rem 0.5rem `,
-                            marginLeft: `${getMarginLeft(user)}%`,
+                            margin: `0.7rem 0.5rem 0.5rem`,
+                            marginLeft:
+                                users.length === 0
+                                    ? '0.5rem'
+                                    : `${getMarginLeft(user)}%`,
                             display: 'flex',
                             flex: '1',
                         }}
                     >
+                        <Avatar />
                         <h6 className="groupleaderboard__name">
                             {user.firstName}
                         </h6>
-                        <Avatar />
                     </div>
                     <div className="groupleaderboard__stats">
                         <h5 className="groupleaderboard__stat1">

@@ -59,6 +59,12 @@ function Leaderboard() {
         return request;
     };
 
+    const getUser = async () => {
+        const request = await axios.get(`/user/${user}`);
+        setFriends((friends) => [...friends, request.data]);
+        return request;
+    };
+
     const getAllGroups = async () => {
         const request = await axios.get('/group');
         setGroups(request.data.groups);
@@ -85,6 +91,7 @@ function Leaderboard() {
     useEffect(() => {
         getYourGroups();
         getFriends();
+        getUser();
         getAllGroups();
         getAllUsers();
     }, []);

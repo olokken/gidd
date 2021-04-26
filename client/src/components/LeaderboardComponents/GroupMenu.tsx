@@ -68,38 +68,14 @@ export default function GroupMenu({
                                 <MenuList
                                     autoFocusItem={open}
                                     id="menu-list-grow"
-                                    //onKeyDown={handleListKeyDown}
                                 >
                                     {renderGroupMenuItems}
-                                    {/*
-                                    <MenuItem onClick={handleClose}>
-                                        Profile
-                                    </MenuItem>
-                                    <MenuItem onClick={handleClose}>
-                                        My account
-                                    </MenuItem>
-                                    <MenuItem onClick={handleClose}>
-                                        Logout
-                                    </MenuItem>
-                                    */}
                                 </MenuList>
                             </ClickAwayListener>
                         </Paper>
                     </Grow>
                 )}
             </Popper>
-            {/*
-            <Menu
-                id="fade-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={open}
-                onClose={handleClose}
-                TransitionComponent={Fade}
-            >
-                {renderGroupMenuItems}
-            </Menu>
-            */}
         </div>
     );
 }
