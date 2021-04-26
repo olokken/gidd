@@ -563,7 +563,9 @@ public class ActivityController {
 
     private String[] splitBase(String base) {
         if(base.length()>32) {
-            return base.split(",");
+            String[] res = base.split(",");
+            res[0] += ",";
+            return res;
         }
         return new String[]{"",""};
     }
