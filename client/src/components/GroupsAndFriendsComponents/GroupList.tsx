@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useState } from 'react';
+import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { TextField, Button } from '@material-ui/core';
 import Select from 'react-select';
@@ -36,7 +36,9 @@ const GroupList = ({ friends, groups }: Props) => {
     const [selectInput, setSelectInput] = useState<User[]>([]);
     const [chosenGroupName, setChosenGroupName] = useState<string>('');
     const [searchValue, setSearchValue] = React.useState('');
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
+
+
 
     const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput((event.target as HTMLInputElement).value);
@@ -135,18 +137,18 @@ const GroupList = ({ friends, groups }: Props) => {
                 variant="outlined"
             />
             <h2>Dine grupper</h2>
-            <StyledUl >
-                {groups.filter((group: Group) => {
-                    if (searchInput === "") {
-                        return group
-                    } else if (group.groupName != null && (group.groupName).toLowerCase().includes(searchInput.toLocaleLowerCase())) {
-                        return group
-                    }
-                }).map((group: Group) =>
-                    <GroupCard key={group.groupId} group={group} />)
+            <StyledUl>
+            {groups.filter((group: Group) => {
+                if (searchInput === "") {
+                    return group
+                } else if (group.groupName != null && (group.groupName).toLowerCase().includes(searchInput.toLocaleLowerCase())) {
+                    return group
                 }
+            }).map((group: Group) =>
+                <GroupCard key={group.groupId} group={group} />)
+            }
             </StyledUl>
-        </StyledContainer>
+        </StyledContainer >
     );
 };
 

@@ -11,6 +11,7 @@ import GroupList from '../components/GroupsAndFriendsComponents/GroupList';
 import User from '../interfaces/User';
 import axios from '../Axios'
 import { UserContext } from '../UserContext';
+import Group from '../interfaces/Group'
 
 
 
@@ -23,40 +24,31 @@ const Container = styled.div`
     width: 100%;
 `;
 
-interface Groups{
-    owner: User;
-    groupName: string;
-    groupId: string;
-    users: User[];
-}
 
 const GroupsAndFriends = () => {
     const [friends, setFriends] = useState<User[]>([]);
     const [users, setUsers] = useState<User[]>([]);
-    const [groups, setGroups] = useState<Groups[]>([]);
-    const {user, setUser} = useContext(UserContext);
+    const [groups, setGroups] = useState<Group[]>([]);
+    const { user, setUser } = useContext(UserContext);
+    const [selectedGroup, setSelectedGroup] = useState<Group>();
 
-     //henter alle users
+    //henter alle users
     useEffect(() => {
-        axios
-            .get('/group')
-            .then((response) => {
-                console.log(response.data);
-                setGroups(response.data['groups']);
-            })
-            .catch((error) => console.log(error));
+        const url = `user/${user}/group`
+        axios.get(url).then(response => { setGroups(response.data['groups']) }).catch(error => {
+            console.log('Kunne ikke hente dine grupper' + error.message);
+        })
     }, [friends, user]);
 
 
-
-     //henter alle users
+    //henter alle users
     useEffect(() => {
         axios
             .get('/user')
             .then((response) => {
                 console.log(response.data);
                 setUsers(response.data.filter(
-                    (test: { userID: string; }) => 
+                    (test: { userID: string; }) =>
                         Object.values(test)[0] != user && FriendCheck(test)
                 ));
             })
@@ -64,10 +56,10 @@ const GroupsAndFriends = () => {
     }, [friends, user]);
 
     //sjekker om user finnes i friends
-    const FriendCheck = (test : any) => {
+    const FriendCheck = (test: any) => {
         let a = true;
         friends.forEach(function (friend) {
-            if(Object.values(friend)[0] === Object.values(test)[0]) {
+            if (Object.values(friend)[0] === Object.values(test)[0]) {
                 a = false;
             }
         })
@@ -75,7 +67,7 @@ const GroupsAndFriends = () => {
     }
 
     //henter ut alle venner
-      useEffect(() => {
+    useEffect(() => {
         axios
             .get(`/user/${user}/user`)
             .then((response) => {
@@ -88,15 +80,15 @@ const GroupsAndFriends = () => {
 
     return (
         <Container>
-            <div style={{width:'20%'}}>
-                <FriendList users={users} friends={friends}/>
+            <div style={{ width: '20%' }}>
+                <FriendList users={users} friends={friends} />
             </div>
-            <div style={{width:'57%'}}>
-              
+            <div style={{ width: '57%' }}>
+
             </div>
 
-            <div style={{width:'20%'}}>
-                <GroupList friends={friends} groups={groups}/>
+            <div style={{ width: '20%' }}>
+                <GroupList friends={friends} groups={groups} />
             </div>
         </Container>
     );

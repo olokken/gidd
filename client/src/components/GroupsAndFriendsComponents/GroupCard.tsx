@@ -15,6 +15,7 @@ import User from '../../interfaces/User';
 import Popup from '../Popup';
 import GroupProfile from './GroupProfile';
 import UserProfile from './UserProfile';
+import Group from '../../interfaces/Group'
 
 const CardInformation = styled.div`
     height: 100%;
@@ -35,21 +36,14 @@ interface Props {
     group: Group;
 }
 
-interface Group {
-    owner: User;
-    groupName: string;
-    groupId: string;
-    users: User[];
-}
 
-
-const GroupCard = ({ group }: Props) => {
+const GroupCard = ({ group, }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     return (
         <div>
             <Card
                 style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
-                onClick={() => console.log(group)}
+                onClick={() => (console.log(group))}
             >
 
                 <CardInformation>
