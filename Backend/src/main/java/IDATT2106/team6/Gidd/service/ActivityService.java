@@ -24,7 +24,7 @@ public class ActivityService {
 
     //Use addActivity(Activity) when you can, as it is easier to work with
     public void addActivity(int id, String title, Timestamp time, int repeat, User userId,
-                            int capacity, int groupId, String description, byte[] image,
+                            int capacity, int groupId, String description, Image image,
                             ActivityLevel activityLevel, List<Tag> tags,
                             double latitude, double longitude) {
         Date today = new Date();
