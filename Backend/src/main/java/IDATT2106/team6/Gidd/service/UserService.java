@@ -199,4 +199,61 @@ public class UserService {
 
         return friendGroups;
     }
+
+    public ArrayList<User> getSentRequest(User user){
+        ArrayList<User> sent = new ArrayList<>();
+        ArrayList<Integer> friendIds = new ArrayList<>();
+
+        for(User u : user.getFriendList()){
+            friendIds.add(u.getUserId());
+        }
+
+        for(Integer i : friendIds){
+            User friend = getUser(i);
+            if(friend == null){
+                break;
+            }
+
+            ArrayList<Integer> friendsFriendIds = new ArrayList<>();
+
+            for(User u : friend.getFriendList()){
+                friendsFriendIds.add(u.getUserId());
+            }
+
+            if(!(friendsFriendIds.contains(user.getUserId()))){
+                sent.add(friend);
+            }
+        }
+
+        return sent;
+    }
+
+    public ArrayList<User> getRequest(User user){
+        ArrayList<User> requests = new ArrayList<>();
+        ArrayList<Integer> friendIds = new ArrayList<>();
+
+        for(User u : user.getFriendList()){
+            friendIds.add(u.getUserId());
+        }
+
+        List<User> users = repo.getAllUsers();
+
+        for(User u : users){
+            if(u == null){
+                continue;
+            }
+
+            ArrayList<Integer> uFriendIds = new ArrayList<>();
+
+            for(User us : u.getFriendList()){
+                uFriendIds.add(us.getUserId());
+            }
+
+            if(uFriendIds.contains(user.getUserId()) && !(friendIds.contains(u.getUserId()))){
+                requests.add(u);
+            }
+        }
+
+        return requests;
+    }
 }
