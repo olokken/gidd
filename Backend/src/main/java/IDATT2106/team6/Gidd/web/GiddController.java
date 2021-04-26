@@ -25,11 +25,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import javax.naming.directory.InvalidAttributesException;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.persistence.exceptions.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -60,6 +65,9 @@ public class GiddController {
     private SecurityService securityService;
     @Autowired
     private FriendGroupService friendGroupService;
+    @Autowired
+    private SimpMessagingTemplate template;
+
 
     private final int NEW_ACTIVITY_BONUS = 50;
     private final int JOIN_ACTIVITY_BONUS = 20;
@@ -1658,6 +1666,39 @@ public class GiddController {
                 .body(formatJson(body));
     }
 
+
+    @MessageMapping("/chat/{groupId}")
+    public void sendMessage(@DestinationVariable Integer groupId, @Payload String message) {
+        // Set the message time as now before sending it back to the topic
+        log.info("recieved message to group " + groupId);
+        template.convertAndSend("/client/chat/" + groupId, message);
+        //todo save in database
+        // if(messageService.saveMessage(groupId, message)){
+        //}
+    }
+
+    @GetMapping("/chat/{groupId}/message")
+    public ResponseEntity sendMessageLog(@PathVariable Integer groupId){
+        ArrayList<Chat> messages = new ArrayList<>();
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<String, String>();
+        //todo get a list of all messages in messageservice
+        /*
+         ArrayList<List> messageList = messageService.getAllMessages(groupId);
+         if(messageList != null){
+            return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(messages.toString();
+        }
+        return ResponseEntity
+            .badRequest()
+            .headers(header)
+            .body(formatJson(body));
+         */
+        return null;
+    }
+
     private int newActivityValidId(Activity activity) {
         log.info("finding new valid id for an activity");
         boolean created;
@@ -1691,7 +1732,7 @@ public class GiddController {
         if (user != null) {
             log.info("email already found in database, generating JWT");
             body.put("token", securityService
-                .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 5)));
+                .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 60 * 24)));
             body.put("userId", String.valueOf(user.getUserId()));
 
             return ResponseEntity
@@ -1717,7 +1758,7 @@ public class GiddController {
         }
 
         body.put("token", securityService
-            .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 5)));
+            .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 60 * 24)));
         body.put("userId", String.valueOf(newUser.getUserId()));
 
         return ResponseEntity
