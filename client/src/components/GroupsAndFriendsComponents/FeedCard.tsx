@@ -19,13 +19,13 @@ import { useContext } from 'react';
 
 const FeedContainer = styled.div`
     margin-left:20px;
-    max-height:80%;
+    min-height:60%;
 `
 const TransformDiv = styled.div`
     transition: transform 450ms;
     min-width: 200px;
-    max-width: 60%;
-    max-height:60%;
+    max-width: 40%;
+    max-height:40%;
     margin: 5px;
     margin-bottom: 11rem;
 
@@ -37,11 +37,12 @@ const TransformDiv = styled.div`
 
 interface Props {
     selectedGroup: Group;
+    updateGroups: () => void;
     leaveGroup: () => void;
 }
 
 
-export default function FeedCard({ selectedGroup, leaveGroup }: Props) {
+export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Props) {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     const [openChoiceBox, setOpenChoiceBox] = useState<boolean>(false);
     const [nextActivity, setNextActivity] = useState<ActivityResponse>();
@@ -59,24 +60,35 @@ export default function FeedCard({ selectedGroup, leaveGroup }: Props) {
     });
     const { user } = useContext(UserContext);
 
+    const getNextActivity = async () => {
+        const url = `activity/302425350`
+        await axios.get(url).then(response => {
+            console.log(response.data)
+            setNextActivity(response.data)
+        }).catch(error => {
+            console.log('Kunne ikke hente gruppens neste aktivitet ' + error.message)
+        })
+    }
+
     useEffect(() => {
-        const getNextActivity = async () => {
-            const url = `activity/302425350`
-            await axios.get(url).then(response => {
-                console.log(response.data)
-                setNextActivity(response.data)
-            }).catch(error => {
-                console.log('Kunne ikke hente gruppens neste aktivitet ' + error.message)
-            })
-        }
-        getNextActivity()
+        getNextActivity();
     }, []);
+
+    useEffect(() => {
+        updateGroups();
+    }, [selectedGroup]);
 
     const handleUserClicked = (userClicked: User) => {
         if (Object.values(userClicked)[0].toString() !== user && user === Object.values(selectedGroup.owner)[0].toString()) {
             setSelectedUser(userClicked)
             setOpenChoiceBox(!openChoiceBox);
         }
+    }
+
+    const handleLeaveGroup = () => {
+        leaveGroup()
+        updateGroups()
+
     }
 
     const handleOnChangeOwner = () => {
@@ -87,7 +99,10 @@ export default function FeedCard({ selectedGroup, leaveGroup }: Props) {
             "newOwner": Object.values(selectedUser)[0]
         }).then(response => {
             console.log(response);
-        }).then(() => setOpenChoiceBox(!openChoiceBox)).catch(error => {
+        }).then(() => {
+            updateGroups()
+            setOpenChoiceBox(!openChoiceBox)
+        }).catch(error => {
             console.log('Fikk ikke endret eier' + error.message)
         })
     }
@@ -171,12 +186,12 @@ export default function FeedCard({ selectedGroup, leaveGroup }: Props) {
                 </Popup>
                 <Button
                     fullWidth
-                    onClick={leaveGroup}
+                    onClick={handleLeaveGroup}
                     variant="contained"
                     color="primary"
                     style={{
                         position: 'relative',
-                        bottom: '0'
+                        bottom: '0',
                     }
                     }
                 >  Forlat Gruppe <DeleteIcon style={{ marginLeft: "8px" }} />

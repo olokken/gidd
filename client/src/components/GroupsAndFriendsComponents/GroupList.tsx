@@ -27,12 +27,13 @@ interface Props {
     friends: User[];
     groups: Group[];
     handleGroupClicked: (group:Group) => void;
+    updateGroups: () => void;
 }
 
 
 
 
-const GroupList = ({ friends, groups, handleGroupClicked }: Props) => {
+const GroupList = ({ friends, groups, handleGroupClicked, updateGroups}: Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User[]>([]);
     const [chosenGroupName, setChosenGroupName] = useState<string>('');
@@ -81,7 +82,7 @@ const GroupList = ({ friends, groups, handleGroupClicked }: Props) => {
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
-            })
+            }).then(updateGroups)
             .catch((error) => {
                 console.log('Could not post friend: ' + error.message);
                 alert('Du er allerede venn med denne brukeren');

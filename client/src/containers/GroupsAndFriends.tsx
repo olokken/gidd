@@ -50,14 +50,23 @@ const GroupsAndFriends = () => {
         users: []
     });
 
-    //henter alle users
+    //henter alle grupper
     useEffect(() => {
+        updateGroups();
+    }, [friends, user, selectedGroup]);
+
+    const updateGroups = () => {
         const url = `user/${user}/group`
-        axios.get(url).then(response => { setGroups(response.data['groups']) }).catch(error => {
+        axios.get(url).then(response => {
+            setGroups(response.data['groups'])
+        }).then(() => groups.forEach(group => {
+            if (group.groupId === selectedGroup.groupId) {
+                setSelectedGroup(group);
+            }
+        })).catch(error => {
             console.log('Kunne ikke hente dine grupper' + error.message);
         })
-    }, [friends, user]);
-
+    }
 
     //henter alle users
     useEffect(() => {
@@ -85,8 +94,25 @@ const GroupsAndFriends = () => {
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
-            })
-            .catch((error) => {
+            }).then(() => {
+                updateGroups()
+                setSelectedGroup({
+                    owner: {
+                        firstName: '',
+                        surname: '',
+                        userID: '',
+                        email: '',
+                        picture: '',
+                        password: '',
+                        phoneNumber: '',
+                        activityLevel: '',
+                        points: ''
+                    },
+                    groupName: '',
+                    groupId: '0',
+                    users: []
+                })
+            }).catch((error) => {
                 alert("Du kan ikke forlate gruppen mens du er eier");
                 console.log('Kunne ikke forlate gruppe: ' + error.message)
             }
@@ -123,11 +149,11 @@ const GroupsAndFriends = () => {
                 <FriendList users={users} friends={friends} />
             </div>
             <div style={{ width: '57%' }}>
-                <FeedCard selectedGroup={selectedGroup} leaveGroup={leaveGroup}></FeedCard>
+                <FeedCard selectedGroup={selectedGroup} updateGroups={updateGroups} leaveGroup={leaveGroup}></FeedCard>
             </div>
 
             <div style={{ width: '20%' }}>
-                <GroupList friends={friends} groups={groups} handleGroupClicked={handleGroupClicked} />
+                <GroupList updateGroups={updateGroups} friends={friends} groups={groups} handleGroupClicked={handleGroupClicked} />
             </div>
         </Container>
     );
