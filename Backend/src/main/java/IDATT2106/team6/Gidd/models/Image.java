@@ -1,5 +1,7 @@
 package IDATT2106.team6.Gidd.models;
 
+import java.util.Arrays;
+import java.util.Base64;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -46,5 +48,15 @@ public class Image {
 
     public void setBytes(byte[] imageBytes) {
         this.imageBytes = imageBytes;
+    }
+
+    @Override
+    public String toString() {
+        return
+            "{" +
+                "\n \"imageId\": " + imageId + "," +
+                "\n \"datatype\": \"" + datatype + "\"," +
+                "\n \"imageBytes\": \"" + Base64.getEncoder().encodeToString(imageBytes) + "\"" +
+                "\n}";
     }
 }

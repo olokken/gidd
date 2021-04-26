@@ -260,6 +260,12 @@ public class ActivityController {
                     .body(formatJson(body));
         }
 
+        Image newImage = activity.getImage();
+        String[] imgInfo = splitBase(map.get("image").toString());
+        newImage.setDatatype(imgInfo[0]);
+        newImage.setBytes(Base64.getDecoder().decode(imgInfo[1]));
+        imageService.editImage(newImage);
+
         activity.setTitle(map.get("title").toString());
         activity.setTime(Timestamp.valueOf(map.get("time").toString()));
         activity.setDescription(map.get("description").toString());
@@ -267,7 +273,7 @@ public class ActivityController {
         activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
-        activity.setImage(new Image());  // TODO Edit image
+        activity.setImage(newImage);
         activity.setEquipments(newEquipment(activity,map.get("equipmentList").toString()));
         log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
@@ -420,8 +426,9 @@ public class ActivityController {
         List<User> users = activityService.getUserFromActivity(activityId);
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
+        Activity activity = activityService.getActivity(activityId);
         int bonusPoints = (int) (NEW_ACTIVITY_BONUS *
-                MULTIPLIERS[activityService.getActivity(activityId).getActivityLevel().ordinal()]);
+                MULTIPLIERS[activity.getActivityLevel().ordinal()]);
         if (activityService.deleteActivity(activityId)) {
             log.debug("The deletion was successful");
             header.add("Status", "200 OK");
@@ -429,6 +436,7 @@ public class ActivityController {
 
             body.put("activityId", String.valueOf(activityId));
 
+            imageService.removeImage(activity.getImage());
             String bodyJson = formatJson(body);
 
             //owner s included in getUserFromActivity() result
@@ -544,28 +552,20 @@ public class ActivityController {
     private Image createImage(String base) {
         Image img = new Image();
         if (base.length() > 32) {
-            String[] res = base.split(",");
+            String[] res = splitBase(base);
             img = new Image(res[0], Base64.getDecoder().decode(res[1]));
         }
         if (imageService.newImage(img)) {
-            System.out.println("IMAGE WAS ADDED");
             return img;
         }
-        System.out.println("IMAGE WAS NOT ADDED");
         return null;
     }
 
-    private byte[] baseToByte(String base) {
-        if(base.length()<32){
-            return new byte[]{};
+    private String[] splitBase(String base) {
+        if(base.length()>32) {
+            return base.split(",");
         }
-        log.info("decoding from " + base);
-        base = base.split(",")[1];
-        return Base64.getDecoder().decode(base);
-    }
-
-    private String byteToBase(byte[] bytes) {
-        return Base64.getEncoder().encodeToString(bytes);
+        return new String[]{"",""};
     }
 
     private List<ActivityEquipment> newEquipment (Activity activity, String equipList) {
