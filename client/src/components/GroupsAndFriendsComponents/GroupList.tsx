@@ -26,26 +26,32 @@ interface Props {
 }
 
 
-const GroupList = ( {friends} : Props) => {
+const GroupList = ({ friends }: Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User[]>([]);
     const [searchValue, setSearchValue] = React.useState('');
-    const {user, setUser} = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
 
-     const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput((event.target as HTMLInputElement).value);
     };
 
-     const onAddGroupClick = () => {
+    const onAddGroupClick = () => {
         console.log(selectInput);
         console.log("searchInput: " + searchValue);
-        setSelectInput([]);
-        setSearchValue('');
+        if (selectInput.length < 2) {
+            alert('Du må legge til minst 2 venner for å opprette en gruppe')
+            console.log()
+        } else {
+            setSelectInput([]);
+            axios.post('/group')
+            setSearchValue('');
+        }
     }
-    
+
     return (
         <StyledContainer>
-           <Autocomplete
+            <Autocomplete
                 id="free-solo-demo"
                 value={selectInput}
                 multiple
@@ -62,33 +68,33 @@ const GroupList = ( {friends} : Props) => {
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        label="Legg til ny venn"
+                        label="Legg til venn i gruppe"
                         margin="normal"
                         variant="outlined"
                     />
                 )}
             />
-            <Button 
+            <Button
                 onClick={onAddGroupClick}
-                variant="contained" 
+                variant="contained"
                 color="primary"
-                style={{width:"100%"}}
+                style={{ width: "100%" }}
             >
                 Lag gruppe
-                <AddBox style={{ marginLeft: '8px'}}></AddBox>
+                <AddBox style={{ marginLeft: '8px' }}></AddBox>
             </Button>
 
-            
-            <TextField style={{marginTop:'5px'}} 
-                onChange={onSearchChange} 
-                fullWidth={true} 
-                label="Søk etter grupper" 
-                variant="outlined" 
+
+            <TextField style={{ marginTop: '5px' }}
+                onChange={onSearchChange}
+                fullWidth={true}
+                label="Søk etter grupper"
+                variant="outlined"
             />
             <h2>Dine grupper</h2>
             <StyledUl >
-               
-            </StyledUl> 
+
+            </StyledUl>
         </StyledContainer>
     );
 };
