@@ -46,7 +46,7 @@ const GroupsAndFriends = () => {
             points: ''
         },
         groupName: '',
-        groupId: '123123',
+        groupId: '0',
         users: []
     });
 
@@ -78,6 +78,22 @@ const GroupsAndFriends = () => {
         setSelectedGroup(group);
     }
 
+    const leaveGroup = () => {
+        const groupId = selectedGroup.groupId;
+        axios
+            .delete(`group/${groupId}/user/${user}`)
+            .then((response) => {
+                JSON.stringify(response);
+                console.log(response.data);
+            })
+            .catch((error) => {
+                alert("Du kan ikke forlate gruppen mens du er eier");
+                console.log('Kunne ikke forlate gruppe: ' + error.message)
+            }
+            );
+    }
+
+
     //sjekker om user finnes i friends
     const FriendCheck = (test: any) => {
         let a = true;
@@ -107,7 +123,7 @@ const GroupsAndFriends = () => {
                 <FriendList users={users} friends={friends} />
             </div>
             <div style={{ width: '57%' }}>
-                <FeedCard selectedGroup={selectedGroup}></FeedCard>
+                <FeedCard selectedGroup={selectedGroup} leaveGroup={leaveGroup}></FeedCard>
             </div>
 
             <div style={{ width: '20%' }}>

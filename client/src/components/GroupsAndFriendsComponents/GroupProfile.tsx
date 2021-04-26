@@ -19,10 +19,7 @@ interface Props {
 const GroupProfile = ({ group, openPopup, setOpenPopup }: Props) => {
     const { user, setUser } = useContext(UserContext);
 
-    const deleteFriend = () => {
-        //deleteAxFriend(Object.values(friend)[0]);
-        setOpenPopup(!openPopup);
-    }
+ 
 
     const leaveGroup = () => {
         const groupId = group.groupId;

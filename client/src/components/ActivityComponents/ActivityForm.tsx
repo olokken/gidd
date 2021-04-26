@@ -63,11 +63,12 @@ interface Props {
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
     activityResponse?: ActivityResponse;
+    groupId?: string | undefined;
 }
 
 //TODO:
 //Fix adding image
-const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
+const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Props) => {
     const [page, setPage] = useState<number>(1);
     const { user, setUser } = useContext(UserContext);
     const [title, setTitle] = useState('');
@@ -175,13 +176,13 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
     ) => {
         console.log(event);
         if (event.target.files != null) {
-        const file: File = event.target.files[0];
-        console.log(file);
-        const base64 = await convertBase64(file);
-        console.log(base64);
-        setImage(base64);
-        console.log(image)
-       }
+            const file: File = event.target.files[0];
+            console.log(file);
+            const base64 = await convertBase64(file);
+            console.log(base64);
+            setImage(base64);
+            console.log(image)
+        }
     };
 
     const convertBase64 = (file: File) => {
@@ -189,7 +190,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
 
             const fileReader = new FileReader();
             fileReader.readAsDataURL(file);
-            
+
             fileReader.onload = (() => {
                 resolve(fileReader.result);
             });
@@ -292,14 +293,15 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
             .replace(/\\f/g, '\\f');
     };
 
-    const postActivity = () => {
+    const postActivity = (groupId: string | undefined) => {
+        const id: number = groupId ? +groupId : 0;
         const activity: Activity2 = {
             title: title,
             time: getTimeFormat(),
             repeat: repetition,
             userId: user,
             capacity: capacity,
-            groupId: 0,
+            groupId: id,
             description: escapedJSONDescription(),
             image: image,
             activityLevel: activityLevel.toUpperCase(),
@@ -324,6 +326,8 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
                 console.log('Could not post activity: ' + error.message)
             );
     };
+
+
 
     const changeActivity = async () => {
         const sendActivity = {
@@ -531,7 +535,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
                         }}
                         variant="outlined"
                     />
-                    <img src={image} style={{maxHeight:"40px"}}/>
+                    <img src={image} style={{ maxHeight: "40px" }} />
                 </div>
             )}
             {page === 6 && (
@@ -654,7 +658,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
                             onClick={
                                 isActivityResponse
                                     ? changeActivity
-                                    : postActivity
+                                    : () => postActivity(groupId)
                             }
                             disabled={isDisabled()}
                         >
