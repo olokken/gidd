@@ -391,6 +391,7 @@ public class UserController {
 
     @GetMapping("/{userId}/pending")
     public ResponseEntity getAllSentRequests(@PathVariable Integer userId){
+        log.debug("Received GetMapping to 'user/{userId}/pending'");
         User user = userService.getUser(userId);
 
         HttpHeaders header = new HttpHeaders();
