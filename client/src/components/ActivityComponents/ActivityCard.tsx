@@ -41,7 +41,7 @@ interface Props {
     activity: ActivityResponse;
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
-    setActivity: any;
+    setActivity?: any;
 }
 
 const ActivityCard = ({
