@@ -32,16 +32,23 @@ const TitleArea = styled.div`
 
 interface Props {
     friend: User;
+    onClick?: () => void;
 }
 
 
-const FriendCard = ({friend}: Props) =>{
+const FriendCard = ({friend, onClick}: Props) =>{
     const [openPopup, setOpenPopup] = useState<boolean>(false);
+
+    const onCardClick = () => {
+        if (onClick != undefined){
+            onClick()
+        } 
+    }
     return (
         <div>
         <Card
             style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
-            onClick={() => setOpenPopup(!openPopup)}
+            onClick={onCardClick}
         >
            
             <CardInformation>

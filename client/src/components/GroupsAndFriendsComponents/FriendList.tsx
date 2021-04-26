@@ -24,9 +24,10 @@ const StyledUl = styled.ul`
 interface Props {
     users: User[];
     friends: User[];
+    onClick?: () => void;
 }
 
-const FriendList = ({users, friends} : Props) => {
+const FriendList = ({users, friends, onClick} : Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User | null>(null);
     const [searchValue, setSearchValue] = React.useState('');
@@ -112,7 +113,7 @@ const FriendList = ({users, friends} : Props) => {
                     return friend
                 }
                 }).map((friend : User ) => 
-                    <FriendCard  key={friend.userID} friend={friend}/>)
+                    <FriendCard onClick={onClick}  key={friend.userID} friend={friend}/>)
                 }
             </StyledUl> 
         </StyledContainer>

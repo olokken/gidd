@@ -26,12 +26,13 @@ const StyledUl = styled.ul`
 interface Props {
     friends: User[];
     groups: Group[];
+    onClick?: () => void;
 }
 
 
 
 
-const GroupList = ({ friends, groups }: Props) => {
+const GroupList = ({ friends, groups, onClick }: Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User[]>([]);
     const [chosenGroupName, setChosenGroupName] = useState<string>('');
@@ -145,7 +146,7 @@ const GroupList = ({ friends, groups }: Props) => {
                     return group
                 }
             }).map((group: Group) =>
-                <GroupCard key={group.groupId} group={group} />)
+                <GroupCard onClick={onClick} key={group.groupId} group={group} />)
             }
             </StyledUl>
         </StyledContainer >
