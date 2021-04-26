@@ -37,7 +37,7 @@ public class SecurityController {
 
     @MapTokenRequired
     @ResponseBody
-    @RequestMapping("/security/token/validate")
+    @RequestMapping("/token/validate")
     public ResponseEntity validateToken(@RequestBody Map<String, Object> map) {
         log.info("received request at /security/token/validate with valid token");
         Map<String, String> body = new HashMap<>();
