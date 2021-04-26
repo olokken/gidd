@@ -1,4 +1,4 @@
-import { Avatar, Button, List, ListItem, ListItemText, ListSubheader } from '@material-ui/core'
+import { Avatar, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, List, ListItem, ListItemText, ListSubheader } from '@material-ui/core'
 import React from 'react'
 import styled from 'styled-components'
 import Group from '../../interfaces/Group'
@@ -11,23 +11,27 @@ import ActivityCard from '../ActivityComponents/ActivityCard';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import { useEffect } from 'react';
 import axios from '../../Axios'
+import User from '../../interfaces/User';
+import { UserContext } from '../../UserContext';
+import { useContext } from 'react';
 
 
 
 const FeedContainer = styled.div`
     margin-left:20px;
-    border:1px solid black;
-    min-height:80%;
+    max-height:80%;
 `
 const TransformDiv = styled.div`
     transition: transform 450ms;
     min-width: 200px;
-    max-width: 29%;
+    max-width: 60%;
+    max-height:60%;
     margin: 5px;
     margin-bottom: 11rem;
 
     :hover {
         transform: scale(1.08);
+        cursor:pointer;
     }
 `;
 
@@ -39,7 +43,21 @@ interface Props {
 
 export default function FeedCard({ selectedGroup, leaveGroup }: Props) {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
+    const [openChoiceBox, setOpenChoiceBox] = useState<boolean>(false);
     const [nextActivity, setNextActivity] = useState<ActivityResponse>();
+    const [openActivityPopup, setOpenActivityPopup] = useState<boolean>(false);
+    const [selectedUser, setSelectedUser] = useState<User>({
+        firstName: '',
+        surname: '',
+        userID: '',
+        email: '',
+        picture: '',
+        password: '',
+        phoneNumber: '',
+        activityLevel: '',
+        points: ''
+    });
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         const getNextActivity = async () => {
@@ -53,6 +71,26 @@ export default function FeedCard({ selectedGroup, leaveGroup }: Props) {
         }
         getNextActivity()
     }, []);
+
+    const handleUserClicked = (userClicked: User) => {
+        if (Object.values(userClicked)[0].toString() !== user && user === Object.values(selectedGroup.owner)[0].toString()) {
+            setSelectedUser(userClicked)
+            setOpenChoiceBox(!openChoiceBox);
+        }
+    }
+
+    const handleOnChangeOwner = () => {
+        const url = `/group/${selectedGroup.groupId}`
+        console.log(Object.values(selectedUser)[0])
+        axios.put(url, {
+            "groupId": selectedGroup.groupId,
+            "newOwner": Object.values(selectedUser)[0]
+        }).then(response => {
+            console.log(response);
+        }).then(() => setOpenChoiceBox(!openChoiceBox)).catch(error => {
+            console.log('Fikk ikke endret eier' + error.message)
+        })
+    }
 
     return (
         selectedGroup.groupName !== '' ?
@@ -69,7 +107,7 @@ export default function FeedCard({ selectedGroup, leaveGroup }: Props) {
                         <ListItem
                             button
                             key={index}
-                            onClick={() => console.log(user)}>
+                            onClick={() => handleUserClicked(user)}>
                             <Avatar></Avatar>
                             {Object.values(user)[0] == Object.values(selectedGroup.owner)[0] ?
                                 <ListItemText
@@ -82,14 +120,29 @@ export default function FeedCard({ selectedGroup, leaveGroup }: Props) {
                             }
                         </ListItem>
                     ))}
+                    <Dialog
+                        open={openChoiceBox}
+                        onClose={() => setOpenChoiceBox(false)}
+
+                    >
+                        <DialogTitle >{"Vil du gjøre" + selectedUser.firstName + " " + selectedUser.surname + " til eier av gruppen?"}</DialogTitle>
+                        <DialogActions>
+                            <Button onClick={() => handleOnChangeOwner()} color="primary">
+                                Ja
+                            </Button>
+                            <Button onClick={() => setOpenChoiceBox(!openChoiceBox)} color="primary" autoFocus>
+                                Nei
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </List>
                 <TransformDiv>
-                    <h4>Kommende aktivitet:</h4>
                     {nextActivity ?
                         <ActivityCard
                             activity={nextActivity}
-                            openPopup={openPopup}
-                            setOpenPopup={setOpenPopup}></ActivityCard> :
+                            openPopup={openActivityPopup}
+                            setOpenPopup={setOpenActivityPopup}
+                            setActivity={setNextActivity}></ActivityCard> :
                         <p>Finner ingen aktivitet aktiviteter for denne gruppen</p>}
                 </TransformDiv>
                 <Button

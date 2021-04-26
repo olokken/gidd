@@ -41,7 +41,7 @@ interface Props {
     activity: ActivityResponse;
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
-    setActivity?: any;
+    setActivity: any;
 }
 
 const ActivityCard = ({
@@ -63,12 +63,12 @@ const ActivityCard = ({
         setActivity(activity);
     };
 
-    const picture = () : any => {
+    const picture = (): any => {
         if (activity.image.length > 40) {
-            return activity.image; 
+            return activity.image;
         }
-            return hiking; 
-    }; 
+        return hiking;
+    };
     return (
         <Card
             onClick={onClickActivity}
