@@ -18,6 +18,7 @@ backend-test:
   needs: ["backend-build"]
 
 deploy:
+  stage: deploy
   script:
     - apt-get update -y && apt-get install openssh-client -y
     - mkdir ~/.ssh
