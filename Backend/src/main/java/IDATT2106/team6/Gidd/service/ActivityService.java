@@ -24,7 +24,7 @@ public class ActivityService {
 
     //Use addActivity(Activity) when you can, as it is easier to work with
     public void addActivity(int id, String title, Timestamp time, int repeat, User userId,
-                            int capacity, int groupId, String description, byte[] image,
+                            int capacity, int groupId, String description, Image image,
                             ActivityLevel activityLevel, List<Tag> tags,
                             double latitude, double longitude) {
         Date today = new Date();
@@ -42,6 +42,7 @@ public class ActivityService {
         return this.repo.findActivity(activityId);
     }
 
+    //todo doesn't need id field, only uses it for logs
     public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
         log.info("adding user " + id + " to activity " + activity.getActivityId());
         return this.repo.addUserToActivity(id, activity, user, time);
