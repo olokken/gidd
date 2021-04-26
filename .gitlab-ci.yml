@@ -1,5 +1,22 @@
 image: adoptopenjdk/maven-openjdk11
 
+backend-build:
+  stage: build
+  only:
+      - backend-dev
+  script:
+    - cd Backend
+    - "mvn install -B"
+
+backend-test:
+  stage: test
+  only:
+      - backend-dev
+  script:
+    - cd Backend
+    - mvn test
+  needs: ["backend-build"]
+
 deploy:
   script:
     - apt-get update -y && apt-get install openssh-client -y
