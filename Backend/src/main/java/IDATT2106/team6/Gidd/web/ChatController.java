@@ -42,7 +42,6 @@ public class ChatController {
     private FriendGroupService friendGroupService;
     @MessageMapping("/{activityId}")
     public void sendMessage(@DestinationVariable Integer groupId, @Payload String message) throws ParseException {
-        // Set the message time as now before sending it back to the topic
         log.info("recieved message to group " + groupId);
         JSONParser parser = new JSONParser();
         JSONObject chatJson = (JSONObject) parser.parse(message);

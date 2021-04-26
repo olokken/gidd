@@ -183,4 +183,20 @@ public class UserService {
             return Friendship.NOTHING;
         }
     }
+
+    public ArrayList<FriendGroup> getFriendGroups(int userId, List<FriendGroup> allFriendGroups){
+        ArrayList<FriendGroup> friendGroups = new ArrayList<>();
+
+        for(FriendGroup friendGroup : allFriendGroups){
+            ArrayList<Integer> memberIds = new ArrayList<>();
+            for(User u : friendGroup.getUsers()){
+                memberIds.add(u.getUserId());
+            }
+            if(memberIds.contains(userId)){
+                friendGroups.add(friendGroup);
+            }
+        }
+
+        return friendGroups;
+    }
 }

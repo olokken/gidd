@@ -1,22 +1,44 @@
 package IDATT2106.team6.Gidd.web;
 
-import IDATT2106.team6.Gidd.models.*;
-import IDATT2106.team6.Gidd.service.*;
+import static IDATT2106.team6.Gidd.Constants.ADD_FRIEND_BONUS;
+import static IDATT2106.team6.Gidd.Constants.JOIN_ACTIVITY_BONUS;
+import static IDATT2106.team6.Gidd.Constants.MULTIPLIERS;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.parsePhone;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.validateStringMap;
+
+import IDATT2106.team6.Gidd.models.Activity;
+import IDATT2106.team6.Gidd.models.ActivityLevel;
+import IDATT2106.team6.Gidd.models.ActivityUser;
+import IDATT2106.team6.Gidd.models.FriendGroup;
+import IDATT2106.team6.Gidd.models.Friendship;
+import IDATT2106.team6.Gidd.models.Provider;
+import IDATT2106.team6.Gidd.models.User;
+import IDATT2106.team6.Gidd.service.ActivityService;
+import IDATT2106.team6.Gidd.service.FriendGroupService;
+import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
 import IDATT2106.team6.Gidd.util.PathTwoTokenRequired;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static IDATT2106.team6.Gidd.Constants.*;
-import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -26,17 +48,9 @@ public class UserController {
     @Autowired
     private ActivityService activityService;
     @Autowired
-    private EquipmentService equipmentService;
-    @Autowired
     private UserService userService;
     @Autowired
-    private TagService tagService;
-    @Autowired
-    private SecurityService securityService;
-    @Autowired
     private FriendGroupService friendGroupService;
-    @Autowired
-    private SimpMessagingTemplate template;
 
     @GetMapping(value = "", produces = "application/json")
     public ResponseEntity getAllUsers() {
@@ -418,6 +432,38 @@ public class UserController {
                 .badRequest()
                 .headers(header)
                 .body(formatJson(hashMap));
+    }
+
+    @GetMapping("/{userId}/group")
+    public ResponseEntity getGroupsForUser(@PathVariable Integer userId){
+        log.debug("Received GetMapping to '/user/{userId}/group'");
+        User user = userService.getUser(userId);
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+        if(user == null){
+            log.error("The user is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The user does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        List<FriendGroup> allFriendGroups = friendGroupService.getAllFriendGroups();
+        ArrayList<FriendGroup> friendGroups = userService.getFriendGroups(userId, allFriendGroups);
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body("{ \"groups\" : " + friendGroups.toString() + "}");
     }
 
     @PathTwoTokenRequired
