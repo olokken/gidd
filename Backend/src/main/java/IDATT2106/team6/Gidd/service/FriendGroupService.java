@@ -46,4 +46,9 @@ public class FriendGroupService {
         friendGroup.removeUser(user);
         return repo.updateFriendGroup(friendGroup);
     }
+
+    public boolean updateOwner(FriendGroup friendGroup, User user){
+        friendGroup.setOwner(user);
+        return repo.updateFriendGroup(friendGroup);
+    }
 }

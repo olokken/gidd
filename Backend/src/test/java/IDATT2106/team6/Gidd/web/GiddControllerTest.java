@@ -4,8 +4,7 @@ package IDATT2106.team6.Gidd.web;
 import static IDATT2106.team6.Gidd.Constants.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -873,6 +872,44 @@ public class GiddControllerTest {
 
     @Test
     @Order(19)
+    public void changeOwnerTest() throws Exception {
+        String returnGroup = mockMvc.perform(get("/group/" + group1.getGroupId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject JSONGroupReturn = (JSONObject) parser.parse(returnGroup);
+        String owner = JSONGroupReturn.get("owner").toString();
+
+        JSONObject JSONOwner = (JSONObject) parser.parse(owner);
+
+        assertEquals(user1.getUserId(), Integer.parseInt(JSONOwner.get("userId").toString()));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/group/" + group1.getGroupId()).contentType(MediaType.APPLICATION_JSON)
+                .content(
+                        "{" +
+                                "\"groupId\" : \"" + group1.getGroupId() + "\"," +
+                                "\"newOwner\" : \"" + user2.getUserId() + "\"" +
+                        "}"
+                )).andExpect(status().isOk());
+
+        String friendGroup = mockMvc.perform(get("/group/" + group1.getGroupId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONObject JSONFriendGroup = (JSONObject) parser.parse(friendGroup);
+        String owner2 = JSONFriendGroup.get("owner").toString();
+
+        JSONObject JSONOwner2 = (JSONObject) parser.parse(owner2);
+
+        assertEquals(user2.getUserId(), Integer.parseInt(JSONOwner2.get("userId").toString()));
+    }
+
+    @Test
+    @Order(20)
     public void deleteFriendGroupTest() throws Exception {
         String group = mockMvc.perform(get("/group/" + group1.getGroupId())
                 .accept(MediaType.APPLICATION_JSON)
@@ -900,8 +937,8 @@ public class GiddControllerTest {
     }
 
     @Test
-    @Order(20)
-    public void getFriendRequests() throws Exception {
+    @Order(21)
+    public void getFriendRequestsTest() throws Exception {
         mockMvc.perform(post("/user/" + user1.getUserId() + "/user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
@@ -923,8 +960,8 @@ public class GiddControllerTest {
     }
 
     @Test
-    @Order(21)
-    public void getSentFriendRequests() throws Exception {
+    @Order(22)
+    public void getSentFriendRequestsTest() throws Exception {
 
         String returnString = mockMvc.perform(get("/user/" + user1.getUserId() + "/pending")
                 .accept(MediaType.APPLICATION_JSON)
@@ -940,7 +977,7 @@ public class GiddControllerTest {
     }
 
     @Test
-    @Order(22)
+    @Order(23)
     public void tearDown() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/group/" + group2.getGroupId()))
