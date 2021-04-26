@@ -23,7 +23,9 @@ public class Image {
     }
 
     public Image(){
-
+        this.imageId = -1;
+        this.datatype = "";
+        this.imageBytes = new byte[]{};
     }
 
     public int getId() {

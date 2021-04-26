@@ -1840,17 +1840,16 @@ public class GiddController {
     }
 
     private Image createImage(String base) {
-        if (base.length() < 32) {
-            System.out.println("BASE SMOL");
-            return new Image();
+        Image img = new Image();
+        if (base.length() > 32) {
+            String[] res = base.split(",");
+            img = new Image(res[0], Base64.getDecoder().decode(res[1]));
         }
-        String[] res = base.split(",");
-        Image img = new Image(res[0], Base64.getDecoder().decode(res[1]));
         if (imageService.newImage(img)) {
-            System.out.println("NEW IMAGE WAS CREATED");
+            System.out.println("IMAGE WAS ADDED");
             return img;
         }
-        System.out.println("IMAGE WAS NOT CREATED");
+        System.out.println("IMAGE WAS NOT ADDED");
         return null;
     }
 
