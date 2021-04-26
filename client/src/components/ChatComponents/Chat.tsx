@@ -17,8 +17,10 @@ import React, {
 import styled from 'styled-components';
 import StyledMessage from './StyledMessage';
 import io from 'socket.io-client';
-import { SocketContext } from '../../SocketContext';
 import axios from '../../Axios';
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
+import { UserContext } from '../../UserContext';
 
 const Container = styled.div`
     display: flex;
@@ -47,23 +49,32 @@ const Flex = styled.div`
 interface Props {
     open: boolean;
     close: () => void;
+    activityId: number;
 }
 
-const Chat = ({ open, close }: Props) => {
-    const socket = useContext(SocketContext);
+const Chat = ({ open, close, activityId }: Props) => {
     const [message, setMessage] = useState<string>();
     const [messages, setMessages] = useState<string[]>([]);
+    const { user } = useContext(UserContext);
+    const socket = useRef<any>();
 
     useEffect(() => {
-        //Først hente ut chattehistorikk..
-        /*axios.get('/')*/
-        socket.current.on('message', (msg: any) => {
-            console.log(msg);
-        });
-    }, []);
+        if (open == true) {
+            const so = new SockJS('http://13.51.58.86:8080/ws');
+
+            socket.current = Stomp.over(so);
+
+            socket.current.connect({}, (frame: any) => {
+                socket.current.subscribe(`/client/chat/${activityId}`);
+            });
+        }
+    }, [open]);
 
     const sendMessage = () => {
-        socket.current.emit('send', message);
+        socket.current.send(`/server/chat/${activityId}`, {
+            userId: user,
+            message: message,
+        });
     };
 
     const onChangeMessage = (event: ChangeEvent<HTMLInputElement>) => {

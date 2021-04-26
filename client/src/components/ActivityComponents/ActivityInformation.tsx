@@ -363,7 +363,11 @@ const ActivityInformation = ({
                     setOpenPopup={setOpenEditPopup}
                 ></ActivityForm>
             </Popup>
-            <Chat open={openChat} close={() => setOpenChat(false)}></Chat>
+            <Chat
+                activityId={activity.activityId}
+                open={openChat}
+                close={() => setOpenChat(false)}
+            ></Chat>
         </div>
     );
 };

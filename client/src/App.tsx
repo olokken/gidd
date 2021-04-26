@@ -32,19 +32,6 @@ function App() {
         if (id !== null) {
             setUser(id);
         }
-
-        const socket = new SockJS('http://13.51.58.86:8080/ws');
-
-        const stompClient = Stomp.over(socket);
-
-        socket.onopen = () => {
-            console.log('oookei');
-        };
-
-        stompClient.connect({}, (frame) => {
-            console.log(frame);
-            stompClient.subscribe('/client/chat/1', () => console.log('test'));
-        });
     }, []);
 
     return (
