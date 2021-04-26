@@ -159,7 +159,7 @@ public class LoginController {
             String id = String.valueOf(userService.getUser(map.get("email").toString()).getUserId());
             body.put("id",
                     id);
-            body.put("token", String.valueOf(securityService.createToken(id, (1000 * 60 * 5))));
+            body.put("token", String.valueOf(securityService.createToken(id, (1000 * 60 * 60 * 24))));
             header.add("Status", "200 OK");
             return ResponseEntity.ok()
                     .headers(header)
