@@ -1,4 +1,4 @@
-runs-on: maven-openjdk11
+image: maven-openjdk11
 deploy:
   script:
     - apt-get update -y && apt-get install openssh-client -y
