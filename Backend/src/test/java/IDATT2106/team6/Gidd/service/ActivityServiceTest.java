@@ -34,12 +34,12 @@ public class ActivityServiceTest {
 
     private Activity activity1 = new Activity(121, "skrive tester",
             new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
-            0, user1, 50, 5, "det som du gjør nå", new byte[]{-5},
+            0, user1, 50, 5, "det som du gjør nå", new Image(),
             ActivityLevel.HIGH, null, 0.001, 0.005, null);
 
     private Activity activity2 = new Activity(122, "Gjøre brukertester",
             new Timestamp(2002, 9, 12, 9, 11, 59, 5 ),
-            0, user1, 50, 5, "Møt folk, er det bra?", new byte[]{-5},
+            0, user1, 50, 5, "Møt folk, er det bra?", new Image(),
             ActivityLevel.HIGH, null, 0.001, 0.005, null);
 
     @BeforeEach
