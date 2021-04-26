@@ -1,6 +1,7 @@
 package IDATT2106.team6.Gidd.web;
 
 
+import static IDATT2106.team6.Gidd.Constants.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -57,11 +58,6 @@ public class GiddControllerTest {
     private Activity activity1;
     private FriendGroup group1;
     private FriendGroup group2;
-    private final int NEW_ACTIVITY_BONUS = 50;
-    private final int JOIN_ACTIVITY_BONUS = 20;
-    private final int ADD_FRIEND_BONUS = 30;
-    private final double MULTIPLIERS[] = new double[]{1, 1.4, 1.8};
-
 
    /* @Before
     public void initialize() throws Exception {
