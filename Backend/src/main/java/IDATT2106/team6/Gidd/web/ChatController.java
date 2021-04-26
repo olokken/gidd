@@ -45,9 +45,8 @@ public class ChatController {
     @Autowired
     private FriendGroupService friendGroupService;
 
-    @GetMapping("/chat/{groupId}")
+    @GetMapping(value = "/chat/{groupId}", produces = "application/json")
     public ResponseEntity getMessageLog(@PathVariable Integer groupId){
-        log.info("den kommer inn hit pog");
         ArrayList<Chat> messages = new ArrayList<>();
         HttpHeaders header = new HttpHeaders();
         Activity activity = activityService.getActivity(groupId);
@@ -55,12 +54,18 @@ public class ChatController {
         if(activity != null) {
             List<Chat> messageList = chatService.getMessages(activity);
             if (messageList != null) {
-                JSONObject jsonObject = new JSONObject();
-                System.out.println(JSONArray.toJSONString(messageList));
+                StringBuilder messageJson = new StringBuilder();
+                messageJson.append("{\"activity\":" + "\"" + groupId + "\",");
+                messageJson.append("\"messages\" : [");
+                for (Chat c : messageList){
+                    messageJson.append(c.toJson() + ",");
+                }
+                messageJson.append("]");
+                messageJson.deleteCharAt(messageJson.length() - 2);
                 return ResponseEntity
                         .ok()
                         .headers(header)
-                        .body(JSONArray.toJSONString(messageList));
+                        .body(messageJson.toString());
             }
             return ResponseEntity
                     .badRequest()
@@ -77,18 +82,28 @@ public class ChatController {
 
     @MessageMapping("/chat/{activityId}")
     public void sendMessage(@DestinationVariable Integer activityId, @Payload String message) throws ParseException {
-        log.info("received message to group " + activityId);
         JSONParser parser = new JSONParser();
         System.out.println("message is: " + message);
         JSONObject chatJson = (JSONObject) parser.parse(message);
         Activity activity = activityService.getActivity(activityId);
         User user = userService.getUser(chatJson.getAsNumber("userId").intValue());
 
+        chatJson.put("user", user);
+        chatJson.remove("userId");
+        HashMap<String, String> response = new HashMap<>();
+        response.put("user", user.toJSON());
         Chat newChat = new Chat(activity, user, String.valueOf(chatJson.get("message")));
-        //todo make thread safe and ensure that id does not exist
+        String json = "{" +
+                "\"user\":" + user.toJSON() +
+                ",\"message\":" + "\"" + chatJson.get("message") + "\"" +
+                ",\"timestamp\":" + "\"" + newChat.getTimeStamp().toString() + "\"" +
+                "}";
+
+                //todo make thread safe and ensure that id does not exist
         newChat.setChatId(getRandomID());
         if(chatService.saveChat(newChat)){
-            template.convertAndSend("/client/chat/" + activityId, message);
+            System.out.println(json);
+            template.convertAndSend("/client/chat/" + activityId, json);
         }
         else {
             template.convertAndSend("{\"error\":\"could not save chat message\"");
