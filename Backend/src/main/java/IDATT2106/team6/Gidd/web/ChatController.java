@@ -56,6 +56,7 @@ public class ChatController {
             List<Chat> messageList = chatService.getMessages(activity);
             if (messageList != null) {
                 JSONObject jsonObject = new JSONObject();
+                System.out.println(JSONArray.toJSONString(messageList));
                 return ResponseEntity
                         .ok()
                         .headers(header)

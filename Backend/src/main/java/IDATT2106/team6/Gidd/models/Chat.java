@@ -60,4 +60,12 @@ public class Chat {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public String toJson(){
+        return "{" +
+                "\"activity\":\"" + activity.getActivityId() + "\"" +
+                "\"user\":" + user.toJSON() +
+                "\"timestamp\":" + "\"" + timeStamp.toString() + "\"" +
+                "\"message\": + \"" + "\"" + message + "\"";
+    }
 }
