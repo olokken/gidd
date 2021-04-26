@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static IDATT2106.team6.Gidd.web.GiddController.formatJson;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
 
 @CrossOrigin(origins = "*")
 @Controller

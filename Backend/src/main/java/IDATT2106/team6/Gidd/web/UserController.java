@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static IDATT2106.team6.Gidd.Constants.*;
-import static IDATT2106.team6.Gidd.web.GiddController.*;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -116,7 +116,7 @@ public class UserController {
                 .body(formatJson(body));
     }
 
-    @DeleteMapping("user/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteUser(@PathVariable Integer id) {
         //todo return activity-objects and user id's affected by this user being deleted
         // aka the activities this user has created
@@ -418,6 +418,38 @@ public class UserController {
                 .badRequest()
                 .headers(header)
                 .body(formatJson(hashMap));
+    }
+
+    @GetMapping("/{userId}/group")
+    public ResponseEntity getGroupsForUser(@PathVariable Integer userId){
+        log.debug("Received GetMapping to '/user/{userId}/group'");
+        User user = userService.getUser(userId);
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+        if(user == null){
+            log.error("The user is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The user does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        List<FriendGroup> allFriendGroups = friendGroupService.getAllFriendGroups();
+        ArrayList<FriendGroup> friendGroups = userService.getFriendGroups(userId, allFriendGroups);
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body("{ \"groups\" : " + friendGroups.toString() + "}");
     }
 
     @PathTwoTokenRequired

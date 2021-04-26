@@ -20,8 +20,7 @@ import java.util.*;
 
 import static IDATT2106.team6.Gidd.Constants.MULTIPLIERS;
 import static IDATT2106.team6.Gidd.Constants.NEW_ACTIVITY_BONUS;
-import static IDATT2106.team6.Gidd.web.GiddController.formatJson;
-import static IDATT2106.team6.Gidd.web.GiddController.getRandomID;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
 
 @CrossOrigin(origins = "*")
 @Controller

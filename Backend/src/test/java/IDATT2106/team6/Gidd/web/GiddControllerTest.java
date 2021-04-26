@@ -46,9 +46,6 @@ public class GiddControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private GiddController controller;
-
     private String token;
     private User user1;
     private User user2;

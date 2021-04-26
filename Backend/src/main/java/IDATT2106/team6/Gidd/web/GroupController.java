@@ -16,14 +16,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static IDATT2106.team6.Gidd.web.GiddController.formatJson;
-import static IDATT2106.team6.Gidd.web.GiddController.getRandomID;
+import static IDATT2106.team6.Gidd.web.ControllerUtil.*;
 
 @CrossOrigin(origins = "*")
 @Controller
 @RequestMapping("/group")
 public class GroupController {
-    private static Logger log = new Logger(GiddController.class.toString());
+    private static Logger log = new Logger(GroupController.class.toString());
     @Autowired
     private ActivityService activityService;
     @Autowired
@@ -272,7 +271,7 @@ public class GroupController {
         User user =
     }*/
 
-    @DeleteMapping(value = "    /{groupId}")
+    @DeleteMapping(value = "/{groupId}")
     public ResponseEntity deleteGroup(@PathVariable Integer groupId){
         log.debug("Received DeleteMapping to '/group/{groupId}");
 
@@ -298,6 +297,4 @@ public class GroupController {
                 .headers(header)
                 .body(formatJson(body));
     }
-
-
 }

@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Random;
 
 
-public class GiddController {
-    private static Logger log = new Logger(GiddController.class.toString());
+public class ControllerUtil {
+    private static Logger log = new Logger(ControllerUtil.class.toString());
 
 
 
