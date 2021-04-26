@@ -1312,10 +1312,37 @@ public class GiddController {
                 .body(friendGroup.toString());
     }
 
-    /*@GetMapping("user/{userId}/group")
+    @GetMapping("/user/{userId}/group")
     public ResponseEntity getGroupsForUser(@PathVariable Integer userId){
-        User user =
-    }*/
+        log.debug("Received GetMapping to '/user/{userId}/group'");
+        User user = userService.getUser(userId);
+
+        HttpHeaders header = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+        if(user == null){
+            log.error("The user is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            body.put("error", "The user does not exist");
+
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        List<FriendGroup> allFriendGroups = friendGroupService.getAllFriendGroups();
+        ArrayList<FriendGroup> friendGroups = userService.getFriendGroups(userId, allFriendGroups);
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(friendGroups.toString());
+    }
 
     @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivityToUser(@PathVariable Integer userId,
