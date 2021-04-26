@@ -54,7 +54,7 @@ interface Props {
 
 const Chat = ({ open, close, activityId }: Props) => {
     const [message, setMessage] = useState<string>();
-    const [messages, setMessages] = useState<string[]>([]);
+    const [messages, setMessages] = useState<any[]>([]);
     const { user } = useContext(UserContext);
     const socket = useRef<any>();
 
@@ -65,16 +65,28 @@ const Chat = ({ open, close, activityId }: Props) => {
             socket.current = Stomp.over(so);
 
             socket.current.connect({}, (frame: any) => {
-                socket.current.subscribe(`/client/chat/${activityId}`);
+                socket.current.subscribe(
+                    `/client/chat/${activityId}`,
+                    (event: any) => {
+                        console.log(event.body);
+                        console.log(messages);
+                        setMessages([...messages, JSON.parse(event.body)]);
+                    }
+                );
             });
         }
     }, [open]);
 
     const sendMessage = () => {
-        socket.current.send(`/server/chat/${activityId}`, {
-            userId: user,
-            message: message,
-        });
+        console.log(activityId);
+        socket.current.send(
+            `/server/chat/${activityId}`,
+            {},
+            JSON.stringify({
+                userId: user,
+                message: message,
+            })
+        );
     };
 
     const onChangeMessage = (event: ChangeEvent<HTMLInputElement>) => {
@@ -90,16 +102,9 @@ const Chat = ({ open, close, activityId }: Props) => {
                     <Button onClick={close}>Lukk</Button>
                 </Flex>
                 <MessageBox>
-                    <StyledMessage
-                        isRecieved={false}
-                        sender={'Ole'}
-                        message={'Satans horebukk'}
-                    ></StyledMessage>
-                    <StyledMessage
-                        isRecieved={true}
-                        sender={'Taper'}
-                        message={'Kjør da Åre'}
-                    ></StyledMessage>
+                    {messages.map((msg, index) => (
+                        <h3 key={index}>{msg['message']}</h3>
+                    ))}
                 </MessageBox>
                 <SendMessage>
                     <TextField
