@@ -901,6 +901,46 @@ public class GiddControllerTest {
 
     @Test
     @Order(20)
+    public void getFriendRequests() throws Exception {
+        mockMvc.perform(post("/user/" + user1.getUserId() + "/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\n\"userId\":" + user1.getUserId() + ",\n" +
+                        "\"friendId\":" + user3.getUserId() + "}"
+                )).andExpect(status().isOk());
+
+        String returnString = mockMvc.perform(get("/user/" + user3.getUserId() + "/request")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject friendRequestsJSON = (JSONObject) parser.parse(returnString);
+        String friendRequests = friendRequestsJSON.get("users").toString();
+        JSONArray friendRequestsArray = (((JSONArray) parser.parse(friendRequests)));
+
+        assertEquals(1, friendRequestsArray.size());
+    }
+
+    @Test
+    @Order(21)
+    public void getSentFriendRequests() throws Exception {
+
+        String returnString = mockMvc.perform(get("/user/" + user1.getUserId() + "/sent")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        JSONParser parser = new JSONParser();
+        JSONObject friendRequestsJSON = (JSONObject) parser.parse(returnString);
+        String friendRequests = friendRequestsJSON.get("users").toString();
+        JSONArray friendRequestsArray = (((JSONArray) parser.parse(friendRequests)));
+
+        assertEquals(1, friendRequestsArray.size());
+    }
+
+    @Test
+    @Order(22)
     public void tearDown() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/group/" + group2.getGroupId()))

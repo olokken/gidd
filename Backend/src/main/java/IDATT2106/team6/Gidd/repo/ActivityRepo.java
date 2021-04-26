@@ -20,17 +20,13 @@ import javax.persistence.Query;
 @Repository
 public class ActivityRepo extends GiddRepo {
     private Logger log = new Logger(ActivityRepo.class.toString());
+
     public ActivityRepo() throws IOException {
         connect();
     }
 
     public EntityManager getEm(){
-        return super.emf.createEntityManager();
-    }
-
-    @Override
-    public void connect() throws IOException {
-        super.connect();
+        return emf.createEntityManager();
     }
 
     public boolean addActivity(Activity activity){

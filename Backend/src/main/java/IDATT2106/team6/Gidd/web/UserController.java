@@ -356,6 +356,71 @@ public class UserController {
                 .body(stringBuilder.toString());
     }
 
+    @GetMapping("/{userId}/request")
+    public ResponseEntity getAllFriendRequests(@PathVariable Integer userId){
+        log.debug("Received GetMapping to 'user/{userId}/request' with userId " + userId);
+        User user = userService.getUser(userId);
+
+        HttpHeaders header = new HttpHeaders();
+
+        if(user == null){
+            log.error("The user is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "The user does not exist");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        log.debug("Returning all users that has sent a request");
+        ArrayList<User> requests = userService.getRequest(user);
+
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body("{\"users\" :" + requests.toString() + "}");
+    }
+
+    @GetMapping("/{userId}/pending")
+    public ResponseEntity getAllSentRequests(@PathVariable Integer userId){
+        User user = userService.getUser(userId);
+
+        HttpHeaders header = new HttpHeaders();
+
+        if(user == null){
+            log.error("The user is null");
+            header.add("Status", "400 BAD REQUEST");
+            header.add("Content-Type", "application/json; charset=UTF-8");
+
+            Map<String, String> body = new HashMap<>();
+
+            body.put("error", "The user does not exist");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
+        }
+
+        ArrayList<User> sentRequests = userService.getSentRequest(user);
+
+        log.debug("Returning all user the user has sent a request to");
+        header.add("Status", "200 OK");
+        header.add("Content-Type", "application/json; charset=UTF-8");
+
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body("{\"users\" :" + sentRequests.toString() + "}");
+    }
+
     @GetMapping(value = "/{userId}/activity", produces = "application/json")
     public ResponseEntity getAllActivitiesForUser(@PathVariable Integer userId) {
         log.debug("Received GetMapping to '/user/{userId}/activity' with userId " + userId);
