@@ -1349,7 +1349,7 @@ public class GiddController {
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body(friendGroups.toString());
+                .body("{ \"groups\" : " + friendGroups.toString() + "}");
     }
 
     @DeleteMapping(value = "/user/{userId}/activity/{activityId}", produces = "application/json")
