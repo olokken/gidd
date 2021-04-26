@@ -6,6 +6,7 @@ import IDATT2106.team6.Gidd.models.FriendGroup;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.*;
 import IDATT2106.team6.Gidd.util.Logger;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
@@ -51,12 +53,13 @@ public class ChatController {
         Activity activity = activityService.getActivity(groupId);
         HashMap<String, String> body = new HashMap<>();
         if(activity != null) {
-            ArrayList<Chat> messageList = chatService.getMessages(activity);
+            List<Chat> messageList = chatService.getMessages(activity);
             if (messageList != null) {
+                JSONObject jsonObject = new JSONObject();
                 return ResponseEntity
                         .ok()
                         .headers(header)
-                        .body(messages.toString());
+                        .body(JSONArray.toJSONString(messageList));
             }
             return ResponseEntity
                     .badRequest()
@@ -90,6 +93,4 @@ public class ChatController {
             template.convertAndSend("{\"error\":\"could not save chat message\"");
         }
     }
-
-
 }

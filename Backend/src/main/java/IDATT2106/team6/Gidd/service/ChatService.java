@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ChatService {
@@ -19,7 +20,7 @@ public class ChatService {
         return repo.saveMessage(chat);
     }
 
-    public ArrayList<Chat> getMessages(Activity activity) {
+    public List<Chat> getMessages(Activity activity) {
         //todo check if groupId exists, return false if not
         return repo.getAllChats(activity);
     }

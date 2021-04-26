@@ -45,17 +45,18 @@ public class MessageRepo extends GiddRepo {
         }
     }
 
-    public ArrayList<Chat> getAllChats(Activity activity){
+    public List<Chat> getAllChats(Activity activity){
         log.info("getting all tags");
         EntityManager em = getEm();
         List<Chat> groupMessages = null;
 
         try {
-            
-            Query q = em.createQuery("SELECT a FROM Chat a where a.activity =?1", Chat.class);
-            q.setParameter(1, activity);
+
+            Query q = em.createNativeQuery("SELECT * FROM CHAT WHERE group_id = 1109937914");
+
             System.out.println("query is " + q.toString());
             groupMessages = q.getResultList();
+            System.out.println("result list is " + groupMessages.size());
         }catch (Exception e){
             log.error("getting all chats failed due to " + e.getMessage());
         }finally {
