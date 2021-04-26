@@ -16,9 +16,9 @@ function openConnection(group){
 }
 
 // Send message to the connection
-function sendMessage(message, userId) {
+function sendMessage(activityId, message, userId) {
     stompClient.send("/server/chat/" + groupId, {}, JSON.stringify({
-        user: userId,
+        userId: userId,
         message: message
     }));
 }

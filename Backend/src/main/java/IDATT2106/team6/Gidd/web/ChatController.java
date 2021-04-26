@@ -21,9 +21,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -40,18 +41,20 @@ public class ChatController {
     private ActivityService activityService;
     @Autowired
     private FriendGroupService friendGroupService;
-    @MessageMapping("/chat/{groupId}")
-    public void sendMessage(@DestinationVariable Integer groupId, @Payload String message) throws ParseException {
-        log.info("recieved message to group " + groupId);
+    @MessageMapping("/chat/{activityId}")
+    public void sendMessage(@DestinationVariable Integer activityId, @Payload String message) throws ParseException {
+        log.info("recieved message to group " + activityId);
         JSONParser parser = new JSONParser();
+        System.out.println("message is: " + message);
         JSONObject chatJson = (JSONObject) parser.parse(message);
-        Activity activity = activityService.getActivity(chatJson.getAsNumber("activityId").intValue());
+        Activity activity = activityService.getActivity(activityId);
         User user = userService.getUser(chatJson.getAsNumber("userId").intValue());
 
         Chat newChat = new Chat(activity, user, String.valueOf(chatJson.get("message")));
-        template.convertAndSend("/client/chat/" + groupId, message);
+        //todo make thread safe and ensure that id does not exist
+        newChat.setChatId(getRandomID());
         if(chatService.saveChat(newChat)){
-            template.convertAndSend("/client/chat/" + groupId, message);
+            template.convertAndSend("/client/chat/" + activityId, message);
         }
         else {
             template.convertAndSend("{\"error\":\"could not save chat message\"");
