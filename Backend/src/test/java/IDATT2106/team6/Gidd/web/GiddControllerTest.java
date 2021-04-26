@@ -109,7 +109,7 @@ public class GiddControllerTest {
 
         activity1 = new Activity(121, "skrive tester",
                 new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
-                0, user1, 50, 5, "det som du gjør nå", new byte[]{-5},
+                0, user1, 50, 5, "det som du gjør nå", new Image(),
                 ActivityLevel.HIGH, new ArrayList<>(), 0.001, 0.005, null);
 
         group1 = new FriendGroup(1, "GruppeTest", user1);
@@ -259,7 +259,7 @@ public class GiddControllerTest {
         newValues.put("userId", user1.getUserId());
         newValues.put("capacity", 5);
         newValues.put("description", "changed description");
-        newValues.put("image", "data:image/png;base64");
+        newValues.put("image", "");
         newValues.put("activityLevel", "HIGH");
       //newValues.put("tags", "fotball");
         newValues.put("latitude", 2.0);
@@ -926,7 +926,7 @@ public class GiddControllerTest {
     @Order(21)
     public void getSentFriendRequests() throws Exception {
 
-        String returnString = mockMvc.perform(get("/user/" + user1.getUserId() + "/sent")
+        String returnString = mockMvc.perform(get("/user/" + user1.getUserId() + "/pending")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
