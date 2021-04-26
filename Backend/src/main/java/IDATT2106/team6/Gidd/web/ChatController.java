@@ -27,7 +27,7 @@ import java.util.HashMap;
 
 @CrossOrigin(origins = "*")
 @Controller
-@RequestMapping("/chat")
+@RequestMapping("")
 public class ChatController {
     private static Logger log = new Logger(ChatController.class.toString());
     @Autowired
@@ -40,7 +40,7 @@ public class ChatController {
     private ActivityService activityService;
     @Autowired
     private FriendGroupService friendGroupService;
-    @MessageMapping("/{activityId}")
+    @MessageMapping("/chat/{groupId}")
     public void sendMessage(@DestinationVariable Integer groupId, @Payload String message) throws ParseException {
         // Set the message time as now before sending it back to the topic
         log.info("recieved message to group " + groupId);
