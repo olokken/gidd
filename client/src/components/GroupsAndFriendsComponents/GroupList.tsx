@@ -26,12 +26,13 @@ const StyledUl = styled.ul`
 interface Props {
     friends: User[];
     groups: Group[];
+    handleGroupClicked: (group:Group) => void;
 }
 
 
 
 
-const GroupList = ({ friends, groups }: Props) => {
+const GroupList = ({ friends, groups, handleGroupClicked }: Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User[]>([]);
     const [chosenGroupName, setChosenGroupName] = useState<string>('');
@@ -138,15 +139,15 @@ const GroupList = ({ friends, groups }: Props) => {
             />
             <h2>Dine grupper</h2>
             <StyledUl>
-            {groups.filter((group: Group) => {
-                if (searchInput === "") {
-                    return group
-                } else if (group.groupName != null && (group.groupName).toLowerCase().includes(searchInput.toLocaleLowerCase())) {
-                    return group
+                {groups.filter((group: Group) => {
+                    if (searchInput === "") {
+                        return group
+                    } else if (group.groupName != null && (group.groupName).toLowerCase().includes(searchInput.toLocaleLowerCase())) {
+                        return group
+                    }
+                }).map((group: Group) =>
+                    <GroupCard key={group.groupId} group={group} handleGroupClicked={handleGroupClicked}/>)
                 }
-            }).map((group: Group) =>
-                <GroupCard key={group.groupId} group={group} />)
-            }
             </StyledUl>
         </StyledContainer >
     );

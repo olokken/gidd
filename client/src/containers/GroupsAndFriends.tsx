@@ -8,6 +8,7 @@ import React, {
 import styled from 'styled-components';
 import FriendList from '../components/GroupsAndFriendsComponents/FriendList';
 import GroupList from '../components/GroupsAndFriendsComponents/GroupList';
+import FeedCard from '../components/GroupsAndFriendsComponents/FeedCard';
 import User from '../interfaces/User';
 import axios from '../Axios'
 import { UserContext } from '../UserContext';
@@ -25,12 +26,29 @@ const Container = styled.div`
 `;
 
 
+
+
 const GroupsAndFriends = () => {
     const [friends, setFriends] = useState<User[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
     const { user, setUser } = useContext(UserContext);
-    const [selectedGroup, setSelectedGroup] = useState<Group>();
+    const [selectedGroup, setSelectedGroup] = useState<Group>({
+        owner: {
+            firstName: '',
+            surname: '',
+            userID: '',
+            email: '',
+            picture: '',
+            password: '',
+            phoneNumber: '',
+            activityLevel: '',
+            points: ''
+        },
+        groupName: '',
+        groupId: '123123',
+        users: []
+    });
 
     //henter alle users
     useEffect(() => {
@@ -54,6 +72,11 @@ const GroupsAndFriends = () => {
             })
             .catch((error) => console.log(error));
     }, [friends, user]);
+
+    const handleGroupClicked = (group: Group) => {
+        console.log(group);
+        setSelectedGroup(group);
+    }
 
     //sjekker om user finnes i friends
     const FriendCheck = (test: any) => {
@@ -84,11 +107,11 @@ const GroupsAndFriends = () => {
                 <FriendList users={users} friends={friends} />
             </div>
             <div style={{ width: '57%' }}>
-
+                <FeedCard selectedGroup={selectedGroup}></FeedCard>
             </div>
 
             <div style={{ width: '20%' }}>
-                <GroupList friends={friends} groups={groups} />
+                <GroupList friends={friends} groups={groups} handleGroupClicked={handleGroupClicked} />
             </div>
         </Container>
     );

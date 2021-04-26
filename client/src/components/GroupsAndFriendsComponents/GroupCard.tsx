@@ -34,16 +34,17 @@ const TitleArea = styled.div`
 
 interface Props {
     group: Group;
+    handleGroupClicked: (group:Group) => void;
 }
 
 
-const GroupCard = ({ group, }: Props) => {
+const GroupCard = ({ group, handleGroupClicked }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     return (
         <div>
             <Card
                 style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
-                onClick={() => (console.log(group))}
+                onClick={() => handleGroupClicked(group)}
             >
 
                 <CardInformation>
