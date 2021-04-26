@@ -229,7 +229,7 @@ public class Activity {
             ", \n\"capacity\":" + capacity +
             ", \n\"groupId\":" + groupId +
             ", \n\"description\":" + "" + description + "" +
-            ", \n\"image\":" + "\"" + image.getDatatype() + Base64.getEncoder().encodeToString(image.getBytes()) +"\"" +
+            ", \n\"image\":" + "\"" + image.getDatatype() + "," + Base64.getEncoder().encodeToString(image.getBytes()) +"\"" +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
             ", \n\"tags\":" + tags.toString() +
             ", \n\"equipments\":" + equipments.toString() +
