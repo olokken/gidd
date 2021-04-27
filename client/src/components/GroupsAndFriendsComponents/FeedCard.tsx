@@ -14,8 +14,16 @@ import axios from '../../Axios'
 import User from '../../interfaces/User';
 import { UserContext } from '../../UserContext';
 import { useContext } from 'react';
+import ActivityInformation from '../ActivityComponents/ActivityInformation';
 
+const StyledHeader = styled.h2`
+    text-align: center;
+    font-size:30px;
+`;
 
+const StyledParagraph = styled.p`
+    font-size:20px;
+`;
 
 const FeedContainer = styled.div`
     margin-left:20px;
@@ -47,12 +55,13 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
     const [openChoiceBox, setOpenChoiceBox] = useState<boolean>(false);
     const [nextActivity, setNextActivity] = useState<ActivityResponse>();
     const [openActivityPopup, setOpenActivityPopup] = useState<boolean>(false);
+    const [changeActivityPopup, setChangeActivityPopup] = useState<boolean>(false);
     const [selectedUser, setSelectedUser] = useState<User>({
         firstName: '',
         surname: '',
         userID: '',
         email: '',
-        picture: '',
+        image: '',
         password: '',
         phoneNumber: '',
         activityLevel: '',
@@ -66,7 +75,7 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
             console.log(response.data['activities']);
             const nextAct = await sortNextActivity(response.data['activities'])
             setNextActivity(nextAct)
-        }).catch(error => {
+        }).then(() => updateGroups()).catch(error => {
             console.log('Kunne ikke hente gruppens neste aktivitet ' + error.message)
         })
     }
@@ -87,11 +96,9 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
 
     useEffect(() => {
         getNextActivity();
-    }, []);
+    }, [selectedGroup, openPopup]);
 
-    useEffect(() => {
-        updateGroups();
-    }, [selectedGroup]);
+
 
     const handleUserClicked = (userClicked: User) => {
         if (Object.values(userClicked)[0].toString() !== user && user === Object.values(selectedGroup.owner)[0].toString()) {
@@ -100,10 +107,35 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
         }
     }
 
+    const register = (activityId: number): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            axios.delete(`/user/${user}/activity/${activityId}`);
+            resolve();
+        });
+    };
+
+    const unRegister = (activityId: number): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            axios.post('/user/activity', {
+                userId: user,
+                activityId: activityId,
+            });
+            resolve();
+        });
+    };
+
     const handleLeaveGroup = () => {
         leaveGroup()
         updateGroups()
     }
+
+
+    const deleteActivity = (id: number) => {
+        axios
+            .delete(`/activity/${id}`)
+            .then(getNextActivity)
+            .then(() => window.location.reload());
+    };
 
     const handleOnChangeOwner = () => {
         const url = `/group/${selectedGroup.groupId}`
@@ -124,7 +156,7 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
     return (
         selectedGroup.groupName !== '' ?
             <FeedContainer>
-                <h2>{selectedGroup.groupName}</h2>
+                <StyledHeader >{selectedGroup.groupName}</StyledHeader>
                 <List
                     style={{
                         width: '40%',
@@ -167,13 +199,30 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
                 </List>
                 <TransformDiv>
                     {nextActivity ?
+
                         <ActivityCard
                             activity={nextActivity}
                             openPopup={openActivityPopup}
                             setOpenPopup={setOpenActivityPopup}
                             setActivity={setNextActivity}></ActivityCard> :
-                        <p>Finner ingen aktivitet aktiviteter for denne gruppen, legg til en ny aktivitet!</p>}
+                        <StyledParagraph>Finner ingen aktivitet aktiviteter for denne gruppen, legg til en ny aktivitet!</StyledParagraph>}
                 </TransformDiv>
+                {nextActivity ?
+                    <Popup
+                        openPopup={openActivityPopup}
+                        setOpenPopup={setOpenActivityPopup}
+                        maxWidth="md"
+                    >
+                        <ActivityInformation
+                            register={register}
+                            unRegister={unRegister}
+                            deleteActivity={deleteActivity}
+                            activity={nextActivity}
+                            setOpenPopup={setOpenActivityPopup}
+                            openPopup={openActivityPopup}
+                        />
+                    </Popup>
+                    : <div></div>}
                 <Button
                     fullWidth
                     onClick={() => setOpenPopup(!openPopup)}

@@ -36,21 +36,21 @@ const GroupsAndFriends = () => {
     const [friends, setFriends] = useState<User[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
     const [selectedGroup, setSelectedGroup] = useState<Group>({
         owner: {
             firstName: '',
             surname: '',
             userID: '',
             email: '',
-            picture: '',
+            image: '',
             password: '',
             phoneNumber: '',
             activityLevel: '',
             points: ''
         },
         groupName: '',
-        groupId: '0',
+        groupId: '-1',
         users: []
     });
 
@@ -78,20 +78,16 @@ const GroupsAndFriends = () => {
     //henter alle dine grupper
     useEffect(() => {
         updateGroups();
-    }, [friends, user, selectedGroup]);
+    }, [groups, selectedGroup]);
 
     const updateGroups = () => {
         const url = `user/${user}/group`
         axios.get(url).then(response => {
             setGroups(response.data['groups'])
-            if (selectedGroup.groupId === '0' && response.data['groups'].length > 0) {
+            if (selectedGroup.groupId === '-1') {
                 setSelectedGroup(response.data['groups'][0])
             }
-        }).then(() => groups.forEach(group => {
-            if (group.groupId === selectedGroup.groupId) {
-                setSelectedGroup(group);
-            }
-        })).catch(error => {
+        }).catch(error => {
             console.log('Kunne ikke hente dine grupper' + error.message);
         })
     }
@@ -111,7 +107,6 @@ const GroupsAndFriends = () => {
     }, [friends, user]);
 
     const handleGroupClicked = (group: Group) => {
-        console.log(group);
         setSelectedGroup(group);
     }
 
@@ -130,7 +125,7 @@ const GroupsAndFriends = () => {
                         surname: '',
                         userID: '',
                         email: '',
-                        picture: '',
+                        image: '',
                         password: '',
                         phoneNumber: '',
                         activityLevel: '',
@@ -184,28 +179,28 @@ const GroupsAndFriends = () => {
                 <div style={{ width: '57%' }}>
                     <FeedCard selectedGroup={selectedGroup} updateGroups={updateGroups} leaveGroup={leaveGroup}></FeedCard>
                 </div>
-
                 <div style={{ width: '20%', minWidth: '200px', marginRight: '20px' }}>
-                    <GroupList  updateGroups={updateGroups} friends={friends} groups={groups} handleGroupClicked={handleGroupClicked} />
+                    <GroupList updateGroups={updateGroups} friends={friends} groups={groups} handleGroupClicked={handleGroupClicked} />
                 </div>
-        </Container>
+            </Container>
         );
     };
 
-const displayMobile = () => {
-    const handleDrawerOpen = () =>
-        setState((prevState) => ({ ...prevState, drawerOpen: true }));
+    const displayMobile = () => {
+        const handleDrawerOpen = () =>
+            setState((prevState) => ({ ...prevState, drawerOpen: true }));
 
-    const handleDrawerClose = () =>
-        setState((prevState) => ({ ...prevState, drawerOpen: false }));
+        const handleDrawerClose = () =>
+            setState((prevState) => ({ ...prevState, drawerOpen: false }));
 
-    const handleDrawerOpen2 = () =>
-        setState((prevState) => ({ ...prevState, drawerOpen2: true }));
+        const handleDrawerOpen2 = () =>
+            setState((prevState) => ({ ...prevState, drawerOpen2: true }));
 
-    const handleDrawerClose2 = () =>
-        setState((prevState) => ({ ...prevState, drawerOpen2: false }));
+        const handleDrawerClose2 = () =>
+            setState((prevState) => ({ ...prevState, drawerOpen2: false }));
 
-    return (
+        return (
+            <div>
                 <Container>
                     <Button
                         style={{
@@ -278,12 +273,16 @@ const displayMobile = () => {
                         <GroupList onClick={handleDrawerClose2} updateGroups={updateGroups} friends={friends} groups={groups} handleGroupClicked={handleGroupClicked} />
                     </Drawer>
                 </Container>
-    );
-};
+                <div style={{ width: '100%' }}>
+                    <FeedCard selectedGroup={selectedGroup} updateGroups={updateGroups} leaveGroup={leaveGroup}></FeedCard>
+                </div>
+            </div>
+        );
+    };
 
-return (
-                <div>{mobileView ? displayMobile() : displayDesktop()}</div>
-);
+    return (
+        <div>{mobileView ? displayMobile() : displayDesktop()}</div>
+    );
 };
 
 export default GroupsAndFriends;
