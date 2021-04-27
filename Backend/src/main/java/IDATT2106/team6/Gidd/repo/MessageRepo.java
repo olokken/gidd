@@ -27,7 +27,7 @@ public class MessageRepo extends GiddRepo {
     }
 
     public boolean saveMessage(Chat chat){
-        log.info("adding chat" + chat.toString());
+        log.info("adding chat " + chat.getChatId());
         EntityManager em = getEm();
 
         try {
@@ -52,11 +52,10 @@ public class MessageRepo extends GiddRepo {
 
         try {
 
-            Query q = em.createNativeQuery("SELECT * FROM CHAT WHERE group_id = 1109937914");
-
-            System.out.println("query is " + q.toString());
+            Query q = em.createNativeQuery("SELECT * FROM CHAT WHERE group_id = ?1", Chat.class);
+            q.setParameter(1, activity.getActivityId());
             groupMessages = q.getResultList();
-            System.out.println("result list is " + groupMessages.size());
+            log.info("result list size is " + groupMessages.size());
         }catch (Exception e){
             log.error("getting all chats failed due to " + e.getMessage());
         }finally {

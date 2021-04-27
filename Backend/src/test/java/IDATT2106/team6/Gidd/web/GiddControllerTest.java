@@ -55,38 +55,9 @@ public class GiddControllerTest {
     private FriendGroup group1;
     private FriendGroup group2;
 
-   /* @Before
-    public void initialize() throws Exception {
-        System.out.println("Initalizing tests");
-
-        user1 = new User(11, "1@1", "pass1", "Olav", "Skundeberg", 123, 
-        ActivityLevel.HIGH,
-        Provider.LOCAL);
-
-        user2 = new User(22, "2@2", "pass2", "Ole", "Christian", 1232, 
-        ActivityLevel.HIGH,
-        Provider.LOCAL);
-
-        user3 = new User(33, "3@3", "pass3", "Hans Jakob", "Matte", 1233,
-        ActivityLevel.HIGH,
-        Provider.LOCAL);
-
-        user4 = new User(44, "4@4", "pass4", "Jonas", "Støhre", 1234,
-        ActivityLevel.HIGH, Provider.LOCAL);
-
-        user5 = new User(55, "5@5", "pass5", "Erna", "Solberg", 1235,
-        ActivityLevel.HIGH, Provider.LOCAL);
-
-        activity1 = new Activity(121, "skrive tester",
-        new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
-        0, user1, 50, 5, "det som du gjør nå", new byte[]{-5},
-        ActivityLevel.HIGH, null, 0.001, 0.005, null);
-    }*/
-
     @BeforeAll
     public void beforeAll(){
-        System.out.println("Beginning a test!\n");
-
+        System.out.println("Beginning the tests!\n");
 
         user1 = new User(11, "1@1", "pass1", "Olav", "Skundeberg", 123,
                 ActivityLevel.HIGH,
@@ -980,6 +951,32 @@ public class GiddControllerTest {
     @Order(23)
     public void giveRatingTest() throws Exception {
         //TODO
+        mockMvc.perform(post("/user/" + user1.getUserId() + "/rating")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\n\"userId\": \"" + user1.getUserId() + "\",\n" +
+                        "\"rating\": \"5\"" +
+                        "}"
+                )).andExpect(status().isOk());
+
+        mockMvc.perform(post("/user/" + user1.getUserId() + "/rating")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\n\"userId\": \"" + user1.getUserId() + "\",\n" +
+                        "\"rating\": \"1\"" +
+                        "}"
+                )).andExpect(status().isOk());
+
+        String averageRespons = mockMvc.perform(get("/user/" + user1.getUserId() + "/rating")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+
+        JSONParser parser = new JSONParser();
+        JSONObject JSONAverage = (JSONObject) parser.parse(averageRespons);
+
+        assertEquals(String.valueOf(3.0), JSONAverage.get("averageRating").toString());
     }
 
     @Test
@@ -988,8 +985,16 @@ public class GiddControllerTest {
         //TODO
     }
 
+    //TODO
+    //Test for aktivitet tilhørende gruppe
+
     @Test
-    @Order(25)
+    @Order(26)
+    public void getChatTest() throws Exception {
+
+    }
+    @Test
+    @Order(27)
     public void tearDown() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/group/" + group2.getGroupId()))
