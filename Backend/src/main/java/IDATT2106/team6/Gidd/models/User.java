@@ -225,7 +225,7 @@ public class User {
     }
 
     public String toJSON() {
-        String img;
+        String img = "";
         try{
             img = "\"" + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes())  + '\"';
         } catch(Exception e) {
