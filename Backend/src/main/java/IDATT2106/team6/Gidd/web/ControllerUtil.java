@@ -54,6 +54,9 @@ public class ControllerUtil {
                 Map.Entry<String, Object> pair = (Map.Entry) stringObjectEntry;
                 log.debug("Validating pair: " + pair.getKey() + ":" + pair.getValue());
                 if (String.valueOf(pair.getValue()).isBlank() || pair.getValue() == null) {
+                    if(pair.getKey() == "image"){
+                        break;
+                    }
                     log.error(pair.getKey() + " : " + pair.getValue() + " could not be validated");
                     return false;
                 }
