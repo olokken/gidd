@@ -60,22 +60,22 @@ public class GiddControllerTest {
         System.out.println("Beginning the tests!\n");
 
         user1 = new User(11, "1@1", "pass1", "Olav", "Skundeberg", 123,
-                ActivityLevel.HIGH,
+                ActivityLevel.HIGH, new Image(),
                 Provider.LOCAL);
 
         user2 = new User(22, "2@2", "pass2", "Ole", "Christian", 1232,
-                ActivityLevel.HIGH,
+                ActivityLevel.HIGH, new Image(),
                 Provider.LOCAL);
 
         user3 = new User(33, "3@3", "pass3", "Hans jakob", "Matte", 1233,
-                ActivityLevel.HIGH,
+                ActivityLevel.HIGH, new Image(),
                 Provider.LOCAL);
 
         user4 = new User(44, "4@4", "pass4", "Jonas", "Støhre", 1234,
-                ActivityLevel.HIGH, Provider.LOCAL);
+                ActivityLevel.HIGH, new Image(), Provider.LOCAL);
 
         user5 = new User(55, "5@5", "pass5", "Erna", "Solberg", 1235,
-                ActivityLevel.LOW, Provider.LOCAL);
+                ActivityLevel.LOW, new Image(), Provider.LOCAL);
 
         activity1 = new Activity(121, "skrive tester",
                 new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),

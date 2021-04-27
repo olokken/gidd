@@ -82,7 +82,7 @@ public class ActivityController {
             }
             newId = 0;
 
-            Image image = createImage(map.get("image").toString());
+            Image image = imageService.createImage(map.get("image").toString());
             if (image == null) {
                 return ResponseEntity
                     .badRequest()
@@ -266,7 +266,7 @@ public class ActivityController {
         }
 
         Image newImage = activity.getImage();
-        String[] imgInfo = splitBase(map.get("image").toString());
+        String[] imgInfo = imageService.splitBase(map.get("image").toString());
         newImage.setDatatype(imgInfo[0]);
         newImage.setBytes(Base64.getDecoder().decode(imgInfo[1]));
         imageService.editImage(newImage);
@@ -566,27 +566,6 @@ public class ActivityController {
         }
         log.debug("final tag list " + tags.toString());
         return tags;
-    }
-
-    private Image createImage(String base) {
-        Image img = new Image();
-        if (base.length() > 32) {
-            String[] res = splitBase(base);
-            img = new Image(res[0], Base64.getDecoder().decode(res[1]));
-        }
-        if (imageService.newImage(img)) {
-            return img;
-        }
-        return null;
-    }
-
-    private String[] splitBase(String base) {
-        if(base.length()>32) {
-            String[] res = base.split(",");
-            res[0] += ",";
-            return res;
-        }
-        return new String[]{"",""};
     }
 
     private List<ActivityEquipment> newEquipment (Activity activity, String equipList) {

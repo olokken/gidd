@@ -25,13 +25,14 @@ public class UserService {
 	}
 
     public boolean editUser(int id, String email, String password, String firstname, String surname,
-                            int phoneNumber, ActivityLevel activityLevel, Provider provider){
+                            int phoneNumber, ActivityLevel activityLevel, Image image, Provider provider){
         try {
             log.debug("In editUser");
             List<User> friends = getUser(id).getFriendList();
             log.debug("Got friends");
             User newUser =
-                new User(id, email, password, firstname, surname, phoneNumber, activityLevel, provider);
+                new User(id, email, password, firstname, surname, phoneNumber,
+                    activityLevel, image, provider);
             log.debug("Setting friends");
             newUser.setFriendList(friends);
             log.info("updating user: " + newUser.toString());
@@ -49,11 +50,11 @@ public class UserService {
     }
 
     public User registerUser(int id, String email, String password, String firstname,
-                             String surname,
-                             int phoneNumber, ActivityLevel activityLevel,
-                             Provider provider){
+                             String surname, int phoneNumber, ActivityLevel activityLevel,
+                             Image image, Provider provider){
 
-		User newUser = new User(id, email, password, firstname, surname, phoneNumber, activityLevel, provider);
+		User newUser = new User(id, email, password, firstname, surname, phoneNumber,
+                            activityLevel, image, provider);
         log.info("creating new user: " + newUser.getUserId());
         boolean result = repo.addUser(newUser);
         log.info("adding new user was " + result);

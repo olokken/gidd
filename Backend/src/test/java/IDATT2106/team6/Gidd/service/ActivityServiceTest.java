@@ -26,10 +26,10 @@ public class ActivityServiceTest {
     @Mock
     private ActivityRepo repo;
     private User user1 = new User(11, "1@1", "pass1", "Olav", "Skundeberg", 123,
-            ActivityLevel.HIGH,
+            ActivityLevel.HIGH, new Image(),
             Provider.LOCAL);
     private User user2 = new User(22, "2@2", "pass2", "Ole", "Christian", 1232,
-            ActivityLevel.HIGH,
+            ActivityLevel.HIGH, new Image(),
             Provider.LOCAL);
 
     private Activity activity1 = new Activity(121, "skrive tester",

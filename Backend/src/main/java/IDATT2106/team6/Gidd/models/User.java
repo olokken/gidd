@@ -41,10 +41,14 @@ public class User {
     @CascadeOnDelete
     @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
     private List<User> friendList;
+    @CascadeOnDelete
+    @OneToOne(targetEntity = Image.class, fetch = FetchType.EAGER)
+    private Image image;
 
     public User(int id, String email, String password,
                 String firstName, String surname,
-                int phoneNumber, ActivityLevel activityLevel, Provider provider){
+                int phoneNumber, ActivityLevel activityLevel,
+                Image image, Provider provider){
         this.userId = id;
         this.email = email;
         this.firstName = firstName;
@@ -54,7 +58,7 @@ public class User {
         this.authProvider = provider;
         this.activities = new ArrayList<ActivityUser>();
         this.points = 100;
-
+        this.image = image;
         //generates random salt
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
@@ -207,6 +211,14 @@ public class User {
 
     public void addFriend(User user) {
         this.friendList.add(user);
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public String toJSON() {
