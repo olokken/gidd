@@ -20,23 +20,36 @@ public class UserService {
     }
 
 	public boolean login(String email, String password){
-        log.info("logging in user with email " + email);
-		return getUser(email).verifyPassword(password);
+        log.info("logging in user with email " + email.trim());
+		return getUser(email.trim()).verifyPassword(password);
 	}
 
     public boolean editUser(int id, String email, String password, String firstname, String surname,
-                            int phoneNumber, ActivityLevel activityLevel, Provider provider){
+                            int phoneNumber, ActivityLevel activityLevel, Image image, Provider provider){
         try {
             log.debug("In editUser");
             List<User> friends = getUser(id).getFriendList();
             log.debug("Got friends");
             User newUser =
-                new User(id, email, password, firstname, surname, phoneNumber, activityLevel, provider);
+                new User(id, email, password, firstname, surname, phoneNumber,
+                    activityLevel, image, provider);
             log.debug("Setting friends");
             newUser.setFriendList(friends);
-            log.info("updating user: " + newUser.toString());
+            log.info("updating user with id: " + newUser.getUserId());
 
             return repo.updateUser(newUser);
+        } catch(Exception e) {
+            log.debug("An error was caught while updating user " + e.getMessage() + " | Local; " + e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    public boolean editUser (User u){
+        try {
+            log.debug("In editUser");
+            u.setFriendList(getUser(u.getUserId()).getFriendList());
+            log.debug("Got friends");
+            return repo.updateUser(u);
         } catch(Exception e) {
             log.debug("An error was caught while updating user " + e.getMessage() + " | Local; " + e.getLocalizedMessage());
         }
@@ -49,11 +62,11 @@ public class UserService {
     }
 
     public User registerUser(int id, String email, String password, String firstname,
-                             String surname,
-                             int phoneNumber, ActivityLevel activityLevel,
-                             Provider provider){
+                             String surname, int phoneNumber, ActivityLevel activityLevel,
+                             Image image, Provider provider){
 
-		User newUser = new User(id, email, password, firstname, surname, phoneNumber, activityLevel, provider);
+		User newUser = new User(id, email, password, firstname, surname, phoneNumber,
+                            activityLevel, image, provider);
         log.info("creating new user: " + newUser.getUserId());
         boolean result = repo.addUser(newUser);
         log.info("adding new user was " + result);
@@ -77,7 +90,7 @@ public class UserService {
     }
 
     public boolean removeActivity(int activityUserId, User user){
-        log.info("removing connection with id " + activityUserId + " from user " + user.toString());
+        log.info("removing connection with id " + activityUserId + " from user " + user.getUserId());
         return this.repo.removeActivity(activityUserId, user);
     }
 

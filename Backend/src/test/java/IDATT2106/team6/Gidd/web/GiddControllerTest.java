@@ -60,22 +60,22 @@ public class GiddControllerTest {
         System.out.println("Beginning the tests!\n");
 
         user1 = new User(11, "1@1", "pass1", "Olav", "Skundeberg", 123,
-                ActivityLevel.HIGH,
+                ActivityLevel.HIGH, new Image(),
                 Provider.LOCAL);
 
         user2 = new User(22, "2@2", "pass2", "Ole", "Christian", 1232,
-                ActivityLevel.HIGH,
+                ActivityLevel.HIGH, new Image(),
                 Provider.LOCAL);
 
         user3 = new User(33, "3@3", "pass3", "Hans jakob", "Matte", 1233,
-                ActivityLevel.HIGH,
+                ActivityLevel.HIGH, new Image(),
                 Provider.LOCAL);
 
         user4 = new User(44, "4@4", "pass4", "Jonas", "Støhre", 1234,
-                ActivityLevel.HIGH, Provider.LOCAL);
+                ActivityLevel.HIGH, new Image(), Provider.LOCAL);
 
         user5 = new User(55, "5@5", "pass5", "Erna", "Solberg", 1235,
-                ActivityLevel.LOW, Provider.LOCAL);
+                ActivityLevel.LOW, new Image(), Provider.LOCAL);
 
         activity1 = new Activity(121, "skrive tester",
                 new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
@@ -154,11 +154,11 @@ public class GiddControllerTest {
         //login user from order 1
         System.out.println("test 3");
         String tolken = mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON)
-        .content("{" +
-                "\"email\":\"" + user1.getEmail() + "\"," +
-                "\"password\":\"" + 123 + "\"," +
-                "\"provider\": \"" + "LOCAL\"" +
-                "}"))
+                .content("{" +
+                        "\"email\":\"" + user1.getEmail() + "\"," +
+                        "\"password\":\"" + 123 + "\"," +
+                        "\"provider\": \"" + "LOCAL\"" +
+                        "}"))
                 .andExpect(status().isOk()).andExpect((MockMvcResultMatchers.jsonPath("$.id").exists()))
                 .andReturn().getResponse().getContentAsString();
 
@@ -387,7 +387,7 @@ public class GiddControllerTest {
         JSONObject json2 = (JSONObject) parser.parse(error2);
         assertEquals("subject mismatch", json2.get("error"));
     }
-    
+
     @Order(8)
     @Test
     public void getSingleActivityTest() throws Exception {
@@ -531,7 +531,6 @@ public class GiddControllerTest {
         user3.setId(json.getAsNumber("id").intValue());
 
         //for both user 1 and two
-        System.out.println("test 13");
         mockMvc.perform(get("/user/" + user1.getUserId() + "/activity")
         .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -1597,6 +1596,20 @@ public class GiddControllerTest {
     }
 
     @Order(53)
+    @Test
+    public void getChatTest() throws Exception {
+        System.out.println("test 53");
+        mockMvc.perform(get("/chat/" + 123))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error")
+                        .value("the activity does not exist"));
+        mockMvc.perform(get("/chat/" + activity1.getActivityId()))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.activity").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.messages").isArray());
+    }
+
+    @Order(54)
     @Test
     public void tearDown() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders

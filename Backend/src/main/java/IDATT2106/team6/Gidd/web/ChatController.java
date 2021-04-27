@@ -57,9 +57,13 @@ public class ChatController {
                 for (Chat c : messageList){
                     messageJson.append(c.toJson()).append(",");
                 }
+
                 messageJson.append("]");
                 //trailing comma
-                messageJson.deleteCharAt(messageJson.length() - 2);
+                if (!messageList.isEmpty()) {
+                    messageJson.deleteCharAt(messageJson.length() - 2);
+                }
+                messageJson.append("}");
                 return ResponseEntity
                         .ok()
                         .headers(header)
@@ -95,7 +99,7 @@ public class ChatController {
         String json = "{" +
                 "\"user\":" + user.toJSON() +
                 ",\"message\":" + "\"" + chatJson.get("message") + "\"" +
-                ",\"timestamp\":" + "\"" + newChat.getTimeStamp().toString() + "\"" +
+                ",\"timestamp\":" + newChat.getTimeStamp().getTime() +
                 "}";
 
         int counter = 0;

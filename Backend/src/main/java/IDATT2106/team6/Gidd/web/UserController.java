@@ -12,12 +12,14 @@ import IDATT2106.team6.Gidd.models.*;
 import IDATT2106.team6.Gidd.service.ActivityService;
 import IDATT2106.team6.Gidd.service.ChatService;
 import IDATT2106.team6.Gidd.service.FriendGroupService;
+import IDATT2106.team6.Gidd.service.ImageService;
 import IDATT2106.team6.Gidd.service.RatingService;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
 import IDATT2106.team6.Gidd.util.PathTwoTokenRequired;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +53,8 @@ public class UserController {
     private ChatService chatService;
     @Autowired
     private RatingService ratingService;
+    @Autowired
+    private ImageService imageService;
 
     @GetMapping(value = "", produces = "application/json")
     public ResponseEntity getAllUsers() {
@@ -587,6 +591,13 @@ public class UserController {
             log.debug("Attempting to edit user");
             User user = userService.getUser(id);
             log.debug("Found user " + user.toString());
+
+            Image newImage = user.getImage();
+            String[] imgInfo = imageService.splitBase(map.get("image").toString());
+            newImage.setDatatype(imgInfo[0]);
+            newImage.setBytes(Base64.getDecoder().decode(imgInfo[1]));
+            imageService.editImage(newImage);
+
             boolean result = userService.editUser(
                     id,
                     map.get("email").toString(),
@@ -595,6 +606,7 @@ public class UserController {
                     map.get("surname").toString(),
                     Integer.parseInt(map.get("phoneNumber").toString()),
                     ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                    newImage,
                     user.getAuthProvider()
             );
 
@@ -634,7 +646,7 @@ public class UserController {
     @PathTwoTokenRequired
     @PutMapping(value = "/{id}")
     public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
-        log.info("recieved a put mapping for user with id: " + id + " and map " + map.toString());
+        log.info("receieved a put mapping for user with id: " + id);
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
         header.add("Content-Type", "application/json; charset=UTF-8");
@@ -689,6 +701,13 @@ public class UserController {
 
         try {
             User oldUser = userService.getUser(id);
+
+            Image newImage = oldUser.getImage();
+            String[] imgInfo = imageService.splitBase(map.get("image").toString());
+            newImage.setDatatype(imgInfo[0]);
+            newImage.setBytes(Base64.getDecoder().decode(imgInfo[1]));
+            imageService.editImage(newImage);
+
             boolean result = userService.editUser(
                     id,
                     map.get("newEmail").toString(),
@@ -697,9 +716,10 @@ public class UserController {
                     map.get("surname").toString(),
                     Integer.parseInt(map.get("phoneNumber").toString()),
                     ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                    newImage,
                     oldUser.getAuthProvider());
 
-            log.info("edited user " + map.toString());
+            log.info("edited user " + id);
             if (result) {
                 log.info("created user");
                 header.add("Status", "201 CREATED");
@@ -902,6 +922,13 @@ public class UserController {
                     .body(formatJson(body));
         }
 
+        Image image = imageService.createImage(map.get("image").toString());
+        if (image == null) {
+            return ResponseEntity
+                .badRequest()
+                .body("nope");
+        }
+
         User result = userService.registerUser(
                 getRandomID(),
                 map.get("email").toString(),
@@ -910,6 +937,7 @@ public class UserController {
                 map.get("surname").toString(),
                 Integer.parseInt(map.get("phoneNumber").toString()),
                 ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                image,
                 Provider.LOCAL);
         log.info("created user with id: " + result.getUserId());
         HttpHeaders header = new HttpHeaders();

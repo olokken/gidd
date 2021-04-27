@@ -88,6 +88,7 @@ public class TokenRequiredAspect {
             HttpServletRequest request = reqAttributes.getRequest();
             // checks for token in request header
             String tokenInHeader = request.getHeader("token");
+            log.info("Token received: " + tokenInHeader);
             if (StringUtils.isEmpty(tokenInHeader)) {
                 log.error("No token was passed in header");
                 body.put("error", "empty token");

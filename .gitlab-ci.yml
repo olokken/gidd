@@ -8,12 +8,15 @@ backend-build:
     - cd Backend
     - "mvn compile"
 
+
 backend-test:
   stage: test
   only:
       - backend-dev
   script:
     - cd Backend
+    - touch src/main/resources/application.properties
+    - echo "$application" > src/main/resources/application.properties
     - mvn test
   needs: ["backend-build"]
 

@@ -3,6 +3,7 @@ package IDATT2106.team6.Gidd.web;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
 
+import IDATT2106.team6.Gidd.models.Image;
 import IDATT2106.team6.Gidd.models.Provider;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.SecurityService;
@@ -172,6 +173,7 @@ public class LoginController {
                 map.get("surname").toString(),
                 -1,
                 null,
+                new Image(),
                 provider);
 
         // TODO this segment can be removed once registerUser()

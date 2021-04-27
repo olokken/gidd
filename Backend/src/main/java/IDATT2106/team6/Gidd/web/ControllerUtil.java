@@ -48,10 +48,13 @@ public class ControllerUtil {
     }
 
     static boolean validateStringMap(Map<String, Object> map) {
-        log.info("validating map values of " + map.toString());
+        log.info("validating a map");
         for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
             try {
                 Map.Entry<String, Object> pair = (Map.Entry) stringObjectEntry;
+                if(pair.getKey() == "image"){
+                    break;
+                }
                 log.debug("Validating pair: " + pair.getKey() + ":" + pair.getValue());
                 if (String.valueOf(pair.getValue()).isBlank() || pair.getValue() == null) {
                     log.error(pair.getKey() + " : " + pair.getValue() + " could not be validated");

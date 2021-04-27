@@ -1,7 +1,6 @@
 package IDATT2106.team6.Gidd.web;
 
-import static IDATT2106.team6.Gidd.Constants.MULTIPLIERS;
-import static IDATT2106.team6.Gidd.Constants.NEW_ACTIVITY_BONUS;
+import static IDATT2106.team6.Gidd.Constants.*;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
 
@@ -25,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +81,7 @@ public class ActivityController {
             }
             newId = 0;
 
-            Image image = createImage(map.get("image").toString());
+            Image image = imageService.createImage(map.get("image").toString());
             if (image == null) {
                 body.put("error", "the image is null");
                 return ResponseEntity
@@ -95,13 +95,16 @@ public class ActivityController {
             log.debug("new activity id: " + newId);
 
             if(!insertUserActivityCoupling(user, newActivity)){
-                body.put("error", "something went wrong when coupling the user and activiyt");
+                body.put("error", "something went wrong when coupling the user and activity");
                 return ResponseEntity
                         .badRequest()
                         .headers(headers)
                         .body(formatJson(body));
             }
-            registerEquipmentToActivity(newId, map.get("equipmentList").toString());
+            if(!registerEquipmentToActivity(newId, map.get("equipmentList").toString())){
+                log.error("Equipment could not be registered correctly");
+                body.put("error", "could not add equipment, but continuing anyways");
+            }
 
             log.info("Activity created successfully");
 
@@ -247,8 +250,11 @@ public class ActivityController {
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         log.debug("User with id received");
         Activity activity = activityService.getActivity(actId);
+
+
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
+
         headers.add("Content-Type", "application/json; charset=UTF-8");
         if (activity == null || user == null) {
             body.put("error", "user or activity is null");
@@ -262,8 +268,32 @@ public class ActivityController {
         }
         log.info("old activity " + activity.getActivityId());
 
+        log.info("old activity " + activity.getActivityId());
+        
+        //edit points of participants
+        ActivityLevel oldLevel = activity.getActivityLevel();
+        ActivityLevel newLevel = ActivityLevel.valueOf(map.get("activityLevel").toString());
+        if (oldLevel != newLevel) {
+            for (int i = 0; i < activity.getRegisteredParticipants().size(); i++) {
+                User p = activity.getRegisteredParticipants().get(i).getUser();
+                if (i != 0) {
+                    p.setPoints(
+                            (int) (p.getPoints() - JOIN_ACTIVITY_BONUS * MULTIPLIERS[oldLevel.ordinal()])
+                                    +
+                                    (int) (JOIN_ACTIVITY_BONUS * MULTIPLIERS[newLevel.ordinal()]));
+                }
+                else {
+                    p.setPoints(
+                            (int) (p.getPoints() - NEW_ACTIVITY_BONUS * MULTIPLIERS[oldLevel.ordinal()])
+                                    +
+                                    (int) (NEW_ACTIVITY_BONUS * MULTIPLIERS[newLevel.ordinal()]));
+                }
+                userService.editUser(p);
+            }
+        }
+
         Image newImage = activity.getImage();
-        String[] imgInfo = splitBase(map.get("image").toString());
+        String[] imgInfo = imageService.splitBase(map.get("image").toString());
         newImage.setDatatype(imgInfo[0]);
         newImage.setBytes(Base64.getDecoder().decode(imgInfo[1]));
         imageService.editImage(newImage);
@@ -276,6 +306,7 @@ public class ActivityController {
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
         activity.setImage(newImage);
+
         // equipment
         List<ActivityEquipment> oldEquips = activity.getEquipments();
         System.out.println("OLD : " + oldEquips.toString());
@@ -401,14 +432,20 @@ public class ActivityController {
         log.debug(String.format("There are %d activities", activities.size()));
 
         HttpHeaders header = new HttpHeaders();
-        HashMap<String, String> body = new HashMap<>();
 
-        body.put("activity", activities.toString());
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
         log.debug(String.format("Returning %d activities", activities.size()));
-        return ResponseEntity
+        try{
+            return ResponseEntity
                 .ok()
+                .headers(header)
+                .body("{\"activities\": \n" + activities.toString() + "\n}");
+        } catch (Exception e) {
+            log.error("could not return cause of: " + e.getMessage() + " of cause: " + e.getCause() + " with message " + e.getCause().getMessage());
+        }
+        return ResponseEntity
+                .badRequest()
                 .headers(header)
                 .body("{\"activities\": \n" + activities.toString() + "\n}");
     }
@@ -420,7 +457,7 @@ public class ActivityController {
         HashMap<String, String> userMap = new HashMap<>();
         HashMap<String, String> errorCode = new HashMap<>();
         List<User> users = activityService.getUserFromActivity(id);
-        if (users.size() != 0) {
+        if (!users.isEmpty()) {
             log.info("users found for activity with id " + id);
             userMap.put("user", "");
 
@@ -549,6 +586,9 @@ public class ActivityController {
 
 
     private List<Tag> splitTags(String tagString) {
+        if(tagString.trim().equals("")){
+            return Collections.emptyList();
+        }
         log.info("splitting tags");
         ArrayList<String> tagNames = new ArrayList<>(Arrays.asList(tagString.split(",")));
         ArrayList<Tag> tags = new ArrayList<>();
@@ -568,27 +608,6 @@ public class ActivityController {
         return tags;
     }
 
-    private Image createImage(String base) {
-        Image img = new Image();
-        if (base.length() > 32) {
-            String[] res = splitBase(base);
-            img = new Image(res[0], Base64.getDecoder().decode(res[1]));
-        }
-        if (imageService.newImage(img)) {
-            return img;
-        }
-        return null;
-    }
-
-    private String[] splitBase(String base) {
-        if(base.length()>32) {
-            String[] res = base.split(",");
-            res[0] += ",";
-            return res;
-        }
-        return new String[]{"",""};
-    }
-
     private List<ActivityEquipment> newEquipment (Activity activity, String equipList) {
         List<ActivityEquipment> oldEquips = activity.getEquipments();
         List<Equipment> equips = toEquipList(equipList);
@@ -601,7 +620,6 @@ public class ActivityController {
             for (ActivityEquipment con: oldEquips) {
                 if (con.getEquipment().getEquipmentId() == e.getEquipmentId()){
                     res.add(con);
-                    System.out.println("Equipment match, adding to result list");
                     match = true;
                     break;
                 }
@@ -619,8 +637,6 @@ public class ActivityController {
                                                      List<ActivityEquipment> newEquips) {
         List<ActivityEquipment> differences = new ArrayList<>(oldEquips);
         differences.removeAll(newEquips);
-
-        System.out.println("DIFF : " + differences);
 
         try {
             boolean worked = true;
@@ -644,7 +660,6 @@ public class ActivityController {
         for (String name : equipString.split(",")) {
             name = name.toLowerCase();
             Equipment equipment = equipmentService.getEquipmentByDescription(name);
-            System.out.println("Found equipment with name ["+name+"]");
             if(equipment == null) {
                 log.debug("equipment " + name + " did not exist, creating");
                 equipment = new Equipment(name);
@@ -677,9 +692,7 @@ public class ActivityController {
         //Kalle insert-metode helt til den blir true
 
         ArrayList<ActivityUser> activityUsers = new ArrayList<>();
-        System.out.println("is null " + activityService == null);
         ArrayList<Activity> activities = activityService.getAllActivities();
-        System.out.println("activity null " + activities == null);
         for (Activity a : activities) {
             activityUsers.addAll(a.getRegisteredParticipants());
         }
