@@ -397,6 +397,18 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                 });
         }
     };
+
+
+    const showActivityLevel = (actLevel: string) => {
+        if (actLevel === 'HIGH') {
+            return 'Høyt'
+        } else if (actLevel === 'MEDIUM') {
+            return 'Middels'
+        } else if (actLevel === 'LOW') {
+            return 'Lavt'
+        }
+    }
+
     const onClickChangePass = () => {
         const putUrl = `/user/${user}`;
         const sendUser: User = currentUser;
@@ -854,7 +866,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                     Aktivitetsnivå
                                 </TableCell>
                                 <TableCell align="center">
-                                    {currentUser.activityLevel}
+                                    {showActivityLevel(currentUser.activityLevel)}
                                 </TableCell>
                                 <TableCell align="right">
                                     <Button

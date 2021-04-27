@@ -84,8 +84,7 @@ const ActivityInformation = ({
     const [openChat, setOpenChat] = useState<boolean>(false);
     const [currentAct, setCurrentAct] = useState<ActivityResponse>(activity);
     const classes = useStyles();
-    const date = new Date(activity.time);
-    const eventTime = new String(date);
+    const date = new Date(activity.time).toLocaleDateString() + ', ' + new Date(activity.time - 7200000).toLocaleTimeString();
     //Registration is 0 if registration is posible, 1 if you are already registered and 2 if the activity is ful
     const [registration, setRegistration] = useState<number>(1);
     const [isOwner, setIsOwner] = useState<boolean>(false);
@@ -119,6 +118,16 @@ const ActivityInformation = ({
             setOpenPopup(!openPopup);
         }
     };
+
+    const showActivityLevel = (actLevel: string) => {
+        if (actLevel === 'HIGH') {
+            return 'Høyt'
+        } else if (actLevel === 'MEDIUM') {
+            return 'Middels'
+        } else if (actLevel === 'LOW') {
+            return 'Lavt'
+        }
+    }
 
     useEffect(() => {
         let value = -1;
@@ -281,11 +290,11 @@ const ActivityInformation = ({
                             </Typography>
                             <Typography>
                                 <b>Vanskligheitsgrad:</b>{' '}
-                                {activity.activityLevel}
+                                {showActivityLevel(activity.activityLevel)}
                             </Typography>
                             <Typography>
                                 <b>Tidspunkt: </b>
-                                {eventTime}
+                                {date}
                             </Typography>
                         </Grid>
                     </Grid>
