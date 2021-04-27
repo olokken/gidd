@@ -132,11 +132,11 @@ public class GiddControllerTest {
         //login user from order 1
         System.out.println("test 2");
         String tolken = mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON)
-        .content("{" +
-                "\"email\":\"" + user1.getEmail() + "\"," +
-                "\"password\":\"" + 123 + "\"," +
-                "\"provider\": \"" + "LOCAL\"" +
-                "}"))
+                .content("{" +
+                        "\"email\":\"" + user1.getEmail() + "\"," +
+                        "\"password\":\"" + 123 + "\"," +
+                        "\"provider\": \"" + "LOCAL\"" +
+                        "}"))
                 .andExpect(status().isOk()).andExpect((MockMvcResultMatchers.jsonPath("$.id").exists()))
                 .andReturn().getResponse().getContentAsString();
 
@@ -991,7 +991,14 @@ public class GiddControllerTest {
     @Test
     @Order(26)
     public void getChatTest() throws Exception {
-
+        mockMvc.perform(get("/chat/" + 123))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error")
+                .value("the activity does not exist"));
+        mockMvc.perform(get("/chat/" + activity1.getActivityId()))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.activity").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.messages").isArray());
     }
     @Test
     @Order(27)

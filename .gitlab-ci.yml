@@ -7,6 +7,7 @@ backend-build:
   script:
     - cd Backend
     - "mvn compile"
+    - cp $application src/main/resources/application.properties
 
 backend-test:
   stage: test
