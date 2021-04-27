@@ -1,8 +1,6 @@
 package IDATT2106.team6.Gidd.web;
 
-import static IDATT2106.team6.Gidd.Constants.ADD_FRIEND_BONUS;
-import static IDATT2106.team6.Gidd.Constants.JOIN_ACTIVITY_BONUS;
-import static IDATT2106.team6.Gidd.Constants.MULTIPLIERS;
+import static IDATT2106.team6.Gidd.Constants.*;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.parsePhone;
@@ -261,11 +259,12 @@ public class UserController {
         log.debug("The deletion was successful");
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
-
         body.put("userId", String.valueOf(user.getUserId()));
         body.put("activityId", String.valueOf(activity.getActivityId()));
-        //todo bug hvor man kan få minuspoeng dersom man joiner en aktivitet, aktiviteten endres til høyere activity
-        // level, og man leaver denne
+
+        user.setPoints(
+                user.getPoints() - HOST_JOIN_BONUS
+        );
         userService.setPoints(user, (int) (user.getPoints() -
                 JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
         return ResponseEntity
@@ -870,6 +869,11 @@ public class UserController {
 
         try {
             if (insertUserActivityCoupling(user, activity)) {
+                User owner = activity.getUser();
+                //todo remove points when someone leaves your activity
+                owner.setPoints(
+                        owner.getPoints() + HOST_JOIN_BONUS
+                );
                 log.debug("The registration was successful");
                 header.add("Status", "200 OK");
                 header.add("Content-Type", "application/json; charset=UTF-8");
