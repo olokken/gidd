@@ -64,6 +64,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const [oldMail, setOldMail] = useState<string>('');
     const [newMail, setNewMail] = useState<string>('');
     const [phone, setPhone] = useState<string>('');
+    const [image, setImage] = useState<string>('');
     const [activityLevel, setActivityLevel] = useState<string>('');
     const [oldPassword, setOldPassword] = useState<string>('');
     const [editPass, setEditPass] = useState<string>('');
@@ -79,11 +80,18 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const [showChangeName, setShowChangeName] = useState<boolean>(false);
     const [showChangeEmail, setShowChangeEmail] = useState<boolean>(false);
     const [showChangePhone, setShowChangePhone] = useState<boolean>(false);
+    const [showChangeImage, setShowChangeImage] = useState<boolean>(false);
     const [showChangeActLvl, setShowChangeActLvl] = useState<boolean>(false);
     const [showChangePass, setShowChangePass] = useState<boolean>(false);
     const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
     const [isFirstTimeLogin, setIsFirstTimeLogin] = useState<boolean>(false);
     const [showIsFirstTime, setShowIsFirstTime] = useState<boolean>(false);
+    const token = localStorage.getItem('token');
+    const config = {
+        headers: {
+            token: token,
+        },
+    };
 
     const checkInput = (input: string): boolean => {
         if (input.length > 0 && input.charAt(0) !== ' ') {
@@ -106,10 +114,12 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         const input: string = (event.target as HTMLInputElement).value;
         setOldMail(input);
     };
+
     const onChangeNewMail = (event: ChangeEvent<HTMLInputElement>) => {
         const input: string = (event.target as HTMLInputElement).value;
         setNewMail(input);
     };
+
     const onChangePhone = (event: ChangeEvent<HTMLInputElement>) => {
         const input: string = (event.target as HTMLInputElement).value;
         setPhone(input);
@@ -120,11 +130,11 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         setVisualActivityLevel(input);
         let actLevel = input;
         if (actLevel === 'Lav') {
-            actLevel = 'Low'
+            actLevel = 'Low';
         } else if (actLevel === 'Middels') {
-            actLevel = 'Medium'
+            actLevel = 'Medium';
         } else {
-            actLevel = 'High'
+            actLevel = 'High';
         }
         setActivityLevel(actLevel);
     };
@@ -145,6 +155,34 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         setConfirmPass(input);
     };
 
+    const onChangeImage = async (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        console.log(event);
+        if (event.target.files != null) {
+            const file: File = event.target.files[0];
+            console.log(file);
+            const base64 = await convertBase64(file);
+            console.log(base64);
+            setImage(base64);
+            console.log(image);
+        }
+    };
+
+    const convertBase64 = (file: File) => {
+        return new Promise<any>((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
+
     const onClickChangeName = () => {
         const putUrl = `/user/${user}`;
         const sendUser: User = currentUser;
@@ -157,7 +195,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         if (checkInput(firstName)) {
             sendUser.firstName = firstName;
             axios
-                .put(putUrl, sendUser)
+                .put(putUrl, sendUser, config)
                 .then((response) => {
                     setCurrentUser({ ...currentUser, firstName: firstName });
                 })
@@ -171,7 +209,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
             sendUser.surname = surname;
             console.log(sendUser);
             axios
-                .put(putUrl, sendUser)
+                .put(putUrl, sendUser, config)
                 .then((response) => {
                     console.log(response);
                     setCurrentUser({ ...currentUser, surname: surname });
@@ -185,8 +223,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     };
 
     const onClickChangeMail = () => {
-        const usertest = localStorage.getItem('userId');
-        const putUrl = `/user/${usertest}`;
+        const putUrl = `/user/${user}`;
         if (checkInput(oldPassword) === false) {
             alert('Skriv inn gammelt passord for å endre brukeren');
             return;
@@ -202,10 +239,11 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                     password: oldPassword,
                     phoneNumber: currentUser.phoneNumber,
                     activityLevel: currentUser.activityLevel,
+                    image: currentUser.image,
                 };
                 console.log(sendUser);
                 axios
-                    .put(putUrl, sendUser)
+                    .put(putUrl, sendUser, config)
                     .then((response) => {
                         console.log(response);
                         setCurrentUser({ ...currentUser, email: newMail });
@@ -238,7 +276,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         if (checkInput(phone)) {
             sendUser.phoneNumber = phone;
             axios
-                .put(putUrl, sendUser)
+                .put(putUrl, sendUser, config)
                 .then((response) => {
                     console.log(response);
                     setCurrentUser({ ...currentUser, phoneNumber: phone });
@@ -248,6 +286,32 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                 );
             setPhone('');
             setShowChangePhone(!showChangePhone);
+        }
+    };
+
+    const onClickChangeImage = () => {
+        const putUrl = `/user/${user}`;
+        const sendUser: User = currentUser;
+
+        if (checkInput(oldPassword) === false) {
+            alert('Skriv inn gammelt passord for å endre brukeren');
+            return;
+        } else {
+            sendUser.password = oldPassword;
+        }
+        if (checkInput(image)) {
+            sendUser.image = image;
+            axios
+                .put(putUrl, sendUser, config)
+                .then((response) => {
+                    console.log(response);
+                    setCurrentUser({ ...currentUser, image: image });
+                })
+                .catch((error) =>
+                    console.log('Could not change image: ' + error.message)
+                );
+            setImage('');
+            setShowChangeImage(!showChangeImage);
         }
     };
 
@@ -268,7 +332,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         ) {
             sendUser.activityLevel = activityLevel.toUpperCase();
             axios
-                .put(putUrl, sendUser)
+                .put(putUrl, sendUser, config)
                 .then((response) => {
                     console.log(response);
                     setCurrentUser({
@@ -287,40 +351,45 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     };
 
     const onClickUpdateUser = () => {
-        console.log('hei hei')
+        console.log('hei hei');
         const putUrl = `/user/some/${user}`;
-        const token = localStorage.getItem('token')
-        const config = {
-            headers: {
-                token: token
-            }
-        }
+
         if (!checkInput(editPass) || !checkInput(confirmPass)) {
-            alert('Feil input i passord')
+            alert('Feil input i passord');
         } else if (editPass != confirmPass) {
             alert('Ulike passord');
         } else {
-            axios.put(putUrl, {
-                phoneNumber: phone,
-                email: currentUser.email,
-                firstName: currentUser.firstName,
-                surname: currentUser.surname,
-                activityLevel: activityLevel.toUpperCase(),
-                newPassword: confirmPass
-            },
-                config).then(response => {
+            axios
+                .put(
+                    putUrl,
+                    {
+                        phoneNumber: phone,
+                        email: currentUser.email,
+                        firstName: currentUser.firstName,
+                        surname: currentUser.surname,
+                        activityLevel: activityLevel.toUpperCase(),
+                        newPassword: confirmPass,
+                    },
+                    config
+                )
+                .then((response) => {
                     console.log('brukerinformasjon oppdatert' + response);
                     setPhone(phone);
                     setOldPassword(confirmPass);
                     setActivityLevel(activityLevel);
                     setIsFirstTimeLogin(!isFirstTimeLogin);
-                    setShowIsFirstTime(!showIsFirstTime)
-                    setCurrentUser({ ...currentUser, phoneNumber: phone, activityLevel: activityLevel })
+                    setShowIsFirstTime(!showIsFirstTime);
+                    setCurrentUser({
+                        ...currentUser,
+                        phoneNumber: phone,
+                        activityLevel: activityLevel,
+                    });
                     setIsFirstTimeLogin(!isFirstTimeLogin);
                     setShowIsFirstTime(!showIsFirstTime);
-                }).catch(error => {
-                    console.log(error.message)
                 })
+                .catch((error) => {
+                    console.log(error.message);
+                });
         }
     };
     const onClickChangePass = () => {
@@ -338,11 +407,33 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
             checkInput(editPass) &&
             checkInput(confirmPass)
         ) {
-            sendUser.password = editPass;
-            axios.put(putUrl, sendUser).then((response) => {
-                console.log(response);
-                setCurrentUser({ ...currentUser, password: editPass });
-            });
+            console.log(editPass);
+            console.log(oldPassword);
+            axios
+                .put(
+                    putUrl,
+                    {
+                        firstName: sendUser.firstName,
+                        surname: sendUser.surname,
+                        userID: sendUser.userID,
+                        email: sendUser.email,
+                        image: sendUser.image,
+                        password: oldPassword,
+                        newPassword: editPass,
+                        phoneNumber: sendUser.phoneNumber,
+                        activityLevel: sendUser.activityLevel,
+                        points: sendUser.points,
+                    },
+                    config
+                )
+                .then((response) => {
+                    console.log(response);
+                    setCurrentUser({ ...currentUser, password: editPass });
+                    setShowChangePass(!showChangePass);
+                })
+                .catch((error) => {
+                    console.log('Kunne ikke endre passord' + error.message);
+                });
         } else {
             setNoMatchPass(true);
         }
@@ -357,7 +448,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
             .delete(`user/${user}`)
             .then((response) => {
                 if (response.data.error) {
-                    console.log(response.data.error)
+                    console.log(response.data.error);
                 } else {
                     console.log(response);
                     setCurrentUser(response.data);
@@ -369,7 +460,6 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                 console.log('Could not delete user: ' + error.message);
             });
     };
-
 
     useEffect(() => {
         async function fetchUser() {
@@ -469,7 +559,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                         <StyledButton
                             className="myuser__button"
                             onClick={() => {
-                                onClickUpdateUser()
+                                onClickUpdateUser();
                             }}
                         >
                             Bekreft
@@ -678,6 +768,73 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                                 onClick={() => {
                                                     setShowChangePhone(
                                                         !showChangePhone
+                                                    );
+                                                }}
+                                            >
+                                                Avbryt
+                                            </StyledButton>
+                                        </div>
+                                    </Popup>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell align="left">Bilde</TableCell>
+                                <TableCell align="center">
+                                    <img
+                                        style={{ height: '35px' }}
+                                        src={currentUser.image}
+                                        alt="Fant ikke bildet"
+                                    />
+                                </TableCell>
+                                <TableCell align="right">
+                                    <Button
+                                        onClick={() => {
+                                            setPopupTitle('Endre bilde');
+                                            setShowChangeImage(
+                                                !showChangeImage
+                                            );
+                                        }}
+                                    >
+                                        Rediger
+                                    </Button>
+                                    <Popup
+                                        title={popupTitle}
+                                        openPopup={showChangeImage}
+                                        setOpenPopup={setShowChangeImage}
+                                    >
+                                        <TextField
+                                            className="myuser__textfield"
+                                            label="Endre bilde"
+                                            variant="outlined"
+                                            onChange={onChangeImage}
+                                            type="file"
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                        <TextField
+                                            className="myuser__textfield"
+                                            type={
+                                                showPassword
+                                                    ? 'text'
+                                                    : 'password'
+                                            }
+                                            label="Passord*"
+                                            variant="outlined"
+                                            onChange={onChangePassword}
+                                        />
+                                        <div className="myuser__buttons">
+                                            <StyledButton
+                                                className="myuser__button"
+                                                onClick={onClickChangeImage}
+                                            >
+                                                Bekreft
+                                            </StyledButton>
+                                            <StyledButton
+                                                className="myuser__button"
+                                                onClick={() => {
+                                                    setShowChangeImage(
+                                                        !showChangeImage
                                                     );
                                                 }}
                                             >
