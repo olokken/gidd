@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -544,6 +545,9 @@ public class ActivityController {
 
 
     private List<Tag> splitTags(String tagString) {
+        if(tagString.trim().equals("")){
+            return Collections.emptyList();
+        }
         log.info("splitting tags");
         ArrayList<String> tagNames = new ArrayList<>(Arrays.asList(tagString.split(",")));
         ArrayList<Tag> tags = new ArrayList<>();
