@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public class FriendGroupRepo extends GiddRepo {
-    private Logger log = new Logger(ActivityRepo.class.toString());
+    private Logger log = new Logger(FriendGroup.class.toString());
 
     public FriendGroupRepo() throws IOException {
         connect();
