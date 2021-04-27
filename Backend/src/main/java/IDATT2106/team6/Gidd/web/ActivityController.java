@@ -269,7 +269,7 @@ public class ActivityController {
         log.info("old activity " + activity.getActivityId());
 
         log.info("old activity " + activity.getActivityId());
-        
+
         //edit points of participants
         ActivityLevel oldLevel = activity.getActivityLevel();
         ActivityLevel newLevel = ActivityLevel.valueOf(map.get("activityLevel").toString());

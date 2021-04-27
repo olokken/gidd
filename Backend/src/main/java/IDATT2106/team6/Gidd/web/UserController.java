@@ -447,7 +447,7 @@ public class UserController {
                     .body(formatJson(body));
         }
 
-        log.debug("Getting all activities " + user.toString() + " is registered to");
+        log.debug("Getting all activities " + user.getUserId() + " is registered to");
         List<ActivityUser> activityUser = user.getActivities();
 
         header.add("Status", "200 OK");
