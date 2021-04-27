@@ -1,6 +1,8 @@
 import axios from '../Axios';
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
-import GroupLeaderboard from '../components/LeaderboardComponents/GroupLeaderboard';
+import GroupLeaderboard, {
+    Placements,
+} from '../components/LeaderboardComponents/GroupLeaderboard';
 import Group from '../interfaces/Group';
 import { group } from 'node:console';
 import { UserContext } from '../UserContext';
@@ -15,6 +17,7 @@ import {
 import User from '../interfaces/User';
 import GroupMenu from '../components/LeaderboardComponents/GroupMenu';
 import GroupList from '../components/GroupsAndFriendsComponents/GroupList';
+import { Groups } from '../components/GroupsAndFriendsComponents/Groups';
 
 const useStyles = makeStyles({
     root: {
@@ -60,9 +63,12 @@ function Leaderboard() {
             points: '',
         },
         groupName: '',
-        groupId: '0',
+        groupId: '',
         users: [],
     });
+    const [users, setUsers] = useState<User[]>([]);
+    const [placements, setPlacements] = useState<Placements[]>([]);
+    const [totalPoints, setTotalPoints] = useState<number>(0);
 
     const getYourGroups = async () => {
         const request = await axios.get(`/user/${user}/group`);
@@ -140,12 +146,24 @@ function Leaderboard() {
         updateGroups();
     }, []);
 
+    /*
+    useEffect(() => {
+        console.log(selectedGroup.users);
+        setUsers(selectedGroup.users);
+    }, [selectedGroup]);
+    */
+
     const renderAllGroups = groups.map((group, index: number) => {
         return (
             <GroupLeaderboard
                 key={index}
-                propUsers={group.users}
+                users={group.users}
+                setUsers={setUsers}
                 title={group.groupName}
+                placements={placements}
+                setPlacements={setPlacements}
+                totalPoints={totalPoints}
+                setTotalPoints={setTotalPoints}
             />
         );
     });
@@ -170,28 +188,26 @@ function Leaderboard() {
             </div>
             <div>
                 {value === 0 && (
-                    <div>
+                    <div style={{ display: 'flex' }}>
                         <div style={{ width: '20%' }}>
-                            <GroupList
-                                updateGroups={updateGroups}
-                                friends={friends}
-                                groups={groups}
+                            <h2>Dine grupper</h2>
+                            <Groups
+                                groups={yourGroups}
                                 handleGroupClicked={handleGroupClicked}
                             />
                         </div>
-                        {/*
-                        <GroupMenu
-                            anchorEl={anchorEl}
-                            setAnchorEl={setAnchorEl}
-                            groups={yourGroups}
-                            setGroup={setGroup}
-                        />
-                        */}
-                        {selectedGroup !== undefined && (
-                            <GroupLeaderboard
-                                propUsers={selectedGroup.users}
-                                title={group.groupName}
-                            />
+                        {selectedGroup.groupId !== '' && (
+                            <div style={{ flex: '1' }}>
+                                <GroupLeaderboard
+                                    users={selectedGroup.users}
+                                    setUsers={setUsers}
+                                    title={selectedGroup.groupName}
+                                    placements={placements}
+                                    setPlacements={setPlacements}
+                                    totalPoints={totalPoints}
+                                    setTotalPoints={setTotalPoints}
+                                />
+                            </div>
                         )}
                     </div>
                 )}
@@ -200,8 +216,13 @@ function Leaderboard() {
                 {value === 1 && (
                     <div>
                         <GroupLeaderboard
-                            propUsers={friends}
+                            users={friends}
+                            setUsers={setUsers}
                             title="Dine venner"
+                            placements={placements}
+                            setPlacements={setPlacements}
+                            totalPoints={totalPoints}
+                            setTotalPoints={setTotalPoints}
                         />
                     </div>
                 )}
@@ -211,8 +232,13 @@ function Leaderboard() {
                 {value === 3 && (
                     <div>
                         <GroupLeaderboard
-                            propUsers={allUsers}
+                            users={allUsers}
+                            setUsers={setUsers}
                             title="Alle brukere"
+                            placements={placements}
+                            setPlacements={setPlacements}
+                            totalPoints={totalPoints}
+                            setTotalPoints={setTotalPoints}
                         />
                     </div>
                 )}

@@ -24,22 +24,35 @@ const useStyles = makeStyles({
 });
 interface Props {
     title?: string;
-    propUsers: User[];
+    users: User[];
+    setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+    placements: Placements[];
+    setPlacements: React.Dispatch<React.SetStateAction<Placements[]>>;
+    totalPoints: number;
+    setTotalPoints: React.Dispatch<React.SetStateAction<number>>;
 }
 
-interface Placements {
+export interface Placements {
     user: User;
     position: number;
 }
 
-const GroupLeaderboard: React.FC<Props> = ({ title, propUsers }: Props) => {
-    const [users, setUsers] = useState<User[]>(propUsers);
-    const [placements, setPlacements] = useState<Placements[]>([]);
-    const [totalPoints, setTotalPoints] = useState<number>(0);
+const GroupLeaderboard: React.FC<Props> = ({
+    title,
+    users,
+    setUsers,
+    placements,
+    setPlacements,
+    totalPoints,
+    setTotalPoints,
+}: Props) => {
+    //const [users, setUsers] = useState<User[]>(propUsers);
+    //const [placements, setPlacements] = useState<Placements[]>([]);
+    //const [totalPoints, setTotalPoints] = useState<number>(0);
     const classes = useStyles();
 
     const sortPoints = (): User[] => {
-        return propUsers.sort((u1, u2) => {
+        return users.sort((u1, u2) => {
             if (u1.points > u2.points) return -1;
             else if (u1.points < u2.points) return 1;
             else return 0;
@@ -85,7 +98,7 @@ const GroupLeaderboard: React.FC<Props> = ({ title, propUsers }: Props) => {
 
     //The max margin-left is 52rem
     const getMarginLeft = (user: User) => {
-        if (users.length > 7) return (+user.points / totalPoints) * 200;
+        if (users.length > 7) return (+user.points / totalPoints) * 150;
         else return (+user.points / totalPoints) * 75;
     };
 
@@ -93,6 +106,19 @@ const GroupLeaderboard: React.FC<Props> = ({ title, propUsers }: Props) => {
         getPlacements();
         getTotalPoints();
     }, []);
+
+    /*
+    useEffect(() => {
+        setUsers(users);
+        getPlacements();
+        getTotalPoints();
+        return () => {
+            setUsers([]);
+            setPlacements([]);
+            setTotalPoints(0);
+        };
+    }, [propUsers]);
+    */
 
     const renderPlayers = users.map((user, index: number) => {
         return (
