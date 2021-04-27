@@ -40,9 +40,6 @@ function Leaderboard() {
         groupId: '',
         users: [],
     });
-    const [users, setUsers] = useState<User[]>([]);
-    const [placements, setPlacements] = useState<Placements[]>([]);
-    const [totalPoints, setTotalPoints] = useState<number>(0);
 
     const getYourGroups = async () => {
         const request = await axios.get(`/user/${user}/group`);
@@ -84,7 +81,6 @@ function Leaderboard() {
     };
 
     const handleGroupClicked = (group: Group) => {
-        console.log(group);
         setSelectedGroup(group);
     };
 

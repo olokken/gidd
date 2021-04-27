@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import User from '../../interfaces/User';
 import { Avatar, Card, makeStyles } from '@material-ui/core';
 import './GroupLeaderboard.css';
+import { ContactSupportOutlined, UnfoldLessSharp } from '@material-ui/icons';
 
 const useStyles = makeStyles({
     root: {
@@ -82,13 +83,14 @@ const GroupLeaderboard: React.FC<Props> = ({ title, users }: Props) => {
 
     //The max margin-left is 52rem
     const getMarginLeft = (user: User) => {
-        if (users.length > 7) return (+user.points / totalPoints) * 150;
+        if (users.length > 5) return (+user.points / totalPoints) * 250;
         else return (+user.points / totalPoints) * 75;
     };
 
     useEffect(() => {
         getPlacements();
         getTotalPoints();
+        console.log(' ');
     }, [users]);
 
     const renderPlayers = users.map((user, index: number) => {
@@ -97,7 +99,7 @@ const GroupLeaderboard: React.FC<Props> = ({ title, users }: Props) => {
                 <hr className="groupleaderboard__line" />
                 <div className="groupleaderboard__player">
                     <div
-                        /* The max margin-left is 52rem*/
+                        /* The max margin-left is 52rem on full size*/
                         style={{
                             margin: `0.7rem 0.5rem 0.5rem`,
                             marginLeft:
