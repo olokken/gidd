@@ -1,5 +1,6 @@
 package IDATT2106.team6.Gidd.models;
 
+import IDATT2106.team6.Gidd.util.Logger;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
@@ -44,6 +45,8 @@ public class User {
     @CascadeOnDelete
     @OneToOne(targetEntity = Image.class, fetch = FetchType.EAGER)
     private Image image;
+
+    private Logger log = new Logger(User.class.toString());
 
     public User(int id, String email, String password,
                 String firstName, String surname,
@@ -222,6 +225,12 @@ public class User {
     }
 
     public String toJSON() {
+        String img;
+        try{
+            img = "\"" + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes())  + '\"';
+        } catch(Exception e) {
+            log.error("toJSON failure " + e.getMessage() + " cause: " + e.getCause() + ", cause message: " + e.getCause().getMessage());
+        }
         return "\n  {" +
             "\n     \"userId\":" + userId + "," +
             "\n     \"email\":" + '\"' + email + '\"' +"," +
@@ -229,7 +238,7 @@ public class User {
             "\n     \"surname\":" + '\"' + surname + '\"' +"," +
             "\n     \"phoneNumber\":" + phoneNumber +"," +
             "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
-            "\n     \"image\":" + '\"' + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' + "," +
+            "\n     \"image\":" + '\"' + img + '\"' + "," +
             "\n     \"points\":" + points +
             "\n }";
     }
