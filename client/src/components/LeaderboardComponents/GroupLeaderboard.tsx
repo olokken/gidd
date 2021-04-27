@@ -68,7 +68,7 @@ const GroupLeaderboard: React.FC<Props> = ({
     };
 
     const getPlacements = () => {
-        const placements: Placements[] = [];
+        //const placements: Placements[] = [];
         const sorted = sortPoints();
         for (let i = 0; i < sorted.length; i++) {
             placements.push({ user: sorted[i], position: 1 });
@@ -103,9 +103,10 @@ const GroupLeaderboard: React.FC<Props> = ({
     };
 
     useEffect(() => {
+        setUsers(users);
         getPlacements();
         getTotalPoints();
-    }, []);
+    }, [users, placements, totalPoints]);
 
     /*
     useEffect(() => {
