@@ -15,7 +15,7 @@ const useStyles = makeStyles({
 
 function Leaderboard() {
     const classes = useStyles();
-    const [groups, setGroups] = useState<Group[]>([]);
+    const [allGroups, setAllGroups] = useState<Group[]>([]);
     const { user, seUser } = useContext(UserContext);
     const [yourGroups, setYourGroups] = useState<Group[]>([]);
     const [value, setValue] = React.useState(0);
@@ -57,7 +57,7 @@ function Leaderboard() {
 
     const getAllGroups = async () => {
         const request = await axios.get('/group');
-        setGroups(request.data.groups);
+        setAllGroups(request.data.groups);
         return request;
     };
 
@@ -92,7 +92,7 @@ function Leaderboard() {
         getAllUsers();
     }, []);
 
-    const renderAllGroups = groups.map((group, index: number) => {
+    const renderAllGroups = allGroups.map((group, index: number) => {
         return (
             <GroupLeaderboard
                 key={index}
@@ -148,7 +148,27 @@ function Leaderboard() {
                     </div>
                 )}
             </div>
-            <div>{value === 2 && <div>{renderAllGroups}</div>}</div>
+            <div>
+                {value === 2 && (
+                    <div style={{ display: 'flex' }}>
+                        <div style={{ width: '20%' }}>
+                            <h2>Alle grupper</h2>
+                            <Groups
+                                groups={allGroups}
+                                handleGroupClicked={handleGroupClicked}
+                            />
+                        </div>
+                        {selectedGroup.groupId !== '' && (
+                            <div style={{ flex: '1' }}>
+                                <GroupLeaderboard
+                                    users={selectedGroup.users}
+                                    title={selectedGroup.groupName}
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
             <div>
                 {value === 3 && (
                     <div>
