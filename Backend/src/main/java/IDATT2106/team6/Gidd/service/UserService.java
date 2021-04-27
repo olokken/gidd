@@ -35,7 +35,7 @@ public class UserService {
                     activityLevel, image, provider);
             log.debug("Setting friends");
             newUser.setFriendList(friends);
-            log.info("updating user: " + newUser.toString());
+            log.info("updating user with id: " + newUser.getUserId());
 
             return repo.updateUser(newUser);
         } catch(Exception e) {

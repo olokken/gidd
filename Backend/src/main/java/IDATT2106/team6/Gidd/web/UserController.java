@@ -719,7 +719,7 @@ public class UserController {
                     newImage,
                     oldUser.getAuthProvider());
 
-            log.info("edited user " + map.toString());
+            log.info("edited user " + id);
             if (result) {
                 log.info("created user");
                 header.add("Status", "201 CREATED");
