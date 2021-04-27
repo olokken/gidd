@@ -242,6 +242,7 @@ public class User {
                 "\n     \"phoneNumber\":" + phoneNumber +"," +
                 "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
                 "\n     \"points\":" + points + "," +
+                "\n     \"image\":" + image.getDatatype() + java.util.Base64.getEncoder().encodeToString(image.getBytes()) + "," +
                 "\n     \"provider\":" + '\"' + authProvider + '\"' +
                 "\n }";
     }
