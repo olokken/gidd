@@ -6,8 +6,6 @@ backend-build:
       - backend-dev
   script:
     - cd Backend
-    - touch src/main/resources/application.properties
-    - echo "$application" > src/main/resources/application.properties
     - "mvn compile"
 
 
@@ -16,6 +14,8 @@ backend-test:
   only:
       - backend-dev
   script:
+    - touch src/main/resources/application.properties
+    - echo "$application" > src/main/resources/application.properties
     - cd Backend
     - mvn test
   needs: ["backend-build"]
