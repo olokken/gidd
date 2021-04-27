@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import User from '../../interfaces/User';
 import { Avatar, Card, makeStyles } from '@material-ui/core';
 import './GroupLeaderboard.css';
-import { ContactSupportOutlined, UnfoldLessSharp } from '@material-ui/icons';
 
 const useStyles = makeStyles({
     root: {

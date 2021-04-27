@@ -1,8 +1,6 @@
 import axios from '../Axios';
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
-import GroupLeaderboard, {
-    Placements,
-} from '../components/LeaderboardComponents/GroupLeaderboard';
+import GroupLeaderboard from '../components/LeaderboardComponents/GroupLeaderboard';
 import Group from '../interfaces/Group';
 import { UserContext } from '../UserContext';
 import { makeStyles, Paper, Tab, Tabs } from '@material-ui/core';
