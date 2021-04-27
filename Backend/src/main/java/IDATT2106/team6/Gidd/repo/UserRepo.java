@@ -9,6 +9,7 @@ import java.util.List;
 
 import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.ActivityUser;
+import IDATT2106.team6.Gidd.models.Rating;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.util.*;
 import org.springframework.stereotype.Repository;
@@ -95,6 +96,15 @@ public class UserRepo extends GiddRepo {
 
             if(user != null){
                 log.info("found user " + userId +  " to be deleted");
+                List<Rating> ratings = em.createNativeQuery("SELECT * FROM RATING WHERE user_id = ?1", Rating.class)
+                        .setParameter(1, userId).getResultList();
+
+                for(Rating r : ratings){
+                    em.getTransaction().begin();
+                    Rating temporaryRating = em.merge(r);
+                    em.remove(temporaryRating);
+                    em.getTransaction().commit();
+                }
                 em.getTransaction().begin();
                 User temporaryUser = em.merge(user);
                 em.remove(temporaryUser);

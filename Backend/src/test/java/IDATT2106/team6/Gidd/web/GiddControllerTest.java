@@ -980,6 +980,32 @@ public class GiddControllerTest {
     @Order(23)
     public void giveRatingTest() throws Exception {
         //TODO
+        mockMvc.perform(post("/user/" + user1.getUserId() + "/rating")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\n\"userId\": \"" + user1.getUserId() + "\",\n" +
+                        "\"rating\": \"5\"" +
+                        "}"
+                )).andExpect(status().isOk());
+
+        mockMvc.perform(post("/user/" + user1.getUserId() + "/rating")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "\n\"userId\": \"" + user1.getUserId() + "\",\n" +
+                        "\"rating\": \"1\"" +
+                        "}"
+                )).andExpect(status().isOk());
+
+        String averageRespons = mockMvc.perform(get("/user/" + user1.getUserId() + "/rating")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+
+        JSONParser parser = new JSONParser();
+        JSONObject JSONAverage = (JSONObject) parser.parse(averageRespons);
+
+        assertEquals(String.valueOf(3.0), JSONAverage.get("averageRating").toString());
     }
 
     @Test
@@ -987,6 +1013,9 @@ public class GiddControllerTest {
     public void findAverageRatingTest() throws Exception {
         //TODO
     }
+
+    //TODO
+    //Test for aktivitet tilhørende gruppe
 
     @Test
     @Order(25)
