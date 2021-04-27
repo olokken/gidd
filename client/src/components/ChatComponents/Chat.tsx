@@ -40,6 +40,7 @@ const Flex = styled.div`
     margin: 1rem;
 `;
 
+
 interface Props {
     open: boolean;
     close: () => void;
@@ -142,6 +143,7 @@ const Chat = ({ open, close, activityId }: Props) => {
                             time={msg.timestamp}
                             userId={msg.user.userId}
                             message={msg.message}
+                            image={msg.user.image}
                         ></StyledMessage>
                     ))}
                 </MessageBox>

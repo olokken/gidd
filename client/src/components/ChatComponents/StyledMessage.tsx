@@ -1,4 +1,4 @@
-import { Tooltip } from '@material-ui/core';
+import { Avatar, makeStyles, Tooltip } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import User from '../../interfaces/User';
@@ -9,7 +9,9 @@ interface Props {
     name: string;
     userId: string;
     time: number;
+    image: string;
 }
+
 
 const SendtMessage = styled.fieldset`
     position: left;
@@ -22,6 +24,10 @@ const SendtMessage = styled.fieldset`
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     border-radius: 10px;
+`;
+
+const Flex = styled.div`
+    display:flex;
 `;
 
 const RecievedMessage = styled.fieldset`
@@ -37,7 +43,7 @@ const RecievedMessage = styled.fieldset`
     border-radius: 10px;
 `;
 
-const StyledMessage = ({ message, userId, time, name }: Props) => {
+const StyledMessage = ({ message, userId, time, name, image }: Props) => {
     const { user } = useContext(UserContext);
     const date = new Date(time);
 
@@ -46,14 +52,18 @@ const StyledMessage = ({ message, userId, time, name }: Props) => {
             return (
                 <RecievedMessage>
                     <legend>{name}</legend>
-                    {message}
+                    <Flex>
+                        <Avatar src={image} />{message}
+                    </Flex>
                 </RecievedMessage>
             );
         } else {
             return (
                 <SendtMessage>
                     <legend>{name}</legend>
-                    {message}
+                    <Flex>
+                        <Avatar src={image} />{message}
+                    </Flex>
                 </SendtMessage>
             );
         }
