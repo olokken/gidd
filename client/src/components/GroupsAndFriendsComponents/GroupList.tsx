@@ -32,12 +32,6 @@ interface Props {
     onClick?: () => void;
 }
 
-<<<<<<< HEAD
-
-
-
-const GroupList = ({ friends, groups, handleGroupClicked, updateGroups, onClick }: Props) => {
-=======
 const GroupList = ({
     friends,
     groups,
@@ -45,7 +39,6 @@ const GroupList = ({
     updateGroups,
     onClick,
 }: Props) => {
->>>>>>> leaderboard
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User[]>([]);
     const [chosenGroupName, setChosenGroupName] = useState<string>('');
@@ -67,13 +60,9 @@ const GroupList = ({
 
         console.log('searchInput: ' + searchValue);
         if (selectInput === null) {
-<<<<<<< HEAD
-            alert('Du må legge noen til i gruppen')
+            alert('Du må legge noen til i gruppen');
         } else if (chosenGroupName === '') {
-            alert('Du må skrive et gruppenavn')
-=======
-            console.log('ingen bruker valgt ');
->>>>>>> leaderboard
+            alert('Du må skrive et gruppenavn');
         } else {
             postGroup();
             setSelectInput([]);
