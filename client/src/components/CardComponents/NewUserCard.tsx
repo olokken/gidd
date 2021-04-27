@@ -30,10 +30,12 @@ interface Props {
   equalPasswords: boolean;
   correctEmailFormat: boolean;
   email: string;
+  image: string;
+  onChangeImage: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 
-const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel, activityLevel, visualActivityLevel, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email }: Props) => {
+const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel, activityLevel, visualActivityLevel, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email, image, onChangeImage }: Props) => {
   const activityLevels: string[] = ['Lav', 'Middels', 'Høyt']
 
   return (
@@ -92,6 +94,18 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel
           variant="outlined"
           onChange={onChangeNumber}
         />
+
+        <TextField
+          style={{ width: '100%', marginBottom: 24 }}
+          type="file"
+          label="Bilde"
+          onChange={onChangeImage}
+          InputLabelProps={{
+              shrink: true,
+          }}
+          variant="outlined"
+        />
+
         <TextField
           style={{ width: '100%', marginBottom: 24 }}
           label="Passord"

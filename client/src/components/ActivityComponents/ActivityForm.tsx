@@ -23,6 +23,7 @@ import DefaultCenter from '../../interfaces/DefaultCenter';
 import styled from 'styled-components';
 import InfoIcon from '@material-ui/icons/Info';
 import ActivityResponse from '../../interfaces/ActivityResponse';
+import { resolve } from 'node:dns';
 
 const StyledButton = withStyles({
     root: {
@@ -169,12 +170,33 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
         }
     };
 
-    const onChangeImage = (
-        event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    const onChangeImage = async (
+        event: React.ChangeEvent<HTMLInputElement>
     ) => {
         console.log(event);
-        setImage(event.target.value);
-        console.log(btoa(event.target.value));
+        if (event.target.files != null) {
+        const file: File = event.target.files[0];
+        console.log(file);
+        const base64 = await convertBase64(file);
+        console.log(base64);
+        setImage(base64);
+        console.log(image)
+       }
+    };
+
+    const convertBase64 = (file: File) => {
+        return new Promise<any>((resolve, reject) => {
+
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            
+            fileReader.onload = (() => {
+                resolve(fileReader.result);
+            });
+            fileReader.onerror = ((error) => {
+                reject(error);
+            });
+        });
     };
 
     const addEquipment = (event: React.KeyboardEvent): boolean => {
@@ -279,7 +301,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
             capacity: capacity,
             groupId: 0,
             description: escapedJSONDescription(),
-            image: '1111',
+            image: image,
             activityLevel: activityLevel.toUpperCase(),
             equipmentList: getEquipmentString(),
             tags: getTagString(),
@@ -312,7 +334,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
             capacity: capacity,
             groupId: 0,
             description: escapedJSONDescription(),
-            image: '01010101',
+            image: image,
             activityLevel: activityLevel,
             equipmentList: getEquipmentString(),
             tags: getTagString(),
@@ -509,6 +531,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse }: Props) => {
                         }}
                         variant="outlined"
                     />
+                    <img src={image} style={{maxHeight:"40px"}}/>
                 </div>
             )}
             {page === 6 && (

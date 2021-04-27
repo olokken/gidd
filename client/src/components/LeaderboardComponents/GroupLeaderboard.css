@@ -8,13 +8,12 @@
     justify-content: center;
 }
 
+.groupleaderboard__players {
+}
+
 .groupleaderboard__player {
     display: flex;
     height: 4rem;
-}
-
-.groupleaderboard__logo {
-    display: flex;
 }
 
 .groupleaderboard__name {

@@ -1,5 +1,7 @@
+import User from './User';
 export default interface Group {
-    groupId: number;
-    name: string;
-    users: string;
+    owner: User;
+    groupName: string;
+    groupId: string;
+    users: User[];
 }

@@ -32,16 +32,21 @@ const TitleArea = styled.div`
 
 interface Props {
     friend: User;
+    updateFriends: () => void;
 }
 
 
-const FriendCard = ({friend}: Props) =>{
+const FriendCard = ({friend, updateFriends}: Props) =>{
     const [openPopup, setOpenPopup] = useState<boolean>(false);
+
+    const onCardClick = () => {
+        setOpenPopup(!openPopup)
+    }
     return (
         <div>
         <Card
             style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
-            onClick={() => setOpenPopup(!openPopup)}
+            onClick={onCardClick}
         >
            
             <CardInformation>
@@ -52,7 +57,7 @@ const FriendCard = ({friend}: Props) =>{
                         alt={'Image related to the activity' }
                         height="40px"
                         width="40px"
-                        image={logo} // hente bildet frå aktiviteta
+                        image={friend.image} // hente bildet frå aktiviteta
                     />
                 </Grid>
                 <Grid item >
@@ -72,7 +77,12 @@ const FriendCard = ({friend}: Props) =>{
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
     >
-        <UserProfile friend={friend}/>
+        <UserProfile
+            updateFriends={updateFriends}
+            openPopup={openPopup}
+            setOpenPopup={setOpenPopup}
+            friend={friend}
+        />
     </Popup>
     </div>
     );
