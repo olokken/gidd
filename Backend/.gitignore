@@ -189,7 +189,6 @@ sketch
 #
 # Recommended template: Node.gitignore
 
-# TODO: where does this rule come from?
 docs/_book
 
 ### Vuejs ###

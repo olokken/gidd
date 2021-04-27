@@ -4,5 +4,5 @@ public enum Provider {
     LOCAL,
     GOOGLE,
     FACEBOOK
-    //TODO Add more providers as necessary
+    //Add more providers as necessary
 }

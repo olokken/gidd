@@ -31,7 +31,6 @@ public class SecurityController {
         String token = securityService.createToken(subject, (1000 * 60 * 60 * 24));
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("result", token);
-        //TODO Return JSON
         return map;
     }
 
