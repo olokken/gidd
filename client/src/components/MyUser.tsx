@@ -51,7 +51,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const [currentUser, setCurrentUser] = useState<User>({
         firstName: '',
         surname: '',
-        userID: '',
+        userId: '',
         email: '',
         image: '',
         password: '',
@@ -120,11 +120,11 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         setVisualActivityLevel(input);
         let actLevel = input;
         if (actLevel === 'Lav') {
-            actLevel = 'Low'
+            actLevel = 'Low';
         } else if (actLevel === 'Middels') {
-            actLevel = 'Medium'
+            actLevel = 'Medium';
         } else {
-            actLevel = 'High'
+            actLevel = 'High';
         }
         setActivityLevel(actLevel);
     };
@@ -287,40 +287,50 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     };
 
     const onClickUpdateUser = () => {
-        console.log('hei hei')
+        console.log('hei hei');
         const putUrl = `/user/some/${user}`;
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('token');
         const config = {
             headers: {
-                token: token
-            }
-        }
+                token: token,
+            },
+        };
         if (!checkInput(editPass) || !checkInput(confirmPass)) {
-            alert('Feil input i passord')
+            alert('Feil input i passord');
         } else if (editPass != confirmPass) {
             alert('Ulike passord');
         } else {
-            axios.put(putUrl, {
-                phoneNumber: phone,
-                email: currentUser.email,
-                firstName: currentUser.firstName,
-                surname: currentUser.surname,
-                activityLevel: activityLevel.toUpperCase(),
-                newPassword: confirmPass
-            },
-                config).then(response => {
+            axios
+                .put(
+                    putUrl,
+                    {
+                        phoneNumber: phone,
+                        email: currentUser.email,
+                        firstName: currentUser.firstName,
+                        surname: currentUser.surname,
+                        activityLevel: activityLevel.toUpperCase(),
+                        newPassword: confirmPass,
+                    },
+                    config
+                )
+                .then((response) => {
                     console.log('brukerinformasjon oppdatert' + response);
                     setPhone(phone);
                     setOldPassword(confirmPass);
                     setActivityLevel(activityLevel);
                     setIsFirstTimeLogin(!isFirstTimeLogin);
-                    setShowIsFirstTime(!showIsFirstTime)
-                    setCurrentUser({ ...currentUser, phoneNumber: phone, activityLevel: activityLevel })
+                    setShowIsFirstTime(!showIsFirstTime);
+                    setCurrentUser({
+                        ...currentUser,
+                        phoneNumber: phone,
+                        activityLevel: activityLevel,
+                    });
                     setIsFirstTimeLogin(!isFirstTimeLogin);
                     setShowIsFirstTime(!showIsFirstTime);
-                }).catch(error => {
-                    console.log(error.message)
                 })
+                .catch((error) => {
+                    console.log(error.message);
+                });
         }
     };
     const onClickChangePass = () => {
@@ -357,7 +367,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
             .delete(`user/${user}`)
             .then((response) => {
                 if (response.data.error) {
-                    console.log(response.data.error)
+                    console.log(response.data.error);
                 } else {
                     console.log(response);
                     setCurrentUser(response.data);
@@ -369,7 +379,6 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                 console.log('Could not delete user: ' + error.message);
             });
     };
-
 
     useEffect(() => {
         async function fetchUser() {
@@ -469,7 +478,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                         <StyledButton
                             className="myuser__button"
                             onClick={() => {
-                                onClickUpdateUser()
+                                onClickUpdateUser();
                             }}
                         >
                             Bekreft

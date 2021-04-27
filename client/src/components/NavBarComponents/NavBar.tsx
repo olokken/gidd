@@ -34,7 +34,7 @@ import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
 import Popup from '../Popup';
 import MyUser from '../MyUser';
 import User from '../../interfaces/User';
-import axios from '../../Axios'
+import axios from '../../Axios';
 import { UserContext } from '../../UserContext';
 import CheckIcon from '@material-ui/icons/Check';
 import Badge from '@material-ui/core/Badge';
@@ -69,9 +69,11 @@ const StyledMenuItem = withStyles((theme) => ({
 }))(MenuItem);
 
 const Navbar = () => {
-    const {user, setUser} = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
     const [friendRequests, setFriendRequests] = useState<User[]>([]);
-    const [pendingFriendRequests, setPendingFriendRequests] = useState<User[]>([]);
+    const [pendingFriendRequests, setPendingFriendRequests] = useState<User[]>(
+        []
+    );
     const [openUser, setOpenUser] = useState<boolean>(false);
     const [notifications1, setNotifications1] = useState<number>(0);
     const [notifications2, setNotifications2] = useState<number>(0);
@@ -85,9 +87,9 @@ const Navbar = () => {
             return window.innerWidth < 951
                 ? setState((prevState) => ({ ...prevState, mobileView: true }))
                 : setState((prevState) => ({
-                    ...prevState,
-                    mobileView: false,
-                }));
+                      ...prevState,
+                      mobileView: false,
+                  }));
         };
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());
@@ -155,41 +157,40 @@ const Navbar = () => {
     const changeToGroupsAndFriends = () => {
         history.push('/GroupsAndFriends');
     };
-         //henter alle pending *angre
-     const loadPending = () => {
-         axios
+    //henter alle pending *angre
+    const loadPending = () => {
+        axios
             .get(`/user/${localStorage.getItem('userID')}/pending`)
             .then((response) => {
-                console.log('PendingVenneforespørsler:')
+                console.log('PendingVenneforespørsler:');
                 console.log(response.data['users']);
                 setPendingFriendRequests(response.data['users']);
             })
             .catch((error) => console.log(error));
-    }
-    const loadRequest = () =>{
+    };
+    const loadRequest = () => {
         //henter alle reqest ja/nei
-        console.log(localStorage.getItem('userID'))
+        console.log(localStorage.getItem('userID'));
         axios
             .get(`/user/${localStorage.getItem('userID')}/request`)
             .then((response) => {
-                console.log('Venneforespørsler:')
+                console.log('Venneforespørsler:');
                 console.log(response.data['users']);
                 setFriendRequests(response.data['users']);
-
             })
             .catch((error) => console.log(error));
-    }
+    };
 
-      useEffect(() => {
+    useEffect(() => {
         loadRequest();
     }, [user]);
 
-     //henter alle sendte venneforespørsler
-     useEffect(() => {
+    //henter alle sendte venneforespørsler
+    useEffect(() => {
         loadPending();
     }, [user]);
-    
-   /* const setNotificationData = () => {
+
+    /* const setNotificationData = () => {
         setTimeout(()=>{
             setNotifications(friendRequests.length + pendingFriendRequests.length)
             console.log('notdata: ' + (friendRequests.length + pendingFriendRequests.length) );
@@ -199,46 +200,54 @@ const Navbar = () => {
         },5000);
     }*/
 
-    const declineRequest = (request : User) => {
-        deleteFriend(Object.values(request)[0])
-    }
+    const declineRequest = (request: User) => {
+        deleteFriend(Object.values(request)[0]);
+    };
 
-    const addFriend = (request : User) => {
-        postFriend(Object.values(request)[0])
-    }
+    const addFriend = (request: User) => {
+        postFriend(Object.values(request)[0]);
+    };
     //godkjenner forespørsel
     const postFriend = (friendId: string) => {
-        console.log(friendId)
+        console.log(friendId);
         axios
             .post(`/user/${localStorage.getItem('userID')}/user`, {
-                "userId": localStorage.getItem('userID'),
-                "friendId": friendId
-                }) 
+                userId: localStorage.getItem('userID'),
+                friendId: friendId,
+            })
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
-            }).then(() => {loadPending(); loadRequest();})
+            })
+            .then(() => {
+                loadPending();
+                loadRequest();
+            })
             .catch((error) => {
                 console.log('Could not post friend: ' + error.message);
                 alert('Du er allerede venn med denne brukeren');
             });
-    }
-        //sletter forespørsel
-     const deleteFriend = (friendId: string) => {
+    };
+    //sletter forespørsel
+    const deleteFriend = (friendId: string) => {
         axios
-            .delete(`user/${user}/user/${friendId}`) 
+            .delete(`user/${user}/user/${friendId}`)
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
-            }).then(() => {loadPending(); loadRequest();})
+            })
+            .then(() => {
+                loadPending();
+                loadRequest();
+            })
             .catch((error) =>
                 console.log('Could not delete friend: ' + error.message)
             );
-    }
+    };
 
     const getDefault = () => {
-        if(friendRequests.length < 1 && pendingFriendRequests.length < 1){
-            return(
+        if (friendRequests.length < 1 && pendingFriendRequests.length < 1) {
+            return (
                 <StyledMenuItem
                     style={{
                         whiteSpace: 'normal',
@@ -249,12 +258,13 @@ const Navbar = () => {
                     }}
                     onClick={handleCloseMenu}
                 >
-                    <b style={{marginTop:'50px', paddingTop:'100px'}}>Du har ingen varsler</b>
+                    <b style={{ marginTop: '50px', paddingTop: '100px' }}>
+                        Du har ingen varsler
+                    </b>
                 </StyledMenuItem>
-            )
+            );
         }
-    }
-
+    };
 
     const displayMobile = () => {
         const getDrawerChoices = () => {
@@ -274,10 +284,7 @@ const Navbar = () => {
                         <DirectionsRunIcon />
                         Aktiviteter
                     </Button>
-                    <Button
-                        style={{ padding: '10px' }}
-                        onClick={changeToMap}
-                    >
+                    <Button style={{ padding: '10px' }} onClick={changeToMap}>
                         <MapIcon />
                         Kart
                     </Button>
@@ -306,7 +313,6 @@ const Navbar = () => {
             );
         };
 
-
         const handleDrawerOpen = () =>
             setState((prevState) => ({ ...prevState, drawerOpen: true }));
 
@@ -334,7 +340,13 @@ const Navbar = () => {
                         aria-haspopup="true"
                         onClick={handleOpenMenu}
                     >
-                        <Badge badgeContent={pendingFriendRequests.length + friendRequests.length} color="primary">
+                        <Badge
+                            badgeContent={
+                                pendingFriendRequests.length +
+                                friendRequests.length
+                            }
+                            color="primary"
+                        >
                             <NotificationsIcon />
                         </Badge>
                     </IconButton>
@@ -424,7 +436,13 @@ const Navbar = () => {
                         aria-haspopup="true"
                         onClick={handleOpenMenu}
                     >
-                        <Badge badgeContent={friendRequests.length + pendingFriendRequests.length} color="primary">
+                        <Badge
+                            badgeContent={
+                                friendRequests.length +
+                                pendingFriendRequests.length
+                            }
+                            color="primary"
+                        >
                             <NotificationsIcon />
                         </Badge>
                     </IconButton>
@@ -454,8 +472,8 @@ const Navbar = () => {
                 onClose={handleCloseMenu}
             >
                 {getDefault()}
-                
-                {friendRequests.map((request : User) => {
+
+                {friendRequests.map((request: User) => {
                     return (
                         <StyledMenuItem
                             style={{
@@ -465,17 +483,30 @@ const Navbar = () => {
                                 width: '300px',
                                 fontSize: '15px',
                             }}
-                            key={request.userID}
+                            key={request.userId}
                             onClick={handleCloseMenu}
                         >
                             <div>
                                 <b>Venneforespørsel fra:</b>
-                                <p style={{marginTop:'2px'}}>{request.firstName + ' ' + request.surname}</p>
-                                <IconButton style= {{color:'green', marginTop:'-15px'}}>
-                                    <CheckIcon onClick={() => addFriend(request)} />
+                                <p style={{ marginTop: '2px' }}>
+                                    {request.firstName + ' ' + request.surname}
+                                </p>
+                                <IconButton
+                                    style={{
+                                        color: 'green',
+                                        marginTop: '-15px',
+                                    }}
+                                >
+                                    <CheckIcon
+                                        onClick={() => addFriend(request)}
+                                    />
                                 </IconButton>
-                                <IconButton style={{color:'red' , marginTop:'-15px'}}>
-                                    <CloseIcon onClick={() => declineRequest(request)}/>
+                                <IconButton
+                                    style={{ color: 'red', marginTop: '-15px' }}
+                                >
+                                    <CloseIcon
+                                        onClick={() => declineRequest(request)}
+                                    />
                                 </IconButton>
                             </div>
                             <hr />
@@ -483,7 +514,7 @@ const Navbar = () => {
                     );
                 })}
 
-                {pendingFriendRequests.map((pending : User) => {
+                {pendingFriendRequests.map((pending: User) => {
                     return (
                         <StyledMenuItem
                             style={{
@@ -493,19 +524,21 @@ const Navbar = () => {
                                 width: '300px',
                                 fontSize: '15px',
                             }}
-                            key={pending.userID}
+                            key={pending.userId}
                             onClick={handleCloseMenu}
                         >
                             <div>
                                 <b>Du har sendt en venneforspørsel til:</b>
-                                <p style={{marginTop:'-5px',}}>
+                                <p style={{ marginTop: '-5px' }}>
                                     {pending.firstName + ' ' + pending.surname}
-                                    <IconButton style={{color:'red'}}>
-                                        <CloseIcon onClick={() => declineRequest(pending)}/>
+                                    <IconButton style={{ color: 'red' }}>
+                                        <CloseIcon
+                                            onClick={() =>
+                                                declineRequest(pending)
+                                            }
+                                        />
                                     </IconButton>
-                                    
                                 </p>
-                               
                             </div>
                             <hr />
                         </StyledMenuItem>
@@ -531,9 +564,7 @@ const Navbar = () => {
                     openPopup={openUser}
                     setOpenPopup={setOpenUser}
                 >
-                    <MyUser
-                        openPopup={openUser}
-                        setOpenPopup={setOpenUser} />
+                    <MyUser openPopup={openUser} setOpenPopup={setOpenUser} />
                 </Popup>
                 <StyledMenuItem onClick={changeToSettings}>
                     <ListItemIcon>
