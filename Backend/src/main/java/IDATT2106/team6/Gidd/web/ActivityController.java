@@ -472,7 +472,6 @@ public class ActivityController {
         return ResponseEntity.badRequest().headers(headers).body(formatJson(errorCode));
     }
 
-    //todo - error code when giving too long numbers or strings ?
     @DeleteMapping(value = "/{activityId}")
     public ResponseEntity deleteActivity(@PathVariable Integer activityId) {
         List<User> users = activityService.getUserFromActivity(activityId);

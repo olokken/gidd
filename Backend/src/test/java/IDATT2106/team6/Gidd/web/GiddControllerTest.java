@@ -800,7 +800,7 @@ public class GiddControllerTest {
                     * MULTIPLIERS[activity1.getActivityLevel().ordinal()]
                     );
         }
-                //todo test
+
         mockMvc.perform(get("/activity/" + initialPost.getAsNumber("id"))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
