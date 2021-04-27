@@ -12,36 +12,46 @@ const StyledUl = styled.ul`
 interface GroupsProps {
     groups: Group[];
     handleGroupClicked: (group: Group) => void;
+    searchInput?: string;
 }
 
 export const Groups: React.FC<GroupsProps> = ({
     groups,
     handleGroupClicked,
+    searchInput,
 }: GroupsProps) => {
     return (
         <StyledUl>
-            {groups
-                /*
-                .filter((group: Group) => {
-                    if (searchInput === '') {
-                        return group;
-                    } else if (
-                        group.groupName != null &&
-                        group.groupName
-                            .toLowerCase()
-                            .includes(searchInput.toLocaleLowerCase())
-                    ) {
-                        return group;
-                    }
-                })
-                */
-                .map((group: Group) => (
-                    <GroupCard
-                        key={group.groupId}
-                        group={group}
-                        handleGroupClicked={handleGroupClicked}
-                    />
-                ))}
+            {searchInput !== undefined
+                ? groups
+                      .filter((group: Group) => {
+                          if (searchInput !== undefined) {
+                              if (searchInput === '') {
+                                  return group;
+                              } else if (
+                                  group.groupName != null &&
+                                  group.groupName
+                                      .toLowerCase()
+                                      .includes(searchInput.toLocaleLowerCase())
+                              ) {
+                                  return group;
+                              }
+                          }
+                      })
+                      .map((group: Group) => (
+                          <GroupCard
+                              key={group.groupId}
+                              group={group}
+                              handleGroupClicked={handleGroupClicked}
+                          />
+                      ))
+                : groups.map((group: Group) => (
+                      <GroupCard
+                          key={group.groupId}
+                          group={group}
+                          handleGroupClicked={handleGroupClicked}
+                      />
+                  ))}
         </StyledUl>
     );
 };

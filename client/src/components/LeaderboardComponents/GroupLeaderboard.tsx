@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Group from '../../interfaces/Group';
 import User from '../../interfaces/User';
 import { Avatar, Card, makeStyles } from '@material-ui/core';
 import './GroupLeaderboard.css';
-import GroupsAndFriends from '../../containers/GroupsAndFriends';
 
 const useStyles = makeStyles({
     root: {
@@ -25,11 +23,6 @@ const useStyles = makeStyles({
 interface Props {
     title?: string;
     users: User[];
-    setUsers: React.Dispatch<React.SetStateAction<User[]>>;
-    placements: Placements[];
-    setPlacements: React.Dispatch<React.SetStateAction<Placements[]>>;
-    totalPoints: number;
-    setTotalPoints: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export interface Placements {
@@ -37,18 +30,9 @@ export interface Placements {
     position: number;
 }
 
-const GroupLeaderboard: React.FC<Props> = ({
-    title,
-    users,
-    setUsers,
-    placements,
-    setPlacements,
-    totalPoints,
-    setTotalPoints,
-}: Props) => {
-    //const [users, setUsers] = useState<User[]>(propUsers);
-    //const [placements, setPlacements] = useState<Placements[]>([]);
-    //const [totalPoints, setTotalPoints] = useState<number>(0);
+const GroupLeaderboard: React.FC<Props> = ({ title, users }: Props) => {
+    const [placements, setPlacements] = useState<Placements[]>([]);
+    const [totalPoints, setTotalPoints] = useState<number>(0);
     const classes = useStyles();
 
     const sortPoints = (): User[] => {
@@ -68,6 +52,7 @@ const GroupLeaderboard: React.FC<Props> = ({
     };
 
     const getPlacements = () => {
+        const placements: Placements[] = [];
         const sorted = sortPoints();
         for (let i = 0; i < sorted.length; i++) {
             placements.push({ user: sorted[i], position: 1 });
@@ -102,23 +87,9 @@ const GroupLeaderboard: React.FC<Props> = ({
     };
 
     useEffect(() => {
-        setUsers(users);
         getPlacements();
         getTotalPoints();
-    }, [users, placements, totalPoints]);
-
-    /*
-    useEffect(() => {
-        setUsers(users);
-        getPlacements();
-        getTotalPoints();
-        return () => {
-            setUsers([]);
-            setPlacements([]);
-            setTotalPoints(0);
-        };
-    }, [propUsers]);
-    */
+    }, [users]);
 
     const renderPlayers = users.map((user, index: number) => {
         return (
@@ -137,7 +108,7 @@ const GroupLeaderboard: React.FC<Props> = ({
                             flex: '1',
                         }}
                     >
-                        <Avatar />
+                        <Avatar src={user.image} />
                         <h6 className="groupleaderboard__name">
                             {user.firstName}
                         </h6>
