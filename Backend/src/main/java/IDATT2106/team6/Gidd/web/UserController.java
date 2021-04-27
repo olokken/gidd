@@ -646,7 +646,7 @@ public class UserController {
     @PathTwoTokenRequired
     @PutMapping(value = "/{id}")
     public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
-        log.info("recieved a put mapping for user with id: " + id + " and map " + map.toString());
+        log.info("receieved a put mapping for user with id: " + id);
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
         header.add("Content-Type", "application/json; charset=UTF-8");
