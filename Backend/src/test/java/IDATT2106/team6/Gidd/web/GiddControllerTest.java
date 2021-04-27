@@ -84,12 +84,12 @@ public class GiddControllerTest {
                 new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
                 0, user1, 50, group3, "det som du gjør nå", new Image(),
                 ActivityLevel.HIGH, new ArrayList<>(), 0.001, 0.005, null);
+                0, user1, 50, group3, "det som du gjør nå", new Image(),
+                ActivityLevel.MEDIUM, new ArrayList<>(), 0.001, 0.005, null);
 
         group1 = new FriendGroup(1, "GruppeTest", user1);
 
         group2 = new FriendGroup(1, "GruppeTest", user1);
-
-
     }
 
   //  @Test
@@ -176,9 +176,9 @@ public class GiddControllerTest {
     @Order(4)
     @Test
     public void newActivityTest() throws Exception {
+        System.out.println("test 4");
         //create new activity
         int initialPoints = user1.getPoints();
-        System.out.println(activity1.getGroup().getGroupId());
         String id = mockMvc.perform(MockMvcRequestBuilders
                 .post("/activity").contentType(MediaType.APPLICATION_JSON)
                 .content("{\n" +
@@ -307,6 +307,7 @@ public class GiddControllerTest {
         ",\"equipmentList\": \"" + newValues.get("equipments") + "\"" +
     "}"  ).contentType(MediaType.APPLICATION_JSON).header("token", token)).andExpect(status().isOk());
 
+        activity1.setActivityLevel(ActivityLevel.valueOf("HIGH"));
         String getActivityString = mockMvc.perform(get("/activity/" + activity1.getActivityId())).andDo(print())
         .andReturn().getResponse().getContentAsString();
 
@@ -472,9 +473,11 @@ public class GiddControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         JSONObject user2Json = (JSONObject) parser.parse(user2AfterRegistering);
+        ActivityLevel activityLevel = ActivityLevel.valueOf(String.valueOf((((JSONObject)((JSONArray)
+                user2Activities.get("activities")).get(0))).get("activityLevel")));
         //points
         assertEquals(initialPoints + JOIN_ACTIVITY_BONUS
-                * MULTIPLIERS[activity1.getActivityLevel().ordinal()], user2Json.getAsNumber("points").intValue());
+                * MULTIPLIERS[activityLevel.ordinal()], user2Json.getAsNumber("points").intValue());
     }
 
     @Order(11)
@@ -650,7 +653,9 @@ public class GiddControllerTest {
 
         //points
         assertEquals(user2PreDeleteJson.getAsNumber("points").intValue() -
-                        JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity1.getActivityLevel().ordinal()],
+                        JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity1.getActivityLevel().ordinal()]
+                - HOST_JOIN_BONUS
+                ,
                 user2PostDeleteJson.getAsNumber("points").intValue());
     }
 
@@ -805,7 +810,7 @@ public class GiddControllerTest {
                     * MULTIPLIERS[activity1.getActivityLevel().ordinal()]
                     );
         }
-                //todo test
+
         mockMvc.perform(get("/activity/" + initialPost.getAsNumber("id"))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))

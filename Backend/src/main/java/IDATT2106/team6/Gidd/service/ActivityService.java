@@ -42,7 +42,6 @@ public class ActivityService {
         return this.repo.findActivity(activityId);
     }
 
-    //todo doesn't need id field, only uses it for logs
     public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
         log.info("adding user " + id + " to activity " + activity.getActivityId());
         return this.repo.addUserToActivity(id, activity, user, time);

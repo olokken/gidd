@@ -572,7 +572,6 @@ public class UserController {
     @PutMapping(value = "/some/{id}")
     public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
         log.debug("Received request at /user/some/" + id);
-        // TODO This method NEEDS to control token once that's possible
         Map<String, String> body = new HashMap<>();
         HttpHeaders headers = new HttpHeaders();
 
@@ -912,8 +911,6 @@ public class UserController {
 
     @PostMapping("")
     public ResponseEntity registerUser(@RequestBody HashMap<String, Object> map) {
-        //      TODO Error handling
-        //      Return Exception to user
         log.info("recieved postmapping to /user: " + map.toString());
         Map<String, String> body = new HashMap<>();
 
@@ -927,9 +924,10 @@ public class UserController {
 
         Image image = imageService.createImage(map.get("image").toString());
         if (image == null) {
+            body.put("error", "Something wrong happened with the image");
             return ResponseEntity
                 .badRequest()
-                .body("nope");
+                .body(formatJson(body));
         }
 
         User result = userService.registerUser(
@@ -953,15 +951,18 @@ public class UserController {
 
             body.put("id", String.valueOf(result.getUserId()));
 
-            return ResponseEntity.ok()
+            return ResponseEntity
+                    .ok()
                     .headers(header)
                     .body(formatJson(body));
         }
-        log.error("Created user is null, does the user already exist?");
+        log.error("Created user is null");
         header.add("Status", "400 BAD REQUEST");
-        body.put("error", "Created user is null, does the user already exist?");
-        return ResponseEntity.ok()
-                .headers(header).body(formatJson(body));
+        body.put("error", "Created user is null");
+        return ResponseEntity
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
     }
 
     @PostMapping("/{userId}/rating")

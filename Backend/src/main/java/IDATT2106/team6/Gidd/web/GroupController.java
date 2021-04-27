@@ -102,8 +102,6 @@ public class GroupController {
 
     @PostMapping("")
     public ResponseEntity addNewGroup(@RequestBody Map<String, Object> map){
-        //TODO bruker som lager gruppen legges automatisk til?
-        //Ta inn streng med medlemsIder
         String groupName = map.get("groupName").toString();
         String[] userIdsString = (map.get("userIds").toString()).split(",");
         int userId = Integer.parseInt(map.get("userId").toString());
