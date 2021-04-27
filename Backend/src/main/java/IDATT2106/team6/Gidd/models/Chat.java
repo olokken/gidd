@@ -69,14 +69,14 @@ public class Chat {
         return "{" +
                 "\"activity\":\"" + activity.getActivityId() + "\"" +
                 ",\"user\":" + user.toJSON() +
-                ",\"timestamp\":" + "\"" + timeStamp.toString() + "\"" +
+                ",\"timestamp\":" + timeStamp.getTime() +
                 ",\"message\":" + "\"" + message + "\"" +
                 "}";
     }
     public String toJson(){
         return "{" +
                 "\"user\":" + user.toJSON() +
-                ",\"timestamp\":" + "\"" + timeStamp.toString() + "\"" +
+                ",\"timestamp\":" + timeStamp.getTime() +
                 ",\"message\":" + "\"" + message + "\"" +
                 "}";
     }

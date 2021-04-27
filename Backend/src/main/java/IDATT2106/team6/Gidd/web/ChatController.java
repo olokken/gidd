@@ -96,7 +96,7 @@ public class ChatController {
         String json = "{" +
                 "\"user\":" + user.toJSON() +
                 ",\"message\":" + "\"" + chatJson.get("message") + "\"" +
-                ",\"timestamp\":" + "\"" + newChat.getTimeStamp().toString() + "\"" +
+                ",\"timestamp\":" + newChat.getTimeStamp().getTime() +
                 "}";
 
         int counter = 0;
