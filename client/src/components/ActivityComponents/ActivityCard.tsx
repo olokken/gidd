@@ -59,16 +59,16 @@ const ActivityCard = ({
 
     const onClickActivity = () => {
         setOpenPopup(!openPopup);
-        console.log(activity);
+        console.log(activity)
         setActivity(activity);
     };
 
-    const picture = () : any => {
+    const picture = (): any => {
         if (activity.image.length > 40) {
-            return activity.image; 
+            return activity.image;
         }
-            return hiking; 
-    }; 
+        return hiking;
+    };
     return (
         <Card
             onClick={onClickActivity}

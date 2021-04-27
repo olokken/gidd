@@ -26,13 +26,15 @@ const StyledUl = styled.ul`
 interface Props {
     friends: User[];
     groups: Group[];
+    handleGroupClicked: (group:Group) => void;
+    updateGroups: () => void;
     onClick?: () => void;
 }
 
 
 
 
-const GroupList = ({ friends, groups, onClick }: Props) => {
+const GroupList = ({ friends, groups, handleGroupClicked, updateGroups, onClick}: Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User[]>([]);
     const [chosenGroupName, setChosenGroupName] = useState<string>('');
@@ -81,7 +83,7 @@ const GroupList = ({ friends, groups, onClick }: Props) => {
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
-            })
+            }).then(updateGroups)
             .catch((error) => {
                 console.log('Could not post friend: ' + error.message);
                 alert('Du er allerede venn med denne brukeren');
@@ -139,15 +141,15 @@ const GroupList = ({ friends, groups, onClick }: Props) => {
             />
             <h2>Dine grupper</h2>
             <StyledUl>
-            {groups.filter((group: Group) => {
-                if (searchInput === "") {
-                    return group
-                } else if (group.groupName != null && (group.groupName).toLowerCase().includes(searchInput.toLocaleLowerCase())) {
-                    return group
+                {groups.filter((group: Group) => {
+                    if (searchInput === "") {
+                        return group
+                    } else if (group.groupName != null && (group.groupName).toLowerCase().includes(searchInput.toLocaleLowerCase())) {
+                        return group
+                    }
+                }).map((group: Group) =>
+                    <GroupCard key={group.groupId} group={group} handleGroupClicked={handleGroupClicked} onClick={onClick}/>)
                 }
-            }).map((group: Group) =>
-                <GroupCard onClick={onClick} key={group.groupId} group={group} />)
-            }
             </StyledUl>
         </StyledContainer >
     );

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Group from '../../interfaces/Group';
 import User from '../../interfaces/User';
 import { Avatar, Card, makeStyles } from '@material-ui/core';
 import './GroupLeaderboard.css';
+import GroupsAndFriends from '../../containers/GroupsAndFriends';
 
 const useStyles = makeStyles({
     root: {
@@ -22,7 +23,8 @@ const useStyles = makeStyles({
     },
 });
 interface Props {
-    group: Group;
+    title?: string;
+    propUsers: User[];
 }
 
 interface Placements {
@@ -30,86 +32,68 @@ interface Placements {
     position: number;
 }
 
-const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
-    const [users, setUsers] = useState<User[]>(group.users);
+const GroupLeaderboard: React.FC<Props> = ({ title, propUsers }: Props) => {
+    const [users, setUsers] = useState<User[]>(propUsers);
+    const [placements, setPlacements] = useState<Placements[]>([]);
+    const [totalPoints, setTotalPoints] = useState<number>(0);
     const classes = useStyles();
 
-    const greatest = () => {
-        let index = 0;
-        for (let i = 0; i < users.length; i++) {
-            for (let y = i + 1; y < users.length; y++) {
-                if (+users[i].points > +users[y].points) index = i;
-            }
-        }
-        return index;
-    };
-
-    /*
-    const getPlacements = () => {
-        let arr: Placements[] = [];
-        let indexes: number[] = [];
-        let index = 0;
-        let max = 1000000000;
-        let nextPlacement = 0;
-        for (let i = 0; i < users.length; i++) {
-            for (let y = i + 1; y < users.length; y++) {
-                if (+users[i].points > +users[y].points) {
-                    index = i;
-                } 
-                if(y === users.length-1) {
-                    for(let k=y-1; k >=0; k--) {
-                        let ind = 0;
-                        let arr1: Placements[] = [];
-                        if(+users[index].points === +users[k].points) {
-                            nextPlacement++;
-                            arr1[ind++] = 
-                        }
-                        if(k===0)
-                    }
-                }
-            }
-        }
-    };
-    */
-
-    const filterPoints = () => {
-        const sortArray = users.map(function (data, index) {
-            return { index: index, data: data };
-        });
-
-        sortArray.sort(function (a, b) {
-            if (a.data < b.data) return -1;
-            if (a.data > b.data) return 1;
-            return a.index - b.index;
-        });
-
-        return sortArray.map(function (val) {
-            return val.data;
+    const sortPoints = (): User[] => {
+        return propUsers.sort((u1, u2) => {
+            if (u1.points > u2.points) return -1;
+            else if (u1.points < u2.points) return 1;
+            else return 0;
         });
     };
 
     const getPosition = (user: User): number => {
-        console.log(Object.values(user)[0]);
-        const filtered = filterPoints();
-        filtered.forEach((f) => console.log(f));
-        return filtered.indexOf(user);
-        //return -1;
+        let position = 0;
+        placements.forEach((p) => {
+            if (p.user === user) position = p.position;
+        });
+        return position;
     };
 
-    const getTotalPoints = (): number => {
+    const getPlacements = () => {
+        const placements: Placements[] = [];
+        const sorted = sortPoints();
+        for (let i = 0; i < sorted.length; i++) {
+            placements.push({ user: sorted[i], position: 1 });
+        }
+        let currentPos = 1;
+        let nextPos = 1;
+        for (let i = 0; i < placements.length - 1; i++) {
+            placements[i].position = currentPos;
+            nextPos++;
+            if (+placements[i].user.points > +placements[i + 1].user.points) {
+                currentPos = nextPos;
+            }
+            if (i === placements.length - 2) {
+                placements[i + 1].position = currentPos;
+            }
+        }
+        setPlacements(placements);
+    };
+
+    const getTotalPoints = () => {
         let sum = 0;
         users.forEach((user) => {
             sum += +user.points;
         });
-        return sum;
+        setTotalPoints(sum);
     };
 
     //The max margin-left is 52rem
     const getMarginLeft = (user: User) => {
-        return ((+user.points / getTotalPoints()) * 52) % 52;
+        return ((+user.points / totalPoints) % 1) * 100;
     };
 
-    const renderPlayers = group.users.map((user, index: number) => {
+    useEffect(() => {
+        getPlacements();
+        getTotalPoints();
+    }, []);
+
+    const renderPlayers = users.map((user, index: number) => {
         return (
             <div className="groupleaderboard__players" key={index}>
                 <hr className="groupleaderboard__line" />
@@ -117,16 +101,19 @@ const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
                     <div
                         /* The max margin-left is 52rem*/
                         style={{
-                            margin: `0.7rem 0.5rem 0.5rem `,
-                            marginLeft: `${getMarginLeft(user)}rem`,
+                            margin: `0.7rem 0.5rem 0.5rem`,
+                            marginLeft:
+                                users.length === 0
+                                    ? '0.5rem'
+                                    : `${getMarginLeft(user)}%`,
                             display: 'flex',
                             flex: '1',
                         }}
                     >
+                        <Avatar />
                         <h6 className="groupleaderboard__name">
                             {user.firstName}
                         </h6>
-                        <Avatar />
                     </div>
                     <div className="groupleaderboard__stats">
                         <h5 className="groupleaderboard__stat1">
@@ -143,9 +130,11 @@ const GroupLeaderboard: React.FC<Props> = ({ group }: Props) => {
 
     return (
         <Card className={classes.root}>
-            <div className="groupleaderboard__header">
-                <h1>{group.groupName}</h1>
-            </div>
+            {title !== undefined && (
+                <div className="groupleaderboard__header">
+                    <h1>{title}</h1>
+                </div>
+            )}
             {renderPlayers}
             <hr className="groupleaderboard__line" />
         </Card>
