@@ -230,7 +230,7 @@ public class User {
             "\n     \"surname\":" + '\"' + surname + '\"' +"," +
             "\n     \"phoneNumber\":" + phoneNumber +"," +
             "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
-            "\n     \"image\":" + '\"' + "\"" + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes())  + '\"' + '\"' + "," +
+            "\n     \"image\":" + '\"' + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes())  + '\"' + "," +
             "\n     \"points\":" + points +
             "\n }";
     }
