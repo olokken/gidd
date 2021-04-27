@@ -95,13 +95,16 @@ public class ActivityController {
             log.debug("new activity id: " + newId);
 
             if(!insertUserActivityCoupling(user, newActivity)){
-                body.put("error", "something went wrong when coupling the user and activiyt");
+                body.put("error", "something went wrong when coupling the user and activity");
                 return ResponseEntity
                         .badRequest()
                         .headers(headers)
                         .body(formatJson(body));
             }
-            registerEquipmentToActivity(newId, map.get("equipmentList").toString());
+            if(!registerEquipmentToActivity(newId, map.get("equipmentList").toString())){
+                log.error("Equipment could not be registered correctly");
+                body.put("error", "could not add equipment, but continuing anyways");
+            }
 
             log.info("Activity created successfully");
 
@@ -401,9 +404,7 @@ public class ActivityController {
         log.debug(String.format("There are %d activities", activities.size()));
 
         HttpHeaders header = new HttpHeaders();
-        HashMap<String, String> body = new HashMap<>();
 
-        body.put("activity", activities.toString());
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
         log.debug(String.format("Returning %d activities", activities.size()));
@@ -420,7 +421,7 @@ public class ActivityController {
         HashMap<String, String> userMap = new HashMap<>();
         HashMap<String, String> errorCode = new HashMap<>();
         List<User> users = activityService.getUserFromActivity(id);
-        if (users.size() != 0) {
+        if (!users.isEmpty()) {
             log.info("users found for activity with id " + id);
             userMap.put("user", "");
 
@@ -600,7 +601,6 @@ public class ActivityController {
             for (ActivityEquipment con: oldEquips) {
                 if (con.getEquipment().getEquipmentId() == e.getEquipmentId()){
                     res.add(con);
-                    System.out.println("Equipment match, adding to result list");
                     match = true;
                     break;
                 }
@@ -618,8 +618,6 @@ public class ActivityController {
                                                      List<ActivityEquipment> newEquips) {
         List<ActivityEquipment> differences = new ArrayList<>(oldEquips);
         differences.removeAll(newEquips);
-
-        System.out.println("DIFF : " + differences);
 
         try {
             boolean worked = true;
@@ -643,7 +641,6 @@ public class ActivityController {
         for (String name : equipString.split(",")) {
             name = name.toLowerCase();
             Equipment equipment = equipmentService.getEquipmentByDescription(name);
-            System.out.println("Found equipment with name ["+name+"]");
             if(equipment == null) {
                 log.debug("equipment " + name + " did not exist, creating");
                 equipment = new Equipment(name);
@@ -676,9 +673,7 @@ public class ActivityController {
         //Kalle insert-metode helt til den blir true
 
         ArrayList<ActivityUser> activityUsers = new ArrayList<>();
-        System.out.println("is null " + activityService == null);
         ArrayList<Activity> activities = activityService.getAllActivities();
-        System.out.println("activity null " + activities == null);
         for (Activity a : activities) {
             activityUsers.addAll(a.getRegisteredParticipants());
         }
