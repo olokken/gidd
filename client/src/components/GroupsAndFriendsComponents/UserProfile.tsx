@@ -2,12 +2,35 @@ import React, { useContext } from 'react';
 import emailjs from 'emailjs-com';
 import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
-import { Button, Card, CardContent, CardMedia, Typography } from '@material-ui/core';
+import { Avatar, Button, Card, CardContent, CardMedia, makeStyles, Typography } from '@material-ui/core';
 import logo from '../../assets/logo.png';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { UserContext } from '../../UserContext';
 import User from '../../interfaces/User';
 import axios from '../../Axios'
+import styled from 'styled-components';
+
+const AvatarDiv = styled.div`
+    justify-content: center;
+     display: flex;
+`;
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
+        '& > *': {
+            margin: theme.spacing(1),
+        },
+    },
+    small: {
+        width: theme.spacing(3),
+        height: theme.spacing(3),
+    },
+    large: {
+        width: 300,
+        height: 300,
+    },
+}));
 
 interface Props {
     updateFriends: () => void;
@@ -16,17 +39,19 @@ interface Props {
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const UserProfile = ({friend, openPopup, setOpenPopup, updateFriends}: Props) => {
-    const {user, setUser} = useContext(UserContext);
+const UserProfile = ({ friend, openPopup, setOpenPopup, updateFriends }: Props) => {
+    const { user, setUser } = useContext(UserContext);
+    const classes = useStyles();
 
-    const deleteFriend = () =>{
+
+    const deleteFriend = () => {
         deleteAxFriend(Object.values(friend)[0]);
         setOpenPopup(!openPopup);
     }
 
     const deleteAxFriend = (friendId: string) => {
         axios
-            .delete(`user/${user}/user/${friendId}`) 
+            .delete(`user/${user}/user/${friendId}`)
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
@@ -37,14 +62,10 @@ const UserProfile = ({friend, openPopup, setOpenPopup, updateFriends}: Props) =>
     }
 
 
-  return (
+    return (
         <Card>
-            <CardMedia
-                component="img"
-                height="140"
-                image={friend.image}
-          
-            />
+            <AvatarDiv>
+                <Avatar src={friend.image} className={classes.large}></Avatar></AvatarDiv>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="h2">
                     {friend.firstName + ' ' + friend.surname}
@@ -61,18 +82,18 @@ const UserProfile = ({friend, openPopup, setOpenPopup, updateFriends}: Props) =>
                 <Typography variant="body2" color="textSecondary" component="p">
                     Poeng: {friend.points}
                 </Typography>
-                <div style={{marginTop: "5px"}}>
-                    <Button 
+                <div style={{ marginTop: "5px" }}>
+                    <Button
                         fullWidth
-                        onClick={deleteFriend} 
-                        variant="contained" 
+                        onClick={deleteFriend}
+                        variant="contained"
                         color="primary"
-                    >  Fjern venn <DeleteIcon style={{marginLeft:"8px"}}/>
+                    >  Fjern venn <DeleteIcon style={{ marginLeft: "8px" }} />
                     </Button>
                 </div>
             </CardContent>
         </Card>
-  );
+    );
 }
 
 export default UserProfile;
