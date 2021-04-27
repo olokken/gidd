@@ -1,6 +1,7 @@
 package IDATT2106.team6.Gidd.models;
 
 import IDATT2106.team6.Gidd.util.Logger;
+import java.util.Objects;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
@@ -245,5 +246,19 @@ public class User {
                 "\n     \"image\":" + '\"' + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' + "," +
                 "\n     \"provider\":" + '\"' + authProvider + '\"' +
                 "\n }";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return userId == user.userId && phoneNumber == user.phoneNumber &&
+            email.equals(user.email) && password.equals(user.password) &&
+            firstName.equals(user.firstName) && surname.equals(user.surname);
     }
 }

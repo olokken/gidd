@@ -25,7 +25,9 @@ public class FriendGroup {
         this.users = new ArrayList<>();
     }
 
-    public FriendGroup(){}
+    public FriendGroup(){
+        this.users = new ArrayList<>();
+    }
 
     public Integer getGroupId() {
         return groupId;
