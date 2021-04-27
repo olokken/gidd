@@ -38,7 +38,7 @@ function Leaderboard() {
             surname: '',
             userID: '',
             email: '',
-            picture: '',
+            image: '',
             password: '',
             phoneNumber: '',
             activityLevel: '',

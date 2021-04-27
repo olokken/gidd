@@ -59,7 +59,7 @@ const ActivityCard = ({
 
     const onClickActivity = () => {
         setOpenPopup(!openPopup);
-        console.log(activity);
+        console.log(activity)
         setActivity(activity);
     };
 

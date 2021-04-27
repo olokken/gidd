@@ -294,7 +294,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
     };
 
     const postActivity = (groupId: string | undefined) => {
-        const id: number = groupId ? +groupId : 0;
+        const id: number = groupId ? +groupId : -1;
         const activity: Activity2 = {
             title: title,
             time: getTimeFormat(),
@@ -356,7 +356,10 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
             `/activity/${activityResponse?.activityId}`,
             sendActivity,
             config
-        );
+        ).then(() => {
+            handleReset();
+            setOpenPopup(!openPopup);
+        });
         console.log(request);
     };
 

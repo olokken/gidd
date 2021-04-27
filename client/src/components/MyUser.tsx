@@ -53,7 +53,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
         surname: '',
         userID: '',
         email: '',
-        picture: '',
+        image: '',
         password: '',
         phoneNumber: '',
         activityLevel: '',
