@@ -48,7 +48,7 @@ public class ControllerUtil {
     }
 
     static boolean validateStringMap(Map<String, Object> map) {
-        log.info("validating map values of " + map.toString());
+        log.info("validating a map");
         for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
             try {
                 Map.Entry<String, Object> pair = (Map.Entry) stringObjectEntry;

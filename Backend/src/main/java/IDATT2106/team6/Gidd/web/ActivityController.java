@@ -249,10 +249,12 @@ public class ActivityController {
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         log.debug("User with id recieved");
         Activity activity = activityService.getActivity(actId);
+
+
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
+
         headers.add("Content-Type", "application/json; charset=UTF-8");
-        log.info("old activity " + activity.getActivityId());
         if (activity == null || user == null) {
             body.put("error", "user or activity is null");
             log.error("activity or user is null, returning error");
@@ -264,6 +266,8 @@ public class ActivityController {
                     .body(formatJson(body));
         }
 
+        log.info("old activity " + activity.getActivityId());
+        
         //edit points of participants
         ActivityLevel oldLevel = activity.getActivityLevel();
         ActivityLevel newLevel = ActivityLevel.valueOf(map.get("activityLevel").toString());

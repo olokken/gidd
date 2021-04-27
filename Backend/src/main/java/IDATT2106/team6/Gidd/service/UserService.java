@@ -90,7 +90,7 @@ public class UserService {
     }
 
     public boolean removeActivity(int activityUserId, User user){
-        log.info("removing connection with id " + activityUserId + " from user " + user.toString());
+        log.info("removing connection with id " + activityUserId + " from user " + user.getUserId());
         return this.repo.removeActivity(activityUserId, user);
     }
 
