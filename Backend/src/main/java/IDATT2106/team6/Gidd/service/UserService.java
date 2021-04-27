@@ -85,7 +85,7 @@ public class UserService {
     }
 
     public Integer getActivityUser(Activity activity, User user){
-        log.info("getting id of connection between activity" + activity.toString() + " and user " + user.toString());
+        log.info("getting id of connection between activity" + activity.getActivityId() + " and user " + user.getUserId());
         return this.repo.getActivityUserId(activity.getActivityId(), user.getUserId());
     }
 
@@ -100,7 +100,7 @@ public class UserService {
     }
 
     public boolean deleteConnection(ActivityUser activityUser){
-        log.info("deleting connection " + activityUser.toString());
+        log.info("deleting connection " + activityUser.getId());
         return this.repo.deleteConnection(activityUser);
     }
 

@@ -65,12 +65,10 @@ public class User {
         byte[] salt = new byte[16];
         random.nextBytes(salt);
 
-        //convert password to char arra
         char[] passwordChars = password.toCharArray();
-        //password hashed with salt
         byte[] hashedBytes = hashPassword(passwordChars, salt);
 
-        //convert hashed password to string to store in datbase
+        //convert hashed password to string to store in database
         String hashedString = Hex.encodeHexString(hashedBytes);
         //convert byte to string
         this.salt = org.apache.commons.codec.binary.Base64.encodeBase64String(salt);
