@@ -21,7 +21,6 @@ public class ChatService {
     }
 
     public List<Chat> getMessages(Activity activity) {
-        //todo check if groupId exists, return false if not
         return repo.getAllChats(activity);
     }
 }

@@ -1018,7 +1018,12 @@ public class GiddControllerTest {
     //Test for aktivitet tilhørende gruppe
 
     @Test
-    @Order(25)
+    @Order(26)
+    public void getChatTest() throws Exception {
+
+    }
+    @Test
+    @Order(27)
     public void tearDown() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/group/" + group2.getGroupId()))

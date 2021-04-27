@@ -60,6 +60,7 @@ public class ChatController {
                 messageJson.append("]");
                 //trailing comma
                 messageJson.deleteCharAt(messageJson.length() - 2);
+                messageJson.append("}");
                 return ResponseEntity
                         .ok()
                         .headers(header)

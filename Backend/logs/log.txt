@@ -1,1 +1,36 @@
 
+2021-04-27T09:13:52.718338 class IDATT2106.team6.Gidd.service.ActivityService INFO: Getting activity with activityId 1109937914
+2021-04-27T09:13:52.718676 class IDATT2106.team6.Gidd.repo.ActivityRepo INFO: finding activity with id 1109937914
+2021-04-27T09:13:52.724196 class IDATT2106.team6.Gidd.repo.ActivityRepo INFO: activity found successfully
+2021-04-27T09:13:52.724449 class IDATT2106.team6.Gidd.repo.MessageRepo INFO: getting all tags
+2021-04-27T09:16:42.399724 class IDATT2106.team6.Gidd.service.ActivityService INFO: Getting activity with activityId 302425350
+2021-04-27T09:16:42.400050 class IDATT2106.team6.Gidd.repo.ActivityRepo INFO: finding activity with id 302425350
+2021-04-27T09:16:42.410300 class IDATT2106.team6.Gidd.repo.ActivityRepo INFO: activity found successfully
+2021-04-27T09:16:42.411512 class IDATT2106.team6.Gidd.web.ControllerUtil INFO: formatting json
+2021-04-27T09:18:10.000268 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:18:10.368074 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:18:10.383207 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:18:10.397484 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:18:10.411629 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:18:10.424542 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:18:10.436378 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:18:31.585032 class IDATT2106.team6.Gidd.service.ActivityService INFO: Getting activity with activityId 302425350
+2021-04-27T09:18:32.615897 class IDATT2106.team6.Gidd.repo.ActivityRepo INFO: finding activity with id 302425350
+2021-04-27T09:18:32.655828 class IDATT2106.team6.Gidd.repo.ActivityRepo INFO: activity found successfully
+2021-04-27T09:18:32.659327 class IDATT2106.team6.Gidd.web.ControllerUtil INFO: formatting json
+2021-04-27T09:20:03.895226 class IDATT2106.team6.Gidd.service.ActivityService INFO: Getting activity with activityId 1109937914
+2021-04-27T09:20:03.895531 class IDATT2106.team6.Gidd.repo.ActivityRepo INFO: finding activity with id 1109937914
+2021-04-27T09:20:03.993837 class IDATT2106.team6.Gidd.repo.ActivityRepo INFO: activity found successfully
+2021-04-27T09:20:03.994090 class IDATT2106.team6.Gidd.repo.MessageRepo INFO: getting all tags
+2021-04-27T09:20:38.703834 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:20:39.007270 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:20:39.018009 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:20:39.029123 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:20:39.039895 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:20:39.048893 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:20:39.058349 class IDATT2106.team6.Gidd.repo.GiddRepo INFO: Connecting
+2021-04-27T09:20:43.850420 class IDATT2106.team6.Gidd.service.ActivityService INFO: Getting activity with activityId 1109937914
+2021-04-27T09:20:44.830009 class IDATT2106.team6.Gidd.repo.ActivityRepo INFO: finding activity with id 1109937914
+2021-04-27T09:20:45.089122 class IDATT2106.team6.Gidd.repo.ActivityRepo INFO: activity found successfully
+2021-04-27T09:20:45.089707 class IDATT2106.team6.Gidd.repo.MessageRepo INFO: getting all tags
+2021-04-27T09:20:45.132916 class IDATT2106.team6.Gidd.repo.MessageRepo INFO: result list size is 9
