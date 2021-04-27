@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Group from '../../interfaces/Group';
 import User from '../../interfaces/User';
 import { Avatar, Card, makeStyles } from '@material-ui/core';
 import './GroupLeaderboard.css';
-import GroupsAndFriends from '../../containers/GroupsAndFriends';
 
 const useStyles = makeStyles({
     root: {
@@ -24,22 +22,21 @@ const useStyles = makeStyles({
 });
 interface Props {
     title?: string;
-    propUsers: User[];
+    users: User[];
 }
 
-interface Placements {
+export interface Placements {
     user: User;
     position: number;
 }
 
-const GroupLeaderboard: React.FC<Props> = ({ title, propUsers }: Props) => {
-    const [users, setUsers] = useState<User[]>(propUsers);
+const GroupLeaderboard: React.FC<Props> = ({ title, users }: Props) => {
     const [placements, setPlacements] = useState<Placements[]>([]);
     const [totalPoints, setTotalPoints] = useState<number>(0);
     const classes = useStyles();
 
     const sortPoints = (): User[] => {
-        return propUsers.sort((u1, u2) => {
+        return users.sort((u1, u2) => {
             if (u1.points > u2.points) return -1;
             else if (u1.points < u2.points) return 1;
             else return 0;
@@ -85,13 +82,15 @@ const GroupLeaderboard: React.FC<Props> = ({ title, propUsers }: Props) => {
 
     //The max margin-left is 52rem
     const getMarginLeft = (user: User) => {
-        return ((+user.points / totalPoints) % 1) * 100;
+        if (users.length > 5) return (+user.points / totalPoints) * 250;
+        else return (+user.points / totalPoints) * 75;
     };
 
     useEffect(() => {
         getPlacements();
         getTotalPoints();
-    }, []);
+        console.log(' ');
+    }, [users]);
 
     const renderPlayers = users.map((user, index: number) => {
         return (
@@ -99,7 +98,7 @@ const GroupLeaderboard: React.FC<Props> = ({ title, propUsers }: Props) => {
                 <hr className="groupleaderboard__line" />
                 <div className="groupleaderboard__player">
                     <div
-                        /* The max margin-left is 52rem*/
+                        /* The max margin-left is 52rem on full size*/
                         style={{
                             margin: `0.7rem 0.5rem 0.5rem`,
                             marginLeft:
@@ -110,7 +109,7 @@ const GroupLeaderboard: React.FC<Props> = ({ title, propUsers }: Props) => {
                             flex: '1',
                         }}
                     >
-                        <Avatar />
+                        <Avatar src={user.image} />
                         <h6 className="groupleaderboard__name">
                             {user.firstName}
                         </h6>

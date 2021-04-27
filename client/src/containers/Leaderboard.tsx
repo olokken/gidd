@@ -2,18 +2,10 @@ import axios from '../Axios';
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
 import GroupLeaderboard from '../components/LeaderboardComponents/GroupLeaderboard';
 import Group from '../interfaces/Group';
-import { group } from 'node:console';
 import { UserContext } from '../UserContext';
-import {
-    makeStyles,
-    Menu,
-    MenuItem,
-    Paper,
-    Tab,
-    Tabs,
-} from '@material-ui/core';
+import { makeStyles, Paper, Tab, Tabs } from '@material-ui/core';
 import User from '../interfaces/User';
-import GroupMenu from '../components/LeaderboardComponents/GroupMenu';
+import { Groups } from '../components/GroupsAndFriendsComponents/Groups';
 
 const useStyles = makeStyles({
     root: {
@@ -26,9 +18,11 @@ function Leaderboard() {
     const [groups, setGroups] = useState<Group[]>([]);
     const { user, seUser } = useContext(UserContext);
     const [yourGroups, setYourGroups] = useState<Group[]>([]);
-    const [group, setGroup] = useState<Group>({
-        groupId: '0',
-        groupName: '',
+    const [value, setValue] = React.useState(0);
+    const [allUsers, setAllUsers] = useState<User[]>([]);
+    const [friends, setFriends] = useState<User[]>([]);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [selectedGroup, setSelectedGroup] = useState<Group>({
         owner: {
             firstName: '',
             surname: '',
@@ -40,12 +34,10 @@ function Leaderboard() {
             activityLevel: '',
             points: '',
         },
+        groupName: '',
+        groupId: '',
         users: [],
     });
-    const [value, setValue] = React.useState(0);
-    const [allUsers, setAllUsers] = useState<User[]>([]);
-    const [friends, setFriends] = useState<User[]>([]);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const getYourGroups = async () => {
         const request = await axios.get(`/user/${user}/group`);
@@ -55,13 +47,11 @@ function Leaderboard() {
 
     const getFriends = async () => {
         const request = await axios.get(`/user/${user}/user`);
-        setFriends(request.data.users);
         return request;
     };
 
     const getUser = async () => {
         const request = await axios.get(`/user/${user}`);
-        setFriends((friends) => [...friends, request.data]);
         return request;
     };
 
@@ -88,10 +78,16 @@ function Leaderboard() {
         setAnchorEl(event.currentTarget);
     };
 
+    const handleGroupClicked = (group: Group) => {
+        setSelectedGroup(group);
+    };
+
     useEffect(() => {
         getYourGroups();
-        getFriends();
-        getUser();
+        Promise.all([getFriends(), getUser()]).then((response) => {
+            setFriends(response[0].data.users);
+            setFriends((friends) => [...friends, response[1].data]);
+        });
         getAllGroups();
         getAllUsers();
     }, []);
@@ -100,7 +96,7 @@ function Leaderboard() {
         return (
             <GroupLeaderboard
                 key={index}
-                propUsers={group.users}
+                users={group.users}
                 title={group.groupName}
             />
         );
@@ -126,18 +122,21 @@ function Leaderboard() {
             </div>
             <div>
                 {value === 0 && (
-                    <div>
-                        <GroupMenu
-                            anchorEl={anchorEl}
-                            setAnchorEl={setAnchorEl}
-                            groups={yourGroups}
-                            setGroup={setGroup}
-                        />
-                        {group !== undefined && (
-                            <GroupLeaderboard
-                                propUsers={group.users}
-                                title={group.groupName}
+                    <div style={{ display: 'flex' }}>
+                        <div style={{ width: '20%' }}>
+                            <h2>Dine grupper</h2>
+                            <Groups
+                                groups={yourGroups}
+                                handleGroupClicked={handleGroupClicked}
                             />
+                        </div>
+                        {selectedGroup.groupId !== '' && (
+                            <div style={{ flex: '1' }}>
+                                <GroupLeaderboard
+                                    users={selectedGroup.users}
+                                    title={selectedGroup.groupName}
+                                />
+                            </div>
                         )}
                     </div>
                 )}
@@ -145,10 +144,7 @@ function Leaderboard() {
             <div>
                 {value === 1 && (
                     <div>
-                        <GroupLeaderboard
-                            propUsers={friends}
-                            title="Dine venner"
-                        />
+                        <GroupLeaderboard users={friends} title="Dine venner" />
                     </div>
                 )}
             </div>
@@ -157,7 +153,7 @@ function Leaderboard() {
                 {value === 3 && (
                     <div>
                         <GroupLeaderboard
-                            propUsers={allUsers}
+                            users={allUsers}
                             title="Alle brukere"
                         />
                     </div>
