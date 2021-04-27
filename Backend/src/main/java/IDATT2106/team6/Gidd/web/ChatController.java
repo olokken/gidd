@@ -57,9 +57,12 @@ public class ChatController {
                 for (Chat c : messageList){
                     messageJson.append(c.toJson()).append(",");
                 }
+
                 messageJson.append("]");
                 //trailing comma
-                messageJson.deleteCharAt(messageJson.length() - 2);
+                if (!messageList.isEmpty()) {
+                    messageJson.deleteCharAt(messageJson.length() - 2);
+                }
                 messageJson.append("}");
                 return ResponseEntity
                         .ok()
