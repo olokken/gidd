@@ -26,7 +26,7 @@ const StyledUl = styled.ul`
 interface Props {
     friends: User[];
     groups: Group[];
-    handleGroupClicked: (group:Group) => void;
+    handleGroupClicked: (group: Group) => void;
     updateGroups: () => void;
     onClick?: () => void;
 }
@@ -34,7 +34,7 @@ interface Props {
 
 
 
-const GroupList = ({ friends, groups, handleGroupClicked, updateGroups, onClick}: Props) => {
+const GroupList = ({ friends, groups, handleGroupClicked, updateGroups, onClick }: Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User[]>([]);
     const [chosenGroupName, setChosenGroupName] = useState<string>('');
@@ -58,7 +58,9 @@ const GroupList = ({ friends, groups, handleGroupClicked, updateGroups, onClick}
 
         console.log("searchInput: " + searchValue);
         if (selectInput === null) {
-            console.log('ingen bruker valgt ')
+            alert('Du må legge noen til i gruppen')
+        } else if (chosenGroupName === '') {
+            alert('Du må skrive et gruppenavn')
         } else {
             postGroup();
             setSelectInput([]);
@@ -148,7 +150,7 @@ const GroupList = ({ friends, groups, handleGroupClicked, updateGroups, onClick}
                         return group
                     }
                 }).map((group: Group) =>
-                    <GroupCard key={group.groupId} group={group} handleGroupClicked={handleGroupClicked} onClick={onClick}/>)
+                    <GroupCard key={group.groupId} group={group} handleGroupClicked={handleGroupClicked} onClick={onClick} />)
                 }
             </StyledUl>
         </StyledContainer >

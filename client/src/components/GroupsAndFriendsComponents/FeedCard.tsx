@@ -158,7 +158,7 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
                 <StyledHeader >{selectedGroup.groupName}</StyledHeader>
                 <List
                     style={{
-                        width: '40%',
+                        width: '30%',
                         float: 'right',
                     }}
                 >
@@ -168,7 +168,7 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
                             button
                             key={index}
                             onClick={() => handleUserClicked(user)}>
-                            <Avatar></Avatar>
+                            <Avatar src={user.image}></Avatar>
                             {Object.values(user)[0] == Object.values(selectedGroup.owner)[0] ?
                                 <ListItemText
                                     primary={
