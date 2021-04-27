@@ -26,11 +26,11 @@ const FeedbackForm = ({ openPopup, setOpenPopup }: Props) => {
 
   return (
       <div>
-          <div style={{padding:"10px"}}>
+          <div style={{padding:"5px"}}>
               <form onSubmit={sendEmail}>
-                  <div id="main" style={{display:"flex"}} >
+                  <div id="main" style={{display:"block"}} >
                     <div id="left">
-                        <div style={{padding:"10px"}}>
+                        <div style={{padding:"5px"}}>
                             <TextField  
                                 label="Navn"
                                 variant="outlined"
@@ -39,7 +39,7 @@ const FeedbackForm = ({ openPopup, setOpenPopup }: Props) => {
                                 type="text"
                                 name="name" />
                         </div>
-                        <div style={{padding:"10px"}}>
+                        <div style={{padding:"5px", minWidth:"100px"}}>
                             <TextField  
                                 label="Email"
                                 variant="outlined"
@@ -49,7 +49,7 @@ const FeedbackForm = ({ openPopup, setOpenPopup }: Props) => {
                                 placeholder="Email" 
                                 name="email"/>
                         </div>
-                        <div style={{padding:"10px"}}>
+                        <div style={{padding:"5px"}}>
                             <TextField 
                                 label="Emne"
                                 variant="outlined"
@@ -60,7 +60,7 @@ const FeedbackForm = ({ openPopup, setOpenPopup }: Props) => {
                         </div>
                     </div>
                     <div id="right">
-                        <div style={{padding:"10px"}}>
+                        <div style={{padding:"5px"}}>
                             <TextField 
                                 label="Din melding"
                                 variant="outlined"
@@ -73,7 +73,7 @@ const FeedbackForm = ({ openPopup, setOpenPopup }: Props) => {
                             <Button 
                                 color="primary"
                                 variant="contained" 
-                                style={{ marginLeft:"10px", width:"205px", height:"47px"}}
+                                style={{ marginLeft:"5px", width:"205px", height:"47px"}}
                                 type="submit" 
                                 >Send melding
                             </Button>
