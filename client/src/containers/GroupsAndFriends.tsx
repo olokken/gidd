@@ -84,7 +84,7 @@ const GroupsAndFriends = () => {
         const url = `user/${user}/group`
         axios.get(url).then(response => {
             setGroups(response.data['groups'])
-            if (selectedGroup.groupId === '-1') {
+            if (selectedGroup.groupId === '-1' && response.data['groups'].length > 0) {
                 setSelectedGroup(response.data['groups'][0])
             }
         }).catch(error => {
@@ -100,7 +100,7 @@ const GroupsAndFriends = () => {
                 console.log(response.data);
                 setUsers(response.data.filter(
                     (test: { userID: string; }) =>
-                        Object.values(test)[0] != user && FriendCheck(test)
+                        Object.values(test)[0] != user && friendCheck(test)
                 ));
             })
             .catch((error) => console.log(error));
@@ -144,7 +144,7 @@ const GroupsAndFriends = () => {
 
 
     //sjekker om user finnes i friends
-    const FriendCheck = (test: any) => {
+    const friendCheck = (test: any) => {
         let a = true;
         friends.forEach(function (friend) {
             if (Object.values(friend)[0] === Object.values(test)[0]) {

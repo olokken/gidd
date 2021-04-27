@@ -55,7 +55,6 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
     const [openChoiceBox, setOpenChoiceBox] = useState<boolean>(false);
     const [nextActivity, setNextActivity] = useState<ActivityResponse>();
     const [openActivityPopup, setOpenActivityPopup] = useState<boolean>(false);
-    const [changeActivityPopup, setChangeActivityPopup] = useState<boolean>(false);
     const [selectedUser, setSelectedUser] = useState<User>({
         firstName: '',
         surname: '',

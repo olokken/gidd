@@ -30,6 +30,7 @@ const NewUser = () => {
     const [surname, setSurname] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [number, setNumber] = useState<string>('');
+    const [image, setImage] = useState<string>('');
     const [activityLevel, setActivityLevel] = useState<string>('');
     const [password1, setPassword1] = useState<string>('');
     const [password2, setPassword2] = useState<string>('');
@@ -51,7 +52,8 @@ const NewUser = () => {
         surname: string,
         email: string,
         number: string,
-        password: string
+        password: string,
+        image: string
     ): boolean => {
         if (!emailCheck(email)) {
             alert('E-mail er allerede registrert');
@@ -68,12 +70,12 @@ const NewUser = () => {
                     surname: surname,
                     phoneNumber: number,
                     activityLevel: activityLevel.toUpperCase(),
-                    image: ''
+                    image: image,
                 })
                 .then((response) => {
                     const id = response.data.id
                     console.log(JSON.stringify(id));
-                    axios.get(`/security/generate/token?subject=${id}`).then(response => {
+                    axios.get(`/security/token/generate?subject=${id}`).then(response => {
                         const token = response.data.result;
                         localStorage.setItem('token', token);
                         localStorage.setItem('userID', id);
@@ -132,9 +134,38 @@ const NewUser = () => {
         setPassword2((event.target as HTMLInputElement).value);
     };
 
+    const onChangeImage = async (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        console.log(event);
+        if (event.target.files != null) {
+        const file: File = event.target.files[0];
+        console.log(file);
+        const base64 = await convertBase64(file);
+        console.log(base64);
+        setImage(base64);
+        console.log(image)
+       }
+    };
+
+    const convertBase64 = (file: File) => {
+        return new Promise<any>((resolve, reject) => {
+
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            
+            fileReader.onload = (() => {
+                resolve(fileReader.result);
+            });
+            fileReader.onerror = ((error) => {
+                reject(error);
+            });
+        });
+    };
+
     const onClick = () => {
         if (equalPasswords) {
-            createUser(firstName, surname, email, number, password1);
+            createUser(firstName, surname, email, number, password1, image);
         } else {
             alert('Noe gikk galt');
         }
@@ -157,6 +188,8 @@ const NewUser = () => {
                 correctEmailFormat={correctEmailFormat}
                 email={email}
                 goBack={goBack}
+                image={image}
+                onChangeImage={onChangeImage}
             ></NewUserCard>
         </NewUsernContainer>
     );

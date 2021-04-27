@@ -57,7 +57,7 @@ const FriendCard = ({friend, updateFriends}: Props) =>{
                         alt={'Image related to the activity' }
                         height="40px"
                         width="40px"
-                        image={logo} // hente bildet frå aktiviteta
+                        image={friend.image} // hente bildet frå aktiviteta
                     />
                 </Grid>
                 <Grid item >

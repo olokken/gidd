@@ -42,7 +42,7 @@ const UserProfile = ({friend, openPopup, setOpenPopup, updateFriends}: Props) =>
             <CardMedia
                 component="img"
                 height="140"
-                image={logo}
+                image={friend.image}
           
             />
             <CardContent>
