@@ -80,7 +80,7 @@ public class GiddControllerTest {
         activity1 = new Activity(121, "skrive tester",
                 new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
                 0, user1, 50, 5, "det som du gjør nå", new Image(),
-                ActivityLevel.HIGH, new ArrayList<>(), 0.001, 0.005, null);
+                ActivityLevel.MEDIUM, new ArrayList<>(), 0.001, 0.005, null);
 
         group1 = new FriendGroup(1, "GruppeTest", user1);
 
@@ -302,6 +302,7 @@ public class GiddControllerTest {
         ",\"equipmentList\": \"" + newValues.get("equipments") + "\"" +
     "}"  ).contentType(MediaType.APPLICATION_JSON).header("token", token)).andExpect(status().isOk());
 
+        activity1.setActivityLevel(ActivityLevel.valueOf("HIGH"));
         String getActivityString = mockMvc.perform(get("/activity/" + activity1.getActivityId())).andDo(print())
         .andReturn().getResponse().getContentAsString();
 
@@ -467,9 +468,11 @@ public class GiddControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         JSONObject user2Json = (JSONObject) parser.parse(user2AfterRegistering);
+        ActivityLevel activityLevel = ActivityLevel.valueOf(String.valueOf((((JSONObject)((JSONArray)
+                user2Activities.get("activities")).get(0))).get("activityLevel")));
         //points
         assertEquals(initialPoints + JOIN_ACTIVITY_BONUS
-                * MULTIPLIERS[activity1.getActivityLevel().ordinal()], user2Json.getAsNumber("points").intValue());
+                * MULTIPLIERS[activityLevel.ordinal()], user2Json.getAsNumber("points").intValue());
     }
 
     @Order(11)
