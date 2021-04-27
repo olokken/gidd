@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import LoginCard from '../components/CardComponents/LoginCard';
 import { useHistory } from 'react-router-dom';
@@ -33,6 +33,14 @@ const StyledLogo = styled.img`
     margin-right: 70px;
 `;
 
+function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+        width,
+        height
+    };
+}
+
 const Login = () => {
     const history = useHistory();
     const [email, setEmail] = useState<string>('');
@@ -43,6 +51,7 @@ const Login = () => {
     const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const { user, setUser } = useContext(UserContext);
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
 
     const onLogin = async () => {
         if (!checkPassword() || email !== '') {
@@ -170,9 +179,20 @@ const Login = () => {
         console.log();
     };
 
+    useEffect(() => {
+        function handleResize() {
+            setWindowDimensions(getWindowDimensions());
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
     return (
         <LoginContainer>
-            <StyledLogo src={image}></StyledLogo>
+            {
+                windowDimensions.width > 951 &&
+                <StyledLogo src={image}></StyledLogo>
+            }
             <LoginCard
                 onLogin={onLogin}
                 onChangeEmail={onChangeEmail}

@@ -72,7 +72,11 @@ const FriendCard = ({friend}: Props) =>{
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
     >
-        <UserProfile friend={friend}/>
+        <UserProfile
+            openPopup={openPopup}
+            setOpenPopup={setOpenPopup}
+            friend={friend}
+        />
     </Popup>
     </div>
     );

@@ -8,17 +8,16 @@
     justify-content: center;
 }
 
+.groupleaderboard__players {
+}
+
 .groupleaderboard__player {
     display: flex;
     height: 4rem;
 }
 
-.groupleaderboard__logo {
-    display: flex;
-}
-
 .groupleaderboard__name {
-    margin: 1rem 0.3rem 1rem 1rem;
+    margin: 1rem 0.3rem 1rem 0.5rem;
 }
 
 .groupleaderboard__line {
