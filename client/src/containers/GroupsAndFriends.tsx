@@ -59,6 +59,9 @@ const GroupsAndFriends = () => {
         const url = `user/${user}/group`
         axios.get(url).then(response => {
             setGroups(response.data['groups'])
+            if (selectedGroup.groupId === '0' && response.data['groups'].length > 0) {
+                setSelectedGroup(response.data['groups'][0])
+            }
         }).then(() => groups.forEach(group => {
             if (group.groupId === selectedGroup.groupId) {
                 setSelectedGroup(group);

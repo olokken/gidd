@@ -61,13 +61,28 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
     const { user } = useContext(UserContext);
 
     const getNextActivity = async () => {
-        const url = `activity/302425350`
-        await axios.get(url).then(response => {
-            console.log(response.data)
-            setNextActivity(response.data)
+        const url = `group/${selectedGroup.groupId}/activity`
+        await axios.get(url).then(async response => {
+            console.log(response.data['activities']);
+            const nextAct = await sortNextActivity(response.data['activities'])
+            setNextActivity(nextAct)
         }).catch(error => {
             console.log('Kunne ikke hente gruppens neste aktivitet ' + error.message)
         })
+    }
+
+    const sortNextActivity = async (activities: ActivityResponse[]) => {
+        const now = new Date().getTime();
+        console.log(now)
+        let currActivity = activities[0]
+        activities.forEach(activity => {
+            if (activity.time < currActivity.time && activity.time >= now) {
+                console.log(activity)
+                console.log(currActivity)
+                currActivity = activity;
+            }
+        })
+        return currActivity;
     }
 
     useEffect(() => {
@@ -88,7 +103,6 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
     const handleLeaveGroup = () => {
         leaveGroup()
         updateGroups()
-
     }
 
     const handleOnChangeOwner = () => {
@@ -158,7 +172,7 @@ export default function FeedCard({ selectedGroup, updateGroups, leaveGroup }: Pr
                             openPopup={openActivityPopup}
                             setOpenPopup={setOpenActivityPopup}
                             setActivity={setNextActivity}></ActivityCard> :
-                        <p>Finner ingen aktivitet aktiviteter for denne gruppen</p>}
+                        <p>Finner ingen aktivitet aktiviteter for denne gruppen, legg til en ny aktivitet!</p>}
                 </TransformDiv>
                 <Button
                     fullWidth
