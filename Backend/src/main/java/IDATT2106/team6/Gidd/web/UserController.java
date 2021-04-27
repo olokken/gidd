@@ -392,7 +392,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/pending")
-    public ResponseEntity getAllSentRequests(@PathVariable Integer userId){
+    public ResponseEntity getAllPendingRequests(@PathVariable Integer userId){
         log.debug("Received GetMapping to 'user/{userId}/pending'");
         User user = userService.getUser(userId);
 
@@ -445,7 +445,7 @@ public class UserController {
                     .body(formatJson(body));
         }
 
-        log.debug("Getting all activities " + user.toString() + " is registered to");
+        log.debug("Getting all activities " + user.getUserId() + " is registered to");
         List<ActivityUser> activityUser = user.getActivities();
 
         header.add("Status", "200 OK");
@@ -588,7 +588,7 @@ public class UserController {
         try{
             log.debug("Attempting to edit user");
             User user = userService.getUser(id);
-            log.debug("Found user " + user.toString());
+            log.debug("Found user " + user.getUserId());
 
             Image newImage = user.getImage();
             String[] imgInfo = imageService.splitBase(map.get("image").toString());
@@ -644,7 +644,7 @@ public class UserController {
     @PathTwoTokenRequired
     @PutMapping(value = "/{id}")
     public ResponseEntity editUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
-        log.info("recieved a put mapping for user with id: " + id + " and map " + map.toString());
+        log.info("receieved a put mapping for user with id: " + id);
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
         header.add("Content-Type", "application/json; charset=UTF-8");
@@ -717,7 +717,7 @@ public class UserController {
                     newImage,
                     oldUser.getAuthProvider());
 
-            log.info("edited user " + map.toString());
+            log.info("edited user " + id);
             if (result) {
                 log.info("created user");
                 header.add("Status", "201 CREATED");
@@ -901,8 +901,8 @@ public class UserController {
 
             }
         } catch(IllegalArgumentException e){
-            log.error("user is already registered to the activity");
-            body.put("error", "user is already registered to the activity: " + e.getMessage());
+            log.error("user is already registered to the activity: " + e.getMessage());
+            body.put("error", "the user is already registered to the activity");
             return ResponseEntity
                     .badRequest()
                     .headers(header)

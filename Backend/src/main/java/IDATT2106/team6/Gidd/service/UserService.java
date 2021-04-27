@@ -35,7 +35,7 @@ public class UserService {
                     activityLevel, image, provider);
             log.debug("Setting friends");
             newUser.setFriendList(friends);
-            log.info("updating user: " + newUser.toString());
+            log.info("updating user with id: " + newUser.getUserId());
 
             return repo.updateUser(newUser);
         } catch(Exception e) {
@@ -85,12 +85,12 @@ public class UserService {
     }
 
     public Integer getActivityUser(Activity activity, User user){
-        log.info("getting id of connection between activity" + activity.toString() + " and user " + user.toString());
+        log.info("getting id of connection between activity" + activity.getActivityId() + " and user " + user.getUserId());
         return this.repo.getActivityUserId(activity.getActivityId(), user.getUserId());
     }
 
     public boolean removeActivity(int activityUserId, User user){
-        log.info("removing connection with id " + activityUserId + " from user " + user.toString());
+        log.info("removing connection with id " + activityUserId + " from user " + user.getUserId());
         return this.repo.removeActivity(activityUserId, user);
     }
 
@@ -100,7 +100,7 @@ public class UserService {
     }
 
     public boolean deleteConnection(ActivityUser activityUser){
-        log.info("deleting connection " + activityUser.toString());
+        log.info("deleting connection " + activityUser.getId());
         return this.repo.deleteConnection(activityUser);
     }
 

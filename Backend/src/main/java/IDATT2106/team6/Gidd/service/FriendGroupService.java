@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class FriendGroupService {
 
-    private Logger log = new Logger(ActivityService.class.toString());
+    private Logger log = new Logger(FriendGroupService.class.toString());
     @Autowired
     private FriendGroupRepo repo;
 

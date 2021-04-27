@@ -67,18 +67,16 @@ public class ActivityRepo extends GiddRepo {
 
     public Activity findActivity(int activityId){
         EntityManager em = getEm();
-        Activity activity = null;
+        Activity activity;
         log.info("finding activity with id " + activityId);
         try {
-            activity = em.find(Activity.class, activityId);
+            return em.find(Activity.class, activityId);
         }catch (Exception e){
             log.error("returning null, finding activity failed due to " + e.getMessage());
             return null;
         }finally {
             em.close();
         }
-        log.info("activity found successfully");
-        return activity;
     }
 
     public boolean deleteActivity(int activityId){

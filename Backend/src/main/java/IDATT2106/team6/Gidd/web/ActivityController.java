@@ -83,9 +83,10 @@ public class ActivityController {
 
             Image image = imageService.createImage(map.get("image").toString());
             if (image == null) {
+                body.put("error", "the image is null");
                 return ResponseEntity
                     .badRequest()
-                    .body("nope");
+                    .body(formatJson(body));
             }
 
             newActivity = mapToActivity(map, newId, user, image);
@@ -116,8 +117,8 @@ public class ActivityController {
                     .body(formatJson(body));
 
         } catch (InvalidAttributesException e) {
-            log.error("InvalidattributesException, invalid userID recieved " + e.getMessage());
-            body.put("error", e.getMessage());
+            log.error("InvalidattributesException, invalid userID received" + e.getMessage());
+            body.put("error", "invalid userID received");
             return ResponseEntity
                     .badRequest()
                     .headers(headers)
@@ -138,7 +139,7 @@ public class ActivityController {
         }
     }
 
-    @PostMapping(value = "/{activityId}/equipment/{equipmentId}/user")
+    @PostMapping(value = "activityId}/equipment/{equipmentId}/user")
     public ResponseEntity registerUserToEquipment(@RequestBody HashMap<String, Object> map) {
         log.debug("Received PostMapping to '/activity/{activityId}/equipment/{equipmentId}/user'");
         int activityId = Integer.parseInt(map.get("activityId").toString());
@@ -245,14 +246,16 @@ public class ActivityController {
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity editActivity(@RequestBody Map<String, Object> map,
                                        @PathVariable("id") int actId) {
-        log.info("recieved putmapping to /activity/{id}");
+        log.info("received putMapping to /activity/{id}");
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
-        log.debug("User with id recieved");
+        log.debug("User with id received");
         Activity activity = activityService.getActivity(actId);
+
+
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
+
         headers.add("Content-Type", "application/json; charset=UTF-8");
-        log.info("old activity " + activity.getActivityId());
         if (activity == null || user == null) {
             body.put("error", "user or activity is null");
             log.error("activity or user is null, returning error");
@@ -263,6 +266,9 @@ public class ActivityController {
                     .headers(headers)
                     .body(formatJson(body));
         }
+        log.info("old activity " + activity.getActivityId());
+
+        log.info("old activity " + activity.getActivityId());
 
         //edit points of participants
         ActivityLevel oldLevel = activity.getActivityLevel();
@@ -473,6 +479,10 @@ public class ActivityController {
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
         Activity activity = activityService.getActivity(activityId);
+        if(activity == null){
+            body.put("error", "the activity does not exist");
+            return ResponseEntity.badRequest().headers(header).body(formatJson(body));
+        }
         int bonusPoints = (int) (NEW_ACTIVITY_BONUS *
                 MULTIPLIERS[activity.getActivityLevel().ordinal()]);
         if (activityService.deleteActivity(activityId)) {
