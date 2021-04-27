@@ -108,6 +108,7 @@ public class GiddControllerTest {
                         "\"firstName\":\"" + user1.getFirstName() + "\"," +
                         "\"surname\":\"" + user1.getSurname() + "\"," +
                         "\"phoneNumber\":\"" + user1.getPhoneNumber() + "\"," +
+                        "\"image\":\"" + "\"," +
                         "\"activityLevel\":\"" + user1.getActivityLevel() + "\"" +
                         "}"))
                 .andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
@@ -427,6 +428,7 @@ public class GiddControllerTest {
                         "\"firstName\":\"" + user2.getFirstName() + "\"," +
                         "\"surname\":\"" + user2.getSurname() + "\"," +
                         "\"phoneNumber\":\"" + user2.getPhoneNumber() + "\"," +
+                        "\"image\":\"" + "\"," +
                         "\"activityLevel\":\"" + user2.getActivityLevel() + "\"" +
                         "}"))
                 .andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
@@ -521,6 +523,7 @@ public class GiddControllerTest {
                         "\"firstName\":\"" + user3.getFirstName() + "\"," +
                         "\"surname\":\"" + user3.getSurname() + "\"," +
                         "\"phoneNumber\":\"" + user3.getPhoneNumber() + "\"," +
+                        "\"image\":\"" + "\"," +
                         "\"activityLevel\":\"" + user3.getActivityLevel() + "\"" +
                         "}")).andReturn().getResponse().getContentAsString();
 
@@ -696,6 +699,7 @@ public class GiddControllerTest {
                         "\"firstName\":\"" + user4.getFirstName() + "\"," +
                         "\"surname\":\"" + user4.getSurname() + "\"," +
                         "\"phoneNumber\":\"" + user4.getPhoneNumber() + "\"," +
+                        "\"image\":\"" + "\"," +
                         "\"activityLevel\":\"" + user4.getActivityLevel() + "\"" +
                         "}"))
                 .andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
@@ -832,6 +836,7 @@ public class GiddControllerTest {
         newValues.put("password", "123");
         newValues.put("activityLevel", "MEDIUM");
         newValues.put("newPassword", "321");
+        newValues.put("newImage", "");
 
         String id = mockMvc.perform(MockMvcRequestBuilders
                 .put("/user/" + user1.getUserId()).contentType(MediaType.APPLICATION_JSON)
@@ -844,6 +849,7 @@ public class GiddControllerTest {
                         "    \"points\" : " +  newValues.get("points") + ",\n" +
                         "    \"password\" : \"" + newValues.get("password") + "\",\n" +
                         "    \"activityLevel\" : \"" + newValues.get("activityLevel") + "\",\n" +
+                        "    \"image\":\"" + newValues.get("newImage") + "\"," +
                         "    \"newPassword\" : \"" + newValues.get("newPassword") + "\"\n" +
                         "}").header("token", token)).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         
@@ -864,7 +870,8 @@ public class GiddControllerTest {
             else if(!(pair.getKey().equals("email") ||
                     pair.getKey().equals("password") ||
                     pair.getKey().equals("newPassword") ||
-                    pair.getKey().equals("points"))) {
+                    pair.getKey().equals("points") ||
+                    pair.getKey().equals("newImage"))) {
                 assertEquals(pair.getValue(), userJson.get(pair.getKey()));
             }
         }
@@ -1141,6 +1148,7 @@ public class GiddControllerTest {
                         "\"firstName\":\"" + user5.getFirstName() + "\"," +
                         "\"surname\":\"" + user5.getSurname() + "\"," +
                         "\"phoneNumber\":\"" + user5.getPhoneNumber() + "\"," +
+                        "\"image\":\"" + "\"," +
                         "\"activityLevel\":\"" + user5.getActivityLevel() + "\"" +
                         "}"))
                 .andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
