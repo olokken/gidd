@@ -44,6 +44,18 @@ public class UserService {
         return false;
     }
 
+    public boolean editUser (User u){
+        try {
+            log.debug("In editUser");
+            u.setFriendList(getUser(u.getUserId()).getFriendList());
+            log.debug("Got friends");
+            return repo.updateUser(u);
+        } catch(Exception e) {
+            log.debug("An error was caught while updating user " + e.getMessage() + " | Local; " + e.getLocalizedMessage());
+        }
+        return false;
+    }
+
     public List<User> getUsers(){
         log.info("getting all users");
         return repo.getAllUsers();

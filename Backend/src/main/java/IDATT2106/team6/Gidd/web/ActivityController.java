@@ -1,7 +1,6 @@
 package IDATT2106.team6.Gidd.web;
 
-import static IDATT2106.team6.Gidd.Constants.MULTIPLIERS;
-import static IDATT2106.team6.Gidd.Constants.NEW_ACTIVITY_BONUS;
+import static IDATT2106.team6.Gidd.Constants.*;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
 
@@ -265,6 +264,28 @@ public class ActivityController {
                     .body(formatJson(body));
         }
 
+        //edit points of participants
+        ActivityLevel oldLevel = activity.getActivityLevel();
+        ActivityLevel newLevel = ActivityLevel.valueOf(map.get("activityLevel").toString());
+        if (oldLevel != newLevel) {
+            for (int i = 0; i < activity.getRegisteredParticipants().size(); i++) {
+                User p = activity.getRegisteredParticipants().get(i).getUser();
+                if (i != 0) {
+                    p.setPoints(
+                            (int) (p.getPoints() - JOIN_ACTIVITY_BONUS * MULTIPLIERS[oldLevel.ordinal()])
+                                    +
+                                    (int) (JOIN_ACTIVITY_BONUS * MULTIPLIERS[newLevel.ordinal()]));
+                }
+                else {
+                    p.setPoints(
+                            (int) (p.getPoints() - NEW_ACTIVITY_BONUS * MULTIPLIERS[oldLevel.ordinal()])
+                                    +
+                                    (int) (NEW_ACTIVITY_BONUS * MULTIPLIERS[newLevel.ordinal()]));
+                }
+                userService.editUser(p);
+            }
+        }
+
         Image newImage = activity.getImage();
         String[] imgInfo = imageService.splitBase(map.get("image").toString());
         newImage.setDatatype(imgInfo[0]);
@@ -279,6 +300,7 @@ public class ActivityController {
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
         activity.setImage(newImage);
+
         // equipment
         List<ActivityEquipment> oldEquips = activity.getEquipments();
         System.out.println("OLD : " + oldEquips.toString());
