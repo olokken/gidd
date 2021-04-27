@@ -343,7 +343,7 @@ public class GroupController {
         return ResponseEntity
                 .ok()
                 .headers(header)
-                .body("{\"activities\"" + activities.toString() + "}");
+                .body("{\"activities\" : " + activities.toString() + "}");
     }
 
     @DeleteMapping(value = "/{groupId}")

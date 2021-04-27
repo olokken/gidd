@@ -55,38 +55,9 @@ public class GiddControllerTest {
     private FriendGroup group1;
     private FriendGroup group2;
 
-   /* @Before
-    public void initialize() throws Exception {
-        System.out.println("Initalizing tests");
-
-        user1 = new User(11, "1@1", "pass1", "Olav", "Skundeberg", 123, 
-        ActivityLevel.HIGH,
-        Provider.LOCAL);
-
-        user2 = new User(22, "2@2", "pass2", "Ole", "Christian", 1232, 
-        ActivityLevel.HIGH,
-        Provider.LOCAL);
-
-        user3 = new User(33, "3@3", "pass3", "Hans Jakob", "Matte", 1233,
-        ActivityLevel.HIGH,
-        Provider.LOCAL);
-
-        user4 = new User(44, "4@4", "pass4", "Jonas", "Støhre", 1234,
-        ActivityLevel.HIGH, Provider.LOCAL);
-
-        user5 = new User(55, "5@5", "pass5", "Erna", "Solberg", 1235,
-        ActivityLevel.HIGH, Provider.LOCAL);
-
-        activity1 = new Activity(121, "skrive tester",
-        new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
-        0, user1, 50, 5, "det som du gjør nå", new byte[]{-5},
-        ActivityLevel.HIGH, null, 0.001, 0.005, null);
-    }*/
-
     @BeforeAll
     public void beforeAll(){
-        System.out.println("Beginning a test!\n");
-
+        System.out.println("Beginning the tests!\n");
 
         user1 = new User(11, "1@1", "pass1", "Olav", "Skundeberg", 123,
                 ActivityLevel.HIGH,
