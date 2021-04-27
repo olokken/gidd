@@ -46,8 +46,6 @@ public class User {
     @OneToOne(targetEntity = Image.class, fetch = FetchType.EAGER)
     private Image image;
 
-    private Logger log = new Logger(User.class.toString());
-
     public User(int id, String email, String password,
                 String firstName, String surname,
                 int phoneNumber, ActivityLevel activityLevel,
@@ -225,12 +223,6 @@ public class User {
     }
 
     public String toJSON() {
-        String img = "";
-        try{
-            img = "\"" + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes())  + '\"';
-        } catch(Exception e) {
-            log.error("toJSON failure " + e.getMessage() + " cause: " + e.getCause() + ", cause message: " + e.getCause().getMessage());
-        }
         return "\n  {" +
             "\n     \"userId\":" + userId + "," +
             "\n     \"email\":" + '\"' + email + '\"' +"," +
@@ -238,7 +230,7 @@ public class User {
             "\n     \"surname\":" + '\"' + surname + '\"' +"," +
             "\n     \"phoneNumber\":" + phoneNumber +"," +
             "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
-            "\n     \"image\":" + '\"' + img + '\"' + "," +
+            "\n     \"image\":" + '\"' + "\"" + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes())  + '\"' + '\"' + "," +
             "\n     \"points\":" + points +
             "\n }";
     }
