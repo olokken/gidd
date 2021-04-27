@@ -1,12 +1,4 @@
-import {
-    Button,
-    Drawer,
-    makeStyles,
-    TextField,
-    Theme,
-    createStyles,
-    useTheme,
-} from '@material-ui/core';
+import { Button, Drawer, TextField } from '@material-ui/core';
 import React, {
     ChangeEvent,
     useEffect,
@@ -16,11 +8,11 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import StyledMessage from './StyledMessage';
-import io from 'socket.io-client';
 import axios from '../../Axios';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import { UserContext } from '../../UserContext';
+import MessageResponse from '../../interfaces/MessageResponse';
 
 const Container = styled.div`
     display: flex;
@@ -54,29 +46,37 @@ interface Props {
 
 const Chat = ({ open, close, activityId }: Props) => {
     const [message, setMessage] = useState<string>();
-    const [messages, setMessages] = useState<any[]>([]);
     const { user } = useContext(UserContext);
+    const [chat, setChat] = useState<MessageResponse[]>([]);
     const socket = useRef<any>();
 
     useEffect(() => {
-        if (open == true) {
-            const so = new SockJS('http://13.51.58.86:8080/ws');
-
-            socket.current = Stomp.over(so);
-
-            socket.current.connect({}, (frame: any) => {
-                socket.current.subscribe(
-                    `/client/chat/${activityId}`,
-                    (event: any) => {
-                        console.log(event.body);
-                        console.log(messages);
-                        setMessages([...messages, JSON.parse(event.body)]);
-                    }
-                );
+        if (open) {
+            axios.get(`/chat/${activityId}`).then((response) => {
+                console.log(response);
             });
+            const so = new SockJS('http://13.51.58.86:8080/ws');
+            socket.current = Stomp.over(so);
+            socket.current.connect();
         }
+        return () => {
+            if (socket.current) {
+                socket.current.disconnect();
+            }
+        };
     }, [open]);
 
+    useEffect(() => {
+        if (socket.current) {
+            socket.current.subscribe(
+                `/client/chat/${activityId}`,
+                (event: any) => {
+                    console.log(JSON.parse(event.body));
+                    setChat([...chat, JSON.parse(event.body)]);
+                }
+            );
+        }
+    }, [socket.current, chat]);
     const sendMessage = () => {
         console.log(activityId);
         socket.current.send(
@@ -102,8 +102,14 @@ const Chat = ({ open, close, activityId }: Props) => {
                     <Button onClick={close}>Lukk</Button>
                 </Flex>
                 <MessageBox>
-                    {messages.map((msg, index) => (
-                        <h3 key={index}>{msg['message']}</h3>
+                    {chat.map((msg, index) => (
+                        <StyledMessage
+                            key={index}
+                            name={msg.user.firstName}
+                            time={msg.timestamp}
+                            userId={msg.user['userID']}
+                            message={msg.message}
+                        ></StyledMessage>
                     ))}
                 </MessageBox>
                 <SendMessage>
@@ -121,6 +127,7 @@ const Chat = ({ open, close, activityId }: Props) => {
                     </Button>
                 </SendMessage>
             </Container>
+            <Button onClick={() => console.log(chat)}>hahahahah</Button>
         </Drawer>
     );
 };

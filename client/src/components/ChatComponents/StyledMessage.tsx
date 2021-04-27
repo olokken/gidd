@@ -1,53 +1,65 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import User from '../../interfaces/User';
+import { UserContext } from '../../UserContext';
 
 interface Props {
     message: string;
-    sender: string;
-    isRecieved: boolean;
+    name: string;
+    userId: string;
+    time: number;
 }
 
 const SendtMessage = styled.p`
-    margin-right: 30%;
-    border: 4px solid black;
-    border-radius: 10rem;
-    max-width: 100%;
+    position: left;
+    float: left;
+    width: 50%;
+    height: relative;
+    padding: 5px;
+    background-color: primary;
+    margin: 3px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
 `;
 
 const RecievedMessage = styled.p`
-    border: 4px solid red;
-    border-radius: 10rem;
-    max-width: 100%;
-    margin-left: 30%;
+    position: left;
+    float: right;
+    width: 50%;
+    height: relative;
+    padding: 5px;
+    background-color: none;
+    margin: 3px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
 `;
 
-const Sender = styled.p`
-    margin-left: 30%;
-`;
 
-const Reciever = styled.p`
-    margin-right: 30%;
-`;
 
-const StyledMessage = ({ message, sender, isRecieved }: Props) => {
+const StyledMessage = ({ message, userId, time, name }: Props) => {
+    const [isRecieved, setIsRecieved] = useState<boolean>(true);
+    const { user } = useContext(UserContext);
+
+    useEffect(() => {
+        if (userId == user) setIsRecieved(false);
+        else setIsRecieved(true);
+    }, []);
+
     const MessageStyle = isRecieved ? (
-        <RecievedMessage>{message}</RecievedMessage>
+        <RecievedMessage>
+            <legend>{name}</legend>
+            {message}
+        </RecievedMessage>
     ) : (
-        <SendtMessage>{message}</SendtMessage>
+        <SendtMessage>
+            <legend>{name}</legend>
+            {message}
+        </SendtMessage>
     );
 
-    const SenderStyle = isRecieved ? (
-        <Sender>{sender}</Sender>
-    ) : (
-        <Reciever>{sender}</Reciever>
-    );
-
-    return (
-        <>
-            {SenderStyle}
-            {MessageStyle}
-        </>
-    );
+    return <>{MessageStyle}</>;
 };
 
 export default StyledMessage;
