@@ -229,6 +229,7 @@ public class User {
             "\n     \"surname\":" + '\"' + surname + '\"' +"," +
             "\n     \"phoneNumber\":" + phoneNumber +"," +
             "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
+            "\n     \"image\":" + image.getDatatype() + java.util.Base64.getEncoder().encodeToString(image.getBytes()) + "," +
             "\n     \"points\":" + points +
             "\n }";
     }
