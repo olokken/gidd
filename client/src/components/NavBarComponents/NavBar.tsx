@@ -73,8 +73,8 @@ const Navbar = () => {
     const [friendRequests, setFriendRequests] = useState<User[]>([]);
     const [pendingFriendRequests, setPendingFriendRequests] = useState<User[]>([]);
     const [openUser, setOpenUser] = useState<boolean>(false);
-    const [invisible, setInvisible] = useState<boolean>(false);
-    const [notifications, setNotifications] = useState<number>(0);
+    const [notifications1, setNotifications1] = useState<number>(0);
+    const [notifications2, setNotifications2] = useState<number>(0);
     const [state, setState] = useState({
         mobileView: false,
         drawerOpen: false,
@@ -158,7 +158,7 @@ const Navbar = () => {
          //henter alle pending *angre
      const loadPending = () => {
          axios
-            .get(`/user/${user}/pending`)
+            .get(`/user/${localStorage.getItem('userID')}/pending`)
             .then((response) => {
                 console.log('PendingVenneforespørsler:')
                 console.log(response.data['users']);
@@ -168,12 +168,14 @@ const Navbar = () => {
     }
     const loadRequest = () =>{
         //henter alle reqest ja/nei
+        console.log(localStorage.getItem('userID'))
         axios
-            .get(`/user/${user}/request`)
+            .get(`/user/${localStorage.getItem('userID')}/request`)
             .then((response) => {
                 console.log('Venneforespørsler:')
                 console.log(response.data['users']);
                 setFriendRequests(response.data['users']);
+
             })
             .catch((error) => console.log(error));
     }
@@ -188,27 +190,28 @@ const Navbar = () => {
     }, [user]);
     
    /* const setNotificationData = () => {
-        setNotifications(friendRequests.length + pendingFriendRequests.length)
-        if(notifications > 0){
-            setInvisible(false)
-        }else{setInvisible(true)}
+        setTimeout(()=>{
+            setNotifications(friendRequests.length + pendingFriendRequests.length)
+            console.log('notdata: ' + (friendRequests.length + pendingFriendRequests.length) );
+            if(notifications > 0){
+                setInvisible(false)
+            }else{setInvisible(true)}
+        },5000);
     }*/
 
     const declineRequest = (request : User) => {
-        setNotifications(notifications-1)
         deleteFriend(Object.values(request)[0])
     }
 
     const addFriend = (request : User) => {
-        setNotifications(notifications-1)
         postFriend(Object.values(request)[0])
     }
     //godkjenner forespørsel
     const postFriend = (friendId: string) => {
         console.log(friendId)
         axios
-            .post(`/user/${user}/user`, {
-                "userId": user,
+            .post(`/user/${localStorage.getItem('userID')}/user`, {
+                "userId": localStorage.getItem('userID'),
                 "friendId": friendId
                 }) 
             .then((response) => {
@@ -331,7 +334,7 @@ const Navbar = () => {
                         aria-haspopup="true"
                         onClick={handleOpenMenu}
                     >
-                        <Badge badgeContent={notifications} color="primary" invisible={invisible}>
+                        <Badge badgeContent={pendingFriendRequests.length + friendRequests.length} color="primary">
                             <NotificationsIcon />
                         </Badge>
                     </IconButton>
@@ -421,7 +424,7 @@ const Navbar = () => {
                         aria-haspopup="true"
                         onClick={handleOpenMenu}
                     >
-                        <Badge badgeContent={notifications} color="primary" invisible={invisible}>
+                        <Badge badgeContent={friendRequests.length + pendingFriendRequests.length} color="primary">
                             <NotificationsIcon />
                         </Badge>
                     </IconButton>
@@ -453,7 +456,6 @@ const Navbar = () => {
                 {getDefault()}
                 
                 {friendRequests.map((request : User) => {
-                    setNotifications(notifications+1)
                     return (
                         <StyledMenuItem
                             style={{
@@ -482,7 +484,6 @@ const Navbar = () => {
                 })}
 
                 {pendingFriendRequests.map((pending : User) => {
-                    setNotifications(notifications+1)
                     return (
                         <StyledMenuItem
                             style={{
