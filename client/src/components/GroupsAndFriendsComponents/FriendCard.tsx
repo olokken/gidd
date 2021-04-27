@@ -32,16 +32,21 @@ const TitleArea = styled.div`
 
 interface Props {
     friend: User;
+    updateFriends: () => void;
 }
 
 
-const FriendCard = ({friend}: Props) =>{
+const FriendCard = ({friend, updateFriends}: Props) =>{
     const [openPopup, setOpenPopup] = useState<boolean>(false);
+
+    const onCardClick = () => {
+        setOpenPopup(!openPopup)
+    }
     return (
         <div>
         <Card
             style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
-            onClick={() => setOpenPopup(!openPopup)}
+            onClick={onCardClick}
         >
            
             <CardInformation>
@@ -73,6 +78,7 @@ const FriendCard = ({friend}: Props) =>{
         setOpenPopup={setOpenPopup}
     >
         <UserProfile
+            updateFriends={updateFriends}
             openPopup={openPopup}
             setOpenPopup={setOpenPopup}
             friend={friend}

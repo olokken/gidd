@@ -10,12 +10,13 @@ import User from '../../interfaces/User';
 import axios from '../../Axios'
 
 interface Props {
+    updateFriends: () => void;
     friend: User;
     openPopup: boolean;
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const UserProfile = ({friend, openPopup, setOpenPopup}: Props) => {
+const UserProfile = ({friend, openPopup, setOpenPopup, updateFriends}: Props) => {
     const {user, setUser} = useContext(UserContext);
 
     const deleteFriend = () =>{
@@ -29,7 +30,7 @@ const UserProfile = ({friend, openPopup, setOpenPopup}: Props) => {
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
-            })
+            }).then(updateFriends)
             .catch((error) =>
                 console.log('Could not delete friend: ' + error.message)
             );

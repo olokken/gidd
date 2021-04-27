@@ -28,12 +28,13 @@ interface Props {
     groups: Group[];
     handleGroupClicked: (group:Group) => void;
     updateGroups: () => void;
+    onClick?: () => void;
 }
 
 
 
 
-const GroupList = ({ friends, groups, handleGroupClicked, updateGroups}: Props) => {
+const GroupList = ({ friends, groups, handleGroupClicked, updateGroups, onClick}: Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User[]>([]);
     const [chosenGroupName, setChosenGroupName] = useState<string>('');
@@ -147,7 +148,7 @@ const GroupList = ({ friends, groups, handleGroupClicked, updateGroups}: Props) 
                         return group
                     }
                 }).map((group: Group) =>
-                    <GroupCard key={group.groupId} group={group} handleGroupClicked={handleGroupClicked}/>)
+                    <GroupCard key={group.groupId} group={group} handleGroupClicked={handleGroupClicked} onClick={onClick}/>)
                 }
             </StyledUl>
         </StyledContainer >
