@@ -1,3 +1,4 @@
+import { Tooltip } from '@material-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import User from '../../interfaces/User';
@@ -10,7 +11,7 @@ interface Props {
     time: number;
 }
 
-const SendtMessage = styled.p`
+const SendtMessage = styled.fieldset`
     position: left;
     float: left;
     width: 50%;
@@ -23,7 +24,7 @@ const SendtMessage = styled.p`
     border-radius: 10px;
 `;
 
-const RecievedMessage = styled.p`
+const RecievedMessage = styled.fieldset`
     position: left;
     float: right;
     width: 50%;
@@ -36,30 +37,29 @@ const RecievedMessage = styled.p`
     border-radius: 10px;
 `;
 
-
-
 const StyledMessage = ({ message, userId, time, name }: Props) => {
-    const [isRecieved, setIsRecieved] = useState<boolean>(true);
     const { user } = useContext(UserContext);
+    const date = new Date(time);
 
-    useEffect(() => {
-        if (userId == user) setIsRecieved(false);
-        else setIsRecieved(true);
-    }, []);
+    const MessageStyle = (): React.ReactElement => {
+        if (userId == user) {
+            return (
+                <RecievedMessage>
+                    <legend>{name}</legend>
+                    {message}
+                </RecievedMessage>
+            );
+        } else {
+            return (
+                <SendtMessage>
+                    <legend>{name}</legend>
+                    {message}
+                </SendtMessage>
+            );
+        }
+    };
 
-    const MessageStyle = isRecieved ? (
-        <RecievedMessage>
-            <legend>{name}</legend>
-            {message}
-        </RecievedMessage>
-    ) : (
-        <SendtMessage>
-            <legend>{name}</legend>
-            {message}
-        </SendtMessage>
-    );
-
-    return <>{MessageStyle}</>;
+    return <Tooltip title={date.toString()}>{MessageStyle()}</Tooltip>;
 };
 
 export default StyledMessage;

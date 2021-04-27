@@ -32,7 +32,7 @@ function Leaderboard() {
         owner: {
             firstName: '',
             surname: '',
-            userID: '',
+            userId: '',
             email: '',
             image: '',
             password: '',

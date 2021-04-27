@@ -7,6 +7,7 @@ import React, {
     useContext,
 } from 'react';
 import styled from 'styled-components';
+import SendRoundedIcon from '@material-ui/icons/SendRounded';
 import StyledMessage from './StyledMessage';
 import axios from '../../Axios';
 import SockJS from 'sockjs-client';
@@ -17,18 +18,19 @@ import MessageResponse from '../../interfaces/MessageResponse';
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 `;
 
 const MessageBox = styled.div`
-    height: 80%;
-    overflow-y: auto;
+    max-height: 37rem;
+    overflow: hidden;
+    overflow-y: scroll;
 `;
 
 const SendMessage = styled.div`
     display: flex;
     position: absolute;
     bottom: 0;
+    margin-top: 5rem;
     width: 95%;
 `;
 
@@ -53,40 +55,62 @@ const Chat = ({ open, close, activityId }: Props) => {
     useEffect(() => {
         if (open) {
             axios.get(`/chat/${activityId}`).then((response) => {
-                console.log(response);
+                console.log(response.data['messages']);
+                setChat(response.data['messages']);
             });
-            const so = new SockJS('http://13.51.58.86:8080/ws');
-            socket.current = Stomp.over(so);
-            socket.current.connect();
+            socketConn();
         }
-        return () => {
-            if (socket.current) {
-                socket.current.disconnect();
-            }
-        };
     }, [open]);
+
+    const socketConn = async () => {
+        const so = await new SockJS('http://13.51.58.86:8080/ws');
+        socket.current = await Stomp.over(so);
+        socket.current.connect();
+    };
 
     useEffect(() => {
         if (socket.current) {
-            socket.current.subscribe(
-                `/client/chat/${activityId}`,
-                (event: any) => {
-                    console.log(JSON.parse(event.body));
-                    setChat([...chat, JSON.parse(event.body)]);
-                }
-            );
+            if (socket.current.connected) {
+                socket.current.subscribe(
+                    `/client/chat/${activityId}`,
+                    (event: any) => {
+                        console.log(JSON.parse(event.body));
+                        setChat([...chat, JSON.parse(event.body)]);
+                    }
+                );
+            }
         }
-    }, [socket.current, chat]);
+    }, [socket, chat]);
+
     const sendMessage = () => {
-        console.log(activityId);
-        socket.current.send(
-            `/server/chat/${activityId}`,
-            {},
-            JSON.stringify({
-                userId: user,
-                message: message,
-            })
-        );
+        if (socket.current && message !== '') {
+            socket.current.send(
+                `/server/chat/${activityId}`,
+                {},
+                JSON.stringify({
+                    userId: user,
+                    message: message,
+                })
+            );
+            setMessage('');
+        }
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [chat]);
+
+    const onKeyDown = (e: any) => {
+        if (e.code === 'Enter') {
+            sendMessage();
+        }
+    };
+
+    const scrollToBottom = () => {
+        const messagebox = document.getElementById('chat');
+        if (messagebox) {
+            messagebox.scrollTop = messagebox.scrollHeight;
+        }
     };
 
     const onChangeMessage = (event: ChangeEvent<HTMLInputElement>) => {
@@ -99,22 +123,33 @@ const Chat = ({ open, close, activityId }: Props) => {
             <Container>
                 <Flex>
                     <h2>CHAT</h2>
-                    <Button onClick={close}>Lukk</Button>
+                    <Button
+                        onClick={() => {
+                            close();
+                            if (socket.current) {
+                                socket.current.disconnect();
+                            }
+                        }}
+                    >
+                        Lukk
+                    </Button>
                 </Flex>
-                <MessageBox>
+                <MessageBox id="chat">
                     {chat.map((msg, index) => (
                         <StyledMessage
                             key={index}
                             name={msg.user.firstName}
                             time={msg.timestamp}
-                            userId={msg.user['userID']}
+                            userId={msg.user.userId}
                             message={msg.message}
                         ></StyledMessage>
                     ))}
                 </MessageBox>
                 <SendMessage>
                     <TextField
+                        onKeyDown={onKeyDown}
                         onChange={onChangeMessage}
+                        value={message}
                         style={{
                             width: '90%',
                             marginLeft: '1rem',
@@ -122,12 +157,20 @@ const Chat = ({ open, close, activityId }: Props) => {
                         }}
                         label="Send Melding"
                     ></TextField>
-                    <Button style={{ width: '10%' }} onClick={sendMessage}>
-                        Send
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        style={{
+                            width: '10%',
+                            height: '10%',
+                            marginLeft: '0.5rem',
+                        }}
+                        onClick={sendMessage}
+                    >
+                        <SendRoundedIcon />
                     </Button>
                 </SendMessage>
             </Container>
-            <Button onClick={() => console.log(chat)}>hahahahah</Button>
         </Drawer>
     );
 };

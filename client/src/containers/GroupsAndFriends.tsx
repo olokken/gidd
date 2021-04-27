@@ -41,7 +41,7 @@ const GroupsAndFriends = () => {
         owner: {
             firstName: '',
             surname: '',
-            userID: '',
+            userId: '',
             email: '',
             image: '',
             password: '',
@@ -123,7 +123,7 @@ const GroupsAndFriends = () => {
                     owner: {
                         firstName: '',
                         surname: '',
-                        userID: '',
+                        userId: '',
                         email: '',
                         image: '',
                         password: '',
