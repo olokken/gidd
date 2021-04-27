@@ -68,7 +68,6 @@ const GroupLeaderboard: React.FC<Props> = ({
     };
 
     const getPlacements = () => {
-        //const placements: Placements[] = [];
         const sorted = sortPoints();
         for (let i = 0; i < sorted.length; i++) {
             placements.push({ user: sorted[i], position: 1 });
