@@ -394,7 +394,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/pending")
-    public ResponseEntity getAllSentRequests(@PathVariable Integer userId){
+    public ResponseEntity getAllPendingRequests(@PathVariable Integer userId){
         log.debug("Received GetMapping to 'user/{userId}/pending'");
         User user = userService.getUser(userId);
 
@@ -898,8 +898,8 @@ public class UserController {
 
             }
         } catch(IllegalArgumentException e){
-            log.error("user is already registered to the activity");
-            body.put("error", "user is already registered to the activity: " + e.getMessage());
+            log.error("user is already registered to the activity: " + e.getMessage());
+            body.put("error", "the user is already registered to the activity");
             return ResponseEntity
                     .badRequest()
                     .headers(header)
