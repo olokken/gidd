@@ -229,7 +229,7 @@ public class User {
             "\n     \"surname\":" + '\"' + surname + '\"' +"," +
             "\n     \"phoneNumber\":" + phoneNumber +"," +
             "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
-            "\n     \"image\":" + '\"' + image.getDatatype() + java.util.Base64.getEncoder().encodeToString(image.getBytes()) + '\"' + "," +
+            "\n     \"image\":" + '\"' + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' + "," +
             "\n     \"points\":" + points +
             "\n }";
     }
@@ -243,7 +243,7 @@ public class User {
                 "\n     \"phoneNumber\":" + phoneNumber +"," +
                 "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
                 "\n     \"points\":" + points + "," +
-                "\n     \"image\":" + '\"' + image.getDatatype() + java.util.Base64.getEncoder().encodeToString(image.getBytes()) + '\"' + "," +
+                "\n     \"image\":" + '\"' + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' + "," +
                 "\n     \"provider\":" + '\"' + authProvider + '\"' +
                 "\n }";
     }
