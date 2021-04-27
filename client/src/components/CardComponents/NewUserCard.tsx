@@ -30,10 +30,11 @@ interface Props {
   equalPasswords: boolean;
   correctEmailFormat: boolean;
   email: string;
+  goBack: () => void;
 }
 
 
-const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel, activityLevel, visualActivityLevel, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email }: Props) => {
+const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel, activityLevel, visualActivityLevel, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email, goBack }: Props) => {
   const activityLevels: string[] = ['Lav', 'Middels', 'Høyt']
 
   return (
@@ -97,9 +98,10 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel
           label="Passord"
           color="secondary"
           variant="outlined"
-          type="paswsord"
+          type="password"
           onChange={onChangePassword1}
         />
+        {equalPasswords === false && <a>Passordene er ulike!</a>}
         <TextField
           style={{ width: '100%', marginBottom: 5 }}
           label="Passord"
@@ -108,14 +110,21 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel
           type="password"
           onChange={onChangePassword2}
         />
-        {equalPasswords === false && <a>Passordene er ulike!</a>}
         <Button
-          style={{ width: '100%', height: '50px' }}
+          style={{ width: '69%', height: '50px' }}
           variant="contained"
           color="primary"
           onClick={onClick}
         >
           OPPRETT BRUKER
+        </Button>
+        <Button
+          style={{ width: '29%', height: '50px', float: 'right' }}
+          variant="contained"
+          color="primary"
+          onClick={goBack}
+        >
+          Gå tilbake
         </Button>
       </form>
     </RegisterContainer>

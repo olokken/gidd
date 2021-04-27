@@ -16,13 +16,11 @@ const NewUsernContainer = styled.div`
     background: #334d50; /* fallback for old browsers */
     background: -webkit-linear-gradient(
         to right,
-        #cbcaa5,
-        #334d50
+        #1d4350, #a43931
     ); /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(
         to right,
-        #cbcaa5,
-        #334d50
+        #1d4350, #a43931
     ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 `;
 
@@ -70,6 +68,7 @@ const NewUser = () => {
                     surname: surname,
                     phoneNumber: number,
                     activityLevel: activityLevel.toUpperCase(),
+                    image: ''
                 })
                 .then((response) => {
                     const id = response.data.id
@@ -79,8 +78,8 @@ const NewUser = () => {
                         localStorage.setItem('token', token);
                         localStorage.setItem('userID', id);
                         setUser(id);
-                        history.push('/Activities');
-                    }).catch(error => {
+                    }).then(() => history.push('/Activities')
+                    ).catch(error => {
                         console.log('Feil med token: ' + error.message)
                     })
                 })
@@ -91,6 +90,10 @@ const NewUser = () => {
             return true;
         }
     };
+
+    const goBack = () => {
+        history.push('/')
+    }
 
     const onChangeEmail = (event: ChangeEvent<HTMLInputElement>) => {
         const currentEmail: string = (event.target as HTMLInputElement).value;
@@ -153,6 +156,7 @@ const NewUser = () => {
                 equalPasswords={equalPasswords}
                 correctEmailFormat={correctEmailFormat}
                 email={email}
+                goBack={goBack}
             ></NewUserCard>
         </NewUsernContainer>
     );
