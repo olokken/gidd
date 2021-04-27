@@ -645,7 +645,9 @@ public class GiddControllerTest {
 
         //points
         assertEquals(user2PreDeleteJson.getAsNumber("points").intValue() -
-                        JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity1.getActivityLevel().ordinal()],
+                        JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity1.getActivityLevel().ordinal()]
+                - HOST_JOIN_BONUS
+                ,
                 user2PostDeleteJson.getAsNumber("points").intValue());
     }
 
