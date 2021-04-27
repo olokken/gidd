@@ -105,6 +105,10 @@ public class ActivityService {
         return repo.addEquipmentToActivity(activity);
     }
 
+    public boolean removeEquipmentFromActivity(ActivityEquipment ae) {
+        return repo.removeActivityEquipmentConnection(ae);
+    }
+
     public boolean updateEquipment(ActivityEquipment activityEquipment, Activity activity){
         return repo.updateActivity(activity) && repo.updateActivityEquipmentConnection(activityEquipment);
     }

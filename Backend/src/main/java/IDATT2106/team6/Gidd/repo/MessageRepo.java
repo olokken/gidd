@@ -27,7 +27,7 @@ public class MessageRepo extends GiddRepo {
     }
 
     public boolean saveMessage(Chat chat){
-        log.info("adding chat" + chat.toString());
+        log.info("adding chat " + chat.getChatId());
         EntityManager em = getEm();
 
         try {
@@ -51,8 +51,8 @@ public class MessageRepo extends GiddRepo {
         List<Chat> groupMessages = null;
 
         try {
-
-            Query q = em.createNativeQuery("SELECT * FROM CHAT WHERE group_id = 1109937914");
+            //todo fix hardcoded lol
+            Query q = em.createNativeQuery("SELECT * FROM CHAT WHERE group_id = 1109937914", Chat.class);
 
             System.out.println("query is " + q.toString());
             groupMessages = q.getResultList();

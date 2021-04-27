@@ -1,4 +1,24 @@
+image: adoptopenjdk/maven-openjdk11
+
+backend-build:
+  stage: build
+  only:
+      - backend-dev
+  script:
+    - cd Backend
+    - "mvn compile"
+
+backend-test:
+  stage: test
+  only:
+      - backend-dev
+  script:
+    - cd Backend
+    - mvn test
+  needs: ["backend-build"]
+
 deploy:
+  stage: deploy
   script:
     - apt-get update -y && apt-get install openssh-client -y
     - mkdir ~/.ssh
@@ -8,4 +28,5 @@ deploy:
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - ssh app@13.51.58.86 ./runjava.sh
   only:
-    - CI
+    - backend-dev
+  needs: ["backend-build"]

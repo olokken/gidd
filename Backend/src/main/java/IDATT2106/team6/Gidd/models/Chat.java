@@ -57,15 +57,27 @@ public class Chat {
         this.user = user;
     }
 
+    public Timestamp getTimeStamp(){
+        return timeStamp;
+    }
+
     public void setMessage(String message) {
         this.message = message;
     }
 
-    public String toJson(){
+    public String toString(){
         return "{" +
                 "\"activity\":\"" + activity.getActivityId() + "\"" +
+                ",\"user\":" + user.toJSON() +
+                ",\"timestamp\":" + "\"" + timeStamp.toString() + "\"" +
+                ",\"message\":" + "\"" + message + "\"" +
+                "}";
+    }
+    public String toJson(){
+        return "{" +
                 "\"user\":" + user.toJSON() +
-                "\"timestamp\":" + "\"" + timeStamp.toString() + "\"" +
-                "\"message\": + \"" + "\"" + message + "\"";
+                ",\"timestamp\":" + "\"" + timeStamp.toString() + "\"" +
+                ",\"message\":" + "\"" + message + "\"" +
+                "}";
     }
 }

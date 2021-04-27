@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.naming.directory.InvalidAttributesException;
+import org.apache.coyote.Response;
 import org.eclipse.persistence.exceptions.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -274,7 +275,13 @@ public class ActivityController {
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
         activity.setImage(newImage);
-        activity.setEquipments(newEquipment(activity,map.get("equipmentList").toString()));
+        // equipment
+        List<ActivityEquipment> oldEquips = activity.getEquipments();
+        System.out.println("OLD : " + oldEquips.toString());
+        List<ActivityEquipment> newEquips = newEquipment(activity,map.get("equipmentList").toString());
+        System.out.println("NEW : " + newEquips.toString());
+        activity.setEquipments(newEquips);
+
         log.info("new activity: " + activity.getActivityId());
         boolean edited = activityService.editActivity(activity);
         if (!edited) {
@@ -284,6 +291,13 @@ public class ActivityController {
                     .badRequest()
                     .headers(headers)
                     .body("didnt work here either sad");
+        }
+
+        if(!removeEquipment(oldEquips, newEquips)){
+            body.put("error", "could not remove old equipment");
+            return ResponseEntity
+                .status(500)
+                .body(formatJson(body));
         }
 
         return ResponseEntity
@@ -563,7 +577,9 @@ public class ActivityController {
 
     private String[] splitBase(String base) {
         if(base.length()>32) {
-            return base.split(",");
+            String[] res = base.split(",");
+            res[0] += ",";
+            return res;
         }
         return new String[]{"",""};
     }
@@ -578,8 +594,9 @@ public class ActivityController {
         for (Equipment e : equips) {
             match = false;
             for (ActivityEquipment con: oldEquips) {
-                if (con.getEquipment().equals(e)){
+                if (con.getEquipment().getEquipmentId() == e.getEquipmentId()){
                     res.add(con);
+                    System.out.println("Equipment match, adding to result list");
                     match = true;
                     break;
                 }
@@ -593,13 +610,36 @@ public class ActivityController {
         return res;
     }
 
+    private boolean removeEquipment (List<ActivityEquipment> oldEquips,
+                                                     List<ActivityEquipment> newEquips) {
+        List<ActivityEquipment> differences = new ArrayList<>(oldEquips);
+        differences.removeAll(newEquips);
+
+        System.out.println("DIFF : " + differences);
+
+        try {
+            boolean worked = true;
+            for (ActivityEquipment activityEquipment: differences) {
+                worked = activityService.removeEquipmentFromActivity(activityEquipment);
+            }
+            if(worked) {
+                log.debug("All differences were removed successfully");
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            log.error("An exception occurred while removing equipment from activity");
+            return false;
+        }
+    }
+
     private List<Equipment> toEquipList(String equipString) {
         log.info("splitting equipment");
         ArrayList<Equipment> equips = new ArrayList<>();
         for (String name : equipString.split(",")) {
             name = name.toLowerCase();
             Equipment equipment = equipmentService.getEquipmentByDescription(name);
-
+            System.out.println("Found equipment with name ["+name+"]");
             if(equipment == null) {
                 log.debug("equipment " + name + " did not exist, creating");
                 equipment = new Equipment(name);

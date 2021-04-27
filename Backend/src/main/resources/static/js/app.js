@@ -4,7 +4,7 @@ let groupId;
 
 function openConnection(group){
     groupId = group;
-    var e = new SockJS("/websocket");
+    var e = new SockJS("/ws");
     stompClient = Stomp.over(e);
 
     stompClient.connect({}, function(e) {
@@ -18,7 +18,7 @@ function openConnection(group){
 
 
 // Send message to the connection
-function sendMessage(activityId, message, userId) {
+function sendMessage(message, userId) {
     stompClient.send("/server/chat/" + groupId, {}, JSON.stringify({
         userId: userId,
         message: message
