@@ -14,6 +14,7 @@ import {
 } from '@material-ui/core';
 import User from '../interfaces/User';
 import GroupMenu from '../components/LeaderboardComponents/GroupMenu';
+import GroupList from '../components/GroupsAndFriendsComponents/GroupList';
 
 const useStyles = makeStyles({
     root: {
@@ -46,6 +47,22 @@ function Leaderboard() {
     const [allUsers, setAllUsers] = useState<User[]>([]);
     const [friends, setFriends] = useState<User[]>([]);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [selectedGroup, setSelectedGroup] = useState<Group>({
+        owner: {
+            firstName: '',
+            surname: '',
+            userID: '',
+            email: '',
+            picture: '',
+            password: '',
+            phoneNumber: '',
+            activityLevel: '',
+            points: '',
+        },
+        groupName: '',
+        groupId: '0',
+        users: [],
+    });
 
     const getYourGroups = async () => {
         const request = await axios.get(`/user/${user}/group`);
@@ -55,13 +72,13 @@ function Leaderboard() {
 
     const getFriends = async () => {
         const request = await axios.get(`/user/${user}/user`);
-        setFriends(request.data.users);
+        //setFriends(request.data.users);
         return request;
     };
 
     const getUser = async () => {
         const request = await axios.get(`/user/${user}`);
-        setFriends((friends) => [...friends, request.data]);
+        //setFriends((friends) => [...friends, request.data]);
         return request;
     };
 
@@ -87,13 +104,40 @@ function Leaderboard() {
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
+    const updateGroups = () => {
+        const url = `user/${user}/group`;
+        axios
+            .get(url)
+            .then((response) => {
+                setGroups(response.data['groups']);
+            })
+            .then(() =>
+                groups.forEach((group) => {
+                    if (group.groupId === selectedGroup.groupId) {
+                        setSelectedGroup(group);
+                    }
+                })
+            )
+            .catch((error) => {
+                console.log('Kunne ikke hente dine grupper' + error.message);
+            });
+    };
+
+    const handleGroupClicked = (group: Group) => {
+        console.log(group);
+        setSelectedGroup(group);
+    };
 
     useEffect(() => {
         getYourGroups();
-        getFriends();
-        getUser();
+        Promise.all([getFriends(), getUser()]).then((response) => {
+            //console.log(response[0].data.users);
+            setFriends(response[0].data.users);
+            setFriends((friends) => [...friends, response[1].data]);
+        });
         getAllGroups();
         getAllUsers();
+        updateGroups();
     }, []);
 
     const renderAllGroups = groups.map((group, index: number) => {
@@ -127,15 +171,25 @@ function Leaderboard() {
             <div>
                 {value === 0 && (
                     <div>
+                        <div style={{ width: '20%' }}>
+                            <GroupList
+                                updateGroups={updateGroups}
+                                friends={friends}
+                                groups={groups}
+                                handleGroupClicked={handleGroupClicked}
+                            />
+                        </div>
+                        {/*
                         <GroupMenu
                             anchorEl={anchorEl}
                             setAnchorEl={setAnchorEl}
                             groups={yourGroups}
                             setGroup={setGroup}
                         />
-                        {group !== undefined && (
+                        */}
+                        {selectedGroup !== undefined && (
                             <GroupLeaderboard
-                                propUsers={group.users}
+                                propUsers={selectedGroup.users}
                                 title={group.groupName}
                             />
                         )}
