@@ -590,7 +590,7 @@ public class UserController {
         try{
             log.debug("Attempting to edit user");
             User user = userService.getUser(id);
-            log.debug("Found user " + user.toString());
+            log.debug("Found user " + user.getUserId());
 
             Image newImage = user.getImage();
             String[] imgInfo = imageService.splitBase(map.get("image").toString());
