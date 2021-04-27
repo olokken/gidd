@@ -408,8 +408,16 @@ public class ActivityController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
         log.debug(String.format("Returning %d activities", activities.size()));
-        return ResponseEntity
+        try{
+            return ResponseEntity
                 .ok()
+                .headers(header)
+                .body("{\"activities\": \n" + activities.toString() + "\n}");
+        } catch (Exception e) {
+            log.error("could not return cause of: " + e.getMessage() + " of cause: " + e.getCause() + " with message " + e.getCause().getMessage());
+        }
+        return ResponseEntity
+                .badRequest()
                 .headers(header)
                 .body("{\"activities\": \n" + activities.toString() + "\n}");
     }
