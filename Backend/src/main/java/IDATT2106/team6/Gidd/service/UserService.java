@@ -20,8 +20,8 @@ public class UserService {
     }
 
 	public boolean login(String email, String password){
-        log.info("logging in user with email " + email);
-		return getUser(email).verifyPassword(password);
+        log.info("logging in user with email " + email.trim());
+		return getUser(email.trim()).verifyPassword(password);
 	}
 
     public boolean editUser(int id, String email, String password, String firstname, String surname,
