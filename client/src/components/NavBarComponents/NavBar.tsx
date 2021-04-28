@@ -38,6 +38,8 @@ import axios from '../../Axios';
 import { UserContext } from '../../UserContext';
 import CheckIcon from '@material-ui/icons/Check';
 import Badge from '@material-ui/core/Badge';
+import ChatAlerts from './ChatAlerts';
+import ActivityResponse from '../../interfaces/ActivityResponse';
 
 const StyledMenu = withStyles({
     paper: {
@@ -69,7 +71,7 @@ const StyledMenuItem = withStyles((theme) => ({
 }))(MenuItem);
 
 const Navbar = () => {
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
     const [friendRequests, setFriendRequests] = useState<User[]>([]);
     const [pendingFriendRequests, setPendingFriendRequests] = useState<User[]>(
         []
@@ -77,6 +79,9 @@ const Navbar = () => {
     const [openUser, setOpenUser] = useState<boolean>(false);
     const [notifications1, setNotifications1] = useState<number>(0);
     const [notifications2, setNotifications2] = useState<number>(0);
+    const [chatNotifications, setChatNotifications] = useState<
+        ActivityResponse[]
+    >([]);
     const [state, setState] = useState({
         mobileView: false,
         drawerOpen: false,
@@ -95,9 +100,35 @@ const Navbar = () => {
         window.addEventListener('resize', () => setResponsiveness());
     }, []);
 
+    useEffect(() => {
+        axios.get(`user/${localStorage.getItem('userID')}`).then((response) => {
+            setChatNotifications(response.data['notifications']);
+        });
+    }, []);
+
+    const onChatNotificationClick = (activityId: number) => {
+        axios
+            .delete(
+                `user/${localStorage.getItem(
+                    'userID'
+                )}/notification/${activityId}`
+            )
+            .then(() => {
+                setChatNotifications(
+                    chatNotifications.filter((not) => {
+                        if (not.activityId != activityId) return not;
+                    })
+                );
+            });
+    };
+
     //const classes = useStyles();
     const history = useHistory();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [anchorChat, setAnchorChat] = React.useState<null | HTMLElement>(
+        null
+    );
+
     const [
         anchorElProfile,
         setAnchorElProfile,
@@ -115,6 +146,14 @@ const Navbar = () => {
         setAnchorElProfile(event.currentTarget);
     };
 
+    const handleOpenChat = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorChat(event.currentTarget);
+    };
+
+    const handleCloseChatMenu = () => {
+        setAnchorChat(null);
+    };
+
     const handleCloseProfileMenu = () => {
         setAnchorElProfile(null);
     };
@@ -130,10 +169,6 @@ const Navbar = () => {
     const changeToMyProfile = () => {
         history.push('/MyProfile');
         handleCloseProfileMenu();
-    };
-
-    const changeToChat = () => {
-        history.push('/Chat');
     };
 
     const changeToLoginPage = () => {
@@ -157,6 +192,7 @@ const Navbar = () => {
     const changeToGroupsAndFriends = () => {
         history.push('/GroupsAndFriends');
     };
+
     //henter alle pending *angre
     const loadPending = () => {
         axios
@@ -332,8 +368,17 @@ const Navbar = () => {
                     }}
                 />
                 <div>
-                    <IconButton onClick={changeToChat}>
-                        <ChatIcon />
+                    <IconButton
+                        aria-controls="chatNotification"
+                        aria-haspopup="true"
+                        onClick={handleOpenChat}
+                    >
+                        <Badge
+                            badgeContent={chatNotifications.length}
+                            color="error"
+                        >
+                            <ChatIcon />
+                        </Badge>
                     </IconButton>
                     <IconButton
                         aria-controls="dropdownNotifications"
@@ -345,7 +390,7 @@ const Navbar = () => {
                                 pendingFriendRequests.length +
                                 friendRequests.length
                             }
-                            color="primary"
+                            color="error"
                         >
                             <NotificationsIcon />
                         </Badge>
@@ -428,8 +473,17 @@ const Navbar = () => {
                     Leaderboard
                 </Button>
                 <div>
-                    <IconButton onClick={changeToChat}>
-                        <ChatIcon />
+                    <IconButton
+                        aria-controls="chatNotification"
+                        aria-haspopup="true"
+                        onClick={handleOpenChat}
+                    >
+                        <Badge
+                            badgeContent={chatNotifications.length}
+                            color="error"
+                        >
+                            <ChatIcon />
+                        </Badge>
                     </IconButton>
                     <IconButton
                         aria-controls="dropdownNotifications"
@@ -441,7 +495,7 @@ const Navbar = () => {
                                 friendRequests.length +
                                 pendingFriendRequests.length
                             }
-                            color="primary"
+                            color="error"
                         >
                             <NotificationsIcon />
                         </Badge>
@@ -463,6 +517,13 @@ const Navbar = () => {
             <AppBar position="static" style={{ display: 'flex' }}>
                 {mobileView ? displayMobile() : displayDesktop()}
             </AppBar>
+            <ChatAlerts
+                onItemClick={onChatNotificationClick}
+                notifications={chatNotifications}
+                onClose={handleCloseChatMenu}
+                id={'chatNotification'}
+                anchorEl={anchorChat}
+            ></ChatAlerts>
 
             <StyledMenu
                 id="dropdownNotifications"

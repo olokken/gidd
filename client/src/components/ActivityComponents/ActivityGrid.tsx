@@ -45,8 +45,8 @@ const ActivityGrid = ({
     const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     useEffect(() => {
-        const startIndex = (page - 1) * 24;
-        const endIndex = page * 24;
+        const startIndex = (page - 1) * 12;
+        const endIndex = page * 12;
         setCurrentActivities(activities.slice(startIndex, endIndex));
     }, [page, activities]);
 
@@ -120,7 +120,7 @@ const ActivityGrid = ({
                     display: 'flex',
                 }}
                 onChange={onPageChange}
-                count={Math.ceil(activities.length / 24)}
+                count={Math.ceil(activities.length / 12)}
                 size="large"
             />
         </Container>

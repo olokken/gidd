@@ -197,6 +197,7 @@ const Activities = () => {
         axios
             .get('/activity')
             .then((response) => {
+                response.data;
                 setActivities(response.data['activities']);
             })
             .catch((error) => console.log(error));

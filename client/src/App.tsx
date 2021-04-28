@@ -19,6 +19,10 @@ const theme = createMuiTheme({
             main: '#000',
             contrastText: '#000',
         },
+        error: {
+            main: '#fff',
+            contrastText: '#000',
+        },
     },
 });
 
