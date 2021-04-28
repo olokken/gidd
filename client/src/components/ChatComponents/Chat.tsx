@@ -1,4 +1,11 @@
-import { Button, Drawer, TextField } from '@material-ui/core';
+import {
+    Button,
+    Drawer,
+    Grid,
+    Paper,
+    TextField,
+    Typography,
+} from '@material-ui/core';
 import React, {
     ChangeEvent,
     useEffect,
@@ -19,19 +26,20 @@ import { LeakAddTwoTone } from '@material-ui/icons';
 const Container = styled.div`
     display: flex;
     flex-direction: column;
+    overflow: 'hidden';
 `;
 
 const MessageBox = styled.div`
-    max-height: 37rem;
+    height: 65vh;
+    max-width: 80vh;
     overflow: hidden;
     overflow-y: scroll;
+    margin-top: 10vh;
 `;
 
 const SendMessage = styled.div`
     display: flex;
-    position: absolute;
-    bottom: 0;
-    margin-top: 5rem;
+    flex-direction: row;
     width: 95%;
 `;
 
@@ -40,7 +48,6 @@ const Flex = styled.div`
     justify-content: space-between;
     margin: 1rem;
 `;
-
 
 interface Props {
     open: boolean;
@@ -164,13 +171,25 @@ const Chat = ({ open, close, activityId }: Props) => {
         const msg: string = (event.target as HTMLInputElement).value;
         setMessage(msg);
     };
-
     return (
         <Drawer variant="persistent" anchor="right" open={open}>
-            <Container>
-                <Flex>
-                    <h2>CHAT</h2>
+            <Grid container spacing={2}>
+                <Grid item>
+                    <h2
+                        style={{
+                            position: 'absolute',
+                            top: '5px',
+                            left: '20px',
+                        }}
+                    >
+                        CHAT
+                    </h2>
                     <Button
+                        style={{
+                            position: 'absolute',
+                            top: '20px',
+                            right: '20px',
+                        }}
                         onClick={() => {
                             close();
                             if (socket.current) {
@@ -180,36 +199,128 @@ const Chat = ({ open, close, activityId }: Props) => {
                     >
                         Lukk
                     </Button>
-                </Flex>
-                <MessageBox id="chat">{mapHistoryAndChat()}</MessageBox>
-                <SendMessage>
-                    <TextField
-                        onKeyDown={onKeyDown}
-                        onChange={onChangeMessage}
-                        value={message}
-                        style={{
-                            width: '90%',
-                            marginLeft: '1rem',
-                            height: '5rem',
-                        }}
-                        label="Send Melding"
-                    ></TextField>
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        style={{
-                            width: '10%',
-                            height: '10%',
-                            marginLeft: '0.5rem',
-                        }}
-                        onClick={sendMessage}
-                    >
-                        <SendRoundedIcon />
-                    </Button>
-                </SendMessage>
-            </Container>
+                </Grid>
+                <Grid item xs={12} sm container>
+                    <Grid item xs container direction="column" spacing={2}>
+                        <Grid item xs>
+                            <MessageBox id="chat">
+                                {chat.map((msg, index) => (
+                                    <StyledMessage
+                                        key={index}
+                                        name={msg.user.firstName}
+                                        time={msg.timestamp}
+                                        userId={msg.user.userId}
+                                        message={msg.message}
+                                        image={msg.user.image}
+                                    ></StyledMessage>
+                                ))}
+                            </MessageBox>
+                        </Grid>
+                        <Grid item>
+                            <SendMessage>
+                                <TextField
+                                    onKeyDown={onKeyDown}
+                                    onChange={onChangeMessage}
+                                    value={message}
+                                    style={{
+                                        width: '90%',
+                                        marginLeft: '1rem',
+                                        height: '5rem',
+                                    }}
+                                    label="Send Melding"
+                                ></TextField>
+                                <Button
+                                    color="primary"
+                                    variant="contained"
+                                    style={{
+                                        width: '10%',
+                                        height: '10%',
+                                        marginLeft: '0.5rem',
+                                    }}
+                                    onClick={sendMessage}
+                                >
+                                    <SendRoundedIcon />
+                                </Button>
+                            </SendMessage>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
         </Drawer>
     );
 };
+/* return (
+        <Drawer variant="persistent" anchor="right" open={open}>
+            <Container>
+                <Flex>
+                    <div>
+                        <h2
+                            style={{
+                                position: 'absolute',
+                                top: '5px',
+                                left: '20px',
+                            }}
+                        >
+                            CHAT
+                        </h2>
+                        <Button
+                            style={{
+                                position: 'absolute',
+                                top: '20px',
+                                right: '20px',
+                            }}
+                            onClick={() => {
+                                close();
+                                if (socket.current) {
+                                    socket.current.disconnect();
+                                }
+                            }}
+                        >
+                            Lukk
+                        </Button>
+                    </div>
+                    <MessageBox id="chat">
+                        {chat.map((msg, index) => (
+                            <StyledMessage
+                                key={index}
+                                name={msg.user.firstName}
+                                time={msg.timestamp}
+                                userId={msg.user.userId}
+                                message={msg.message}
+                            ></StyledMessage>
+                        ))}
+                    </MessageBox>
+                    <SendMessage>
+                        <TextField
+                            onKeyDown={onKeyDown}
+                            onChange={onChangeMessage}
+                            value={message}
+                            style={{
+                                width: '90%',
+                                marginLeft: '1rem',
+                                height: '5rem',
+                            }}
+                            label="Send Melding"
+                        ></TextField>
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            style={{
+                                position: 'relative',
+                                width: '10%',
+                                height: '10%',
+                                marginLeft: '0.5rem',
+                                bottom: '0',
+                            }}
+                            onClick={sendMessage}
+                        >
+                            <SendRoundedIcon />
+                        </Button>
+                    </SendMessage>
+                </Flex>
+            </Container>
+        </Drawer>
+    );
+};*/
 
 export default Chat;

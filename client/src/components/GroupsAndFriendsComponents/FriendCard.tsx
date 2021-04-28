@@ -16,10 +16,9 @@ import User from '../../interfaces/User';
 import Popup from '../Popup';
 import UserProfile from './UserProfile';
 import Badge from '@material-ui/core/Badge';
-import verified from '../../assets/verified.png'
+import verified from '../../assets/verified.png';
 import axios from '../../Axios';
-import UserAvatar from '../../components/UserAvatar'
-
+import UserAvatar from '../../components/UserAvatar';
 
 const CardInformation = styled.div`
     height: 100%;
@@ -41,26 +40,26 @@ interface Props {
     updateFriends: () => void;
 }
 
-
-
-
 const FriendCard = ({ friend, updateFriends }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     const [friendRating, setFriendRating] = useState<number | undefined>();
 
     const getFriendRating = (friendId: string) => {
-        const url = `user/${friendId}/rating`
-        axios.get(url).then(response => {
-            setFriendRating(response.data.averageRating);
-        }).catch(error => {
-            console.log('Kunne ikke hente rating' + error.message)
-        });
-    }
+        const url = `user/${friendId}/rating`;
+        axios
+            .get(url)
+            .then((response) => {
+                setFriendRating(response.data.averageRating);
+            })
+            .catch((error) => {
+                console.log('Kunne ikke hente rating' + error.message);
+            });
+    };
 
     const onCardClick = () => {
-        getFriendRating(friend['userId'])
-        setOpenPopup(!openPopup)
-    }
+        getFriendRating(friend['userId']);
+        setOpenPopup(!openPopup);
+    };
 
     return (
         <div>
@@ -68,13 +67,12 @@ const FriendCard = ({ friend, updateFriends }: Props) => {
                 style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
                 onClick={onCardClick}
             >
-
                 <CardInformation>
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
-                            <UserAvatar user={friend} type='small'></UserAvatar>
+                            <UserAvatar user={friend} type="small"></UserAvatar>
                         </Grid>
-                        <Grid item >
+                        <Grid item>
                             <Typography
                                 gutterBottom
                                 variant="subtitle2"

@@ -96,67 +96,96 @@ const { mobileView } = state;
     }
 
     const displayDesktop = () => {
-        return(
-                 <StyledContainer>
-                     <StyledRow>
-                        <StyledCol>
-                            <StyledUl>
-                                <li>Administrerende direktør: Mathias Myrold</li>
-                                <li>Frontendutvikler: Ole</li>
-                                <li>Frontendutvikler: Håvard</li>
-                                <li>Frontendutvikler: William</li>
-                                <li>Frontendutvikler: Iben</li>
-                                <li>Backendutvikler: Ingebrigt</li>
-                                <li>Backendutvikler: Erling</li>
-                                <li>Backendutvikler: Lea</li>
-                            </StyledUl>
-                        </StyledCol>
-                        <StyledCol>
-                            <StyledUl>
-                                <li ><Button onClick={() => setOpenPopup(!openPopup)} style={{color:"white"}}>Kontakt GIDD</Button></li>
-                                <li ><Button onClick={() => setOpenPopup2(!openPopup2)} style={{color:"white"}}>Om GIDD</Button></li>
-                                <li ><Button style={{color:"white"}}>Team 6</Button></li>
-                            </StyledUl>
-                        </StyledCol>
-                         <Popup
-                            title="Send oss en mail"
-                            openPopup={openPopup}
-                            setOpenPopup={setOpenPopup}
-                            >
-                        <FeedbackForm 
+        return (
+            <StyledContainer>
+                <StyledRow>
+                    <StyledCol>
+                        <StyledUl>
+                            <li>Frontendutvikler: Mathias Myrold</li>
+                            <li>Frontendutvikler: Ole Løkken</li>
+                            <li>Frontendutvikler: Håvard Tysland</li>
+                            <li>Frontendutvikler: William Forbrigd</li>
+                            <li>Frontendutvikler: Iben Lind Dragesund</li>
+                            <li>Backendutvikler: Ingebrigt Hovind</li>
+                            <li>Backendutvikler: Erling sletta</li>
+                            <li>Backendutvikler: Lea Grønning</li>
+                        </StyledUl>
+                    </StyledCol>
+                    <StyledCol>
+                        <StyledUl>
+                            <li>
+                                <Button
+                                    onClick={() => setOpenPopup(!openPopup)}
+                                    style={{ color: 'white' }}
+                                >
+                                    Kontakt GIDD
+                                </Button>
+                            </li>
+                            <li>
+                                <Button
+                                    onClick={() => setOpenPopup2(!openPopup2)}
+                                    style={{ color: 'white' }}
+                                >
+                                    Om GIDD
+                                </Button>
+                            </li>
+                            <li>
+                                <Button style={{ color: 'white' }}>
+                                    Team 6
+                                </Button>
+                            </li>
+                        </StyledUl>
+                    </StyledCol>
+                    <Popup
+                        title="Send oss en mail"
+                        openPopup={openPopup}
+                        setOpenPopup={setOpenPopup}
+                    >
+                        <FeedbackForm
                             openPopup={openPopup}
                             setOpenPopup={setOpenPopup}
                         />
-                        </Popup>
-                        <Popup
-                            title="Om oss"
-                            openPopup={openPopup2}
-                            setOpenPopup={setOpenPopup2}
-                            >
-                            <Omoss/>
-                        </Popup>
-                        
-                        <StyledCol>
-                            <StyledUl>
-                                <li>GIDD har ikke ansvar for eksterne nettsider</li>
-                                <li>som det lenkes til. Kopiering av materiale fra GIDD for</li>
-                                <li>burk av annet sted er ikke tilatt uten avtale.</li>
-                            </StyledUl>
-                        </StyledCol>
-                     </StyledRow>
+                    </Popup>
+                    <Popup
+                        title="Om oss"
+                        openPopup={openPopup2}
+                        setOpenPopup={setOpenPopup2}
+                    >
+                        <Omoss />
+                    </Popup>
 
-                     <hr />
-                     <StyledRow>
-                         <div style={{display:"flex"}}>
-                         <img src={logo} style={{
-                                    width:"40px", 
-                                    margin: "10px"}} 
-                            />
-                         <p>&copy;{new Date().getFullYear} GIDD | Personvernerklæring og informasjonskapsler (cookies) </p>
-                         </div>
-                     </StyledRow>
-                 </StyledContainer>
-        )
+                    <StyledCol>
+                        <StyledUl>
+                            <li>GIDD har ikke ansvar for eksterne nettsider</li>
+                            <li>
+                                som det lenkes til. Kopiering av materiale fra
+                                GIDD for
+                            </li>
+                            <li>
+                                burk av annet sted er ikke tilatt uten avtale.
+                            </li>
+                        </StyledUl>
+                    </StyledCol>
+                </StyledRow>
+
+                <hr />
+                <StyledRow>
+                    <div style={{ display: 'flex' }}>
+                        <img
+                            src={logo}
+                            style={{
+                                width: '40px',
+                                margin: '10px',
+                            }}
+                        />
+                        <p>
+                            &copy;{new Date().getFullYear} GIDD |
+                            Personvernerklæring og informasjonskapsler (cookies){' '}
+                        </p>
+                    </div>
+                </StyledRow>
+            </StyledContainer>
+        );
     }
 
   return (

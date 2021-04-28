@@ -161,20 +161,24 @@ export default function FeedCard({
     };
 
     const handleOnChangeOwner = () => {
-        const url = `/group/${selectedGroup.groupId}`
-        console.log(Object.values(selectedUser)[0])
-        axios.put(url, {
-            "groupId": selectedGroup.groupId,
-            "newOwner": Object.values(selectedUser)[0]
-        }).then(response => {
-            console.log(response);
-        }).then(() => {
-            updateGroups()
-            setOpenChoiceBox(!openChoiceBox)
-        }).catch(error => {
-            console.log('Fikk ikke endret eier' + error.message)
-        })
-    }
+        const url = `/group/${selectedGroup.groupId}`;
+        console.log(Object.values(selectedUser)[0]);
+        axios
+            .put(url, {
+                groupId: selectedGroup.groupId,
+                newOwner: Object.values(selectedUser)[0],
+            })
+            .then((response) => {
+                console.log(response);
+            })
+            .then(() => {
+                updateGroups();
+                setOpenChoiceBox(!openChoiceBox);
+            })
+            .catch((error) => {
+                console.log('Fikk ikke endret eier' + error.message);
+            });
+    };
 
     return selectedGroup.groupName !== '' ? (
         <FeedContainer>

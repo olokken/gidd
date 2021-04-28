@@ -7,7 +7,7 @@ import logo from '../../assets/logo.png';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { UserContext } from '../../UserContext';
 import User from '../../interfaces/User';
-import axios from '../../Axios'
+import axios from '../../Axios';
 import styled from 'styled-components';
 import Badge from '@material-ui/core/Badge';
 import Avatar from '@material-ui/core/Avatar';
@@ -42,7 +42,7 @@ const UserProfile = ({ friend, openPopup, setOpenPopup, updateFriends, friendRat
     const deleteFriend = () => {
         deleteAxFriend(Object.values(friend)[0]);
         setOpenPopup(!openPopup);
-    }
+    };
 
 
 
@@ -52,7 +52,8 @@ const UserProfile = ({ friend, openPopup, setOpenPopup, updateFriends, friendRat
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
-            }).then(updateFriends)
+            })
+            .then(updateFriends)
             .catch((error) =>
                 console.log('Could not delete friend: ' + error.message)
             );
@@ -137,6 +138,6 @@ const UserProfile = ({ friend, openPopup, setOpenPopup, updateFriends, friendRat
         </Card >
 
     );
-}
+};
 
 export default UserProfile;

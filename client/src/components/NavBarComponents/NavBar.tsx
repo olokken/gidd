@@ -20,8 +20,6 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import { withStyles } from '@material-ui/core/styles';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import SettingsIcon from '@material-ui/icons/Settings';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
@@ -177,10 +175,6 @@ const Navbar = () => {
         handleCloseProfileMenu();
     };
 
-    const changeToSettings = () => {
-        history.push('/Settings');
-        handleCloseProfileMenu();
-    };
     const changeToLeaderboard = () => {
         history.push('/Leaderboard');
     };
@@ -226,15 +220,11 @@ const Navbar = () => {
         loadPending();
     }, [user]);
 
-    /* const setNotificationData = () => {
-        setTimeout(()=>{
-            setNotifications(friendRequests.length + pendingFriendRequests.length)
-            console.log('notdata: ' + (friendRequests.length + pendingFriendRequests.length) );
-            if(notifications > 0){
-                setInvisible(false)
-            }else{setInvisible(true)}
-        },5000);
-    }*/
+    const handleDrawerOpen = () =>
+        setState((prevState) => ({ ...prevState, drawerOpen: true }));
+
+    const handleDrawerClose = () =>
+        setState((prevState) => ({ ...prevState, drawerOpen: false }));
 
     const declineRequest = (request: User) => {
         deleteFriend(Object.values(request)[0]);
@@ -315,45 +305,85 @@ const Navbar = () => {
                     <br />
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToHomePage}
+                        onClick={() => {
+                            changeToHomePage();
+                            handleDrawerClose();
+                        }}
                     >
                         <DirectionsRunIcon />
                         Aktiviteter
                     </Button>
-                    <Button style={{ padding: '10px' }} onClick={changeToMap}>
+                    <Button
+                        style={{ padding: '10px' }}
+                        onClick={() => {
+                            changeToMap();
+                            handleDrawerClose();
+                        }}
+                    >
                         <MapIcon />
                         Kart
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToCalender}
+                        onClick={() => {
+                            handleDrawerClose();
+                            changeToCalender();
+                        }}
                     >
                         {' '}
                         <CalendarTodayIcon /> Kalender
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToGroupsAndFriends}
+                        onClick={() => {
+                            changeToGroupsAndFriends();
+                            handleDrawerClose();
+                        }}
                     >
                         <PeopleIcon />
                         Grupper og venner
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToLeaderboard}
+                        onClick={() => {
+                            changeToLeaderboard();
+                            handleDrawerClose();
+                        }}
                     >
                         <EmojiEventsIcon />
                         Leaderboard
+                    </Button>
+                    <Button
+                        style={{ padding: '10px' }}
+                        onClick={() => {
+                            setOpenUser(!openUser);
+                            handleDrawerClose();
+                        }}
+                    >
+                        <AccountBoxIcon />
+                        Min bruker
+                    </Button>
+                    <Popup
+                        title="Min Bruker"
+                        openPopup={openUser}
+                        setOpenPopup={setOpenUser}
+                    >
+                        <MyUser
+                            openPopup={openUser}
+                            setOpenPopup={setOpenUser}
+                        />
+                    </Popup>
+                    <Button
+                        style={{ padding: '10px' }}
+                        onClick={changeToLoginPage}
+                    >
+                        <ExitToAppIcon />
+                        Logg ut
                     </Button>
                 </div>
             );
         };
 
-        const handleDrawerOpen = () =>
-            setState((prevState) => ({ ...prevState, drawerOpen: true }));
-
-        const handleDrawerClose = () =>
-            setState((prevState) => ({ ...prevState, drawerOpen: false }));
         return (
             <Toolbar
                 style={{ display: 'flex', justifyContent: 'space-between' }}
@@ -394,13 +424,6 @@ const Navbar = () => {
                         >
                             <NotificationsIcon />
                         </Badge>
-                    </IconButton>
-                    <IconButton
-                        aria-controls="dropdownProfile"
-                        aria-haspopup="true"
-                        onClick={handleOpenProfileMenu}
-                    >
-                        <AccountBoxIcon />
                     </IconButton>
                 </div>
                 <IconButton onClick={handleDrawerOpen}>
@@ -627,17 +650,11 @@ const Navbar = () => {
                 >
                     <MyUser openPopup={openUser} setOpenPopup={setOpenUser} />
                 </Popup>
-                <StyledMenuItem onClick={changeToSettings}>
-                    <ListItemIcon>
-                        <SettingsIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary="Innstillinger" />
-                </StyledMenuItem>
                 <StyledMenuItem onClick={changeToLoginPage}>
                     <ListItemIcon>
                         <ExitToAppIcon fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText primary="Log ut" />
+                    <ListItemText primary="Logg ut" />
                 </StyledMenuItem>
             </StyledMenu>
         </div>
