@@ -244,6 +244,24 @@ public class Activity implements Cloneable{
                 "}";
     }
 
+    public String toNotification() {
+        return "{" +
+                "\n\"activityId\": " + activityId +
+                ", \n\"title\": " + "\"" + title.trim() + "\"" +
+                ", \n\"time\":" + time.getTime() +
+                ", \n\"capacity\":" + capacity +
+                ", \n\"groupId\":" + group +
+                ", \n\"description\":" + "" + description + "" +
+                ", \n\"image\":" + "\"" + image.getDatatype() + Base64.getEncoder().encodeToString(image.getBytes()) +"\"" +
+                ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
+                ", \n\"tags\":" + tags.toString() +
+                ", \n\"equipments\":" + equipments.toString() +
+                ", \n\"latitude\":" + latitude +
+                ", \n\"longitude\":" + longitude +
+                ", \n\"timeCreated\":" + (timeCreated == null ? "null" : timeCreated.getTime()) +
+                "}";
+    }
+
     public String toLog() {
         return "{" +
             "\n\"activityId\": " + activityId +
