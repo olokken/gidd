@@ -2,13 +2,19 @@ import React, { useContext } from 'react';
 import emailjs from 'emailjs-com';
 import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
-import { Button, Card, CardContent, CardMedia, Typography } from '@material-ui/core';
+import {
+    Button,
+    Card,
+    CardContent,
+    CardMedia,
+    Typography,
+} from '@material-ui/core';
 import logo from '../../assets/logo.png';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { UserContext } from '../../UserContext';
 import User from '../../interfaces/User';
-import axios from '../../Axios'
-import Group from '../../interfaces/Group'
+import axios from '../../Axios';
+import Group from '../../interfaces/Group';
 
 interface Props {
     group: Group;
@@ -18,8 +24,6 @@ interface Props {
 
 const GroupProfile = ({ group, openPopup, setOpenPopup }: Props) => {
     const { user, setUser } = useContext(UserContext);
-
- 
 
     const leaveGroup = () => {
         const groupId = group.groupId;
@@ -32,17 +36,11 @@ const GroupProfile = ({ group, openPopup, setOpenPopup }: Props) => {
             .catch((error) =>
                 console.log('Could not delete friend: ' + error.message)
             );
-    }
-
+    };
 
     return (
         <Card>
-            <CardMedia
-                component="img"
-                height="140"
-                image={logo}
-
-            />
+            <CardMedia component="img" height="140" image={logo} />
             <CardContent>
                 <Typography gutterBottom variant="h5" component="h2">
                     {group.groupName}
@@ -59,18 +57,21 @@ const GroupProfile = ({ group, openPopup, setOpenPopup }: Props) => {
                 <Typography variant="body2" color="textSecondary" component="p">
                     Poeng: {group.groupName}
                 </Typography>
-                <div style={{ marginTop: "5px" }}>
+                <div style={{ marginTop: '5px' }}>
                     <Button
                         fullWidth
                         onClick={leaveGroup}
                         variant="contained"
                         color="primary"
-                    >  Meld deg ut av gruppe <DeleteIcon style={{ marginLeft: "8px" }} />
+                    >
+                        {' '}
+                        Meld deg ut av gruppe{' '}
+                        <DeleteIcon style={{ marginLeft: '8px' }} />
                     </Button>
                 </div>
             </CardContent>
         </Card>
     );
-}
+};
 
 export default GroupProfile;

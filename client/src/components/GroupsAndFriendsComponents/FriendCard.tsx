@@ -35,26 +35,24 @@ interface Props {
     updateFriends: () => void;
 }
 
-
 const FriendCard = ({ friend, updateFriends }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     const onCardClick = () => {
-        setOpenPopup(!openPopup)
-    }
+        setOpenPopup(!openPopup);
+    };
     return (
         <div>
             <Card
                 style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
                 onClick={onCardClick}
             >
-
                 <CardInformation>
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
                             <Avatar src={friend.image}></Avatar>
                         </Grid>
-                        <Grid item >
+                        <Grid item>
                             <Typography
                                 gutterBottom
                                 variant="subtitle2"

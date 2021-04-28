@@ -21,6 +21,7 @@ import axios from '../Axios';
 import { useHistory } from 'react-router-dom';
 import Popup from './Popup';
 import User from '../interfaces/User';
+import EditIcon from '@material-ui/icons/Edit';
 
 const StyledButton = withStyles({
     root: {
@@ -598,7 +599,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                             setShowChangeName(!showChangeName);
                                         }}
                                     >
-                                        Rediger
+                                        <EditIcon />
                                     </Button>
                                     <Popup
                                         title={popupTitle}
@@ -667,7 +668,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                             );
                                         }}
                                     >
-                                        Rediger
+                                        <EditIcon />
                                     </Button>
                                     <Popup
                                         openPopup={showChangeEmail}
@@ -736,7 +737,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                             );
                                         }}
                                     >
-                                        Rediger
+                                        <EditIcon />
                                     </Button>
                                     <Popup
                                         title={popupTitle}
@@ -800,7 +801,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                             );
                                         }}
                                     >
-                                        Rediger
+                                        <EditIcon />
                                     </Button>
                                     <Popup
                                         title={popupTitle}
@@ -867,7 +868,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                             );
                                         }}
                                     >
-                                        Rediger
+                                        <EditIcon />
                                     </Button>
                                     <Popup
                                         title={popupTitle}
@@ -946,7 +947,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                                             setShowChangePass(!showChangePass);
                                         }}
                                     >
-                                        Rediger
+                                        <EditIcon />
                                     </Button>
                                     <Popup
                                         openPopup={showChangePass}

@@ -15,7 +15,7 @@ import User from '../../interfaces/User';
 import Popup from '../Popup';
 import GroupProfile from './GroupProfile';
 import UserProfile from './UserProfile';
-import Group from '../../interfaces/Group'
+import Group from '../../interfaces/Group';
 
 const CardInformation = styled.div`
     height: 100%;
@@ -38,26 +38,23 @@ interface Props {
     onClick?: () => void;
 }
 
-
-
 const GroupCard = ({ group, handleGroupClicked, onClick }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     const onCardClick = () => {
         if (onClick != undefined) {
-            onClick()
+            onClick();
         }
-    }
+    };
     return (
         <div>
             <Card
                 style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
                 onClick={() => {
-                    handleGroupClicked(group)
-                    onCardClick()
+                    handleGroupClicked(group);
+                    onCardClick();
                 }}
             >
-
                 <CardInformation>
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
@@ -69,7 +66,7 @@ const GroupCard = ({ group, handleGroupClicked, onClick }: Props) => {
                                 image={logo} // hente bildet frå aktiviteta
                             />
                         </Grid>
-                        <Grid item >
+                        <Grid item>
                             <Typography
                                 gutterBottom
                                 variant="subtitle2"

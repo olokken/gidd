@@ -68,7 +68,12 @@ interface Props {
 
 //TODO:
 //Fix adding image
-const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Props) => {
+const ActivityForm = ({
+    openPopup,
+    setOpenPopup,
+    activityResponse,
+    groupId,
+}: Props) => {
     const [page, setPage] = useState<number>(1);
     const { user, setUser } = useContext(UserContext);
     const [title, setTitle] = useState('');
@@ -181,22 +186,21 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
             const base64 = await convertBase64(file);
             console.log(base64);
             setImage(base64);
-            console.log(image)
+            console.log(image);
         }
     };
 
     const convertBase64 = (file: File) => {
         return new Promise<any>((resolve, reject) => {
-
             const fileReader = new FileReader();
             fileReader.readAsDataURL(file);
 
-            fileReader.onload = (() => {
+            fileReader.onload = () => {
                 resolve(fileReader.result);
-            });
-            fileReader.onerror = ((error) => {
+            };
+            fileReader.onerror = (error) => {
                 reject(error);
-            });
+            };
         });
     };
 
@@ -327,8 +331,6 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
             );
     };
 
-
-
     const changeActivity = async () => {
         const sendActivity = {
             title: title,
@@ -350,16 +352,18 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
         const config = {
             headers: {
                 token: token,
-            }
-        }
-        const request = await axios.put(
-            `/activity/${activityResponse?.activityId}`,
-            sendActivity,
-            config
-        ).then(() => {
-            handleReset();
-            setOpenPopup(!openPopup);
-        });
+            },
+        };
+        const request = await axios
+            .put(
+                `/activity/${activityResponse?.activityId}`,
+                sendActivity,
+                config
+            )
+            .then(() => {
+                handleReset();
+                setOpenPopup(!openPopup);
+            });
         console.log(request);
     };
 
@@ -538,7 +542,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
                         }}
                         variant="outlined"
                     />
-                    <img src={image} style={{ maxHeight: "40px" }} />
+                    <img src={image} style={{ maxHeight: '40px' }} />
                 </div>
             )}
             {page === 6 && (

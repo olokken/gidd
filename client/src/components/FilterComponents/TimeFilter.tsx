@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Slider, TextField, Button } from '@material-ui/core';
 
-const Container = styled.div``;
+const Container = styled.div`
+    width: 100%;
+    margin-top: '20px';
+`;
 
 interface Props {
     onTimeFromChange: (searchResult: Date) => void;
@@ -11,7 +14,7 @@ interface Props {
 
 const TimeFilter = ({ onTimeFromChange, onTimeToChange }: Props) => {
     const [from, setFrom] = useState<Date>(new Date(0));
-    const [to, setTo] = useState<Date>(new Date(2050,0,0));
+    const [to, setTo] = useState<Date>(new Date(2050, 0, 0));
 
     useEffect(() => {
         onTimeFromChange(from);
@@ -30,16 +33,20 @@ const TimeFilter = ({ onTimeFromChange, onTimeToChange }: Props) => {
     };
 
     const reset = () => {
-        setFrom(new Date(0)); 
-        setTo(new Date(2050,0,0)); 
-    }
+        setFrom(new Date(0));
+        setTo(new Date(2050, 0, 0));
+    };
 
     return (
         <Container>
             <h3>Tidspunkt</h3>
             <TextField
                 onChange={handleFromChange}
-                style={{ marginBottom: '10px', marginRight: '5px' }}
+                style={{
+                    marginBottom: '10px',
+                    marginRight: '5px',
+                    minWidth: '140px',
+                }}
                 label="FRA TIDSPUNKT"
                 type="datetime-local"
                 InputLabelProps={{
@@ -48,6 +55,11 @@ const TimeFilter = ({ onTimeFromChange, onTimeToChange }: Props) => {
             />
             <TextField
                 onChange={handleToChange}
+                style={{
+                    marginBottom: '10px',
+                    marginRight: '5px',
+                    minWidth: '140px',
+                }}
                 label="TIL TIDSPUNKT"
                 type="datetime-local"
                 InputLabelProps={{
