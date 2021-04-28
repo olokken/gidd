@@ -54,7 +54,6 @@ const Chat = ({ open, close, activityId }: Props) => {
     const [chatHistory, setChatHistory] = useState<MessageResponse[]>([]);
     const [chat, setChat] = useState<MessageResponse[]>([]);
     const socket = useRef<any>();
-    const [subscribed, setSubscribed] = useState<boolean>(true);
 
     useEffect(() => {
         setChat([]);
@@ -86,7 +85,7 @@ const Chat = ({ open, close, activityId }: Props) => {
     const subscribeAndOpen = async () => {
         if (socket.current) {
             if (socket.current.connected) {
-                await socket.current.subscribe(
+                socket.current.subscribe(
                     `/client/chat/${activityId}`,
                     (event: any) => {
                         console.log(JSON.parse(event.body));
@@ -94,7 +93,6 @@ const Chat = ({ open, close, activityId }: Props) => {
                     }
                 );
             }
-            setTimeout(() => setSubscribed(true), 1000);
         }
     };
 
@@ -181,18 +179,7 @@ const Chat = ({ open, close, activityId }: Props) => {
                         Lukk
                     </Button>
                 </Flex>
-                <MessageBox id="chat">
-                    {chat.map((msg, index) => (
-                        <StyledMessage
-                            key={index}
-                            name={msg.user.firstName}
-                            time={msg.timestamp}
-                            userId={msg.user.userId}
-                            message={msg.message}
-                            image={msg.user.image}
-                        ></StyledMessage>
-                    ))}
-                </MessageBox>
+                <MessageBox id="chat">{mapHistoryAndChat()}</MessageBox>
                 <SendMessage>
                     <TextField
                         onKeyDown={onKeyDown}
