@@ -241,13 +241,16 @@ public class User {
         return false;
     }
 
+    //todo fiks sånn at det blir gyldig json
     public String getNotificationIds() {
         StringBuilder id = new StringBuilder();
+        id.append("[");
         for (Activity a : notifications) {
-            id.append(a.getActivityId()).append(",");
+            id.append(a.toNotification()).append(",");
         }
-        if (id.length() > 0) {
-            id.deleteCharAt(id.length() - 1);
+        id.append("]");
+        if (id.length() > 2) {
+            id.deleteCharAt(id.length() - 2);
         }
         return id.toString();
     }
@@ -265,7 +268,7 @@ public class User {
             org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' +
             "," +
             "\n     \"points\":" + points + "," +
-            "\n     \"notifications\":\"" + getNotificationIds() + "\"" +
+            "\n     \"notifications\":" + getNotificationIds() +
             "\n }";
     }
 
@@ -278,7 +281,7 @@ public class User {
             "\n     \"phoneNumber\":" + phoneNumber + "," +
             "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' + "," +
             "\n     \"points\":" + points + "," +
-            "\n     \"notifications\":\"" + getNotificationIds() + "\"," +
+            "\n     \"notifications\":" + getNotificationIds() + "," +
             "\n     \"image\":" + '\"' + image.getDatatype() +
             org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' +
             "," +
