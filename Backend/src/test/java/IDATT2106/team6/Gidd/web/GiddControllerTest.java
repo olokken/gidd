@@ -84,8 +84,6 @@ public class GiddControllerTest {
                 new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
                 0, user1, 50, group3, "det som du gjør nå", new Image(),
                 ActivityLevel.HIGH, new ArrayList<>(), 0.001, 0.005, null);
-                0, user1, 50, group3, "det som du gjør nå", new Image(),
-                ActivityLevel.MEDIUM, new ArrayList<>(), 0.001, 0.005, null);
 
         group1 = new FriendGroup(1, "GruppeTest", user1);
 
