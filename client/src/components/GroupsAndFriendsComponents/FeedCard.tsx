@@ -1,16 +1,22 @@
 import {
     Avatar,
     Button,
+    Card,
+    CardHeader,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Divider,
+    IconButton,
     List,
     ListItem,
     ListItemText,
     ListSubheader,
     makeStyles,
+    Typography,
+    withStyles,
 } from '@material-ui/core';
 import React from 'react';
 import styled from 'styled-components';
@@ -42,7 +48,17 @@ const StyledParagraph = styled.p`
 const FeedContainer = styled.div`
     margin-left: 20px;
     min-height: 60%;
+    //border: 2px solid blue;
 `;
+
+const StyledCard = withStyles({
+    root: {
+        marginBottom: '1rem',
+        marginLeft: '1rem',
+        marginTop: '1rem',
+        minHeigth: '60%',
+    },
+})(Card);
 const TransformDiv = styled.div`
     transition: transform 450ms;
     min-width: 200px;
@@ -57,21 +73,34 @@ const TransformDiv = styled.div`
     }
 `;
 
+const StyledActivities = styled.div`
+    display: flex;
+    border: 2px solid green;
+    margin: 1%;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    padding: 20px;
+`;
+
+const StyledActivity = styled.div`
+    object-fit: contain;
+    width: 100%;
+    max-height: 100px;
+    margin-right: 10px;
+`;
+
 const StyledButtons = styled.div`
     display: flex;
-    flex-direction: column;
-    border: 2px solid blue;
     padding: 1rem;
+    justify-content: center;
+    border: 2px solid blue;
 `;
 
 const useStyles = makeStyles({
     button: {
-        width: '40%',
-        position: 'relative',
+        width: '25%',
         bottom: '0',
-        fontSize: '12px',
-        right: '0',
-        left: '60%',
+        fontSize: '9px',
         margin: '1%',
     },
 });
@@ -106,6 +135,7 @@ export default function FeedCard({
         points: '',
     });
     const { user } = useContext(UserContext);
+    const [activities, setActivities] = useState<ActivityResponse[]>([]);
 
     const getNextActivity = async () => {
         const url = `group/${selectedGroup.groupId}/activity`;
@@ -203,37 +233,61 @@ export default function FeedCard({
             });
     };
 
+    const getActivities = async () => {
+        const request = await axios.get(
+            `/group/${selectedGroup.groupId}/activity`
+        );
+        console.log(request);
+        setActivities(request.data.activties);
+        return request;
+    };
+
+    useEffect(() => {
+        getActivities();
+    }, []); //TODO when should the side effect trigger
+
+    const renderActivities = activities.map((activity, index: number) => {
+        return (
+            <StyledActivity key={index}>
+                <ActivityCard
+                    activity={activity}
+                    openPopup={openActivityPopup}
+                    setOpenPopup={setOpenActivityPopup}
+                    setActivity={setNextActivity}
+                ></ActivityCard>
+            </StyledActivity>
+        );
+    });
+
     return selectedGroup.groupName !== '' ? (
-        <FeedContainer>
+        <StyledCard raised={true}>
             <StyledHeader>{selectedGroup.groupName}</StyledHeader>
+            <Divider variant="middle" />
             <List
                 style={{
                     width: '40%',
                     float: 'right',
                 }}
             >
-                <ListSubheader>GRUPPEMEDLEMMER</ListSubheader>
+                <ListSubheader style={{ fontSize: '12px' }}>
+                    GRUPPEMEDLEMMER
+                </ListSubheader>
                 {selectedGroup.users.map((user, index) => (
                     <ListItem
                         button
                         key={index}
                         onClick={() => handleUserClicked(user)}
                     >
-                        <Avatar></Avatar>
+                        <Avatar style={{ marginRight: '5%' }} />
                         {Object.values(user)[0] ==
                         Object.values(selectedGroup.owner)[0] ? (
-                            <ListItemText
-                                primary={
-                                    user.firstName +
-                                    ' ' +
-                                    user.surname +
-                                    '(eier)'
-                                }
-                            />
+                            <Typography variant="subtitle2">
+                                {user.firstName + ' ' + user.surname + '(eier)'}
+                            </Typography>
                         ) : (
-                            <ListItemText
-                                primary={user.firstName + ' ' + user.surname}
-                            />
+                            <Typography variant="subtitle2">
+                                {user.firstName + ' ' + user.surname}
+                            </Typography>
                         )}
                     </ListItem>
                 ))}
@@ -298,6 +352,18 @@ export default function FeedCard({
             ) : (
                 <div></div>
             )}
+            <StyledActivities>
+                <button
+                    onClick={() => {
+                        console.log(activities);
+                        console.log(nextActivity);
+                        console.log(selectedGroup);
+                    }}
+                >
+                    hvis aktiviteter
+                </button>
+                {renderActivities}
+            </StyledActivities>
             <StyledButtons>
                 <Button
                     className={classes.button}
@@ -321,6 +387,9 @@ export default function FeedCard({
                         groupId={selectedGroup.groupId}
                     />
                 </Popup>
+            </StyledButtons>
+            <GroupLeaderboard users={selectedGroup.users} />
+            <StyledButtons>
                 <Button
                     className={classes.button}
                     onClick={handleLeaveGroup}
@@ -340,13 +409,7 @@ export default function FeedCard({
                     Slett Gruppe <DeleteIcon style={{ marginLeft: '8px' }} />
                 </Button>
             </StyledButtons>
-            <div>
-                <GroupLeaderboard
-                    users={selectedGroup.users}
-                    title={selectedGroup.groupName}
-                />
-            </div>
-        </FeedContainer>
+        </StyledCard>
     ) : (
         <FeedContainer>
             <h2>Ingen gruppe valgt</h2>
