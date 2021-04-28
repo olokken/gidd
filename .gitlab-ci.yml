@@ -16,7 +16,7 @@ backend-test:
   script:
     - cd Backend
     - touch $(pwd)/src/main/resources/application.properties
-    - cp "$APPLICATION" $(pwd)/src/main/resources/application.properties
+    - cp "$PROPERTIES" $(pwd)/src/main/resources/application.properties
     - mvn test
   needs: ["backend-build"]
 
