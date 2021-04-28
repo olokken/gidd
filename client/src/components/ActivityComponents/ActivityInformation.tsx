@@ -11,6 +11,9 @@ import {
     Chip,
     CardMedia,
     Button,
+    ListItem,
+    ListItemText,
+    List,
 } from '@material-ui/core';
 import { Edit, Delete } from '@material-ui/icons';
 import ChatIcon from '@material-ui/icons/Chat';
@@ -26,6 +29,9 @@ import Popup from '../Popup';
 import WeatherComponent from '../WeatherComponents/WeatherComponent';
 import ActivityForm from './ActivityForm';
 import Chat from '../ChatComponents/Chat';
+import User from '../../interfaces/User';
+import PlayerRatingForm from '../Forms/PlayerRatingForm'
+import UserAvatar from '../UserAvatar';
 
 interface Props {
     activity: ActivityResponse;
@@ -84,9 +90,7 @@ const ActivityInformation = ({
     const [openChat, setOpenChat] = useState<boolean>(false);
     const [currentAct, setCurrentAct] = useState<ActivityResponse>(activity);
     const classes = useStyles();
-    const date = new Date(activity.time);
-    const eventTime = new String(date);
-    //Registration is 0 if registration is posible, 1 if you are already registered and 2 if the activity is ful
+    const date = new Date(activity.time).toLocaleDateString() + ' ' + new Date(activity.time - 7200000).toLocaleTimeString();
     const [registration, setRegistration] = useState<number>(1);
     const [isOwner, setIsOwner] = useState<boolean>(false);
     const { user } = useContext(UserContext);
@@ -94,6 +98,18 @@ const ActivityInformation = ({
     const [numRegistered, setNumRegistered] = useState<number>(
         activity.registeredParticipants.length
     );
+    const [currentParticipant, setCurrentParticipant] = useState<User>({
+        firstName: '',
+        surname: '',
+        userId: '',
+        email: '',
+        image: '',
+        password: '',
+        phoneNumber: '',
+        activityLevel: '',
+        points: ''
+    });
+    const [openRatingPopup, setRatingPopup] = useState<boolean>(false);
 
     const onRegisterClick = () => {
         register(activity.activityId).then(() => {
@@ -119,6 +135,16 @@ const ActivityInformation = ({
             setOpenPopup(!openPopup);
         }
     };
+
+    const showActivityLevel = (actLevel: string) => {
+        if (actLevel === 'HIGH') {
+            return 'Høy'
+        } else if (actLevel === 'MEDIUM') {
+            return 'Middels'
+        } else if (actLevel === 'LOW') {
+            return 'Lav'
+        }
+    }
 
     useEffect(() => {
         let value = -1;
@@ -196,9 +222,24 @@ const ActivityInformation = ({
         }
     );
 
+    const onParticipantClicked = (par: User) => {
+        setCurrentParticipant(par);
+        setRatingPopup(!openRatingPopup)
+    }
+
     const mapParticipants = currentAct.registeredParticipants.map(
         (par: any, index: number) => {
-            return <p key={index}>{par['firstName'] + ' ' + par['surname']}</p>;
+            return <ListItem
+                button
+                key={index}
+                onClick={() => { if (user !== par['userId'].toString()) onParticipantClicked(par) }}
+            >
+                <UserAvatar user={user} type='small'></UserAvatar>
+                <ListItemText
+                    primary={par['firstName'] + ' ' + par['surname']}
+                />
+
+            </ListItem>;
         }
     );
 
@@ -281,11 +322,11 @@ const ActivityInformation = ({
                             </Typography>
                             <Typography>
                                 <b>Vanskligheitsgrad:</b>{' '}
-                                {activity.activityLevel}
+                                {showActivityLevel(activity.activityLevel)}
                             </Typography>
                             <Typography>
                                 <b>Tidspunkt: </b>
-                                {eventTime}
+                                {date}
                             </Typography>
                         </Grid>
                     </Grid>
@@ -294,10 +335,21 @@ const ActivityInformation = ({
                         <Typography>
                             {registration == 1 && (
                                 <>
-                                    <b>Påmeldte personer:</b> {mapParticipants}
+                                    <b>Påmeldte personer:</b>  <List
+                                        style={{
+                                            width: '100%',
+                                            float: 'right',
+                                            maxHeight: '160px',
+                                            overflow: 'auto'
+                                        }}
+                                    >{mapParticipants}</List>
                                 </>
                             )}
                         </Typography>
+                        <PlayerRatingForm
+                            openPopup={openRatingPopup}
+                            setOpenPopup={setRatingPopup}
+                            user={currentParticipant}></PlayerRatingForm>
                     </Grid>
                 </Grid>
                 <Typography style={{ color: 'black' }}>

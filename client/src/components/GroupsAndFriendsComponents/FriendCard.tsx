@@ -7,13 +7,19 @@ import {
     Avatar,
     Tooltip,
     Chip,
+    withStyles,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import logo from '../../assets/logo.png';
 import User from '../../interfaces/User';
 import Popup from '../Popup';
 import UserProfile from './UserProfile';
+import Badge from '@material-ui/core/Badge';
+import verified from '../../assets/verified.png'
+import axios from '../../Axios';
+import UserAvatar from '../../components/UserAvatar'
+
 
 const CardInformation = styled.div`
     height: 100%;
@@ -36,12 +42,26 @@ interface Props {
 }
 
 
+
+
 const FriendCard = ({ friend, updateFriends }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
+    const [friendRating, setFriendRating] = useState<number | undefined>();
+
+    const getFriendRating = (friendId: string) => {
+        const url = `user/${friendId}/rating`
+        axios.get(url).then(response => {
+            setFriendRating(response.data.averageRating);
+        }).catch(error => {
+            console.log('Kunne ikke hente rating' + error.message)
+        });
+    }
 
     const onCardClick = () => {
+        getFriendRating(friend['userId'])
         setOpenPopup(!openPopup)
     }
+
     return (
         <div>
             <Card
@@ -52,7 +72,7 @@ const FriendCard = ({ friend, updateFriends }: Props) => {
                 <CardInformation>
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
-                            <Avatar src={friend.image}></Avatar>
+                            <UserAvatar user={friend} type='small'></UserAvatar>
                         </Grid>
                         <Grid item >
                             <Typography
@@ -76,6 +96,7 @@ const FriendCard = ({ friend, updateFriends }: Props) => {
                     openPopup={openPopup}
                     setOpenPopup={setOpenPopup}
                     friend={friend}
+                    friendRating={friendRating}
                 />
             </Popup>
         </div>

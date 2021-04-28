@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import hiking from '../../assets/hiking.jpg';
 import ActivityResponse from '../../interfaces/ActivityResponse';
+import UserAvatar from '../../components/UserAvatar'
 
 const useStyles = makeStyles({
     cutText: {
@@ -53,8 +54,7 @@ const ActivityCard = ({
     const participants = new String(activity.registeredParticipants.length);
     const fullCapacity = new String(activity.capacity);
     const comparison = new String(participants + '/' + fullCapacity);
-    const date = new Date(activity.time);
-    const eventTime = new String(date).substring(0, 24);
+    const date = new Date(activity.time).toLocaleDateString() + ', ' + new Date(activity.time - 7200000).toLocaleTimeString();
     const classes = useStyles();
 
     const onClickActivity = () => {
@@ -62,6 +62,16 @@ const ActivityCard = ({
         console.log(activity)
         setActivity(activity);
     };
+
+    const showActivityLevel = (actLevel: string) => {
+        if (actLevel === 'HIGH') {
+            return 'Høyt'
+        } else if (actLevel === 'MEDIUM') {
+            return 'Middels'
+        } else if (actLevel === 'LOW') {
+            return 'Lavt'
+        }
+    }
 
     const picture = (): any => {
         if (activity.image.length > 40) {
@@ -114,7 +124,7 @@ const ActivityCard = ({
                             <Chip
                                 variant="outlined"
                                 size="small"
-                                label={activity.activityLevel}
+                                label={showActivityLevel(activity.activityLevel)}
                                 style={{
                                     backgroundColor: '#ffa6a0',
                                     borderBlockEndWidth: '0px',
@@ -128,7 +138,7 @@ const ActivityCard = ({
                     <Grid container wrap="nowrap" spacing={2}>
                         <Grid item>
                             <Tooltip title={activity.user.firstname}>
-                                <Avatar src={activity.user.image}>{activity.user.firstname}</Avatar>
+                                <UserAvatar user={activity.user} type='small'></UserAvatar>
                             </Tooltip>
                         </Grid>
                         <Grid item xs>
@@ -137,7 +147,7 @@ const ActivityCard = ({
                                 color="textSecondary"
                                 component="p"
                             >
-                                {eventTime}
+                                {date}
                             </Typography>
                         </Grid>
                     </Grid>

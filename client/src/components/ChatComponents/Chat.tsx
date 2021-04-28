@@ -41,6 +41,7 @@ const Flex = styled.div`
     margin: 1rem;
 `;
 
+
 interface Props {
     open: boolean;
     close: () => void;
@@ -166,49 +167,58 @@ const Chat = ({ open, close, activityId }: Props) => {
 
     return (
         <Drawer variant="persistent" anchor="right" open={open}>
-            {subscribed && (
-                <Container>
-                    <Flex>
-                        <h2>CHAT</h2>
-                        <Button
-                            onClick={() => {
-                                close();
-                                if (socket.current) {
-                                    socket.current.disconnect();
-                                }
-                            }}
-                        >
-                            Lukk
-                        </Button>
-                    </Flex>
-                    <MessageBox id="chat">{mapHistoryAndChat()}</MessageBox>
-                    <SendMessage>
-                        <TextField
-                            onKeyDown={onKeyDown}
-                            onChange={onChangeMessage}
-                            value={message}
-                            style={{
-                                width: '90%',
-                                marginLeft: '1rem',
-                                height: '5rem',
-                            }}
-                            label="Send Melding"
-                        ></TextField>
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            style={{
-                                width: '10%',
-                                height: '10%',
-                                marginLeft: '0.5rem',
-                            }}
-                            onClick={sendMessage}
-                        >
-                            <SendRoundedIcon />
-                        </Button>
-                    </SendMessage>
-                </Container>
-            )}
+            <Container>
+                <Flex>
+                    <h2>CHAT</h2>
+                    <Button
+                        onClick={() => {
+                            close();
+                            if (socket.current) {
+                                socket.current.disconnect();
+                            }
+                        }}
+                    >
+                        Lukk
+                    </Button>
+                </Flex>
+                <MessageBox id="chat">
+                    {chat.map((msg, index) => (
+                        <StyledMessage
+                            key={index}
+                            name={msg.user.firstName}
+                            time={msg.timestamp}
+                            userId={msg.user.userId}
+                            message={msg.message}
+                            image={msg.user.image}
+                        ></StyledMessage>
+                    ))}
+                </MessageBox>
+                <SendMessage>
+                    <TextField
+                        onKeyDown={onKeyDown}
+                        onChange={onChangeMessage}
+                        value={message}
+                        style={{
+                            width: '90%',
+                            marginLeft: '1rem',
+                            height: '5rem',
+                        }}
+                        label="Send Melding"
+                    ></TextField>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        style={{
+                            width: '10%',
+                            height: '10%',
+                            marginLeft: '0.5rem',
+                        }}
+                        onClick={sendMessage}
+                    >
+                        <SendRoundedIcon />
+                    </Button>
+                </SendMessage>
+            </Container>
         </Drawer>
     );
 };

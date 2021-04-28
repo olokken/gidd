@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import User from '../../interfaces/User';
 import { Avatar, Card, makeStyles } from '@material-ui/core';
 import './GroupLeaderboard.css';
+import UserAvatar from '../UserAvatar';
 
 const useStyles = makeStyles({
     root: {
@@ -109,7 +110,7 @@ const GroupLeaderboard: React.FC<Props> = ({ title, users }: Props) => {
                             flex: '1',
                         }}
                     >
-                        <Avatar src={user.image} />
+                        <UserAvatar user={user} type="small"></UserAvatar>
                         <h6 className="groupleaderboard__name">
                             {user.firstName}
                         </h6>

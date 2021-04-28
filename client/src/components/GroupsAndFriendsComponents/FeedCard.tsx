@@ -27,6 +27,7 @@ import User from '../../interfaces/User';
 import { UserContext } from '../../UserContext';
 import { useContext } from 'react';
 import ActivityInformation from '../ActivityComponents/ActivityInformation';
+import UserAvatar from '../UserAvatar';
 
 const StyledHeader = styled.h2`
     text-align: center;
@@ -182,18 +183,19 @@ export default function FeedCard({
                 style={{
                     width: '40%',
                     float: 'right',
+                    maxHeight: '160px',
+                    overflow: 'auto'
                 }}
             >
-                <ListSubheader>GRUPPEMEDLEMMER</ListSubheader>
                 {selectedGroup.users.map((user, index) => (
                     <ListItem
                         button
                         key={index}
                         onClick={() => handleUserClicked(user)}
                     >
-                        <Avatar></Avatar>
+                        <UserAvatar user={user} type="small"></UserAvatar>
                         {Object.values(user)[0] ==
-                        Object.values(selectedGroup.owner)[0] ? (
+                            Object.values(selectedGroup.owner)[0] ? (
                             <ListItemText
                                 primary={
                                     user.firstName +
