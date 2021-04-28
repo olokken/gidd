@@ -1,6 +1,8 @@
 package IDATT2106.team6.Gidd.models;
 
 import IDATT2106.team6.Gidd.util.Logger;
+
+import java.rmi.activation.ActivationID;
 import java.util.Objects;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
@@ -46,6 +48,8 @@ public class User {
     @CascadeOnDelete
     @OneToOne(targetEntity = Image.class, fetch = FetchType.EAGER)
     private Image image;
+    @OneToMany
+    private List<Activity> notifications;
 
     public User(int id, String email, String password,
                 String firstName, String surname,
@@ -221,6 +225,29 @@ public class User {
         this.image = image;
     }
 
+    public void addNotification(Activity activity){
+        if(!notifications.contains(activity)){
+            notifications.add(activity);
+        }
+    }
+
+    public boolean removeNotification(Activity activity) {
+        if (notifications.contains(activity)){ ;
+            return notifications.remove(activity);
+        }
+        return false;
+    }
+
+    public String getNotificationIds(){
+        StringBuilder id = new StringBuilder();
+        for (Activity a : notifications) {
+            id.append(a.getActivityId()).append(",");
+        }
+        id.deleteCharAt(id.length() - 1);
+        return id.toString();
+    }
+
+    //todo probably better to return activity objects, but will cause infinite recursion rn
     public String toJSON() {
         return "\n  {" +
             "\n     \"userId\":" + userId + "," +
@@ -230,7 +257,8 @@ public class User {
             "\n     \"phoneNumber\":" + phoneNumber +"," +
             "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
             "\n     \"image\":" + '\"' + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes())  + '\"' + "," +
-            "\n     \"points\":" + points +
+            "\n     \"points\":" + points + "," +
+            "\n     \"notifications\":\"" + getNotificationIds() + "\"" +
             "\n }";
     }
 
@@ -243,6 +271,7 @@ public class User {
                 "\n     \"phoneNumber\":" + phoneNumber +"," +
                 "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
                 "\n     \"points\":" + points + "," +
+                "\n     \"notifications\":\"" + getNotificationIds() + "\"," +
                 "\n     \"image\":" + '\"' + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' + "," +
                 "\n     \"provider\":" + '\"' + authProvider + '\"' +
                 "\n }";

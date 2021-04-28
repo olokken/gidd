@@ -85,7 +85,7 @@ public class ChatController {
     @MessageMapping("/chat/{activityId}")
     public void sendMessage(@DestinationVariable Integer activityId, @Payload String message) throws ParseException {
         log.info("recieved chat message to id: " + activityId + " with message: " + message);
-
+        //todo return error when recieving invalid activity id
         JSONParser parser = new JSONParser();
         JSONObject chatJson = (JSONObject) parser.parse(message);
 
@@ -94,7 +94,7 @@ public class ChatController {
 
         chatJson.put("user", user);
         chatJson.remove("userId");
-
+        //todo handle illegalargument in case of user not connected to activity
         Chat newChat = new Chat(activity, user, String.valueOf(chatJson.get("message")));
         String json = "{" +
                 "\"user\":" + user.toJSON() +
