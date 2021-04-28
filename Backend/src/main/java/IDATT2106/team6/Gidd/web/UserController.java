@@ -991,7 +991,7 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/rating")
-    public ResponseEntity giveRating(@RequestBody HashMap<String, Object> map){
+    public ResponseEntity giveRating(@RequestBody HashMap<String, Object> map, @PathVariable Integer userId){
         log.debug("Received mapping to 'user/{userId}/rating'");
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         int rating = Integer.parseInt(map.get("rating").toString());
