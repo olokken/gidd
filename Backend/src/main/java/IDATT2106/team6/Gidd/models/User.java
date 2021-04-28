@@ -245,13 +245,17 @@ public class User {
     public String getNotificationIds() {
         StringBuilder id = new StringBuilder();
         id.append("[");
-        for (Activity a : notifications) {
-            id.append(a.toNotification()).append(",");
+
+        if(notifications != null) {
+            for (Activity a : notifications) {
+                id.append(a.toNotification()).append(",");
+            }
         }
         id.append("]");
         if (id.length() > 2) {
             id.deleteCharAt(id.length() - 2);
         }
+
         return id.toString();
     }
 
