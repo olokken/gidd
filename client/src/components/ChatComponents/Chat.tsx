@@ -56,6 +56,7 @@ const Chat = ({ open, close, activityId }: Props) => {
     const [subscribed, setSubscribed] = useState<boolean>(true);
 
     useEffect(() => {
+        setChat([]);
         if (open) {
             axios.get(`/chat/${activityId}`).then((response) => {
                 let sortedList: MessageResponse[] = response.data['messages'];
