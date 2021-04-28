@@ -13,6 +13,7 @@ import {
     Button,
 } from '@material-ui/core';
 import { Edit, Delete } from '@material-ui/icons';
+import ChatIcon from '@material-ui/icons/Chat';
 import React, { useContext, useEffect, useState } from 'react';
 import { Marker } from 'react-google-maps';
 import hiking from '../../assets/hiking.jpg';
@@ -168,12 +169,12 @@ const ActivityInformation = ({
         }
     };
 
-    const picture = () : any => {
+    const picture = (): any => {
         if (activity.image.length > 40) {
-            return activity.image; 
+            return activity.image;
         }
-            return hiking; 
-    }; 
+        return hiking;
+    };
 
     const mapEquipments = activity.equipments.map(
         (eq: Equipment, index: number) => {
@@ -248,8 +249,11 @@ const ActivityInformation = ({
                         {!isOwner && registerBtn()}
                     </Grid>
                     {registration == 1 && (
-                        <Button onClick={() => setOpenChat(true)}>
-                            Åpen chat
+                        <Button
+                            onClick={() => setOpenChat(true)}
+                            className={classes.otherButton}
+                        >
+                            <ChatIcon></ChatIcon>
                         </Button>
                     )}
                 </Grid>

@@ -51,7 +51,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const [currentUser, setCurrentUser] = useState<User>({
         firstName: '',
         surname: '',
-        userID: '',
+        userId: '',
         email: '',
         image: '',
         password: '',
@@ -353,7 +353,12 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const onClickUpdateUser = () => {
         console.log('hei hei');
         const putUrl = `/user/some/${user}`;
-
+        const token = localStorage.getItem('token');
+        const config = {
+            headers: {
+                token: token,
+            },
+        };
         if (!checkInput(editPass) || !checkInput(confirmPass)) {
             alert('Feil input i passord');
         } else if (editPass != confirmPass) {
@@ -415,7 +420,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                     {
                         firstName: sendUser.firstName,
                         surname: sendUser.surname,
-                        userID: sendUser.userID,
+                        userId: sendUser.userId,
                         email: sendUser.email,
                         image: sendUser.image,
                         password: oldPassword,

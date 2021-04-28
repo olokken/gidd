@@ -184,15 +184,11 @@ const Navbar = () => {
         loadPending();
     }, [user]);
 
-    /* const setNotificationData = () => {
-        setTimeout(()=>{
-            setNotifications(friendRequests.length + pendingFriendRequests.length)
-            console.log('notdata: ' + (friendRequests.length + pendingFriendRequests.length) );
-            if(notifications > 0){
-                setInvisible(false)
-            }else{setInvisible(true)}
-        },5000);
-    }*/
+    const handleDrawerOpen = () =>
+        setState((prevState) => ({ ...prevState, drawerOpen: true }));
+
+    const handleDrawerClose = () =>
+        setState((prevState) => ({ ...prevState, drawerOpen: false }));
 
     const declineRequest = (request: User) => {
         deleteFriend(Object.values(request)[0]);
@@ -273,39 +269,60 @@ const Navbar = () => {
                     <br />
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToHomePage}
+                        onClick={() => {
+                            changeToHomePage();
+                            handleDrawerClose();
+                        }}
                     >
                         <DirectionsRunIcon />
                         Aktiviteter
                     </Button>
-                    <Button style={{ padding: '10px' }} onClick={changeToMap}>
+                    <Button
+                        style={{ padding: '10px' }}
+                        onClick={() => {
+                            changeToMap();
+                            handleDrawerClose();
+                        }}
+                    >
                         <MapIcon />
                         Kart
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToCalender}
+                        onClick={() => {
+                            handleDrawerClose();
+                            changeToCalender();
+                        }}
                     >
                         {' '}
                         <CalendarTodayIcon /> Kalender
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToGroupsAndFriends}
+                        onClick={() => {
+                            changeToGroupsAndFriends();
+                            handleDrawerClose();
+                        }}
                     >
                         <PeopleIcon />
                         Grupper og venner
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={changeToLeaderboard}
+                        onClick={() => {
+                            changeToLeaderboard();
+                            handleDrawerClose();
+                        }}
                     >
                         <EmojiEventsIcon />
                         Leaderboard
                     </Button>
                     <Button
                         style={{ padding: '10px' }}
-                        onClick={() => setOpenUser(!openUser)}
+                        onClick={() => {
+                            setOpenUser(!openUser);
+                            handleDrawerClose();
+                        }}
                     >
                         <AccountBoxIcon />
                         Min bruker
@@ -331,11 +348,6 @@ const Navbar = () => {
             );
         };
 
-        const handleDrawerOpen = () =>
-            setState((prevState) => ({ ...prevState, drawerOpen: true }));
-
-        const handleDrawerClose = () =>
-            setState((prevState) => ({ ...prevState, drawerOpen: false }));
         return (
             <Toolbar
                 style={{ display: 'flex', justifyContent: 'space-between' }}
@@ -494,7 +506,7 @@ const Navbar = () => {
                                 width: '300px',
                                 fontSize: '15px',
                             }}
-                            key={request.userID}
+                            key={request.userId}
                             onClick={handleCloseMenu}
                         >
                             <div>
@@ -535,7 +547,7 @@ const Navbar = () => {
                                 width: '300px',
                                 fontSize: '15px',
                             }}
-                            key={pending.userID}
+                            key={pending.userId}
                             onClick={handleCloseMenu}
                         >
                             <div>

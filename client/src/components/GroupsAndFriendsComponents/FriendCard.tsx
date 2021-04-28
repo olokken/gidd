@@ -11,7 +11,7 @@ import {
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import logo from '../../assets/logo.png';
-import User  from '../../interfaces/User';
+import User from '../../interfaces/User';
 import Popup from '../Popup';
 import UserProfile from './UserProfile';
 
@@ -36,7 +36,7 @@ interface Props {
 }
 
 
-const FriendCard = ({friend, updateFriends}: Props) =>{
+const FriendCard = ({ friend, updateFriends }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
 
     const onCardClick = () => {
@@ -44,47 +44,41 @@ const FriendCard = ({friend, updateFriends}: Props) =>{
     }
     return (
         <div>
-        <Card
-            style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
-            onClick={onCardClick}
-        >
-           
-            <CardInformation>
-                <Grid container spacing={2}>
-                <Grid item xs={3}>
-                    <CardMedia
-                        component="img"
-                        alt={'Image related to the activity' }
-                        height="40px"
-                        width="40px"
-                        image={friend.image} // hente bildet frå aktiviteta
-                    />
-                </Grid>
-                <Grid item >
-                    <Typography
-                        gutterBottom
-                        variant="subtitle2"
-                        component="h3"
-                    >
-                        {friend.firstName + ' ' + friend.surname}
-                    </Typography>
-                </Grid>
-                </Grid>
-            </CardInformation>
-        </Card>
-         <Popup
-        title={friend.firstName + ' ' + friend.surname}
-        openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
-    >
-        <UserProfile
-            updateFriends={updateFriends}
-            openPopup={openPopup}
-            setOpenPopup={setOpenPopup}
-            friend={friend}
-        />
-    </Popup>
-    </div>
+            <Card
+                style={{ minWidth: '100px', maxWidth: '100%', margin: '5px' }}
+                onClick={onCardClick}
+            >
+
+                <CardInformation>
+                    <Grid container spacing={2}>
+                        <Grid item xs={3}>
+                            <Avatar src={friend.image}></Avatar>
+                        </Grid>
+                        <Grid item >
+                            <Typography
+                                gutterBottom
+                                variant="subtitle2"
+                                component="h3"
+                            >
+                                {friend.firstName + ' ' + friend.surname}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                </CardInformation>
+            </Card>
+            <Popup
+                title={friend.firstName + ' ' + friend.surname}
+                openPopup={openPopup}
+                setOpenPopup={setOpenPopup}
+            >
+                <UserProfile
+                    updateFriends={updateFriends}
+                    openPopup={openPopup}
+                    setOpenPopup={setOpenPopup}
+                    friend={friend}
+                />
+            </Popup>
+        </div>
     );
 };
 

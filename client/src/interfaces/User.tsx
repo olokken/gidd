@@ -10,7 +10,7 @@
 export default interface User {
     firstName: string;
     surname: string;
-    userID: string;
+    userId: string;
     email: string;
     image: string;
     password: string;

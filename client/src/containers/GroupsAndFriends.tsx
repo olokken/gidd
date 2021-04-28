@@ -41,7 +41,7 @@ const GroupsAndFriends = () => {
         owner: {
             firstName: '',
             surname: '',
-            userID: '',
+            userId: '',
             email: '',
             image: '',
             password: '',
@@ -78,9 +78,10 @@ const GroupsAndFriends = () => {
     //henter alle dine grupper
     useEffect(() => {
         updateGroups();
-    }, [groups, selectedGroup]);
+    }, [selectedGroup]);
 
     const updateGroups = () => {
+        console.log('oppdaterer')
         const url = `user/${user}/group`
         axios.get(url).then(response => {
             setGroups(response.data['groups'])
@@ -123,7 +124,7 @@ const GroupsAndFriends = () => {
                     owner: {
                         firstName: '',
                         surname: '',
-                        userID: '',
+                        userId: '',
                         email: '',
                         image: '',
                         password: '',
