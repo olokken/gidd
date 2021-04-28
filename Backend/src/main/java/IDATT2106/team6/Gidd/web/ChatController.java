@@ -85,36 +85,41 @@ public class ChatController {
     @MessageMapping("/chat/{activityId}")
     public void sendMessage(@DestinationVariable Integer activityId, @Payload String message) throws ParseException {
         log.info("recieved chat message to id: " + activityId + " with message: " + message);
-        //todo return error when recieving invalid activity id
         JSONParser parser = new JSONParser();
         JSONObject chatJson = (JSONObject) parser.parse(message);
 
         Activity activity = activityService.getActivity(activityId);
         User user = userService.getUser(chatJson.getAsNumber("userId").intValue());
 
-        chatJson.put("user", user);
-        chatJson.remove("userId");
-        //todo handle illegalargument in case of user not connected to activity
-        Chat newChat = new Chat(activity, user, String.valueOf(chatJson.get("message")));
-        String json = "{" +
-                "\"user\":" + user.toJSON() +
-                ",\"message\":" + "\"" + chatJson.get("message") + "\"" +
-                ",\"timestamp\":" + newChat.getTimeStamp().getTime() +
-                "}";
+        if(activity != null) {
+            Chat newChat;
+            chatJson.put("user", user);
+            chatJson.remove("userId");
+            try {
+                newChat = new Chat(activity, user, String.valueOf(chatJson.get("message")));
+            } catch (IllegalArgumentException e) {
+                log.error("user not connected to activity, discarding message");
+                return;
+            }
+            String json = "{" +
+                    "\"user\":" + user.toJSON() +
+                    ",\"message\":" + "\"" + chatJson.get("message") + "\"" +
+                    ",\"timestamp\":" + newChat.getTimeStamp().getTime() +
+                    "}";
 
-        int counter = 0;
-        boolean succeeded;
-        do{
-            newChat.setChatId(getRandomID());
-            //avoid infinte loop incase of database error
-            succeeded = chatService.saveChat(newChat);
-        } while(counter++ < 5 && !succeeded);
-        //if the counter did not reach threshold, save chat succeeded
-        if (succeeded) {
-            template.convertAndSend("/client/chat/" + activityId, json);
-        }
-        else {
-            template.convertAndSend("{\"error\":\"could not save chat message\"");
+            int counter = 0;
+            boolean succeeded;
+            do {
+                newChat.setChatId(getRandomID());
+                //avoid infinte loop incase of database error
+                succeeded = chatService.saveChat(newChat);
+            } while (counter++ < 5 && !succeeded);
+            //if the counter did not reach threshold, save chat succeeded
+            if (succeeded) {
+                template.convertAndSend("/client/chat/" + activityId, json);
+            } else {
+                template.convertAndSend("{\"error\":\"could not save chat message\"");
+            }
         }
     }
 }

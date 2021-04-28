@@ -95,6 +95,7 @@ public class UserRepo extends GiddRepo {
             User user = findUser(userId);
 
             if(user != null){
+                System.out.println("kommer hit wpogsjgdslkjga ");
                 log.info("found user " + userId +  " to be deleted");
                 List<Rating> ratings = em.createNativeQuery("SELECT * FROM RATING WHERE user_id = ?1", Rating.class)
                         .setParameter(1, userId).getResultList();

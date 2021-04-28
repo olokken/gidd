@@ -29,7 +29,6 @@ public class Activity implements Cloneable{
     @JoinColumn(name = "user_id")
     private User user;
     private int capacity;
-    //Ikke laget klasse. Lar den være for nå
     @ManyToOne(targetEntity = FriendGroup.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id")
     private FriendGroup group;
