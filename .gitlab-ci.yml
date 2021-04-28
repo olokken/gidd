@@ -16,9 +16,8 @@ backend-test:
   script:
     - cd Backend
     - touch src/main/resources/application.properties
-    - echo "$application" > src/main/resources/application.properties
-    - cat src/main/resources/application.properties
-    #- mvn test
+    - echo "$application" > $(pwd)/src/main/resources/application.properties
+    - mvn test
   needs: ["backend-build"]
 
 deploy:
