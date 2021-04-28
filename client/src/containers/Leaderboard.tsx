@@ -15,13 +15,10 @@ const useStyles = makeStyles({
 
 function Leaderboard() {
     const classes = useStyles();
-    const [groups, setGroups] = useState<Group[]>([]);
     const { user, seUser } = useContext(UserContext);
     const [yourGroups, setYourGroups] = useState<Group[]>([]);
     const [value, setValue] = React.useState(0);
-    const [allUsers, setAllUsers] = useState<User[]>([]);
     const [friends, setFriends] = useState<User[]>([]);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [selectedGroup, setSelectedGroup] = useState<Group>({
         owner: {
             firstName: '',
@@ -55,18 +52,6 @@ function Leaderboard() {
         return request;
     };
 
-    const getAllGroups = async () => {
-        const request = await axios.get('/group');
-        setGroups(request.data.groups);
-        return request;
-    };
-
-    const getAllUsers = async () => {
-        const request = await axios.get('/user');
-        setAllUsers(request.data);
-        return request;
-    };
-
     const handleChange = (
         event: ChangeEvent<Record<string, unknown>>,
         newValue: number
@@ -74,33 +59,17 @@ function Leaderboard() {
         setValue(newValue);
     };
 
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
     const handleGroupClicked = (group: Group) => {
         setSelectedGroup(group);
     };
 
     useEffect(() => {
-        getYourGroups();
         Promise.all([getFriends(), getUser()]).then((response) => {
             setFriends(response[0].data.users);
             setFriends((friends) => [...friends, response[1].data]);
         });
-        getAllGroups();
-        getAllUsers();
+        getYourGroups();
     }, []);
-
-    const renderAllGroups = groups.map((group, index: number) => {
-        return (
-            <GroupLeaderboard
-                key={index}
-                users={group.users}
-                title={group.groupName}
-            />
-        );
-    });
 
     return (
         <div style={{ margin: '1rem' }}>
@@ -113,22 +82,39 @@ function Leaderboard() {
                         textColor="primary"
                         centered
                     >
-                        <Tab onClick={handleClick} label="Dine grupper"></Tab>
                         <Tab label="Dine venner"></Tab>
-                        <Tab label="Alle grupper"></Tab>
-                        <Tab label="Alle brukere"></Tab>
+                        <Tab label="Dine grupper"></Tab>
                     </Tabs>
                 </Paper>
             </div>
             <div>
-                {value === 0 && (
+                <div>
+                    {value === 0 && (
+                        <div>
+                            <GroupLeaderboard
+                                users={friends}
+                                title="Dine venner"
+                            />
+                        </div>
+                    )}
+                </div>
+                {value === 1 && (
                     <div style={{ display: 'flex' }}>
                         <div style={{ width: '20%' }}>
-                            <h2>Dine grupper</h2>
-                            <Groups
-                                groups={yourGroups}
-                                handleGroupClicked={handleGroupClicked}
-                            />
+                            {yourGroups.length === 0 ? (
+                                <h5>
+                                    Du har ingen grupper enda. Vennligst legg
+                                    til under <q>grupper og venner</q>
+                                </h5>
+                            ) : (
+                                <div>
+                                    <h2>Dine grupper</h2>
+                                    <Groups
+                                        groups={yourGroups}
+                                        handleGroupClicked={handleGroupClicked}
+                                    />
+                                </div>
+                            )}
                         </div>
                         {selectedGroup.groupId !== '' && (
                             <div style={{ flex: '1' }}>
@@ -138,24 +124,6 @@ function Leaderboard() {
                                 />
                             </div>
                         )}
-                    </div>
-                )}
-            </div>
-            <div>
-                {value === 1 && (
-                    <div>
-                        <GroupLeaderboard users={friends} title="Dine venner" />
-                    </div>
-                )}
-            </div>
-            <div>{value === 2 && <div>{renderAllGroups}</div>}</div>
-            <div>
-                {value === 3 && (
-                    <div>
-                        <GroupLeaderboard
-                            users={allUsers}
-                            title="Alle brukere"
-                        />
                     </div>
                 )}
             </div>
