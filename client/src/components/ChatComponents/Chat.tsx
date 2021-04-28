@@ -50,30 +50,35 @@ interface Props {
 const Chat = ({ open, close, activityId }: Props) => {
     const [message, setMessage] = useState<string>();
     const { user } = useContext(UserContext);
+    const [chatHistory, setChatHistory] = useState<MessageResponse[]>([]);
     const [chat, setChat] = useState<MessageResponse[]>([]);
     const socket = useRef<any>();
-    const [subscribed, setSubscribed] = useState<boolean>(false);
+    const [subscribed, setSubscribed] = useState<boolean>(true);
 
     useEffect(() => {
         if (open) {
-            axios
-                .get(`/chat/${activityId}`)
-                .then((response) => {
-                    let sortedList: MessageResponse[] =
-                        response.data['messages'];
-                    sortedList = [...sortedList].sort(
-                        (mes1, mes2) => mes1.timestamp - mes2.timestamp
-                    );
-                    setChat(sortedList);
-                })
-                .then(() => socketConn());
+            axios.get(`/chat/${activityId}`).then((response) => {
+                let sortedList: MessageResponse[] = response.data['messages'];
+                sortedList = [...sortedList].sort(
+                    (mes1, mes2) => mes1.timestamp - mes2.timestamp
+                );
+                setChatHistory(sortedList);
+            });
+            socketConn();
         }
     }, [open]);
 
     const socketConn = async () => {
         const so = await new SockJS('http://13.51.58.86:8080/ws');
         socket.current = await Stomp.over(so);
-        socket.current.connect();
+        socket.current.connect({}, () => {
+            socket.current.subscribe(
+                `/client/chat/${activityId}`,
+                (event: any) => {
+                    setChat([...chat, JSON.parse(event.body)]);
+                }
+            );
+        });
     };
 
     const subscribeAndOpen = async () => {
@@ -87,12 +92,13 @@ const Chat = ({ open, close, activityId }: Props) => {
                     }
                 );
             }
-            setSubscribed(true);
+            setTimeout(() => setSubscribed(true), 1000);
         }
     };
 
     useEffect(() => {
         subscribeAndOpen();
+        console.log(chat.length);
     }, [socket, chat]);
 
     const sendMessage = () => {
@@ -117,6 +123,32 @@ const Chat = ({ open, close, activityId }: Props) => {
         if (e.code === 'Enter') {
             sendMessage();
         }
+    };
+
+    const mapHistoryAndChat = (): React.ReactElement[] => {
+        const history: React.ReactElement[] = chatHistory.map((msg, index) => {
+            return (
+                <StyledMessage
+                    key={index}
+                    name={msg.user.firstName}
+                    time={msg.timestamp}
+                    userId={msg.user.userId}
+                    message={msg.message}
+                ></StyledMessage>
+            );
+        });
+        const newMessages: React.ReactElement[] = chat.map((msg, index) => {
+            return (
+                <StyledMessage
+                    key={index}
+                    name={msg.user.firstName}
+                    time={msg.timestamp}
+                    userId={msg.user.userId}
+                    message={msg.message}
+                ></StyledMessage>
+            );
+        });
+        return [...history, ...newMessages];
     };
 
     const scrollToBottom = () => {
@@ -148,17 +180,7 @@ const Chat = ({ open, close, activityId }: Props) => {
                             Lukk
                         </Button>
                     </Flex>
-                    <MessageBox id="chat">
-                        {chat.map((msg, index) => (
-                            <StyledMessage
-                                key={index}
-                                name={msg.user.firstName}
-                                time={msg.timestamp}
-                                userId={msg.user.userId}
-                                message={msg.message}
-                            ></StyledMessage>
-                        ))}
-                    </MessageBox>
+                    <MessageBox id="chat">{mapHistoryAndChat()}</MessageBox>
                     <SendMessage>
                         <TextField
                             onKeyDown={onKeyDown}
