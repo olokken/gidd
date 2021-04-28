@@ -75,14 +75,20 @@ const PlayerRatingForm = ({ user, openPopup, setOpenPopup }: Props) => {
     };
 
     const onSendRating = () => {
-        const url = `${user.userId}/rating`
+        console.log({
+            userId: user.userId,
+            //fromUserId: currUser,
+            rating: rating
+        })
+        const url = `/user/${user.userId}/rating`
         axios.post(url, {
             userId: user.userId,
-            fromUserId: currUser,
+            //fromUserId: currUser,
             rating: rating
         }).then((response => {
             console.log(response)
-        }))
+        })).catch(error => 
+            console.log('Kunne ikke gi rating' + error.message))
     }
 
     return (

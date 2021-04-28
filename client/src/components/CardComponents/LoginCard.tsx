@@ -125,6 +125,7 @@ const LoginCard = ({
                     />
                 </FacebookContainer>
                 <GoogleContainer>
+
                     <GoogleLogin
                         clientId="829161936578-7u42ghop2aqmgs3e4n98907euik21jrt.apps.googleusercontent.com"
                         render={(renderProps) => (

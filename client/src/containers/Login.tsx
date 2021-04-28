@@ -71,6 +71,7 @@ const Login = () => {
                     }).then(() => {
                         history.push('/Activities');
                     }).catch(error => {
+                        localStorage.clear();
                         console.log('Feil med token: ' + error.message)
                     })
                 })
@@ -140,6 +141,7 @@ const Login = () => {
         }).then(() => {
             history.push('/Activities');
         }).catch(error => {
+            localStorage.clear();
             console.log(error);
         })
     };
@@ -169,6 +171,7 @@ const Login = () => {
         }).then(() => {
             history.push('/Activities');
         }).catch(error => {
+            localStorage.clear();
             console.log(error.message);
         })
     };

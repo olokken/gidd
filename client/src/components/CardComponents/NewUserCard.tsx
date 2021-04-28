@@ -47,21 +47,21 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel
       <h2>Registrer en ny bruker</h2>
       <form>
         <TextField
-          style={{ width: '100%', marginBottom: 24 }}
+          style={{ width: '100%', marginBottom: 12 }}
           label="Fornavn"
           color="secondary"
           variant="outlined"
           onChange={onChangeFirstName}
         />
         <TextField
-          style={{ width: '100%', marginBottom: 24 }}
+          style={{ width: '100%', marginBottom: 12 }}
           label="Etternavn"
           color="secondary"
           variant="outlined"
           onChange={onChangeSurname}
         />
         <TextField
-          style={{ width: '100%', marginBottom: 24 }}
+          style={{ width: '100%', marginBottom: 12 }}
           label="E-mail"
           color="secondary"
           variant="outlined"
@@ -77,7 +77,7 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel
           }}
         />
         <TextField
-          style={{ width: '100%', marginBottom: 24 }}
+          style={{ width: '100%', marginBottom: 12 }}
           select
           color='secondary'
           label="Velg ditt aktivitetsnivå"
@@ -92,7 +92,7 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel
           ))}
         </TextField>
         <TextField
-          style={{ width: '100%', marginBottom: 24 }}
+          style={{ width: '100%', marginBottom: 12 }}
           label="Telefonnummer"
           color="secondary"
           variant="outlined"
@@ -100,8 +100,9 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel
         />
 
         <TextField
-          style={{ width: '100%', marginBottom: 24 }}
+          style={{ width: '100%', marginBottom: 12 }}
           type="file"
+          color="secondary"
           label="Bilde"
           onChange={onChangeImage}
           InputLabelProps={{
@@ -111,7 +112,7 @@ const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel
         />
 
         <TextField
-          style={{ width: '100%', marginBottom: 24 }}
+          style={{ width: '100%', marginBottom: 12 }}
           label="Passord"
           color="secondary"
           variant="outlined"

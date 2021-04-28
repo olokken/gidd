@@ -27,6 +27,7 @@ import User from '../../interfaces/User';
 import { UserContext } from '../../UserContext';
 import { useContext } from 'react';
 import ActivityInformation from '../ActivityComponents/ActivityInformation';
+import UserAvatar from '../UserAvatar';
 
 const StyledHeader = styled.h2`
     text-align: center;
@@ -192,7 +193,7 @@ export default function FeedCard({
                         key={index}
                         onClick={() => handleUserClicked(user)}
                     >
-                        <Avatar src={user.image}></Avatar>
+                        <UserAvatar user={user} type="small"></UserAvatar>
                         {Object.values(user)[0] ==
                             Object.values(selectedGroup.owner)[0] ? (
                             <ListItemText

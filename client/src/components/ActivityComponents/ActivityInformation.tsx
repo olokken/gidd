@@ -31,6 +31,7 @@ import ActivityForm from './ActivityForm';
 import Chat from '../ChatComponents/Chat';
 import User from '../../interfaces/User';
 import PlayerRatingForm from '../Forms/PlayerRatingForm'
+import UserAvatar from '../UserAvatar';
 
 interface Props {
     activity: ActivityResponse;
@@ -90,7 +91,6 @@ const ActivityInformation = ({
     const [currentAct, setCurrentAct] = useState<ActivityResponse>(activity);
     const classes = useStyles();
     const date = new Date(activity.time).toLocaleDateString() + ' ' + new Date(activity.time - 7200000).toLocaleTimeString();
-    //Registration is 0 if registration is posible, 1 if you are already registered and 2 if the activity is ful
     const [registration, setRegistration] = useState<number>(1);
     const [isOwner, setIsOwner] = useState<boolean>(false);
     const { user } = useContext(UserContext);
@@ -234,7 +234,7 @@ const ActivityInformation = ({
                 key={index}
                 onClick={() => { if (user !== par['userId'].toString()) onParticipantClicked(par) }}
             >
-                <Avatar src={par['image']}></Avatar>
+                <UserAvatar user={user} type='small'></UserAvatar>
                 <ListItemText
                     primary={par['firstName'] + ' ' + par['surname']}
                 />

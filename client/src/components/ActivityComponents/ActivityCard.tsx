@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import hiking from '../../assets/hiking.jpg';
 import ActivityResponse from '../../interfaces/ActivityResponse';
+import UserAvatar from '../../components/UserAvatar'
 
 const useStyles = makeStyles({
     cutText: {
@@ -137,7 +138,7 @@ const ActivityCard = ({
                     <Grid container wrap="nowrap" spacing={2}>
                         <Grid item>
                             <Tooltip title={activity.user.firstname}>
-                                <Avatar src={activity.user.image}>{activity.user.firstname}</Avatar>
+                                <UserAvatar user={activity.user} type='small'></UserAvatar>
                             </Tooltip>
                         </Grid>
                         <Grid item xs>

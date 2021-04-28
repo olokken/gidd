@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { TextField, Button } from '@material-ui/core';
-import Select from 'react-select';
 import FriendCard from './FriendCard';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddBox from '@material-ui/icons/AddBox';
@@ -62,6 +61,7 @@ const FriendList = ({ users, friends, updateFriends }: Props) => {
                 alert('Du er allerede venn med denne brukeren');
             });
     };
+''
 
     return (
         <StyledContainer>
