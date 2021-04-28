@@ -1,15 +1,22 @@
 import {
     Avatar,
     Button,
+    Card,
+    CardHeader,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Divider,
+    IconButton,
     List,
     ListItem,
     ListItemText,
     ListSubheader,
+    makeStyles,
+    Typography,
+    withStyles,
 } from '@material-ui/core';
 import React from 'react';
 import styled from 'styled-components';
@@ -28,6 +35,7 @@ import { UserContext } from '../../UserContext';
 import { useContext } from 'react';
 import ActivityInformation from '../ActivityComponents/ActivityInformation';
 import UserAvatar from '../UserAvatar';
+import GroupLeaderboard from '../LeaderboardComponents/GroupLeaderboard';
 
 const StyledHeader = styled.h2`
     text-align: center;
@@ -35,19 +43,35 @@ const StyledHeader = styled.h2`
 `;
 
 const StyledParagraph = styled.p`
-    font-size: 20px;
+    font-size: 10px;
 `;
 
 const FeedContainer = styled.div`
     margin-left: 20px;
     min-height: 60%;
 `;
+
+const StyledCard = withStyles({
+    root: {
+        marginBottom: '1rem',
+        marginLeft: '1rem',
+        marginTop: '1rem',
+        minHeigth: '60%',
+    },
+})(Card);
+
+const ActivityDiv = styled.div`
+    margin: 5%;
+    width: 50%;
+    height: 60vh;
+`;
+
 const TransformDiv = styled.div`
     transition: transform 450ms;
     min-width: 200px;
-    max-width: 40%;
-    max-height: 40%;
-    margin: 5px;
+    max-width: 20%;
+    max-height: 20%;
+    margin-top: 5%;
     margin-bottom: 11rem;
 
     :hover {
@@ -56,17 +80,56 @@ const TransformDiv = styled.div`
     }
 `;
 
+const StyledActivities = styled.div`
+    display: flex;
+    border: 2px solid green;
+    margin: 1%;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    padding: 20px;
+`;
+
+const StyledActivity = styled.div`
+    object-fit: contain;
+    width: 100%;
+    max-height: 100px;
+    margin-right: 10px;
+`;
+
+const StyledButtons = styled.div`
+    display: flex;
+    padding: 1rem;
+    justify-content: center;
+`;
+
+const useStyles = makeStyles({
+    createButton: {
+        width: '50%',
+        fontSize: '9px',
+        margin: '1%',
+        top: '10vh',
+    },
+    button: {
+        width: '50%',
+        fontSize: '9px',
+        margin: '1%',
+    },
+});
+
 interface Props {
     selectedGroup: Group;
     updateGroups: () => void;
     leaveGroup: () => void;
+    deleteGroup: () => void;
 }
 
 export default function FeedCard({
     selectedGroup,
     updateGroups,
     leaveGroup,
+    deleteGroup,
 }: Props) {
+    const classes = useStyles();
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     const [openChoiceBox, setOpenChoiceBox] = useState<boolean>(false);
     const [nextActivity, setNextActivity] = useState<ActivityResponse>();
@@ -83,6 +146,7 @@ export default function FeedCard({
         points: '',
     });
     const { user } = useContext(UserContext);
+    const [activities, setActivities] = useState<ActivityResponse[]>([]);
 
     const getNextActivity = async () => {
         const url = `group/${selectedGroup.groupId}/activity`;
@@ -180,15 +244,45 @@ export default function FeedCard({
             });
     };
 
+    /*
+    const getActivities = async () => {
+        console.log('hva skjer');
+        const request = await axios.get(
+            `/group/${selectedGroup.groupId}/activity`
+        );
+        console.log(request);
+        setActivities(request.data.activties);
+        return request;
+    };
+
+    useEffect(() => {
+        getActivities();
+    }, []); //TODO when should the side effect trigger
+    */
+
+    const renderActivities = activities.map((activity, index: number) => {
+        return (
+            <StyledActivity key={index}>
+                <ActivityCard
+                    activity={activity}
+                    openPopup={openActivityPopup}
+                    setOpenPopup={setOpenActivityPopup}
+                    setActivity={setNextActivity}
+                ></ActivityCard>
+            </StyledActivity>
+        );
+    });
+
     return selectedGroup.groupName !== '' ? (
-        <FeedContainer>
+        <StyledCard raised={true}>
             <StyledHeader>{selectedGroup.groupName}</StyledHeader>
+            <Divider variant="middle" />
             <List
                 style={{
                     width: '40%',
                     float: 'right',
                     maxHeight: '160px',
-                    overflow: 'auto'
+                    overflow: 'auto',
                 }}
             >
                 {selectedGroup.users.map((user, index) => (
@@ -199,7 +293,7 @@ export default function FeedCard({
                     >
                         <UserAvatar user={user} type="small"></UserAvatar>
                         {Object.values(user)[0] ==
-                            Object.values(selectedGroup.owner)[0] ? (
+                        Object.values(selectedGroup.owner)[0] ? (
                             <ListItemText
                                 primary={
                                     user.firstName +
@@ -243,22 +337,47 @@ export default function FeedCard({
                     </DialogActions>
                 </Dialog>
             </List>
-            <TransformDiv>
-                {nextActivity ? (
-                    <ActivityCard
-                        activity={nextActivity}
-                        openPopup={openActivityPopup}
-                        setOpenPopup={setOpenActivityPopup}
-                        setActivity={setNextActivity}
-                    ></ActivityCard>
-                ) : (
-                    <StyledParagraph>
-                        Finner ingen aktivitet aktiviteter for denne gruppen,
-                        legg til en ny aktivitet!
-                    </StyledParagraph>
-                )}
-            </TransformDiv>
-            {nextActivity ? (
+            <ActivityDiv>
+                <Typography variant="h6">Neste aktvitet</Typography>
+                <TransformDiv>
+                    {nextActivity ? (
+                        <ActivityCard
+                            activity={nextActivity}
+                            openPopup={openActivityPopup}
+                            setOpenPopup={setOpenActivityPopup}
+                            setActivity={setNextActivity}
+                        ></ActivityCard>
+                    ) : (
+                        <StyledParagraph>
+                            Finner ingen aktivitet aktiviteter for denne
+                            gruppen, legg til en ny aktivitet!
+                        </StyledParagraph>
+                    )}
+                </TransformDiv>
+                <Button
+                    className={classes.createButton}
+                    onClick={() => setOpenPopup(!openPopup)}
+                    variant="contained"
+                    color="primary"
+                >
+                    {' '}
+                    Opprett ny gruppeaktivitet{' '}
+                    <AddIcon style={{ marginLeft: '8px' }} />
+                </Button>
+                <Popup
+                    title="Legg til aktivitet"
+                    openPopup={openPopup}
+                    setOpenPopup={setOpenPopup}
+                    maxWidth="md"
+                >
+                    <ActivityForm
+                        openPopup={openPopup}
+                        setOpenPopup={setOpenPopup}
+                        groupId={selectedGroup.groupId}
+                    />
+                </Popup>
+            </ActivityDiv>
+            {nextActivity && (
                 <Popup
                     openPopup={openActivityPopup}
                     setOpenPopup={setOpenActivityPopup}
@@ -273,49 +392,41 @@ export default function FeedCard({
                         openPopup={openActivityPopup}
                     />
                 </Popup>
-            ) : (
-                <div></div>
             )}
-            <Button
-                fullWidth
-                onClick={() => setOpenPopup(!openPopup)}
-                variant="contained"
-                color="primary"
-                style={{
-                    position: 'relative',
-                    bottom: '0',
-                }}
-            >
-                {' '}
-                Opprett en gruppeaktivitet{' '}
-                <AddIcon style={{ marginLeft: '8px' }} />
-            </Button>
-            <Popup
-                title="Legg til aktivitet"
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
-                maxWidth="md"
-            >
-                <ActivityForm
-                    openPopup={openPopup}
-                    setOpenPopup={setOpenPopup}
-                    groupId={selectedGroup.groupId}
-                />
-            </Popup>
-            <Button
-                fullWidth
-                onClick={handleLeaveGroup}
-                variant="contained"
-                color="primary"
-                style={{
-                    position: 'relative',
-                    bottom: '0',
-                }}
-            >
-                {' '}
-                Forlat Gruppe <DeleteIcon style={{ marginLeft: '8px' }} />
-            </Button>
-        </FeedContainer>
+            {/* <StyledActivities>
+                <button
+                    onClick={() => {
+                        console.log(activities);
+                        console.log(nextActivity);
+                        console.log(selectedGroup);
+                    }}
+                >
+                    hvis aktiviteter
+                </button>
+                {renderActivities}
+            </StyledActivities> */}
+            <GroupLeaderboard users={selectedGroup.users} />
+            <StyledButtons>
+                <Button
+                    className={classes.button}
+                    onClick={handleLeaveGroup}
+                    variant="contained"
+                    color="primary"
+                >
+                    {' '}
+                    Forlat Gruppe <DeleteIcon style={{ marginLeft: '8px' }} />
+                </Button>
+                <Button
+                    className={classes.button}
+                    onClick={deleteGroup}
+                    variant="contained"
+                    color="primary"
+                >
+                    {' '}
+                    Slett Gruppe <DeleteIcon style={{ marginLeft: '8px' }} />
+                </Button>
+            </StyledButtons>
+        </StyledCard>
     ) : (
         <FeedContainer>
             <h2>Ingen gruppe valgt</h2>
