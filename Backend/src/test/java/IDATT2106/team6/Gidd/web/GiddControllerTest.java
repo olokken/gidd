@@ -729,13 +729,6 @@ public class GiddControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.userId").doesNotExist());
-
-        //todo fill out after the todo in the delete mapping is complete
-        // create one user
-        // create new activity with owner the user from order 8
-        // sign up new user to this activity
-        // delete user from order 8
-        // check that user is deleted and that the new user is returned
     }
 
     @Order(21)

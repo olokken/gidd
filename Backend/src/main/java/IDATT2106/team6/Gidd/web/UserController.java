@@ -868,7 +868,6 @@ public class UserController {
         try {
             if (insertUserActivityCoupling(user, activity)) {
                 User owner = activity.getUser();
-                //todo remove points when someone leaves your activity
                 owner.setPoints(
                         owner.getPoints() + HOST_JOIN_BONUS
                 );
