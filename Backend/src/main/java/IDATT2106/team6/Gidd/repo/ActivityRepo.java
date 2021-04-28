@@ -90,10 +90,16 @@ public class ActivityRepo extends GiddRepo {
                 log.info("activity found, attempting delete");
                 em.getTransaction().begin();
                 Activity temporaryActivity = em.merge(activity);
+
+                em.createQuery("DELETE FROM Chat WHERE activity = ?1")
+                        .setParameter(1, activity)
+                        .executeUpdate();
+
                 em.remove(temporaryActivity);
                 em.getTransaction().commit();
                 log.info("delete success on id: " + activityId);
                 em.getEntityManagerFactory().getCache().evict(User.class);
+
                 return true;
             }else {
                 log.error("failed finding activity, cannot delete activity with id: " + activityId);

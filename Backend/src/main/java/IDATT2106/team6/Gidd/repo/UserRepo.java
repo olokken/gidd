@@ -95,7 +95,6 @@ public class UserRepo extends GiddRepo {
             User user = findUser(userId);
 
             if(user != null){
-                System.out.println("kommer hit wpogsjgdslkjga ");
                 log.info("found user " + userId +  " to be deleted");
                 List<Rating> ratings = em.createNativeQuery("SELECT * FROM RATING WHERE user_id = ?1", Rating.class)
                         .setParameter(1, userId).getResultList();
@@ -107,6 +106,12 @@ public class UserRepo extends GiddRepo {
                     em.getTransaction().commit();
                 }
                 em.getTransaction().begin();
+                em.createQuery("DELETE FROM Chat WHERE user = ?1")
+                        .setParameter(1, user)
+                        .executeUpdate();
+                em.createQuery("DELETE FROM Activity WHERE user = ?1")
+                        .setParameter(1, user)
+                        .executeUpdate();
                 User temporaryUser = em.merge(user);
                 em.remove(temporaryUser);
                 em.getTransaction().commit();
