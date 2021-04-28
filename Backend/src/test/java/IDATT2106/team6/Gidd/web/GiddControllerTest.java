@@ -1531,16 +1531,18 @@ public class GiddControllerTest {
         mockMvc.perform(post("/user/" + user1.getUserId() + "/rating")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                        "\n\"userId\": \"" + user1.getUserId() + "\",\n" +
-                        "\"rating\": \"5\"" +
+                        "\n\"toUserId\": " + user1.getUserId() + "," +
+                        "\n\"fromUserId\": " + user2.getUserId() + "," +
+                        "\n\"rating\": \"5\"" +
                         "}"
                 )).andExpect(status().isOk());
 
         mockMvc.perform(post("/user/" + user1.getUserId() + "/rating")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                        "\n\"userId\": \"" + user1.getUserId() + "\",\n" +
-                        "\"rating\": \"1\"" +
+                        "\n\"toUserId\": " + user1.getUserId() + "," +
+                        "\n\"fromUserId\": " + user3.getUserId() + "," +
+                        "\n\"rating\": \"1\"" +
                         "}"
                 )).andExpect(status().isOk());
 
@@ -1562,7 +1564,8 @@ public class GiddControllerTest {
         String error = mockMvc.perform(post("/user/" + user1.getUserId() + "/rating")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                        "\n\"userId\": \"" + (-1) + "\",\n" +
+                        "\n\"toUserId\": \"" + (-1) + "\",\n" +
+                        "\n\"fromUserId\": \"" + (-2) + "\",\n" +
                         "\"rating\": \"1\"" +
                         "}"
                 )).andExpect(status().isBadRequest())
@@ -1579,7 +1582,8 @@ public class GiddControllerTest {
         String error = mockMvc.perform(post("/user/" + user1.getUserId() + "/rating")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                        "\n\"userId\": \"" + user1.getUserId() + "\",\n" +
+                        "\n\"toUserId\": \"" + user1.getUserId() + "\"," +
+                        "\n\"fromUserId\": \"" + user2.getUserId() + "\",\n" +
                         "\"rating\": \"0\"" +
                         "}"
                 )).andExpect(status().isBadRequest())
@@ -1592,7 +1596,8 @@ public class GiddControllerTest {
         String error2 = mockMvc.perform(post("/user/" + user1.getUserId() + "/rating")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                        "\n\"userId\": \"" + user1.getUserId() + "\",\n" +
+                        "\n\"toUserId\": \"" + user1.getUserId() + "\",\n" +
+                        "\n\"fromUserId\": \"" + user2.getUserId() + "\",\n" +
                         "\"rating\": \"6\"" +
                         "}"
                 )).andExpect(status().isBadRequest())
