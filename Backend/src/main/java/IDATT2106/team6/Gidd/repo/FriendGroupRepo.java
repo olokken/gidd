@@ -2,7 +2,6 @@ package IDATT2106.team6.Gidd.repo;
 
 import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.FriendGroup;
-import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.util.Logger;
 import java.util.Collections;
 import org.springframework.stereotype.Repository;

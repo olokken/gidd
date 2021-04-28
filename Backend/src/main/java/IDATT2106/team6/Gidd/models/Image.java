@@ -1,6 +1,5 @@
 package IDATT2106.team6.Gidd.models;
 
-import java.util.Arrays;
 import java.util.Base64;
 import javax.persistence.Column;
 import javax.persistence.Entity;
