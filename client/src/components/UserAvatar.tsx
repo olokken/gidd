@@ -51,7 +51,7 @@ const UserAvatar = ({ user, type }: Props) => {
     const classes = useStyles();
     return (
         <AvatarDiv>
-            {+user.points >= 300 ?
+            {+user.points >= 1000 ?
 
                 <Badge
                     overlap="circle"

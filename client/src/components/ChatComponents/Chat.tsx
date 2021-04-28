@@ -134,6 +134,7 @@ const Chat = ({ open, close, activityId }: Props) => {
                     time={msg.timestamp}
                     userId={msg.user.userId}
                     message={msg.message}
+                    image={msg.user.image}
                 ></StyledMessage>
             );
         });
@@ -145,6 +146,7 @@ const Chat = ({ open, close, activityId }: Props) => {
                     time={msg.timestamp}
                     userId={msg.user.userId}
                     message={msg.message}
+                    image={msg.user.image}
                 ></StyledMessage>
             );
         });

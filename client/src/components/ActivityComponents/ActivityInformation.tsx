@@ -234,7 +234,7 @@ const ActivityInformation = ({
                 key={index}
                 onClick={() => { if (user !== par['userId'].toString()) onParticipantClicked(par) }}
             >
-                <UserAvatar user={user} type='small'></UserAvatar>
+                <UserAvatar user={par} type='small'></UserAvatar>
                 <ListItemText
                     primary={par['firstName'] + ' ' + par['surname']}
                 />
