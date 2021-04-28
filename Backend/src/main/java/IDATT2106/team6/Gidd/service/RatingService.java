@@ -15,8 +15,8 @@ public class RatingService {
     @Autowired
     private RatingRepo repo;
 
-    public boolean addRating(int rating, User user) {
-        Rating newRating = new Rating(rating, user);
+    public boolean addRating(int rating, User toUser, User fromUser) {
+        Rating newRating = new Rating(rating, toUser, fromUser);
         return this.repo.addRating(newRating);
     }
 

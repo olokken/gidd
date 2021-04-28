@@ -247,11 +247,9 @@ public class ActivityController {
         }
         log.info("old activity " + activity.getActivityId());
 
-        log.info("old activity " + activity.getActivityId());
-
         //edit points of participants
         ActivityLevel oldLevel = activity.getActivityLevel();
-        ActivityLevel newLevel = ActivityLevel.valueOf(map.get("activityLevel").toString());
+        ActivityLevel newLevel = ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
         if (oldLevel != newLevel) {
             for (int i = 0; i < activity.getRegisteredParticipants().size(); i++) {
                 User p = activity.getRegisteredParticipants().get(i).getUser();
@@ -541,7 +539,7 @@ public class ActivityController {
 
     private Activity mapToActivity(Map<String, Object> map, int actId, User user, Image image)
         throws InvalidAttributesException {
-        log.debug("map: " + map.toString() + " to activity");
+        log.debug("map: to activity");
         String title = map.get("title").toString().trim();
         Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
         int capacity = Integer.parseInt(map.get("capacity").toString());

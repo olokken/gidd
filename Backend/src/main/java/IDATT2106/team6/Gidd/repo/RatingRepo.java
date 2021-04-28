@@ -50,7 +50,7 @@ public class RatingRepo extends GiddRepo {
         EntityManager em = getEm();
 
         try{
-            Query q = em.createNativeQuery("SELECT AVG(rating) FROM RATING WHERE user_id = ?1")
+            Query q = em.createNativeQuery("SELECT AVG(rating) FROM RATING WHERE to_user_id = ?1")
                     .setParameter(1, userId);
             return q.getResultList();
         }catch (Exception e){
