@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.naming.directory.InvalidAttributesException;
-import org.apache.coyote.Response;
 import org.eclipse.persistence.exceptions.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -70,7 +69,6 @@ public class ActivityController {
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
 
         log.debug("Received new activity: " + map.toString());
-        int newId;
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
 
@@ -83,7 +81,6 @@ public class ActivityController {
                 log.error("User is null, throwing exception");
                 throw new InvalidAttributesException("User does not exist");
             }
-            newId = 0;
 
             Image image = imageService.createImage(map.get("image").toString());
             if (image == null) {
@@ -93,32 +90,10 @@ public class ActivityController {
                     .body(formatJson(body));
             }
 
-            newActivity = mapToActivity(map, newId, user, image);
-            log.debug("Created new activity: " + newActivity.getActivityId());
-            newId = newActivityValidId(newActivity);
-            log.debug("new activity id: " + newId);
+            newActivity = mapToActivity(map, -1, user, image);
 
-            if(!insertUserActivityCoupling(user, newActivity)){
-                body.put("error", "something went wrong when coupling the user and activity");
-                return ResponseEntity
-                        .badRequest()
-                        .headers(headers)
-                        .body(formatJson(body));
-            }
-            if(!registerEquipmentToActivity(newId, map.get("equipmentList").toString())){
-                log.error("Equipment could not be registered correctly");
-                body.put("error", "could not add equipment, but continuing anyways");
-            }
-
-            log.info("Activity created successfully");
-
-            body.put("id", "" + newActivity.getActivityId());
-            userService.setPoints(user,
-                    (int) (user.getPoints() +
-                            NEW_ACTIVITY_BONUS * MULTIPLIERS[newActivity.getActivityLevel().ordinal()]));
-            return ResponseEntity
-                    .created(URI.create(String.format("/activity/%d", newActivity.getActivityId())))
-                    .body(formatJson(body));
+            return createMultiple(user, newActivity, map, body, headers,
+                                    Integer.parseInt(map.get("repeat").toString()));
 
         } catch (InvalidAttributesException e) {
             log.error("InvalidattributesException, " + e.getMessage());
@@ -569,7 +544,6 @@ public class ActivityController {
         log.debug("map: " + map.toString() + " to activity");
         String title = map.get("title").toString().trim();
         Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
-        int repeat = Integer.parseInt(map.get("repeat").toString());
         int capacity = Integer.parseInt(map.get("capacity").toString());
         // group
         FriendGroup group = null;
@@ -592,7 +566,7 @@ public class ActivityController {
         double longitude = Double.parseDouble(map.get("longitude").toString());
 
         return new Activity(actId,
-            title, newTime, repeat, user,
+            title, newTime, user,
             capacity, group, description, image,
             activityLevel, tags, latitude, longitude, null);
     }
@@ -665,6 +639,40 @@ public class ActivityController {
             log.error("An exception occurred while removing equipment from activity");
             return false;
         }
+    }
+
+    private ResponseEntity createMultiple(User user, Activity activity, Map<String, Object> map,
+                                                  HashMap<String,String> body, HttpHeaders headers,
+                                                    int repeat) {
+        List<Integer> res = new ArrayList();
+        if(repeat>3) repeat = 3;
+        do {
+            Activity temp = new Activity(activity);
+            int newId = newActivityValidId(temp);
+            temp.setActivityId(newId);
+            log.debug("new activity id: " + newId);
+
+            if (!insertUserActivityCoupling(user, temp)) {
+                body.put("error", "something went wrong when coupling the user and activity");
+                return ResponseEntity
+                    .badRequest()
+                    .headers(headers)
+                    .body(formatJson(body));
+            }
+            if (!registerEquipmentToActivity(newId, map.get("equipmentList").toString())) {
+                log.error("Equipment could not be registered correctly");
+                body.put("error", "could not add equipment, but continuing anyways");
+            }
+
+            log.info("Activity created successfully");
+            res.add(temp.getActivityId());
+            userService.setPoints(user,
+                (int) (user.getPoints() +
+                    NEW_ACTIVITY_BONUS * MULTIPLIERS[temp.getActivityLevel().ordinal()]));
+        } while (repeat-- > 0);
+        return ResponseEntity
+            .ok()
+            .body(res);
     }
 
     private List<Equipment> toEquipList(String equipString) {

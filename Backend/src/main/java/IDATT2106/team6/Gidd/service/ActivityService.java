@@ -30,7 +30,7 @@ public class ActivityService {
         Date today = new Date();
         Timestamp currentTime = new Timestamp(today.getTime());
         Activity newActivity =
-            new Activity(id, title, time, repeat, userId,
+            new Activity(id, title, time, userId,
                 capacity, groupId, description, image, activityLevel, tags,
                 latitude, longitude, currentTime);
         log.info("adding new activity: " + newActivity.getActivityId());

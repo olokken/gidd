@@ -20,15 +20,13 @@ import javax.persistence.OneToOne;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 @Entity
-public class Activity {
+public class Activity implements Cloneable{
     @Id
     @Column(name = "activity_id")
     private int activityId;
     private String title;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "E, dd MMM yyyy HH:mm:ss z", timezone = "GMT+2")
     private Timestamp time;
-    @Column(name = "days_to_repeat")
-    private int repeat;
     @CascadeOnDelete
     @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_id")
@@ -37,7 +35,7 @@ public class Activity {
     //Ikke laget klasse. Lar den være for nå
     @ManyToOne(targetEntity = FriendGroup.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id")
-    private FriendGroup groupId;
+    private FriendGroup group;
     private String description;
     @CascadeOnDelete
     @OneToOne(targetEntity = Image.class, fetch = FetchType.EAGER)
@@ -58,16 +56,16 @@ public class Activity {
     @Column(name = "time_created")
     private Timestamp timeCreated;
 
-    public Activity(int id, String title, Timestamp time, int repeat, User user, int capacity,
-                    FriendGroup groupId, String description, Image image, ActivityLevel activityLevel,
+    public Activity(int id, String title, Timestamp time, User user, int capacity,
+                    FriendGroup groupId, String description, Image image,
+                    ActivityLevel activityLevel,
                     List<Tag> tags, double latitude, double longitude, Timestamp timeCreated){
         this.activityId = id;
         this.title = title;
         this.time = time;
-        this.repeat = repeat;
         this.user = user;
         this.capacity = capacity;
-        this.groupId = groupId;
+        this.group = groupId;
         this.description = description;
         this.image = image;
         this.activityLevel = activityLevel;
@@ -77,6 +75,24 @@ public class Activity {
         this.equipments = new ArrayList<>();
         this.registeredParticipants = new ArrayList<>();
         this.timeCreated = timeCreated;
+    }
+
+    public Activity(Activity activity){
+        this.activityId = activity.activityId;
+        this.title = activity.title;
+        this.time = activity.time;
+        this.user = activity.user;
+        this.capacity = activity.capacity;
+        this.group = activity.group;
+        this.description = activity.description;
+        this.image = activity.image;
+        this.activityLevel = activity.activityLevel;
+        this.tags = activity.tags;
+        this.latitude = activity.latitude;
+        this.longitude = activity.longitude;
+        this.equipments = new ArrayList<>();
+        this.registeredParticipants = new ArrayList<>();
+        this.timeCreated = activity.timeCreated;
     }
 
     public Activity(){}
@@ -105,14 +121,6 @@ public class Activity {
         this.time = time;
     }
 
-    public int getRepeat() {
-        return repeat;
-    }
-
-    public void setRepeat(int daysToRepeat) {
-        this.repeat = daysToRepeat;
-    }
-
     public User getUser() {
         return user;
     }
@@ -130,11 +138,11 @@ public class Activity {
     }
 
     public FriendGroup getGroup() {
-        return groupId;
+        return group;
     }
 
     public void setGroup(FriendGroup groupId) {
-        this.groupId = groupId;
+        this.group = groupId;
     }
 
     public String getDescription() {
@@ -224,10 +232,9 @@ public class Activity {
             "\n\"activityId\": " + activityId +
             ", \n\"title\": " + "\"" + title.trim() + "\"" +
             ", \n\"time\":" + time.getTime() +
-            ", \n\"repeat\":" + repeat +
             ", \n\"user\":" + user.toJSON() +
             ", \n\"capacity\":" + capacity +
-            ", \n\"groupId\":" + groupId +
+            ", \n\"groupId\":" + group +
             ", \n\"description\":" + "" + description + "" +
             ", \n\"image\":" + "\"" + image.getDatatype() + Base64.getEncoder().encodeToString(image.getBytes()) +"\"" +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +
@@ -245,10 +252,9 @@ public class Activity {
             "\n\"activityId\": " + activityId +
             ", \n\"title\": " + "\"" + title.trim() + "\"" +
             ", \n\"time\":" + time.getTime() +
-            ", \n\"repeat\":" + repeat +
             ", \n\"user\":" + user.toJSON() +
             ", \n\"capacity\":" + capacity +
-            ", \n\"groupId\":" + groupId +
+            ", \n\"groupId\":" + group +
             ", \n\"description\":" + "" + description + "" +
             ", \n\"image\":" + image.getId() +
             ", \n\"activityLevel\":" +"\"" + activityLevel +"\"" +

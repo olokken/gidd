@@ -283,7 +283,6 @@ public class GroupController {
                 .body("{\"groups\":" + friendGroups.toString() + "}");
     }
 
-
     @GetMapping(value = "/{groupId}")
     public ResponseEntity getFriendGroup(@PathVariable Integer groupId){
         log.debug("Received GetMapping to '/group/{groupId}'");

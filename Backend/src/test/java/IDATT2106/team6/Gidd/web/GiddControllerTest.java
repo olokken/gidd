@@ -82,7 +82,7 @@ public class GiddControllerTest {
 
         activity1 = new Activity(121, "skrive tester",
                 new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
-                0, user1, 50, group3, "det som du gjør nå", new Image(),
+            user1, 50, group3, "det som du gjør nå", new Image(),
                 ActivityLevel.HIGH, new ArrayList<>(), 0.001, 0.005, null);
 
         group1 = new FriendGroup(1, "GruppeTest", user1);
@@ -182,10 +182,10 @@ public class GiddControllerTest {
                 .content("{\n" +
                         "    \"title\" : \"" + activity1.getTitle() + "\",\n" +
                         "    \"time\" : \"" + activity1.getTime() + "\",\n" +
-                        "    \"repeat\" : " + activity1.getRepeat() + ",\n" +
                         "    \"userId\" : " + user1.getUserId() + ",\n" +
                         "    \"capacity\" : " + activity1.getCapacity() + ",\n" +
                         "    \"groupId\" : " + -1 + ",\n" +
+                        "    \"repeat\" : " + 0 + ",\n" +
                         "    \"description\" : \"" + activity1.getDescription() + "\",\n" +
                         "    \"image\" : \"\",\n" +
                         "    \"activityLevel\" : \"" + activity1.getActivityLevel() + "\",\n" +
@@ -194,20 +194,20 @@ public class GiddControllerTest {
                         "    \"longitude\": " + activity1.getLongitude() + ",\n" +
                         "    \"equipmentList\": \"Fish\" ,\n" +
                         "    \"equipment\": \"Fish\" \n" +
-                        "}")).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+                        "}")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         JSONParser parser = new JSONParser();
-        JSONObject json = (JSONObject) parser.parse(id);
+        JSONArray json = (JSONArray) parser.parse(id);
 
-        activity1.setActivityId(json.getAsNumber("id").intValue());
+        activity1.setActivityId(Integer.parseInt(json.get(0).toString()));
 
-        String activity2String = mockMvc.perform(get("/activity/" + json.getAsNumber("id"))
+        String activity2String = mockMvc.perform(get("/activity/" + Integer.parseInt(json.get(0).toString()))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         JSONObject json2 = (JSONObject) parser.parse(activity2String);
-        assertEquals(json.getAsNumber("id"), json2.getAsNumber("activityId"));
+        assertEquals(Integer.parseInt(json.get(0).toString()), json2.getAsNumber("activityId"));
 
         //test that user is registered to own activty
         String userActivities = mockMvc.perform(get("/user/" + user1.getUserId() + "/activity")
@@ -252,7 +252,6 @@ public class GiddControllerTest {
                 .content("{\n" +
                         "    \"title\" : \"" + activity1.getTitle() + "\",\n" +
                         "    \"time\" : \"" + activity1.getTime() + "\",\n" +
-                        "    \"repeat\" : " + activity1.getRepeat() + ",\n" +
                         "    \"userId\" : " + (-1) + ",\n" +
                         "    \"capacity\" : " + activity1.getCapacity() + ",\n" +
                         "    \"groupId\" : " + activity1.getGroup() + ",\n" +
@@ -279,7 +278,6 @@ public class GiddControllerTest {
         HashMap<String, Object> newValues = new HashMap<String, Object>();
         newValues.put("title", "apie changed");
         newValues.put("time", "2011-10-02 18:48:05.123456");
-        newValues.put("repeat", 0);
         newValues.put("userId", user1.getUserId());
         newValues.put("capacity", 5);
         newValues.put("description", "changed description");
@@ -293,17 +291,17 @@ public class GiddControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/activity/" + activity1.getActivityId()).content("{" +
         "\"title\" :" + "\"" + newValues.get("title") + "\"" +
         ",\"time\" :"  + "\"" + newValues.get("time") + "\"" +
-        ",\"repeat\" :" + newValues.get("repeat") + 
         ",\"userId\" :" + newValues.get("userId") +
         ",\"capacity\" :" + newValues.get("capacity") +
         ",\"description\" : \"" + newValues.get("description") + "\"" +
         ",\"image\" : \"" + newValues.get("image") + "\"" +
+        ",\"repeat\" : " + 0 + "\n" +
         ",\"activityLevel\" : \"" + newValues.get("activityLevel") + "\""+
         ",\"tags\" : \"" + newValues.get("tags") + "\"" +
         ",\"latitude\" :" + newValues.get("latitude") +
         ",\"longitude\":" + newValues.get("longitude") +
         ",\"equipmentList\": \"" + newValues.get("equipments") + "\"" +
-    "}"  ).contentType(MediaType.APPLICATION_JSON).header("token", token)).andExpect(status().isOk());
+        "}").contentType(MediaType.APPLICATION_JSON).header("token", token)).andExpect(status().isOk());
 
         activity1.setActivityLevel(ActivityLevel.valueOf("HIGH"));
         String getActivityString = mockMvc.perform(get("/activity/" + activity1.getActivityId())).andDo(print())
@@ -762,33 +760,33 @@ public class GiddControllerTest {
                 .content("{\n" +
                         "    \"title\" : \"" + activity1.getTitle() + "\",\n" +
                         "    \"time\" : \"" + activity1.getTime() + "\",\n" +
-                        "    \"repeat\" : " + activity1.getRepeat() + ",\n" +
                         "    \"userId\" : " + user1.getUserId() + ",\n" +
                         "    \"capacity\" : " + activity1.getCapacity() + ",\n" +
                         "    \"groupId\" : " + -1 + ",\n" +
                         "    \"description\" : \"" + activity1.getDescription() + "\",\n" +
                         "    \"image\" : \"" + 1101 + "\",\n" +
+                        "    \"repeat\" :" + 0 + ",\n" +
                         "    \"activityLevel\" : \"" + activity1.getActivityLevel() + "\",\n" +
                         "    \"tags\" : " + "\"Fisk\"" + ",\n" +
                         "    \"latitude\" : " + activity1.getLatitude() + ",\n" +
                         "    \"longitude\": " + activity1.getLongitude() + ",\n" +
                         "    \"equipmentList\": \"Fish\" ,\n" +
                         "    \"equipment\": \"Fish\" \n" +
-                        "}")).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+                        "}")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         JSONParser parser = new JSONParser();
-        JSONObject initialPost = (JSONObject) parser.parse(id);
+        JSONArray initialPost = (JSONArray) parser.parse(id);
 
-        String initialGet = mockMvc.perform(get("/activity/" + initialPost.getAsNumber("id"))
+        String initialGet = mockMvc.perform(get("/activity/" + initialPost.get(0))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         JSONObject initialGetJson = (JSONObject) parser.parse(initialGet);
-        assertEquals(initialPost.getAsNumber("id"), initialGetJson.getAsNumber("activityId"));
+        assertEquals(initialPost.get(0), initialGetJson.getAsNumber("activityId"));
 
         String deletedResponse = mockMvc.perform(MockMvcRequestBuilders
-                .delete("/activity/" + initialPost.getAsNumber("id")))
+                .delete("/activity/" + initialPost.get(0)))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         JSONObject deletedActivity = (JSONObject) parser.parse(deletedResponse);
@@ -802,7 +800,7 @@ public class GiddControllerTest {
                     );
         }
 
-        mockMvc.perform(get("/activity/" + initialPost.getAsNumber("id"))
+        mockMvc.perform(get("/activity/" + initialPost.get(0))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
