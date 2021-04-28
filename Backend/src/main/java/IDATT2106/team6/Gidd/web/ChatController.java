@@ -94,7 +94,7 @@ public class ChatController {
 
         chatJson.put("user", user);
         chatJson.remove("userId");
-
+        //todo handle illegalargument in case of user not connected to activity
         Chat newChat = new Chat(activity, user, String.valueOf(chatJson.get("message")));
         String json = "{" +
                 "\"user\":" + user.toJSON() +

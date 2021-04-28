@@ -247,6 +247,7 @@ public class User {
         return id.toString();
     }
 
+    //todo probably better to return activity objects, but will cause infinite recursion rn
     public String toJSON() {
         return "\n  {" +
             "\n     \"userId\":" + userId + "," +
