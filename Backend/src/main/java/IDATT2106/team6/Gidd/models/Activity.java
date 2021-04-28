@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,8 +35,9 @@ public class Activity {
     private User user;
     private int capacity;
     //Ikke laget klasse. Lar den være for nå
-    @Column(name = "group_id")
-    private int groupId;
+    @ManyToOne(targetEntity = FriendGroup.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "group_id")
+    private FriendGroup groupId;
     private String description;
     @CascadeOnDelete
     @OneToOne(targetEntity = Image.class, fetch = FetchType.EAGER)
@@ -59,7 +59,7 @@ public class Activity {
     private Timestamp timeCreated;
 
     public Activity(int id, String title, Timestamp time, int repeat, User user, int capacity,
-                    int groupId, String description, Image image, ActivityLevel activityLevel,
+                    FriendGroup groupId, String description, Image image, ActivityLevel activityLevel,
                     List<Tag> tags, double latitude, double longitude, Timestamp timeCreated){
         this.activityId = id;
         this.title = title;
@@ -129,11 +129,11 @@ public class Activity {
         this.capacity = capacity;
     }
 
-    public int getGroupId() {
+    public FriendGroup getGroup() {
         return groupId;
     }
 
-    public void setGroupId(int groupId) {
+    public void setGroup(FriendGroup groupId) {
         this.groupId = groupId;
     }
 

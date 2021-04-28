@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -54,9 +53,11 @@ public class GiddControllerTest {
     private Activity activity1;
     private FriendGroup group1;
     private FriendGroup group2;
+    private FriendGroup group3;
 
     @BeforeAll
     public void beforeAll(){
+
         System.out.println("Beginning the tests!\n");
 
         user1 = new User(11, "1@1", "pass1", "Olav", "Skundeberg", 123,
@@ -66,6 +67,8 @@ public class GiddControllerTest {
         user2 = new User(22, "2@2", "pass2", "Ole", "Christian", 1232,
                 ActivityLevel.HIGH, new Image(),
                 Provider.LOCAL);
+
+        group3 = new FriendGroup(0, "Den Kule Gruppen", user2);
 
         user3 = new User(33, "3@3", "pass3", "Hans jakob", "Matte", 1233,
                 ActivityLevel.HIGH, new Image(),
@@ -79,8 +82,10 @@ public class GiddControllerTest {
 
         activity1 = new Activity(121, "skrive tester",
                 new Timestamp(2001, 9, 11, 9, 11, 59, 5 ),
-                0, user1, 50, 5, "det som du gjør nå", new Image(),
+                0, user1, 50, group3, "det som du gjør nå", new Image(),
                 ActivityLevel.HIGH, new ArrayList<>(), 0.001, 0.005, null);
+                0, user1, 50, group3, "det som du gjør nå", new Image(),
+                ActivityLevel.MEDIUM, new ArrayList<>(), 0.001, 0.005, null);
 
         group1 = new FriendGroup(1, "GruppeTest", user1);
 
@@ -182,7 +187,7 @@ public class GiddControllerTest {
                         "    \"repeat\" : " + activity1.getRepeat() + ",\n" +
                         "    \"userId\" : " + user1.getUserId() + ",\n" +
                         "    \"capacity\" : " + activity1.getCapacity() + ",\n" +
-                        "    \"groupId\" : " + activity1.getGroupId() + ",\n" +
+                        "    \"groupId\" : " + -1 + ",\n" +
                         "    \"description\" : \"" + activity1.getDescription() + "\",\n" +
                         "    \"image\" : \"\",\n" +
                         "    \"activityLevel\" : \"" + activity1.getActivityLevel() + "\",\n" +
@@ -252,7 +257,7 @@ public class GiddControllerTest {
                         "    \"repeat\" : " + activity1.getRepeat() + ",\n" +
                         "    \"userId\" : " + (-1) + ",\n" +
                         "    \"capacity\" : " + activity1.getCapacity() + ",\n" +
-                        "    \"groupId\" : " + activity1.getGroupId() + ",\n" +
+                        "    \"groupId\" : " + activity1.getGroup() + ",\n" +
                         "    \"description\" : \"" + activity1.getDescription() + "\",\n" +
                         "    \"image\" : \"\",\n" +
                         "    \"activityLevel\" : \"" + activity1.getActivityLevel() + "\",\n" +
@@ -302,6 +307,7 @@ public class GiddControllerTest {
         ",\"equipmentList\": \"" + newValues.get("equipments") + "\"" +
     "}"  ).contentType(MediaType.APPLICATION_JSON).header("token", token)).andExpect(status().isOk());
 
+        activity1.setActivityLevel(ActivityLevel.valueOf("HIGH"));
         String getActivityString = mockMvc.perform(get("/activity/" + activity1.getActivityId())).andDo(print())
         .andReturn().getResponse().getContentAsString();
 
@@ -467,9 +473,11 @@ public class GiddControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         JSONObject user2Json = (JSONObject) parser.parse(user2AfterRegistering);
+        ActivityLevel activityLevel = ActivityLevel.valueOf(String.valueOf((((JSONObject)((JSONArray)
+                user2Activities.get("activities")).get(0))).get("activityLevel")));
         //points
         assertEquals(initialPoints + JOIN_ACTIVITY_BONUS
-                * MULTIPLIERS[activity1.getActivityLevel().ordinal()], user2Json.getAsNumber("points").intValue());
+                * MULTIPLIERS[activityLevel.ordinal()], user2Json.getAsNumber("points").intValue());
     }
 
     @Order(11)
@@ -759,7 +767,7 @@ public class GiddControllerTest {
                         "    \"repeat\" : " + activity1.getRepeat() + ",\n" +
                         "    \"userId\" : " + user1.getUserId() + ",\n" +
                         "    \"capacity\" : " + activity1.getCapacity() + ",\n" +
-                        "    \"groupId\" : " + activity1.getGroupId() + ",\n" +
+                        "    \"groupId\" : " + -1 + ",\n" +
                         "    \"description\" : \"" + activity1.getDescription() + "\",\n" +
                         "    \"image\" : \"" + 1101 + "\",\n" +
                         "    \"activityLevel\" : \"" + activity1.getActivityLevel() + "\",\n" +

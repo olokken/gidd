@@ -9,11 +9,13 @@ import IDATT2106.team6.Gidd.models.ActivityEquipment;
 import IDATT2106.team6.Gidd.models.ActivityLevel;
 import IDATT2106.team6.Gidd.models.ActivityUser;
 import IDATT2106.team6.Gidd.models.Equipment;
+import IDATT2106.team6.Gidd.models.FriendGroup;
 import IDATT2106.team6.Gidd.models.Image;
 import IDATT2106.team6.Gidd.models.Tag;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.ActivityService;
 import IDATT2106.team6.Gidd.service.EquipmentService;
+import IDATT2106.team6.Gidd.service.FriendGroupService;
 import IDATT2106.team6.Gidd.service.ImageService;
 import IDATT2106.team6.Gidd.service.TagService;
 import IDATT2106.team6.Gidd.service.UserService;
@@ -61,6 +63,8 @@ public class ActivityController {
     private TagService tagService;
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private FriendGroupService groupService;
 
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
@@ -117,7 +121,7 @@ public class ActivityController {
                     .body(formatJson(body));
 
         } catch (InvalidAttributesException e) {
-            log.error("InvalidattributesException, invalid userID received" + e.getMessage());
+            log.error("InvalidattributesException, " + e.getMessage());
             body.put("error", "invalid userID received");
             return ResponseEntity
                     .badRequest()
@@ -309,9 +313,7 @@ public class ActivityController {
 
         // equipment
         List<ActivityEquipment> oldEquips = activity.getEquipments();
-        System.out.println("OLD : " + oldEquips.toString());
         List<ActivityEquipment> newEquips = newEquipment(activity,map.get("equipmentList").toString());
-        System.out.println("NEW : " + newEquips.toString());
         activity.setEquipments(newEquips);
 
         log.info("new activity: " + activity.getActivityId());
@@ -562,15 +564,27 @@ public class ActivityController {
         equipmentService.registerEquipment(description.toLowerCase());
     }
 
-    private Activity mapToActivity(Map<String, Object> map, int actId, User user, Image image) {
+    private Activity mapToActivity(Map<String, Object> map, int actId, User user, Image image)
+        throws InvalidAttributesException {
         log.debug("map: " + map.toString() + " to activity");
         String title = map.get("title").toString().trim();
         Timestamp newTime = Timestamp.valueOf(map.get("time").toString());
         int repeat = Integer.parseInt(map.get("repeat").toString());
         int capacity = Integer.parseInt(map.get("capacity").toString());
+        // group
+        FriendGroup group = null;
         int groupId = Integer.parseInt(map.get("groupId").toString());
+         if(groupId>=0){
+             group = groupService.getFriendGroup(groupId);
+             if(group==null){
+                 throw new InvalidAttributesException("invalid groupId");
+             }
+             if(!group.getUsers().contains(user)){
+                 throw new InvalidAttributesException("that user is not a part of the given group");
+             }
+         }
         String description = map.get("description").toString();
-        //  image
+        // image
         ActivityLevel activityLevel =
             ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
         List<Tag> tags = splitTags(map.get("tags").toString());
@@ -579,7 +593,7 @@ public class ActivityController {
 
         return new Activity(actId,
             title, newTime, repeat, user,
-            capacity, groupId, description, image,
+            capacity, group, description, image,
             activityLevel, tags, latitude, longitude, null);
     }
 
