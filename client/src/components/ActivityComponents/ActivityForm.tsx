@@ -68,7 +68,12 @@ interface Props {
 
 //TODO:
 //Fix adding image
-const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Props) => {
+const ActivityForm = ({
+    openPopup,
+    setOpenPopup,
+    activityResponse,
+    groupId,
+}: Props) => {
     const [page, setPage] = useState<number>(1);
     const { user, setUser } = useContext(UserContext);
     const [title, setTitle] = useState('');
@@ -88,8 +93,8 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
     const [tagList, setTagList] = useState<Tag[]>([]);
     const [tagsDesc, setTagsDesc] = useState<string>('');
     const [activityLevel, setActivityLevel] = useState<string>('');
-    const [capacity, setCapacity] = useState<number>(1);
-    const [repetition, setRepetition] = useState<number>(0);
+    const [capacity, setCapacity] = useState<string>('');
+    const [repetition, setRepetition] = useState<string>('');
     const [image, setImage] = useState<string>('');
     const [activity, setActivity] = useState<Activity2>({
         title: '',
@@ -153,21 +158,21 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
 
     const onChangeCapacity = (event: ChangeEvent<HTMLInputElement>) => {
         const str: string = (event.target as HTMLInputElement).value;
-        try {
-            setCapacity(+str < 1 ? 1 : +str);
-        } catch (error) {
-            alert('Skriv inn et tall');
-            console.log('Could not convert string to number: ' + error.message);
+        if (+str < 1) {
+            setCapacity('');
+        } else {
+            setCapacity(str);
         }
     };
 
     const onChangeRepetitions = (event: ChangeEvent<HTMLInputElement>) => {
         const str: string = (event.target as HTMLInputElement).value;
-        try {
-            setRepetition(+str < 0 ? 0 : +str);
-        } catch (error) {
-            alert('Skriv inn et tall');
-            console.log('Could not convert string to number: ' + error.message);
+        if (+str < 1) {
+            setRepetition('');
+        } else if (+str > 3) {
+            setRepetition('');
+        } else {
+            setRepetition(str);
         }
     };
 
@@ -181,22 +186,21 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
             const base64 = await convertBase64(file);
             console.log(base64);
             setImage(base64);
-            console.log(image)
+            console.log(image);
         }
     };
 
     const convertBase64 = (file: File) => {
         return new Promise<any>((resolve, reject) => {
-
             const fileReader = new FileReader();
             fileReader.readAsDataURL(file);
 
-            fileReader.onload = (() => {
+            fileReader.onload = () => {
                 resolve(fileReader.result);
-            });
-            fileReader.onerror = ((error) => {
+            };
+            fileReader.onerror = (error) => {
                 reject(error);
-            });
+            };
         });
     };
 
@@ -295,12 +299,20 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
 
     const postActivity = (groupId: string | undefined) => {
         const id: number = groupId ? +groupId : -1;
+        let capa = 1;
+        let repe = 0;
+        try {
+            capa = capacity !== '' ? +capacity : 1;
+            repe = repetition !== '' ? +repetition : 0;
+        } catch (error) {
+            console.log('Could not convert string to number');
+        }
         const activity: Activity2 = {
             title: title,
             time: getTimeFormat(),
-            repeat: repetition,
+            repeat: repe,
             userId: user,
-            capacity: capacity,
+            capacity: capa,
             groupId: id,
             description: escapedJSONDescription(),
             image: image,
@@ -327,8 +339,6 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
             );
     };
 
-
-
     const changeActivity = async () => {
         const sendActivity = {
             title: title,
@@ -350,16 +360,18 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
         const config = {
             headers: {
                 token: token,
-            }
-        }
-        const request = await axios.put(
-            `/activity/${activityResponse?.activityId}`,
-            sendActivity,
-            config
-        ).then(() => {
-            handleReset();
-            setOpenPopup(!openPopup);
-        });
+            },
+        };
+        const request = await axios
+            .put(
+                `/activity/${activityResponse?.activityId}`,
+                sendActivity,
+                config
+            )
+            .then(() => {
+                handleReset();
+                setOpenPopup(!openPopup);
+            });
         console.log(request);
     };
 
@@ -377,8 +389,8 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
         setTagList([]);
         setTagsDesc('');
         setActivityLevel('');
-        setCapacity(0);
-        setRepetition(0);
+        setCapacity('');
+        setRepetition('');
         setActivity({
             title: '',
             time: '',
@@ -425,8 +437,8 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
             });
             setEquipmentList(activityResponse.equipments);
             setActivityLevel(activityResponse.activityLevel);
-            setCapacity(activityResponse.capacity);
-            setRepetition(activityResponse.daysToRepeat);
+            setCapacity(activityResponse.capacity + '');
+            setRepetition(activityResponse.daysToRepeat + '');
         }
     }, []);
 
@@ -538,7 +550,7 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
                         }}
                         variant="outlined"
                     />
-                    <img src={image} style={{ maxHeight: "40px" }} />
+                    <img src={image} style={{ maxHeight: '40px' }} />
                 </div>
             )}
             {page === 6 && (
@@ -618,9 +630,17 @@ const ActivityForm = ({ openPopup, setOpenPopup, activityResponse, groupId }: Pr
             )}
             {page === 8 && (
                 <div>
-                    <Typography className="activityform__containerItem1">
-                        Legg til aktivitetsgrad*, plasser og gjentakninger
-                    </Typography>
+                    <div className="activityform__header">
+                        <Typography className="activityform__headerItem1">
+                            Legg til aktivitetsgrad*, plasser og gjentakninger
+                        </Typography>
+                        <Tooltip
+                            placement="left-end"
+                            title="Plasser må være minst 1. Gjentakninger må være mellom 0 og 3."
+                        >
+                            <InfoIcon />
+                        </Tooltip>
+                    </div>
                     <div className="acitivityform__containerItem2">
                         <TextField
                             className="activityform__activityLevel"
