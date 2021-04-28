@@ -12,6 +12,7 @@ import styled from 'styled-components';
 import Badge from '@material-ui/core/Badge';
 import Avatar from '@material-ui/core/Avatar';
 import verified from '../../assets/verified.png'
+import { Rating } from '@material-ui/lab';
 
 
 const AvatarDiv = styled.div`
@@ -37,11 +38,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SmallAvatar = withStyles((theme) => ({
-  root: {
-    width: 50,
-    height: 50,
-    border: `2px solid ${theme.palette.background.paper}`,
-  },
+    root: {
+        width: 50,
+        height: 50,
+        border: `2px solid ${theme.palette.background.paper}`,
+    },
 }))(Avatar);
 
 interface Props {
@@ -73,6 +74,13 @@ const UserProfile = ({ friend, openPopup, setOpenPopup, updateFriends }: Props) 
             );
     }
 
+    const getFriendRating = (friendId: string) => {
+        const url = `${friendId}/rating`
+        axios.get(url).then(response => { console.log(response.data) }).catch(error => {
+            console.log('Kunne ikke hente rating' + error.message)
+        });
+    }
+
 
     return (
         <Card>
@@ -83,10 +91,17 @@ const UserProfile = ({ friend, openPopup, setOpenPopup, updateFriends }: Props) 
                         vertical: 'bottom',
                         horizontal: 'right',
                     }}
-                    badgeContent={<SmallAvatar alt="Remy Sharp" src={verified } />}
+                    badgeContent={<SmallAvatar alt="Remy Sharp" src={verified} />}
                 >
-                    <Avatar src={friend.image} className ={classes.large}  />
+                    <Avatar src={friend.image} className={classes.large} />
                 </Badge></AvatarDiv>
+            <Rating
+                readOnly
+                name="read-onlu"
+                defaultValue={3.67}
+                precision={0.01}
+                size="large"
+            />
             <CardContent>
                 <Typography gutterBottom variant="h5" component="h2">
                     {friend.firstName + ' ' + friend.surname}
@@ -103,6 +118,7 @@ const UserProfile = ({ friend, openPopup, setOpenPopup, updateFriends }: Props) 
                 <Typography variant="body2" color="textSecondary" component="p">
                     Poeng: {friend.points}
                 </Typography>
+
                 <div style={{ marginTop: "5px" }}>
                     <Button
                         fullWidth

@@ -192,7 +192,7 @@ export default function FeedCard({
                         key={index}
                         onClick={() => handleUserClicked(user)}
                     >
-                        <Avatar></Avatar>
+                        <Avatar src={user.image}></Avatar>
                         {Object.values(user)[0] ==
                             Object.values(selectedGroup.owner)[0] ? (
                             <ListItemText
