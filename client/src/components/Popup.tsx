@@ -52,7 +52,7 @@ const Popup = ({
                     <Typography
                         variant="h6"
                         component="div"
-                        style={{ flexGrow: 1 }}
+                        style={{ flexGrow: 1 , margin:'10px'}}
                     >
                         {title}
                     </Typography>

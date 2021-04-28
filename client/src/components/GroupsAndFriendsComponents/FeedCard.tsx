@@ -182,9 +182,10 @@ export default function FeedCard({
                 style={{
                     width: '40%',
                     float: 'right',
+                    maxHeight: '160px',
+                    overflow: 'auto'
                 }}
             >
-                <ListSubheader>GRUPPEMEDLEMMER</ListSubheader>
                 {selectedGroup.users.map((user, index) => (
                     <ListItem
                         button
@@ -193,7 +194,7 @@ export default function FeedCard({
                     >
                         <Avatar></Avatar>
                         {Object.values(user)[0] ==
-                        Object.values(selectedGroup.owner)[0] ? (
+                            Object.values(selectedGroup.owner)[0] ? (
                             <ListItemText
                                 primary={
                                     user.firstName +
