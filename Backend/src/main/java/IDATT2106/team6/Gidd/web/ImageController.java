@@ -2,7 +2,6 @@ package IDATT2106.team6.Gidd.web;
 
 import IDATT2106.team6.Gidd.models.Image;
 import IDATT2106.team6.Gidd.service.ImageService;
-import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

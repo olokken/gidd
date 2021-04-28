@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import IDATT2106.team6.Gidd.util.*;
 
-import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.ActivityEquipment;
 import IDATT2106.team6.Gidd.models.Equipment;
 import org.springframework.stereotype.Repository;

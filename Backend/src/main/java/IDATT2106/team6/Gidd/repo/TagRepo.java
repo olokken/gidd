@@ -6,7 +6,6 @@ import java.util.List;
 
 import IDATT2106.team6.Gidd.util.*;
 import IDATT2106.team6.Gidd.models.Tag;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 

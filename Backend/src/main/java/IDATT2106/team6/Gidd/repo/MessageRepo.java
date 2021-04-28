@@ -1,7 +1,6 @@
 package IDATT2106.team6.Gidd.repo;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

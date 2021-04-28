@@ -4,7 +4,6 @@ import IDATT2106.team6.Gidd.models.Rating;
 import IDATT2106.team6.Gidd.util.Logger;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.io.IOException;

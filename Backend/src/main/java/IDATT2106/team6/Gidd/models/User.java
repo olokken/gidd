@@ -1,9 +1,5 @@
 package IDATT2106.team6.Gidd.models;
 
-import IDATT2106.team6.Gidd.util.Logger;
-
-import java.rmi.activation.ActivationID;
-import java.util.Objects;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import javax.persistence.*;
