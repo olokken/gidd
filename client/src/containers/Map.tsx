@@ -22,7 +22,7 @@ const Map = () => {
 
     const getCoordinates = () => {
         fetch(
-            'https://geolocation-db.com/json/ef6c41a0-9d3c-11eb-8f3b-e1f5536499e7'
+            `https://geolocation-db.com/json/${process.env.REACT_APP_GEOLOCATION_KEY}`
         )
             .then((response) => response.json())
             .then((data) => {

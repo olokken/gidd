@@ -11,7 +11,7 @@ interface Props {
 
 const TimeFilter = ({ onTimeFromChange, onTimeToChange }: Props) => {
     const [from, setFrom] = useState<Date>(new Date(0));
-    const [to, setTo] = useState<Date>(new Date(2050,0,0));
+    const [to, setTo] = useState<Date>(new Date(2050, 0, 0));
 
     useEffect(() => {
         onTimeFromChange(from);
@@ -30,9 +30,9 @@ const TimeFilter = ({ onTimeFromChange, onTimeToChange }: Props) => {
     };
 
     const reset = () => {
-        setFrom(new Date(0)); 
-        setTo(new Date(2050,0,0)); 
-    }
+        setFrom(new Date(0));
+        setTo(new Date(2050, 0, 0));
+    };
 
     return (
         <Container>
@@ -54,7 +54,9 @@ const TimeFilter = ({ onTimeFromChange, onTimeToChange }: Props) => {
                     shrink: true,
                 }}
             />
-            <Button onClick={reset}>Nullstill</Button>
+            <Button style={{ marginTop: '0.5rem' }} onClick={reset}>
+                Nullstill
+            </Button>
         </Container>
     );
 };
