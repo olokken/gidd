@@ -84,7 +84,7 @@ const ActivityInformation = ({
     const [openChat, setOpenChat] = useState<boolean>(false);
     const [currentAct, setCurrentAct] = useState<ActivityResponse>(activity);
     const classes = useStyles();
-    const date = new Date(activity.time).toLocaleDateString() + ', ' + new Date(activity.time - 7200000).toLocaleTimeString();
+    const date = new Date(activity.time).toLocaleDateString() + ' ' + new Date(activity.time - 7200000).toLocaleTimeString();
     //Registration is 0 if registration is posible, 1 if you are already registered and 2 if the activity is ful
     const [registration, setRegistration] = useState<number>(1);
     const [isOwner, setIsOwner] = useState<boolean>(false);
@@ -121,11 +121,11 @@ const ActivityInformation = ({
 
     const showActivityLevel = (actLevel: string) => {
         if (actLevel === 'HIGH') {
-            return 'Høyt'
+            return 'Høy'
         } else if (actLevel === 'MEDIUM') {
             return 'Middels'
         } else if (actLevel === 'LOW') {
-            return 'Lavt'
+            return 'Lav'
         }
     }
 

@@ -7,6 +7,7 @@ import {
     Avatar,
     Tooltip,
     Chip,
+    withStyles,
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import styled from 'styled-components';
@@ -14,6 +15,8 @@ import logo from '../../assets/logo.png';
 import User from '../../interfaces/User';
 import Popup from '../Popup';
 import UserProfile from './UserProfile';
+import Badge from '@material-ui/core/Badge';
+import verified from '../../assets/verified.png'
 
 const CardInformation = styled.div`
     height: 100%;
@@ -35,6 +38,14 @@ interface Props {
     updateFriends: () => void;
 }
 
+const SmallAvatar = withStyles((theme) => ({
+    root: {
+        width: 18,
+        height: 18,
+        border: `2px solid ${theme.palette.background.paper}`,
+    },
+}))(Avatar);
+
 
 const FriendCard = ({ friend, updateFriends }: Props) => {
     const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -52,7 +63,16 @@ const FriendCard = ({ friend, updateFriends }: Props) => {
                 <CardInformation>
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
-                            <Avatar src={friend.image}></Avatar>
+                            <Badge
+                                overlap="circle"
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                badgeContent={<SmallAvatar src={verified}/>}
+                            >
+                                <Avatar src={friend.image} />
+                            </Badge>
                         </Grid>
                         <Grid item >
                             <Typography

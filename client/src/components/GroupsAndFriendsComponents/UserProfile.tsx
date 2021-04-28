@@ -2,13 +2,17 @@ import React, { useContext } from 'react';
 import emailjs from 'emailjs-com';
 import TextField from '@material-ui/core/TextField';
 import Input from '@material-ui/core/Input';
-import { Avatar, Button, Card, CardContent, CardMedia, makeStyles, Typography } from '@material-ui/core';
+import { Button, Card, CardContent, CardMedia, makeStyles, Typography, withStyles } from '@material-ui/core';
 import logo from '../../assets/logo.png';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { UserContext } from '../../UserContext';
 import User from '../../interfaces/User';
 import axios from '../../Axios'
 import styled from 'styled-components';
+import Badge from '@material-ui/core/Badge';
+import Avatar from '@material-ui/core/Avatar';
+import verified from '../../assets/verified.png'
+
 
 const AvatarDiv = styled.div`
     justify-content: center;
@@ -31,6 +35,14 @@ const useStyles = makeStyles((theme) => ({
         height: 300,
     },
 }));
+
+const SmallAvatar = withStyles((theme) => ({
+  root: {
+    width: 50,
+    height: 50,
+    border: `2px solid ${theme.palette.background.paper}`,
+  },
+}))(Avatar);
 
 interface Props {
     updateFriends: () => void;
@@ -65,7 +77,16 @@ const UserProfile = ({ friend, openPopup, setOpenPopup, updateFriends }: Props) 
     return (
         <Card>
             <AvatarDiv>
-                <Avatar src={friend.image} className={classes.large}></Avatar></AvatarDiv>
+                <Badge
+                    overlap="circle"
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                    }}
+                    badgeContent={<SmallAvatar alt="Remy Sharp" src={verified } />}
+                >
+                    <Avatar src={friend.image} className ={classes.large}  />
+                </Badge></AvatarDiv>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="h2">
                     {friend.firstName + ' ' + friend.surname}
