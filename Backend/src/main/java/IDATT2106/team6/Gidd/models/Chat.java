@@ -1,5 +1,6 @@
 package IDATT2106.team6.Gidd.models;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 
 import javax.persistence.*;

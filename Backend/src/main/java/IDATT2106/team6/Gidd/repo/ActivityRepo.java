@@ -84,8 +84,9 @@ public class ActivityRepo extends GiddRepo {
         log.info("deleting activity with id: " + activityId);
         try{
             Activity activity = findActivity(activityId);
-            
+
             if(activity != null){
+
                 log.info("activity found, attempting delete");
                 em.getTransaction().begin();
                 Activity temporaryActivity = em.merge(activity);

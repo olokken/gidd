@@ -9,11 +9,12 @@ public class ActivityEquipment {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
     @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "activityId")
+    @JoinColumn(name = "ACTIVITY_ID")
     private Activity activity;
     @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "equipmentId")
+    @JoinColumn(name = "EQUIPMENT_ID")
     private Equipment equipment;
+    @Column(name = "BRINGER_ID")
     private int bringerId;
 
     public ActivityEquipment(){}

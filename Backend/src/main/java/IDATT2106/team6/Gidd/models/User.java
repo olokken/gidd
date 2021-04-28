@@ -241,7 +241,6 @@ public class User {
         return false;
     }
 
-    //todo fiks sånn at det blir gyldig json
     public String getNotificationIds() {
         StringBuilder id = new StringBuilder();
         id.append("[");
@@ -259,7 +258,6 @@ public class User {
         return id.toString();
     }
 
-    //todo probably better to return activity objects, but will cause infinite recursion rn
     public String toJSON() {
         return "\n  {" +
             "\n     \"userId\":" + userId + "," +

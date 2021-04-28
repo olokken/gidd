@@ -95,6 +95,7 @@ public class UserRepo extends GiddRepo {
             User user = findUser(userId);
 
             if(user != null){
+                System.out.println("kommer hit wpogsjgdslkjga ");
                 log.info("found user " + userId +  " to be deleted");
                 em.getTransaction().begin();
                 em.createQuery("DELETE FROM Rating WHERE toUser = ?1 OR fromUser = ?1", Rating.class)
