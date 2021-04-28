@@ -1,36 +1,24 @@
-import React, {
-    ChangeEvent,
-    KeyboardEventHandler,
-    useContext,
-    useEffect,
-    useState,
-} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import FriendList from '../components/GroupsAndFriendsComponents/FriendList';
 import GroupList from '../components/GroupsAndFriendsComponents/GroupList';
 import FeedCard from '../components/GroupsAndFriendsComponents/FeedCard';
 import User from '../interfaces/User';
-import axios from '../Axios'
+import axios from '../Axios';
 import { UserContext } from '../UserContext';
-import Group from '../interfaces/Group'
+import Group from '../interfaces/Group';
 import { Button, Drawer } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
 
-
-
 //Endringer kan forekomme her
-
 
 const Container = styled.div`
     display: flex;
     margin-left: 10px;
     width: 100%;
 `;
-
-
-
 
 const GroupsAndFriends = () => {
     const [friends, setFriends] = useState<User[]>([]);
@@ -47,11 +35,11 @@ const GroupsAndFriends = () => {
             password: '',
             phoneNumber: '',
             activityLevel: '',
-            points: ''
+            points: '',
         },
         groupName: '',
         groupId: '-1',
-        users: []
+        users: [],
     });
 
     const [state, setState] = useState({
@@ -67,9 +55,9 @@ const GroupsAndFriends = () => {
             return window.innerWidth < 951
                 ? setState((prevState) => ({ ...prevState, mobileView: true }))
                 : setState((prevState) => ({
-                    ...prevState,
-                    mobileView: false,
-                }));
+                      ...prevState,
+                      mobileView: false,
+                  }));
         };
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());
@@ -78,20 +66,26 @@ const GroupsAndFriends = () => {
     //henter alle dine grupper
     useEffect(() => {
         updateGroups();
-    }, [selectedGroup]);
+    }, []);
 
     const updateGroups = () => {
-        console.log('oppdaterer')
-        const url = `user/${user}/group`
-        axios.get(url).then(response => {
-            setGroups(response.data['groups'])
-            if (selectedGroup.groupId === '-1' && response.data['groups'].length > 0) {
-                setSelectedGroup(response.data['groups'][0])
-            }
-        }).catch(error => {
-            console.log('Kunne ikke hente dine grupper' + error.message);
-        })
-    }
+        console.log('oppdaterer');
+        const url = `user/${user}/group`;
+        axios
+            .get(url)
+            .then((response) => {
+                setGroups(response.data['groups']);
+                if (
+                    selectedGroup.groupId === '-1' &&
+                    response.data['groups'].length > 0
+                ) {
+                    setSelectedGroup(response.data['groups'][0]);
+                }
+            })
+            .catch((error) => {
+                console.log('Kunne ikke hente dine grupper' + error.message);
+            });
+    };
 
     //henter alle users
     useEffect(() => {
@@ -99,17 +93,19 @@ const GroupsAndFriends = () => {
             .get('/user')
             .then((response) => {
                 console.log(response.data);
-                setUsers(response.data.filter(
-                    (test: { userID: string; }) =>
-                        Object.values(test)[0] != user && friendCheck(test)
-                ));
+                setUsers(
+                    response.data.filter(
+                        (test: { userID: string }) =>
+                            Object.values(test)[0] != user && friendCheck(test)
+                    )
+                );
             })
             .catch((error) => console.log(error));
     }, [friends, user]);
 
     const handleGroupClicked = (group: Group) => {
         setSelectedGroup(group);
-    }
+    };
 
     const leaveGroup = () => {
         const groupId = selectedGroup.groupId;
@@ -118,8 +114,9 @@ const GroupsAndFriends = () => {
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
-            }).then(() => {
-                updateGroups()
+            })
+            .then(() => {
+                updateGroups();
                 setSelectedGroup({
                     owner: {
                         firstName: '',
@@ -130,19 +127,45 @@ const GroupsAndFriends = () => {
                         password: '',
                         phoneNumber: '',
                         activityLevel: '',
-                        points: ''
+                        points: '',
                     },
                     groupName: '',
                     groupId: '0',
-                    users: []
-                })
-            }).catch((error) => {
-                alert("Du kan ikke forlate gruppen mens du er eier");
-                console.log('Kunne ikke forlate gruppe: ' + error.message)
-            }
-            );
-    }
+                    users: [],
+                });
+            })
+            .catch((error) => {
+                alert('Du kan ikke forlate gruppen mens du er eier');
+                console.log('Kunne ikke forlate gruppe: ' + error.message);
+            });
+    };
 
+    const deleteGroup = async () => {
+        if ((selectedGroup.owner.userId = user)) {
+            const groupId = selectedGroup.groupId;
+            const request = await axios.delete(`/group/${groupId}`);
+            setSelectedGroup({
+                owner: {
+                    firstName: '',
+                    surname: '',
+                    userId: '',
+                    email: '',
+                    image: '',
+                    password: '',
+                    phoneNumber: '',
+                    activityLevel: '',
+                    points: '',
+                },
+                groupName: '',
+                groupId: '-1',
+                users: [],
+            });
+            updateGroups();
+            return request;
+        } else {
+            console.log('You must be the owner in order to delete the group.');
+        }
+    };
 
     //sjekker om user finnes i friends
     const friendCheck = (test: any) => {
@@ -151,37 +174,56 @@ const GroupsAndFriends = () => {
             if (Object.values(friend)[0] === Object.values(test)[0]) {
                 a = false;
             }
-        })
+        });
         return a;
-    }
+    };
 
     const updateFriends = () => {
         axios
             .get(`/user/${user}/user`)
             .then((response) => {
-                console.log('Venner:')
+                console.log('Venner:');
                 console.log(response.data['users']);
                 setFriends(response.data['users']);
             })
             .catch((error) => console.log(error));
-    }
+    };
     //henter ut alle venner
     useEffect(() => {
-        updateFriends()
+        updateFriends();
     }, [user]);
-
 
     const displayDesktop = () => {
         return (
             <Container>
                 <div style={{ width: '20%', minWidth: '200px' }}>
-                    <FriendList updateFriends={updateFriends} users={users} friends={friends} />
+                    <FriendList
+                        updateFriends={updateFriends}
+                        users={users}
+                        friends={friends}
+                    />
                 </div>
                 <div style={{ width: '57%' }}>
-                    <FeedCard selectedGroup={selectedGroup} updateGroups={updateGroups} leaveGroup={leaveGroup}></FeedCard>
+                    <FeedCard
+                        selectedGroup={selectedGroup}
+                        updateGroups={updateGroups}
+                        leaveGroup={leaveGroup}
+                        deleteGroup={deleteGroup}
+                    ></FeedCard>
                 </div>
-                <div style={{ width: '20%', minWidth: '200px', marginRight: '20px' }}>
-                    <GroupList updateGroups={updateGroups} friends={friends} groups={groups} handleGroupClicked={handleGroupClicked} />
+                <div
+                    style={{
+                        width: '20%',
+                        minWidth: '200px',
+                        marginRight: '20px',
+                    }}
+                >
+                    <GroupList
+                        updateGroups={updateGroups}
+                        friends={friends}
+                        groups={groups}
+                        handleGroupClicked={handleGroupClicked}
+                    />
                 </div>
             </Container>
         );
@@ -213,7 +255,7 @@ const GroupsAndFriends = () => {
                         onClick={handleDrawerOpen}
                     >
                         Dine Venner
-            </Button>
+                    </Button>
                     <Drawer
                         style={{ width: '50px' }}
                         {...{
@@ -222,7 +264,6 @@ const GroupsAndFriends = () => {
                             onClose: handleDrawerClose,
                         }}
                     >
-
                         <br />
                         <IconButton
                             style={{
@@ -236,7 +277,11 @@ const GroupsAndFriends = () => {
                         </IconButton>
                         <b style={{ textAlign: 'center' }}>Dine venner</b>
                         <Divider style={{ marginTop: '20px' }} />
-                        <FriendList updateFriends={updateFriends} users={users} friends={friends} />
+                        <FriendList
+                            updateFriends={updateFriends}
+                            users={users}
+                            friends={friends}
+                        />
                     </Drawer>
 
                     <Button
@@ -249,7 +294,7 @@ const GroupsAndFriends = () => {
                         onClick={handleDrawerOpen2}
                     >
                         Dine grupper
-            </Button>
+                    </Button>
                     <Drawer
                         style={{ width: '50px' }}
                         {...{
@@ -271,19 +316,28 @@ const GroupsAndFriends = () => {
                         </IconButton>
                         <b style={{ textAlign: 'center' }}>Dine grupper</b>
                         <Divider style={{ marginTop: '20px' }} />
-                        <GroupList onClick={handleDrawerClose2} updateGroups={updateGroups} friends={friends} groups={groups} handleGroupClicked={handleGroupClicked} />
+                        <GroupList
+                            onClick={handleDrawerClose2}
+                            updateGroups={updateGroups}
+                            friends={friends}
+                            groups={groups}
+                            handleGroupClicked={handleGroupClicked}
+                        />
                     </Drawer>
                 </Container>
                 <div style={{ width: '100%' }}>
-                    <FeedCard selectedGroup={selectedGroup} updateGroups={updateGroups} leaveGroup={leaveGroup}></FeedCard>
+                    <FeedCard
+                        selectedGroup={selectedGroup}
+                        updateGroups={updateGroups}
+                        leaveGroup={leaveGroup}
+                        deleteGroup={deleteGroup}
+                    ></FeedCard>
                 </div>
             </div>
         );
     };
 
-    return (
-        <div>{mobileView ? displayMobile() : displayDesktop()}</div>
-    );
+    return <div>{mobileView ? displayMobile() : displayDesktop()}</div>;
 };
 
 export default GroupsAndFriends;

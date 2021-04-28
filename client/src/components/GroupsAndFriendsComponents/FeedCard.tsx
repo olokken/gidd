@@ -10,6 +10,7 @@ import {
     ListItem,
     ListItemText,
     ListSubheader,
+    makeStyles,
 } from '@material-ui/core';
 import React from 'react';
 import styled from 'styled-components';
@@ -27,6 +28,7 @@ import User from '../../interfaces/User';
 import { UserContext } from '../../UserContext';
 import { useContext } from 'react';
 import ActivityInformation from '../ActivityComponents/ActivityInformation';
+import GroupLeaderboard from '../LeaderboardComponents/GroupLeaderboard';
 
 const StyledHeader = styled.h2`
     text-align: center;
@@ -55,17 +57,39 @@ const TransformDiv = styled.div`
     }
 `;
 
+const StyledButtons = styled.div`
+    display: flex;
+    flex-direction: column;
+    border: 2px solid blue;
+    padding: 1rem;
+`;
+
+const useStyles = makeStyles({
+    button: {
+        width: '40%',
+        position: 'relative',
+        bottom: '0',
+        fontSize: '12px',
+        right: '0',
+        left: '60%',
+        margin: '1%',
+    },
+});
+
 interface Props {
     selectedGroup: Group;
     updateGroups: () => void;
     leaveGroup: () => void;
+    deleteGroup: () => void;
 }
 
 export default function FeedCard({
     selectedGroup,
     updateGroups,
     leaveGroup,
+    deleteGroup,
 }: Props) {
+    const classes = useStyles();
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     const [openChoiceBox, setOpenChoiceBox] = useState<boolean>(false);
     const [nextActivity, setNextActivity] = useState<ActivityResponse>();
@@ -160,20 +184,24 @@ export default function FeedCard({
     };
 
     const handleOnChangeOwner = () => {
-        const url = `/group/${selectedGroup.groupId}`
-        console.log(Object.values(selectedUser)[0])
-        axios.put(url, {
-            "groupId": selectedGroup.groupId,
-            "newOwner": Object.values(selectedUser)[0]
-        }).then(response => {
-            console.log(response);
-        }).then(() => {
-            updateGroups()
-            setOpenChoiceBox(!openChoiceBox)
-        }).catch(error => {
-            console.log('Fikk ikke endret eier' + error.message)
-        })
-    }
+        const url = `/group/${selectedGroup.groupId}`;
+        console.log(Object.values(selectedUser)[0]);
+        axios
+            .put(url, {
+                groupId: selectedGroup.groupId,
+                newOwner: Object.values(selectedUser)[0],
+            })
+            .then((response) => {
+                console.log(response);
+            })
+            .then(() => {
+                updateGroups();
+                setOpenChoiceBox(!openChoiceBox);
+            })
+            .catch((error) => {
+                console.log('Fikk ikke endret eier' + error.message);
+            });
+    };
 
     return selectedGroup.groupName !== '' ? (
         <FeedContainer>
@@ -270,45 +298,54 @@ export default function FeedCard({
             ) : (
                 <div></div>
             )}
-            <Button
-                fullWidth
-                onClick={() => setOpenPopup(!openPopup)}
-                variant="contained"
-                color="primary"
-                style={{
-                    position: 'relative',
-                    bottom: '0',
-                }}
-            >
-                {' '}
-                Opprett en gruppeaktivitet{' '}
-                <AddIcon style={{ marginLeft: '8px' }} />
-            </Button>
-            <Popup
-                title="Legg til aktivitet"
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
-                maxWidth="md"
-            >
-                <ActivityForm
+            <StyledButtons>
+                <Button
+                    className={classes.button}
+                    onClick={() => setOpenPopup(!openPopup)}
+                    variant="contained"
+                    color="primary"
+                >
+                    {' '}
+                    Opprett gruppeaktivitet{' '}
+                    <AddIcon style={{ marginLeft: '8px' }} />
+                </Button>
+                <Popup
+                    title="Legg til aktivitet"
                     openPopup={openPopup}
                     setOpenPopup={setOpenPopup}
-                    groupId={selectedGroup.groupId}
+                    maxWidth="md"
+                >
+                    <ActivityForm
+                        openPopup={openPopup}
+                        setOpenPopup={setOpenPopup}
+                        groupId={selectedGroup.groupId}
+                    />
+                </Popup>
+                <Button
+                    className={classes.button}
+                    onClick={handleLeaveGroup}
+                    variant="contained"
+                    color="primary"
+                >
+                    {' '}
+                    Forlat Gruppe <DeleteIcon style={{ marginLeft: '8px' }} />
+                </Button>
+                <Button
+                    className={classes.button}
+                    onClick={deleteGroup}
+                    variant="contained"
+                    color="primary"
+                >
+                    {' '}
+                    Slett Gruppe <DeleteIcon style={{ marginLeft: '8px' }} />
+                </Button>
+            </StyledButtons>
+            <div>
+                <GroupLeaderboard
+                    users={selectedGroup.users}
+                    title={selectedGroup.groupName}
                 />
-            </Popup>
-            <Button
-                fullWidth
-                onClick={handleLeaveGroup}
-                variant="contained"
-                color="primary"
-                style={{
-                    position: 'relative',
-                    bottom: '0',
-                }}
-            >
-                {' '}
-                Forlat Gruppe <DeleteIcon style={{ marginLeft: '8px' }} />
-            </Button>
+            </div>
         </FeedContainer>
     ) : (
         <FeedContainer>
