@@ -630,9 +630,17 @@ const ActivityForm = ({
             )}
             {page === 8 && (
                 <div>
-                    <Typography className="activityform__containerItem1">
-                        Legg til aktivitetsgrad*, plasser og gjentakninger
-                    </Typography>
+                    <div className="activityform__header">
+                        <Typography className="activityform__headerItem1">
+                            Legg til aktivitetsgrad*, plasser og gjentakninger
+                        </Typography>
+                        <Tooltip
+                            placement="left-end"
+                            title="Plasser må være minst 1. Gjentakninger må være mellom 0 og 3."
+                        >
+                            <InfoIcon />
+                        </Tooltip>
+                    </div>
                     <div className="acitivityform__containerItem2">
                         <TextField
                             className="activityform__activityLevel"
