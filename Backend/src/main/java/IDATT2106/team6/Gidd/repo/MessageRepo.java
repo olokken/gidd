@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import IDATT2106.team6.Gidd.models.Activity;
-import IDATT2106.team6.Gidd.models.Chat;
-import IDATT2106.team6.Gidd.models.Tag;
+import IDATT2106.team6.Gidd.models.*;
 import org.springframework.stereotype.Repository;
 import IDATT2106.team6.Gidd.util.*;
 
@@ -31,9 +30,27 @@ public class MessageRepo extends GiddRepo {
         EntityManager em = getEm();
 
         try {
+
             em.getTransaction().begin();
             em.persist(chat);
             em.getTransaction().commit();
+            try {
+                List<User> users =
+                        chat.getGroup()
+                        .getRegisteredParticipants()
+                        .stream().map(ActivityUser::getUser).collect(Collectors.toList());
+
+                em.getTransaction().begin();
+                for (User user : users) {
+                    if(user.getUserId() != chat.getUser().getUserId()) {
+                        user.addNotification(chat.getGroup());
+                        em.merge(user);
+                    }
+                }
+                em.getTransaction().commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             return true;
         }catch (Exception e){

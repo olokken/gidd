@@ -269,4 +269,9 @@ public class UserService {
 
         return requests;
     }
+
+    public boolean removeNotification (User user, Activity activity){
+        boolean removed = user.removeNotification(activity);
+        return removed && editUser(user);
+    }
 }

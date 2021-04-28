@@ -5,6 +5,8 @@ import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Chat {
@@ -21,10 +23,17 @@ public class Chat {
     private Timestamp timeStamp;
 
     public Chat(Activity toActivity, User user, String message){
-        this.activity = toActivity;
-        this.user = user;
-        this.message = message;
-        this.timeStamp =  new Timestamp(new Date().getTime());
+        List<User> registeredUsers = toActivity.getRegisteredParticipants().stream().map(ActivityUser::getUser).collect(Collectors.toList());
+
+        if(registeredUsers.contains(user)) {
+            this.activity = toActivity;
+            this.user = user;
+            this.message = message;
+            this.timeStamp = new Timestamp(new Date().getTime());
+        }
+        else {
+            throw new IllegalArgumentException("user does not belong to that activity");
+        }
     }
 
     public Chat(){}

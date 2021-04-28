@@ -271,6 +271,31 @@ public class UserController {
                 .headers(header)
                 .body(formatJson(body));
     }
+    @DeleteMapping("/{userId}/notification/{activityId}")
+    public ResponseEntity deleteNotification(@PathVariable Integer userId, @PathVariable Integer activityId){
+        HttpHeaders headers = new HttpHeaders();
+        HashMap<String, String> body = new HashMap<>();
+        User user = userService.getUser(userId);
+        Activity activity = activityService.getActivity(activityId);
+        if (user != null && activity != null) {
+            if (userService.removeNotification(user, activity)){
+                return ResponseEntity
+                        .ok()
+                        .headers(headers)
+                        .build();
+            }
+            body.put("error", "could not delete");
+            return ResponseEntity
+                    .badRequest()
+                    .headers(headers)
+                    .body(formatJson(body));
+        }
+
+        body.put("error", "user or activity do not exist");
+        return ResponseEntity.badRequest()
+                .headers(headers)
+                .body(formatJson(body));
+    }
     @GetMapping("/{userId}/user/{friendId}")
     public ResponseEntity checkFriendship(@PathVariable Integer userId, @PathVariable Integer friendId) {
         log.debug("Received GetMapping to '/user/{userId}/user/{friendId}'");
@@ -568,6 +593,7 @@ public class UserController {
                 .body(formatJson(body));
     }
 
+    @GetMapping("/{userId}/notification")
     @PathTwoTokenRequired
     @PutMapping(value = "/some/{id}")
     public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
