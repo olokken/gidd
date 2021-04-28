@@ -13,12 +13,16 @@ public class Rating {
     private int rating;
     @CascadeOnDelete
     @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "to_user_id")
+    private User toUser;
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "from_user_id")
+    private User fromUser;
 
-    public Rating(int rating, User user){
+    public Rating(int rating, User toUser, User fromUser){
         this.rating = rating;
-        this.user = user;
+        this.toUser = toUser;
+        this.fromUser = fromUser;
     }
 
     public Rating(){}
@@ -31,8 +35,8 @@ public class Rating {
         return rating;
     }
 
-    public User getUser() {
-        return user;
+    public User getToUser() {
+        return toUser;
     }
 
     public void setRatingId(int ratingId) {
@@ -43,7 +47,7 @@ public class Rating {
         this.rating = rating;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setToUser(User user) {
+        this.toUser = user;
     }
 }

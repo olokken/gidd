@@ -63,8 +63,9 @@ public class UserController {
                     .ok()
                     .body(users.toString());
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("An unexpected error was caught while getting all tags: " +
-                    e.getCause() + " with message" + e.getCause().getMessage());
+                    e.getCause() + " with message " + e.getMessage());
             HashMap<String, String> body = new HashMap<>();
             body.put("error", "something went wrong");
 
@@ -993,13 +994,26 @@ public class UserController {
     @PostMapping("/{userId}/rating")
     public ResponseEntity giveRating(@RequestBody HashMap<String, Object> map, @PathVariable Integer userId){
         log.debug("Received mapping to 'user/{userId}/rating'");
-        User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
-        int rating = Integer.parseInt(map.get("rating").toString());
+        int fromUserId = Integer.parseInt(map.get("fromUserId").toString());
+        int toUserId = Integer.parseInt(map.get("toUserId").toString());
 
         HttpHeaders header = new HttpHeaders();
         Map<String, String> body = new HashMap<>();
 
-        if (user == null) {
+        if(fromUserId == toUserId) {
+            body.put("error", "you cannot rate yourself");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
+
+        User fromUser = userService.getUser(fromUserId);
+        User toUser = userService.getUser(toUserId);
+
+        int rating = Integer.parseInt(map.get("rating").toString());
+
+        if (fromUser == null || toUser == null) {
             log.error("User is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -1025,7 +1039,7 @@ public class UserController {
                     .body(formatJson(body));
         }
 
-        if(!ratingService.addRating(rating, user)){
+        if(!ratingService.addRating(rating, toUser, fromUser)){
             log.error("Something wrong happened when trying to add rating");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -1042,7 +1056,7 @@ public class UserController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
-        body.put("userId", String.valueOf(user.getUserId()));
+        body.put("userId", String.valueOf(toUser.getUserId()));
 
         return ResponseEntity
                 .ok()
