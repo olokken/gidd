@@ -346,6 +346,7 @@ public class ActivityController {
 
     @GetMapping(value = "")
     public ResponseEntity getActivities(
+            @RequestParam(value = "userId", required = false) Integer userId,
             @RequestParam(value = "searchWord", required = false) String searchValue,
             @RequestParam(value = "activityLevel", required = false) Integer activityLevel,
             @RequestParam(value = "tagDescription", required = false) String tagDescription)
@@ -402,6 +403,13 @@ public class ActivityController {
                     .badRequest()
                     .headers(header)
                     .body(formatJson(body));
+        }
+
+        if(userId!=null) {
+            User user = userService.getUser(userId);
+            if (user != null){
+                activities.addAll(groupService.getGroupActivitiesForUser(user));
+            }
         }
 
         log.debug(String.format("There are %d activities", activities.size()));

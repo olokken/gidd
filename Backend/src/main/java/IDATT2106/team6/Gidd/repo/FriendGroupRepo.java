@@ -4,6 +4,7 @@ import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.FriendGroup;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.util.Logger;
+import java.util.Collections;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -114,7 +115,19 @@ public class FriendGroupRepo extends GiddRepo {
         }
     }
 
+    public List<FriendGroup> getGroupsForUser(int userId) {
+        log.debug("Finding groups for user " + userId);
+        EntityManager em = getEm();
 
+        try {
+            Query q = em.createNativeQuery("SELECT * FROM FRIEND_GROUP WHERE group_id IN (SELECT FriendGroup_group_id FROM FRIEND_GROUP_USER WHERE users_user_id = ?1)" , FriendGroup.class)
+                .setParameter(1, userId);
+            return q.getResultList();
+        } catch (Exception e) {
+            log.error("An error has occurred: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
 
     public List<Activity> getActivitiesForGroup(int groupId){
         log.debug("Finding activities for group " + groupId);

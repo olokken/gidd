@@ -23,7 +23,7 @@ public class ActivityService {
     }
 
     //Use addActivity(Activity) when you can, as it is easier to work with
-    public void addActivity(int id, String title, Timestamp time, int repeat, User userId,
+    public void addActivity(int id, String title, Timestamp time, User userId,
                             int capacity, FriendGroup groupId, String description, Image image,
                             ActivityLevel activityLevel, List<Tag> tags,
                             double latitude, double longitude) {

@@ -53,7 +53,19 @@ public class FriendGroupService {
         return repo.updateFriendGroup(friendGroup);
     }
 
+    public List<FriendGroup> getGroupsForUser(User user) {
+        return repo.getGroupsForUser(user.getUserId());
+    }
+
     public List<Activity> getActivitiesForGroup(FriendGroup friendGroup){
         return repo.getActivitiesForGroup(friendGroup.getGroupId());
+    }
+
+    public List<Activity> getGroupActivitiesForUser(User user) {
+        List<Activity> res = new ArrayList();
+        for (FriendGroup fg: getGroupsForUser(user)) {
+            res.addAll(getActivitiesForGroup(fg));
+        }
+        return res;
     }
 }

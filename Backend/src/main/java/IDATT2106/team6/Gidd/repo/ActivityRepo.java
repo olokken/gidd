@@ -213,7 +213,7 @@ public class ActivityRepo extends GiddRepo {
         List<Activity> allActivities = null;
 
         try {
-            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY", Activity.class);
+            Query q = em.createNativeQuery("SELECT * FROM ACTIVITY WHERE group_id IS NULL", Activity.class);
             allActivities = q.getResultList();
         }catch (Exception e){
             log.error("getting all activites failed due to " + e.getMessage());
