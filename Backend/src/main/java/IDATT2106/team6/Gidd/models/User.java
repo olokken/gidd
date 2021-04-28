@@ -54,7 +54,7 @@ public class User {
     public User(int id, String email, String password,
                 String firstName, String surname,
                 int phoneNumber, ActivityLevel activityLevel,
-                Image image, Provider provider){
+                Image image, Provider provider) {
         this.userId = id;
         this.email = email;
         this.firstName = firstName;
@@ -101,7 +101,9 @@ public class User {
     public boolean verifyPassword(String testPassword) {
         //the password that is to be tested
         System.out.println("passordet er " + testPassword);
-        if (testPassword == null) return false;
+        if (testPassword == null) {
+            return false;
+        }
         char[] passwordChars = testPassword.toCharArray();
         byte[] saltBytes = Base64.decodeBase64(salt);
         byte[] hashedBytes = hashPassword(passwordChars, saltBytes);
@@ -110,8 +112,8 @@ public class User {
     }
 
 
-
-    public User(){}
+    public User() {
+    }
 
     public int getUserId() {
         return userId;
@@ -197,7 +199,7 @@ public class User {
         this.authProvider = authProvider;
     }
 
-    public void addActivity(ActivityUser activityUser){
+    public void addActivity(ActivityUser activityUser) {
         this.activities.add(activityUser);
     }
 
@@ -225,25 +227,28 @@ public class User {
         this.image = image;
     }
 
-    public void addNotification(Activity activity){
-        if(!notifications.contains(activity)){
+    public void addNotification(Activity activity) {
+        if (!notifications.contains(activity)) {
             notifications.add(activity);
         }
     }
 
     public boolean removeNotification(Activity activity) {
-        if (notifications.contains(activity)){ ;
+        if (notifications.contains(activity)) {
+            ;
             return notifications.remove(activity);
         }
         return false;
     }
 
-    public String getNotificationIds(){
+    public String getNotificationIds() {
         StringBuilder id = new StringBuilder();
         for (Activity a : notifications) {
             id.append(a.getActivityId()).append(",");
         }
-        id.deleteCharAt(id.length() - 1);
+        if (id.length() > 0) {
+            id.deleteCharAt(id.length() - 1);
+        }
         return id.toString();
     }
 
@@ -251,12 +256,14 @@ public class User {
     public String toJSON() {
         return "\n  {" +
             "\n     \"userId\":" + userId + "," +
-            "\n     \"email\":" + '\"' + email + '\"' +"," +
-            "\n     \"firstName\":" + '\"' + firstName + '\"' +"," +
-            "\n     \"surname\":" + '\"' + surname + '\"' +"," +
-            "\n     \"phoneNumber\":" + phoneNumber +"," +
-            "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
-            "\n     \"image\":" + '\"' + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes())  + '\"' + "," +
+            "\n     \"email\":" + '\"' + email + '\"' + "," +
+            "\n     \"firstName\":" + '\"' + firstName + '\"' + "," +
+            "\n     \"surname\":" + '\"' + surname + '\"' + "," +
+            "\n     \"phoneNumber\":" + phoneNumber + "," +
+            "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' + "," +
+            "\n     \"image\":" + '\"' + image.getDatatype() +
+            org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' +
+            "," +
             "\n     \"points\":" + points + "," +
             "\n     \"notifications\":\"" + getNotificationIds() + "\"" +
             "\n }";
@@ -264,17 +271,19 @@ public class User {
 
     public String toString() {
         return "\n  {" +
-                "\n     \"userId\":" + userId + "," +
-                "\n     \"email\":" + '\"' + email + '\"' +"," +
-                "\n     \"firstName\":" + '\"' + firstName + '\"' +"," +
-                "\n     \"surname\":" + '\"' + surname + '\"' +"," +
-                "\n     \"phoneNumber\":" + phoneNumber +"," +
-                "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' +"," +
-                "\n     \"points\":" + points + "," +
-                "\n     \"notifications\":\"" + getNotificationIds() + "\"," +
-                "\n     \"image\":" + '\"' + image.getDatatype() + org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' + "," +
-                "\n     \"provider\":" + '\"' + authProvider + '\"' +
-                "\n }";
+            "\n     \"userId\":" + userId + "," +
+            "\n     \"email\":" + '\"' + email + '\"' + "," +
+            "\n     \"firstName\":" + '\"' + firstName + '\"' + "," +
+            "\n     \"surname\":" + '\"' + surname + '\"' + "," +
+            "\n     \"phoneNumber\":" + phoneNumber + "," +
+            "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' + "," +
+            "\n     \"points\":" + points + "," +
+            "\n     \"notifications\":\"" + getNotificationIds() + "\"," +
+            "\n     \"image\":" + '\"' + image.getDatatype() +
+            org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' +
+            "," +
+            "\n     \"provider\":" + '\"' + authProvider + '\"' +
+            "\n }";
     }
 
     @Override
