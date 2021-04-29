@@ -1033,8 +1033,6 @@ public class UserController {
         User fromUser = userService.getUser(fromUserId);
         User toUser = userService.getUser(toUserId);
 
-        int rating = Integer.parseInt(map.get("rating").toString());
-
         if (fromUser == null || toUser == null) {
             log.error("User is null");
             header.add("Status", "400 BAD REQUEST");
@@ -1047,6 +1045,16 @@ public class UserController {
                 .headers(header)
                 .body(formatJson(body));
         }
+
+        if(ratingService.ratingExists(fromUser, toUser)){
+            body.put("error", "you've already rated that user");
+
+            return ResponseEntity
+                .badRequest()
+                .body(formatJson(body));
+        }
+
+        int rating = Integer.parseInt(map.get("rating").toString());
 
         if (rating <= 0 || rating > 5) {
             log.error("The rating is " + rating);

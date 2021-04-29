@@ -24,4 +24,8 @@ public class RatingService {
         List avg = this.repo.findAverage(user.getUserId());
         return Double.parseDouble(avg.get(0).toString());
     }
+
+    public boolean ratingExists(User from, User to) {
+        return repo.ratingExists(from.getUserId(), to.getUserId());
+    }
 }
