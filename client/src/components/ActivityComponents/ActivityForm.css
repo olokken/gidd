@@ -1,0 +1,95 @@
+.activityform {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.activityform__container {
+    padding: 10px !important;
+}
+
+.activityform__pageContainer {
+    margin-top: 50px;
+}
+
+.activityform__containerItem1 {
+    margin-bottom: 3vh !important;
+}
+
+.acitivityform__containerItem2 {
+    padding: 10px !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.acitivityform__containerItem22 {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.acitivityform__numberbox {
+    min-width: 18vw !important;
+    @media screen and (max-width: 768px) {
+        min-width: 30vw !important;
+    }
+}
+
+.activityform__description {
+    height: 120px;
+    min-width: 50vh;
+    padding: 5px;
+}
+
+.activityform__reset {
+    margin-left: 4px !important;
+    width: 17vw !important;
+}
+
+.activityform__add {
+    margin-right: 4px !important;
+    width: 17vw !important;
+}
+
+.activityform__activityLevel {
+    min-width: 15vw !important;
+    margin-top: 4px !important;
+}
+
+.activityform__place {
+    display: flex;
+    margin-right: 0;
+}
+
+.activityform__placeButton {
+    height: 2rem !important;
+    width: 9rem !important;
+    margin-top: 1rem !important;
+}
+
+.activityform__placeItem1 {
+    left: 0;
+    width: 25vw;
+}
+
+.activityform__list {
+    border-radius: 5px;
+    border: solid lightgrey 1px;
+    max-width: 28vh;
+    height: 110px;
+    overflow: auto;
+}
+
+.activityform__equipmentField {
+    margin-left: 1px;
+}
+
+.activityform__header {
+    display: flex;
+    margin-bottom: 3vh !important;
+}
+
+.activityform__headerItem1 {
+    margin-right: 1vw !important;
+}

@@ -1,7 +1,11 @@
 export default interface User {
-    name:string,
-    userID: string,
-    email:string,
-    picture:string,
-    password:string
+    firstName: string;
+    surname: string;
+    userId: string;
+    email: string;
+    image: string;
+    password: string;
+    phoneNumber: string;
+    activityLevel: string;
+    points: string;
 }
