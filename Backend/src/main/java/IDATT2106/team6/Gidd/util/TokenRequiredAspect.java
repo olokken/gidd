@@ -126,6 +126,7 @@ public class TokenRequiredAspect {
         for (User u : group.getUsers()) {
             subjects.add(String.valueOf(u.getUserId()));
         }
+        subjects.add(String.valueOf(group.getOwner().getUserId()));
         return handleTokenArr(pjp, subjects);
     }
 
