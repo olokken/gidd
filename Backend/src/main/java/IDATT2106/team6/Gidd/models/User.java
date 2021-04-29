@@ -47,6 +47,9 @@ public class User {
     @OneToMany
     private List<Activity> notifications;
 
+    public User() {
+    }
+
     public User(int id, String email, String password,
                 String firstName, String surname,
                 int phoneNumber, ActivityLevel activityLevel,
@@ -104,10 +107,6 @@ public class User {
         byte[] hashedBytes = hashPassword(passwordChars, saltBytes);
         String hashedString = Hex.encodeHexString(hashedBytes);
         return (hashedString.equals(password));
-    }
-
-
-    public User() {
     }
 
     public int getUserId() {

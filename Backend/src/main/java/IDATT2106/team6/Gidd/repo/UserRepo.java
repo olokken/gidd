@@ -155,7 +155,7 @@ public class UserRepo extends GiddRepo {
      */
     public Integer getActivityUserId(int activityId, int userId){
         EntityManager em = getEm();
-        log.info(" getting connection id betweedn activity and user "+ activityId + " , " + userId);
+        log.info(" getting connection id between activity and user "+ activityId + " , " + userId);
         try{
             Query q = em.createNativeQuery("SELECT ID FROM ACTIVITY_USER WHERE activity_id = ?1 AND user_id = ?2")
                     .setParameter(1, activityId)

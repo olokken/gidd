@@ -25,28 +25,28 @@ public class Equipment {
         return equipmentId;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public List<ActivityEquipment> getActivities() {
-        return activities;
-    }
-
     public void setEquipmentId(int equipmentId) {
         this.equipmentId = equipmentId;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public void addActivityToEquipment(ActivityEquipment activityEquipment){
-        this.activities.add(activityEquipment);
+    public List<ActivityEquipment> getActivities() {
+        return activities;
     }
 
     public void setActivities(List<ActivityEquipment> activities) {
         this.activities = activities;
+    }
+
+    public void addActivityToEquipment(ActivityEquipment activityEquipment){
+        this.activities.add(activityEquipment);
     }
 
     @Override
