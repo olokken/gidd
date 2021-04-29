@@ -84,7 +84,7 @@ const GroupLeaderboard: React.FC<Props> = ({ title, users }: Props) => {
     //The max margin-left is 52rem
     const getMarginLeft = (user: User) => {
         if (users.length > 5) return (+user.points / totalPoints) * 250;
-        else return (+user.points / totalPoints) * 75;
+        else return (+user.points / totalPoints) * 60;
     };
 
     useEffect(() => {

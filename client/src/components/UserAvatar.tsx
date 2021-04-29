@@ -6,17 +6,16 @@ import styled from 'styled-components';
 import { makeStyles, withStyles } from '@material-ui/core';
 import React from 'react';
 
-
 interface Props {
     user: User;
     type: string;
+    marginRight?: string;
 }
-
 
 const AvatarDiv = styled.div`
     justify-content: center;
-     display: flex;
-     margin-left:10px;
+    display: flex;
+    margin-left: 10px;
 `;
 
 const useStyles = makeStyles((theme) => ({
@@ -37,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     mini: {
         width: 20,
         height: 20,
-    }
+    },
 }));
 
 const SmallAvatar = withStyles((theme) => ({
@@ -46,28 +45,44 @@ const SmallAvatar = withStyles((theme) => ({
     },
 }))(Avatar);
 
-
-const UserAvatar = ({ user, type }: Props) => {
+const UserAvatar = ({ user, type, marginRight }: Props) => {
     const classes = useStyles();
     return (
-        <AvatarDiv>
-            {+user.points >= 1000 ?
-
+        <AvatarDiv
+            style={{ marginRight: marginRight === '' ? '0' : marginRight }}
+        >
+            {+user.points >= 1000 ? (
                 <Badge
                     overlap="circle"
                     anchorOrigin={{
                         vertical: 'bottom',
                         horizontal: 'right',
                     }}
-                    badgeContent={<SmallAvatar alt="Remy Sharp" src={verified} className={type == 'small' ? classes.mini : classes.small} />}
+                    badgeContent={
+                        <SmallAvatar
+                            alt="Remy Sharp"
+                            src={verified}
+                            className={
+                                type == 'small' ? classes.mini : classes.small
+                            }
+                        />
+                    }
                 >
-                    <Avatar src={user.image} className={type == 'small' ? classes.small : classes.large} />
-                </Badge> :
-                <Avatar src={user.image} className={type == 'small' ? classes.small : classes.large} />
-            }
+                    <Avatar
+                        src={user.image}
+                        className={
+                            type == 'small' ? classes.small : classes.large
+                        }
+                    />
+                </Badge>
+            ) : (
+                <Avatar
+                    src={user.image}
+                    className={type == 'small' ? classes.small : classes.large}
+                />
+            )}
         </AvatarDiv>
-    )
-}
-
+    );
+};
 
 export default UserAvatar;

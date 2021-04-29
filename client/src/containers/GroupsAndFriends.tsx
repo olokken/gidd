@@ -11,7 +11,7 @@ import { Button, Drawer } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
-import config from '../Config'
+import config from '../Config';
 
 
 const Container = styled.div`
@@ -90,7 +90,7 @@ const GroupsAndFriends = () => {
     //henter alle users
     useEffect(() => {
         axios
-            .get('/user',)
+            .get('/user')
             .then((response) => {
                 console.log(response.data);
                 setUsers(
