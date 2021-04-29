@@ -225,12 +225,22 @@ const ActivityInformation = ({
                 </Button>
             );
         } else if (registration == 3) {
+            let myIndex = 0;
+            currentAct.registeredParticipants
+                .map((par, index) => {
+                    if (par['userId'].toString() === user) {
+                        myIndex = index + 1;
+                    }
+                })
+
             return (
                 <Button
                     onClick={removeWaitingList}
                     className={classes.joinButton}
                 >
-                    Meld deg av venteliste
+                    {'Du er på ' + (myIndex - activity.capacity) +'. plass på vente liste'}
+                    <br></br>
+                    Meld deg av
                 </Button>
             );
         }
