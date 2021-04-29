@@ -19,6 +19,7 @@ import IDATT2106.team6.Gidd.service.FriendGroupService;
 import IDATT2106.team6.Gidd.service.ImageService;
 import IDATT2106.team6.Gidd.service.TagService;
 import IDATT2106.team6.Gidd.service.UserService;
+import IDATT2106.team6.Gidd.util.ActivityTokenRequired;
 import IDATT2106.team6.Gidd.util.Logger;
 import IDATT2106.team6.Gidd.util.MapTokenRequired;
 import java.sql.Timestamp;
@@ -119,7 +120,7 @@ public class ActivityController {
     }
 
     @MapTokenRequired
-    @PostMapping(value = "activityId}/equipment/{equipmentId}/user")
+    @PostMapping(value = "{activityId}/equipment/{equipmentId}/user")
     public ResponseEntity registerUserToEquipment(@RequestBody HashMap<String, Object> map) {
         log.debug("Received PostMapping to '/activity/{activityId}/equipment/{equipmentId}/user'");
         int activityId = Integer.parseInt(map.get("activityId").toString());
@@ -224,8 +225,9 @@ public class ActivityController {
 
     @MapTokenRequired
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity editActivity(@RequestBody Map<String, Object> map,
-                                       @PathVariable("id") int actId) {
+    public ResponseEntity editActivity(@PathVariable("id") int actId,
+                                       @RequestBody Map<String, Object> map
+                                       ) {
         log.info("received putMapping to /activity/{id}");
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         log.debug("User with id received");
@@ -456,6 +458,7 @@ public class ActivityController {
         return ResponseEntity.badRequest().headers(headers).body(formatJson(errorCode));
     }
 
+    @ActivityTokenRequired
     @DeleteMapping(value = "/{activityId}")
     public ResponseEntity deleteActivity(@PathVariable Integer activityId) {
         List<User> users = activityService.getUserFromActivity(activityId);
