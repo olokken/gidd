@@ -44,7 +44,7 @@ const StyledButton = withStyles({
 
 const StyledTextField = withStyles({
     root: {
-        width: '50vh',
+        minWidth: '30vh',
     },
 })(TextField);
 
@@ -655,26 +655,30 @@ const ActivityForm = ({
                             <MenuItem value="Medium">Medium</MenuItem>
                             <MenuItem value="Low">Low</MenuItem>
                         </TextField>
-                        <NumberTextField
-                            label="Plasser"
-                            type="number"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            value={capacity}
-                            onChange={onChangeCapacity}
-                            variant="outlined"
-                        />
-                        <NumberTextField
-                            label="Gjentakinger"
-                            type="number"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            variant="outlined"
-                            value={repetition}
-                            onChange={onChangeRepetitions}
-                        />
+                        <div className="acitivityform__containerItem22">
+                            <NumberTextField
+                                className="acitivityform__numberbox"
+                                label="Plasser"
+                                type="number"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                value={capacity}
+                                onChange={onChangeCapacity}
+                                variant="outlined"
+                            />
+                            <NumberTextField
+                                className="acitivityform__numberbox"
+                                label="Gjentakinger"
+                                type="number"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                variant="outlined"
+                                value={repetition}
+                                onChange={onChangeRepetitions}
+                            />
+                        </div>
                     </div>
                     <ButtonsContainer>
                         <StyledButton
