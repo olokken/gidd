@@ -8,6 +8,7 @@ import IDATT2106.team6.Gidd.models.FriendGroup;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.FriendGroupService;
 import IDATT2106.team6.Gidd.service.UserService;
+import IDATT2106.team6.Gidd.util.GroupMemberTokenRequired;
 import IDATT2106.team6.Gidd.util.GroupTokenRequired;
 import IDATT2106.team6.Gidd.util.Logger;
 import IDATT2106.team6.Gidd.util.MapTokenRequired;
@@ -290,7 +291,7 @@ public class GroupController {
                 .body("{\"groups\":" + friendGroups.toString() + "}");
     }
 
-    @GroupTokenRequired
+    @GroupMemberTokenRequired
     @GetMapping(value = "/{groupId}")
     public ResponseEntity getFriendGroup(@PathVariable Integer groupId){
         log.debug("Received GetMapping to '/group/{groupId}'");
@@ -319,7 +320,7 @@ public class GroupController {
                 .body(friendGroup.toString());
     }
 
-    @MapTokenRequired
+    @GroupMemberTokenRequired
     @GetMapping("/{groupId}/activity")
     public ResponseEntity getActivitiesForGroup(@PathVariable Integer groupId){
         log.debug("Received GetMapping to '/group/{groupId}/activity'");
