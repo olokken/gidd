@@ -133,7 +133,7 @@ export default function FeedCard({
     const classes = useStyles();
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     const [openChoiceBox, setOpenChoiceBox] = useState<boolean>(false);
-    const [nextActivity, setNextActivity] = useState<ActivityResponse>();
+    const [nextActivity, setNextActivity] = useState<ActivityResponse | undefined>();
     const [openActivityPopup, setOpenActivityPopup] = useState<boolean>(false);
     const [selectedUser, setSelectedUser] = useState<User>({
         firstName: '',
@@ -152,34 +152,40 @@ export default function FeedCard({
     const getNextActivity = async () => {
         const url = `group/${selectedGroup.groupId}/activity`;
         await axios
-            .get(url,config)
+            .get(url, config)
             .then(async (response) => {
-                console.log(response.data['activities']);
+                console.log(response.data['activities'])
                 const nextAct = await sortNextActivity(
                     response.data['activities']
                 );
-                setNextActivity(nextAct);
+                if (nextAct !== null) {
+                    setNextActivity(nextAct);
+                } else {
+                    setNextActivity(undefined);
+                }
             })
             .then(() => updateGroups())
             .catch((error) => {
                 console.log(
-                     error.response
+                    error.response
                 );
             });
     };
 
     const sortNextActivity = async (activities: ActivityResponse[]) => {
         const now = new Date().getTime();
-        console.log(now);
         let currActivity = activities[0];
         activities.forEach((activity) => {
-            if (currActivity.time < now || activity.time < currActivity.time && activity.time >= now) {
-                console.log(activity);
-                console.log(currActivity);
+            if (activity.time - 7200000 < currActivity.time && (activity.time - 7200000) >= now) {
+                console.log(activity.title + ' ' + new Date(activity.time).toLocaleString())
                 currActivity = activity;
             }
         });
-        return currActivity;
+        if (currActivity.time < now) {
+            return null;
+        } else {
+            return currActivity;
+        }
     };
 
     useEffect(() => {
@@ -208,7 +214,7 @@ export default function FeedCard({
             axios.post('/user/activity', {
                 userId: user,
                 activityId: activityId,
-            },config);
+            }, config);
             resolve();
         });
     };

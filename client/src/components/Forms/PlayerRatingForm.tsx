@@ -12,6 +12,7 @@ import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@material-ui/icons/SentimentSatisfiedAltOutlined';
 import SentimentVerySatisfiedIcon from '@material-ui/icons/SentimentVerySatisfied';
 import PropTypes from 'prop-types';
+import config from '../../Config';
 
 
 interface Props {
@@ -65,8 +66,7 @@ IconContainer.propTypes = {
 const PlayerRatingForm = ({ user, openPopup, setOpenPopup }: Props) => {
     const [comment, setComment] = useState<string>();
     const [rating, setRating] = useState<number | null>();
-    const { currUser } = useContext(UserContext);
-
+    const currUser = localStorage.getItem('userID')
 
 
     const onChangeRating = (event: ChangeEvent<unknown>, value: number | null) => {
@@ -76,20 +76,24 @@ const PlayerRatingForm = ({ user, openPopup, setOpenPopup }: Props) => {
 
     const onSendRating = () => {
         console.log({
-            userId: user.userId,
-            //fromUserId: currUser,
+            toUserId: user.userId,
+            fromUserId: currUser,
             rating: rating
         })
         const url = `/user/${user.userId}/rating`
         axios.post(url, {
-            userId: user.userId,
-            //fromUserId: currUser,
+            toUserId: user.userId,
+            fromUserId: currUser,
             rating: rating
-        }).then((response => {
+        }, config).then((response => 
             console.log(response)
-        })).catch(error => 
-            console.log('Kunne ikke gi rating' + error.message))
-    }
+        )).catch(error => {
+            if (error.response.data.error === `you've already rated that user`) {
+                alert('Du har allerede gitt denne brukeren rating')
+            }
+        })
+            setOpenPopup(false)
+        }
 
     return (
         <Popup
