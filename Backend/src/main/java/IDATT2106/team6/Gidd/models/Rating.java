@@ -31,23 +31,33 @@ public class Rating {
         return ratingId;
     }
 
-    public int getRating() {
-        return rating;
-    }
-
-    public User getToUser() {
-        return toUser;
-    }
-
     public void setRatingId(int ratingId) {
         this.ratingId = ratingId;
+    }
+
+    public int getRating() {
+        return rating;
     }
 
     public void setRating(int rating) {
         this.rating = rating;
     }
 
+    public User getToUser() {
+        return toUser;
+    }
+
     public void setToUser(User user) {
         this.toUser = user;
+    }
+
+    @Override
+    public String toString() {
+        return "Rating{" +
+                "ratingId=" + ratingId +
+                ", rating=" + rating +
+                ", toUser=" + toUser +
+                ", fromUser=" + fromUser +
+                '}';
     }
 }

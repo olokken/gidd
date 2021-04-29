@@ -90,15 +90,6 @@ public class GiddControllerTest {
         group2 = new FriendGroup(1, "GruppeTest", user1);
     }
 
-  //  @Test
-    void getActivity() throws Exception {
-        mockMvc.perform(get("/activity")
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.activity", Matchers.greaterThanOrEqualTo(0)));
-    }
-
     @Test
     @Order(1)
     public void registerUserTest() throws Exception {
@@ -541,7 +532,7 @@ public class GiddControllerTest {
 
     @Order(13)
     @Test
-    public void getAllActivitiesForUserTest() throws Exception{
+    public void getAllActivitiesForUserTest() throws Exception {
         System.out.println("test 13");
         String id = mockMvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
                 .header("token", token)
@@ -597,7 +588,7 @@ public class GiddControllerTest {
 
     @Order(15)
     @Test
-    public void getAllUsersFromActivityTest() throws Exception{
+    public void getAllUsersFromActivityTest() throws Exception {
         //create new user, add to activity and check order
         System.out.println("test 15");
 

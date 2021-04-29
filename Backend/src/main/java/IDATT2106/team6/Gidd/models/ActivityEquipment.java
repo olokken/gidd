@@ -28,6 +28,10 @@ public class ActivityEquipment {
         return activity;
     }
 
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
     public int getId() {
         return id;
     }
@@ -38,10 +42,6 @@ public class ActivityEquipment {
 
     public void setEquipment(Equipment equipment) {
         this.equipment = equipment;
-    }
-
-    public void setActivity(Activity activity) {
-        this.activity = activity;
     }
 
     public int getBringerId() {

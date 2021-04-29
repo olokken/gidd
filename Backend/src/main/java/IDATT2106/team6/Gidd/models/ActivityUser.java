@@ -39,27 +39,24 @@ public class ActivityUser {
         return activity;
     }
 
-    public Timestamp getReserved() {
-        return reserved;
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
     public User getUser() {
         return user;
     }
 
-    public void setActivity(Activity activity) {
-        this.activity = activity;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Timestamp getReserved(){
+        return reserved;
     }
 
     public void setReserved(Timestamp reserved) {
         this.reserved = reserved;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-    public Timestamp getTimestamp(){
-        return reserved;
     }
 
     @Override

@@ -40,36 +40,36 @@ public class Chat {
         return chatId;
     }
 
-    public Activity getGroup() {
+    public void setChatId(Integer chatId) {
+        this.chatId = chatId;
+    }
+
+    public Activity getActivity() {
         return activity;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
     public User getUser() {
         return user;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setChatId(Integer chatId) {
-        this.chatId = chatId;
-    }
-
-    public void setGroup(Activity activity) {
-        this.activity = activity;
-    }
-
     public void setUser(User user) {
         this.user = user;
     }
 
-    public Timestamp getTimeStamp(){
-        return timeStamp;
+    public String getMessage() {
+        return message;
     }
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Timestamp getTimeStamp(){
+        return timeStamp;
     }
 
     public String toString(){
