@@ -30,6 +30,7 @@ import { useContext } from 'react';
 import ActivityInformation from '../ActivityComponents/ActivityInformation';
 import UserAvatar from '../UserAvatar';
 import GroupLeaderboard from '../LeaderboardComponents/GroupLeaderboard';
+import config from '../../Config';
 
 const StyledHeader = styled.h2`
     text-align: center;
@@ -146,7 +147,7 @@ export default function FeedCard({
     const getNextActivity = async () => {
         const url = `group/${selectedGroup.groupId}/activity`;
         await axios
-            .get(url)
+            .get(url,config)
             .then(async (response) => {
                 console.log(response.data['activities']);
                 const nextAct = await sortNextActivity(
@@ -157,7 +158,7 @@ export default function FeedCard({
             .then(() => updateGroups())
             .catch((error) => {
                 console.log(
-                    'Kunne ikke hente gruppens neste aktivitet ' + error.message
+                     error.response
                 );
             });
     };
@@ -167,7 +168,7 @@ export default function FeedCard({
         console.log(now);
         let currActivity = activities[0];
         activities.forEach((activity) => {
-            if (activity.time < currActivity.time && activity.time >= now) {
+            if (currActivity.time < now || activity.time < currActivity.time && activity.time >= now) {
                 console.log(activity);
                 console.log(currActivity);
                 currActivity = activity;
@@ -192,7 +193,7 @@ export default function FeedCard({
 
     const register = (activityId: number): Promise<void> => {
         return new Promise((resolve, reject) => {
-            axios.delete(`/user/${user}/activity/${activityId}`);
+            axios.delete(`/user/${user}/activity/${activityId}`, config);
             resolve();
         });
     };
@@ -202,7 +203,7 @@ export default function FeedCard({
             axios.post('/user/activity', {
                 userId: user,
                 activityId: activityId,
-            });
+            },config);
             resolve();
         });
     };
@@ -214,7 +215,7 @@ export default function FeedCard({
 
     const deleteActivity = (id: number) => {
         axios
-            .delete(`/activity/${id}`)
+            .delete(`/activity/${id}`, config)
             .then(getNextActivity)
             .then(() => window.location.reload());
     };
@@ -226,7 +227,7 @@ export default function FeedCard({
             .put(url, {
                 groupId: selectedGroup.groupId,
                 newOwner: Object.values(selectedUser)[0],
-            })
+            }, config)
             .then((response) => {
                 console.log(response);
             })
@@ -235,7 +236,7 @@ export default function FeedCard({
                 setOpenChoiceBox(!openChoiceBox);
             })
             .catch((error) => {
-                console.log('Fikk ikke endret eier' + error.message);
+                console.log(error.response.data);
             });
     };
 
@@ -299,7 +300,7 @@ export default function FeedCard({
                             marginRight="0.5rem"
                         ></UserAvatar>
                         {Object.values(user)[0] ==
-                        Object.values(selectedGroup.owner)[0] ? (
+                            Object.values(selectedGroup.owner)[0] ? (
                             <ListItemText
                                 primary={
                                     user.firstName +

@@ -12,6 +12,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
 import ActivityResponse from '../interfaces/ActivityResponse';
+import config from '../Config';
 
 //Endringer kan forekomme her
 
@@ -86,7 +87,7 @@ const GroupsAndFriends = () => {
         console.log('oppdaterer');
         const url = `user/${user}/group`;
         axios
-            .get(url)
+            .get(url, config)
             .then((response) => {
                 setGroups(response.data['groups']);
                 if (
@@ -124,7 +125,7 @@ const GroupsAndFriends = () => {
     const leaveGroup = () => {
         const groupId = selectedGroup.groupId;
         axios
-            .delete(`group/${groupId}/user/${user}`)
+            .delete(`group/${groupId}/user/${user}`, config)
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
@@ -157,7 +158,7 @@ const GroupsAndFriends = () => {
     const deleteGroup = async () => {
         if ((selectedGroup.owner.userId = user)) {
             const groupId = selectedGroup.groupId;
-            const request = await axios.delete(`/group/${groupId}`);
+            const request = await axios.delete(`/group/${groupId}`, config);
             setSelectedGroup({
                 owner: {
                     firstName: '',
@@ -194,7 +195,7 @@ const GroupsAndFriends = () => {
 
     const updateFriends = () => {
         axios
-            .get(`/user/${user}/user`)
+            .get(`/user/${user}/user`, config)
             .then((response) => {
                 console.log('Venner:');
                 console.log(response.data['users']);

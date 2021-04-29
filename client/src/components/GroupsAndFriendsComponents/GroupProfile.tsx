@@ -15,6 +15,7 @@ import { UserContext } from '../../UserContext';
 import User from '../../interfaces/User';
 import axios from '../../Axios';
 import Group from '../../interfaces/Group';
+import config from '../../Config';
 
 interface Props {
     group: Group;
@@ -28,7 +29,7 @@ const GroupProfile = ({ group, openPopup, setOpenPopup }: Props) => {
     const leaveGroup = () => {
         const groupId = group.groupId;
         axios
-            .delete(`group/${groupId}/user/${user}`)
+            .delete(`group/${groupId}/user/${user}`, config)
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);

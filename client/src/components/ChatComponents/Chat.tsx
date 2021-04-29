@@ -43,12 +43,6 @@ const SendMessage = styled.div`
     width: 95%;
 `;
 
-const Flex = styled.div`
-    display: flex;
-    justify-content: space-between;
-    margin: 1rem;
-`;
-
 interface Props {
     open: boolean;
     close: () => void;
@@ -57,7 +51,6 @@ interface Props {
 
 const Chat = ({ open, close, activityId }: Props) => {
     const [message, setMessage] = useState<string>();
-    const { user } = useContext(UserContext);
     const [chatHistory, setChatHistory] = useState<MessageResponse[]>([]);
     const [chat, setChat] = useState<MessageResponse[]>([]);
     const socket = useRef<any>();
@@ -114,7 +107,7 @@ const Chat = ({ open, close, activityId }: Props) => {
                 `/server/chat/${activityId}`,
                 {},
                 JSON.stringify({
-                    userId: user,
+                    userId: localStorage.getItem('userID'),
                     message: message,
                 })
             );
@@ -204,16 +197,7 @@ const Chat = ({ open, close, activityId }: Props) => {
                     <Grid item xs container direction="column" spacing={2}>
                         <Grid item xs>
                             <MessageBox id="chat">
-                                {chat.map((msg, index) => (
-                                    <StyledMessage
-                                        key={index}
-                                        name={msg.user.firstName}
-                                        time={msg.timestamp}
-                                        userId={msg.user.userId}
-                                        message={msg.message}
-                                        image={msg.user.image}
-                                    ></StyledMessage>
-                                ))}
+                                {mapHistoryAndChat()}
                             </MessageBox>
                         </Grid>
                         <Grid item>

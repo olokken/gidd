@@ -24,6 +24,7 @@ import styled from 'styled-components';
 import InfoIcon from '@material-ui/icons/Info';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import { resolve } from 'node:dns';
+import config from '../../Config'
 
 const StyledButton = withStyles({
     root: {
@@ -325,7 +326,7 @@ const ActivityForm = ({
         console.log(activity);
 
         axios
-            .post('/activity', activity)
+            .post('/activity', activity, config)
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
@@ -335,7 +336,7 @@ const ActivityForm = ({
                 setOpenPopup(!openPopup);
             })
             .catch((error) =>
-                console.log('Could not post activity: ' + error.message)
+                console.log(error.response.data)
             );
     };
 

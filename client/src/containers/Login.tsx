@@ -71,12 +71,11 @@ const Login = () => {
                     }).then(() => {
                         history.push('/Activities');
                     }).catch(error => {
-                        localStorage.clear();
                         console.log('Feil med token: ' + error.message)
                     })
                 })
                 .catch((error) => {
-                    console.log('error: ' + error.message);
+                    console.log(error.response.data);
                     alert('Email eller passord er feil');
                 });
         } else {
@@ -141,7 +140,6 @@ const Login = () => {
         }).then(() => {
             history.push('/Activities');
         }).catch(error => {
-            localStorage.clear();
             console.log(error);
         })
     };
@@ -171,7 +169,6 @@ const Login = () => {
         }).then(() => {
             history.push('/Activities');
         }).catch(error => {
-            localStorage.clear();
             console.log(error.message);
         })
     };

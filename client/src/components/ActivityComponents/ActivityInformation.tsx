@@ -30,7 +30,7 @@ import WeatherComponent from '../WeatherComponents/WeatherComponent';
 import ActivityForm from './ActivityForm';
 import Chat from '../ChatComponents/Chat';
 import User from '../../interfaces/User';
-import PlayerRatingForm from '../Forms/PlayerRatingForm'
+import PlayerRatingForm from '../Forms/PlayerRatingForm';
 import UserAvatar from '../UserAvatar';
 
 interface Props {
@@ -89,8 +89,14 @@ const ActivityInformation = ({
 }: Props) => {
     const [openChat, setOpenChat] = useState<boolean>(false);
     const [currentAct, setCurrentAct] = useState<ActivityResponse>(activity);
+    const [currentRegistered, setCurrentRegisteret] = useState<User[]>(
+        activity.registeredParticipants.slice(0, activity.capacity)
+    );
     const classes = useStyles();
-    const date = new Date(activity.time).toLocaleDateString() + ' ' + new Date(activity.time - 7200000).toLocaleTimeString();
+    const date =
+        new Date(activity.time).toLocaleDateString() +
+        ' ' +
+        new Date(activity.time - 7200000).toLocaleTimeString();
     const [registration, setRegistration] = useState<number>(1);
     const [isOwner, setIsOwner] = useState<boolean>(false);
     const { user } = useContext(UserContext);
@@ -98,6 +104,7 @@ const ActivityInformation = ({
     const [numRegistered, setNumRegistered] = useState<number>(
         activity.registeredParticipants.length
     );
+    //const [registeredPart, setRegisteredPart] = useState<
     const [currentParticipant, setCurrentParticipant] = useState<User>({
         firstName: '',
         surname: '',
@@ -107,7 +114,7 @@ const ActivityInformation = ({
         password: '',
         phoneNumber: '',
         activityLevel: '',
-        points: ''
+        points: '',
     });
     const [openRatingPopup, setRatingPopup] = useState<boolean>(false);
 
@@ -118,9 +125,23 @@ const ActivityInformation = ({
         });
     };
 
+    const onWaitingListClick = () => {
+        register(activity.activityId).then(() => {
+            setRegistration(3);
+            setNumRegistered(numRegistered + 1);
+        });
+    };
+
     const onUnRegisterClick = () => {
         unRegister(activity.activityId).then(() => {
             setRegistration(0);
+            setNumRegistered(numRegistered - 1);
+        });
+    };
+
+    const removeWaitingList = () => {
+        unRegister(activity.activityId).then(() => {
+            setRegistration(2);
             setNumRegistered(numRegistered - 1);
         });
     };
@@ -138,13 +159,13 @@ const ActivityInformation = ({
 
     const showActivityLevel = (actLevel: string) => {
         if (actLevel === 'HIGH') {
-            return 'Høy'
+            return 'Høy';
         } else if (actLevel === 'MEDIUM') {
-            return 'Middels'
+            return 'Middels';
         } else if (actLevel === 'LOW') {
-            return 'Lav'
+            return 'Lav';
         }
-    }
+    };
 
     useEffect(() => {
         let value = -1;
@@ -157,6 +178,13 @@ const ActivityInformation = ({
         if (registered >= 1) {
             value = 1;
             setRegistration(1);
+            if (
+                currentRegistered
+                    .map((par) => par['userId'])
+                    .filter((num) => num == user).length <= 0
+            ) {
+                setRegistration(3);
+            }
         } else if (
             currentAct.registeredParticipants.length >= currentAct.capacity &&
             value != 1
@@ -179,8 +207,12 @@ const ActivityInformation = ({
             );
         } else if (registration == 2) {
             return (
-                <Button className={classes.joinButton} disabled>
-                    Aktiviteten er allerede fullbooket
+                <Button
+                    onClick={onWaitingListClick}
+                    className={classes.joinButton}
+                >
+                    Fullbooket! <br></br>
+                    Meld deg på venteliste
                 </Button>
             );
         } else if (registration == 0) {
@@ -190,6 +222,15 @@ const ActivityInformation = ({
                     className={classes.joinButton}
                 >
                     Meld deg på
+                </Button>
+            );
+        } else if (registration == 3) {
+            return (
+                <Button
+                    onClick={removeWaitingList}
+                    className={classes.joinButton}
+                >
+                    Meld deg av venteliste
                 </Button>
             );
         }
@@ -224,24 +265,26 @@ const ActivityInformation = ({
 
     const onParticipantClicked = (par: User) => {
         setCurrentParticipant(par);
-        setRatingPopup(!openRatingPopup)
-    }
+        setRatingPopup(!openRatingPopup);
+    };
 
-    const mapParticipants = currentAct.registeredParticipants.map(
-        (par: any, index: number) => {
-            return <ListItem
+    const mapParticipants = currentRegistered.map((par: any, index: number) => {
+        return (
+            <ListItem
                 button
                 key={index}
-                onClick={() => { if (user !== par['userId'].toString()) onParticipantClicked(par) }}
+                onClick={() => {
+                    if (user !== par['userId'].toString())
+                        onParticipantClicked(par);
+                }}
             >
-                <UserAvatar user={par} type='small'></UserAvatar>
+                <UserAvatar user={par} type="small"></UserAvatar>
                 <ListItemText
                     primary={par['firstName'] + ' ' + par['surname']}
                 />
-
-            </ListItem>;
-        }
-    );
+            </ListItem>
+        );
+    });
 
     return (
         <div>
@@ -335,21 +378,25 @@ const ActivityInformation = ({
                         <Typography>
                             {registration == 1 && (
                                 <>
-                                    <b>Påmeldte personer:</b>  <List
+                                    <b>Påmeldte personer:</b>{' '}
+                                    <List
                                         style={{
                                             width: '100%',
                                             float: 'right',
                                             maxHeight: '160px',
-                                            overflow: 'auto'
+                                            overflow: 'auto',
                                         }}
-                                    >{mapParticipants}</List>
+                                    >
+                                        {mapParticipants}
+                                    </List>
                                 </>
                             )}
                         </Typography>
                         <PlayerRatingForm
                             openPopup={openRatingPopup}
                             setOpenPopup={setRatingPopup}
-                            user={currentParticipant}></PlayerRatingForm>
+                            user={currentParticipant}
+                        ></PlayerRatingForm>
                     </Grid>
                 </Grid>
                 <Typography style={{ color: 'black' }}>
