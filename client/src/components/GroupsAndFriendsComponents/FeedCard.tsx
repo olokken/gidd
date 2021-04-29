@@ -149,13 +149,13 @@ export default function FeedCard({
     const { user } = useContext(UserContext);
     const [activities, setActivities] = useState<ActivityResponse[]>([]);
 
-    const getNextActivity = async () => {
+    const getNextActivity = () => {
         const url = `group/${selectedGroup.groupId}/activity`;
-        await axios
+        axios
             .get(url, config)
-            .then(async (response) => {
+            .then((response) => {
                 console.log(response.data['activities'])
-                const nextAct = await sortNextActivity(
+                const nextAct = sortNextActivity(
                     response.data['activities']
                 );
                 if (nextAct !== null) {
@@ -172,7 +172,7 @@ export default function FeedCard({
             });
     };
 
-    const sortNextActivity = async (activities: ActivityResponse[]) => {
+    const sortNextActivity = (activities: ActivityResponse[]) => {
         const now = new Date().getTime();
         let currActivity = activities[0];
         activities.forEach((activity) => {

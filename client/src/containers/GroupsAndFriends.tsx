@@ -142,7 +142,7 @@ const GroupsAndFriends = () => {
     };
 
     const deleteGroup = async () => {
-        if ((selectedGroup.owner.userId = user)) {
+        if ((selectedGroup.owner['userId'].toString() === user)) {
             const groupId = selectedGroup.groupId;
             const request = await axios.delete(`/group/${groupId}`, config);
             setSelectedGroup({
