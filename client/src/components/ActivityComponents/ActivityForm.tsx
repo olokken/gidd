@@ -72,7 +72,7 @@ const ActivityForm = ({
     groupId,
 }: Props) => {
     const [page, setPage] = useState<number>(1);
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
     const [date, setDate] = useState<Date>(new Date());

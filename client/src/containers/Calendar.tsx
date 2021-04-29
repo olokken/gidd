@@ -96,7 +96,7 @@ const Calender = () => {
 
     const register = (activityId: number): Promise<void> => {
         console.log(activityId + ' ' + user);
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             axios
                 .post('/user/activity', {
                     userId: user,
@@ -107,7 +107,7 @@ const Calender = () => {
     };
 
     const unRegister = (activityId: number): Promise<void> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             axios
                 .delete(`/user/${user}/activity/${activityId}`, config)
                 .then(() => loadActivities()).catch(error => {

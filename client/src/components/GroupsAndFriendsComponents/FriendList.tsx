@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useEffect, useContext } from 'react';
+import React, { ChangeEvent, useState, useContext } from 'react';
 import styled from 'styled-components';
 import { TextField, Button } from '@material-ui/core';
 import FriendCard from './FriendCard';
@@ -31,7 +31,7 @@ const FriendList = ({ users, friends, updateFriends }: Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User | null>(null);
     const [searchValue, setSearchValue] = React.useState('');
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchInput((event.target as HTMLInputElement).value);
@@ -59,7 +59,6 @@ const FriendList = ({ users, friends, updateFriends }: Props) => {
             .then(updateFriends)
             .catch((error) => {
                 console.log(error.response.data);
-                //alert('Du er allerede venn med denne brukeren');
             });
     };
 ''

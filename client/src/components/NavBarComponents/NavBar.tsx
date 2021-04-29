@@ -56,13 +56,8 @@ const StyledMenu = withStyles({
     />
 ));
 
-const StyledMenuItem = withStyles((theme) => ({
-    /*root: {
-    '&:focus': {
-      backgroundColor: theme.palette.primary.main,
-    },
-  },*/
-    //kan legges til hvis man vill ha annen bakgrunnsfarge etter klikk
+const StyledMenuItem = withStyles(() => ({
+
 }))(MenuItem);
 
 const Navbar = () => {
@@ -72,8 +67,6 @@ const Navbar = () => {
         []
     );
     const [openUser, setOpenUser] = useState<boolean>(false);
-    const [notifications1, setNotifications1] = useState<number>(0);
-    const [notifications2, setNotifications2] = useState<number>(0);
     const [chatNotifications, setChatNotifications] = useState<
         ActivityResponse[]
     >([]);
@@ -165,10 +158,6 @@ const Navbar = () => {
         history.push('/Activities');
     };
 
-    const changeToMyProfile = () => {
-        history.push('/MyProfile');
-        handleCloseProfileMenu();
-    };
 
     const changeToLoginPage = () => {
         localStorage.clear();

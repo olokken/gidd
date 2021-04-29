@@ -41,13 +41,9 @@ function getWindowDimensions() {
 const Login = () => {
     const history = useHistory();
     const [email, setEmail] = useState<string>('');
-    const [userID, setUserID] = useState<string>('');
-    const [firstName, setFirstName] = useState<string>('');
-    const [surname, setSurname] = useState<string>('');
-    const [picture, setPicture] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    const { user, setUser } = useContext(UserContext);
+    const {setUser } = useContext(UserContext);
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
 
     const onLogin = async () => {

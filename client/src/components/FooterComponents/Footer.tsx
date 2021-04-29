@@ -7,17 +7,6 @@ import Popup from '../Popup';
 import Omoss from "./Omoss";
 
 
-const StyledTextArea = styled.textarea`
-    resize: none;
-    border-radius: 10px;
-`;
-
-const StyledFooter = styled.div`
-    padding-top: 3em;
-    position: realtive;
-    bottom:  0;
-    width: 100%;
-`;
 const StyledContainer = styled.div`
     resize: none;
     border-radius: 10px;

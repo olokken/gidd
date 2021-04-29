@@ -16,7 +16,7 @@ const useStyles = makeStyles({
 
 function Leaderboard() {
     const classes = useStyles();
-    const { user, seUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
     const [yourGroups, setYourGroups] = useState<Group[]>([]);
     const [value, setValue] = React.useState(0);
     const [friends, setFriends] = useState<User[]>([]);

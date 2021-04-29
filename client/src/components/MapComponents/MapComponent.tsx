@@ -1,4 +1,3 @@
-import Button from '@material-ui/core/Button';
 import React from 'react';
 import { GoogleMap, withGoogleMap } from 'react-google-maps';
 import DefaultCenter from '../../interfaces/DefaultCenter';

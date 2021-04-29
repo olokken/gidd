@@ -43,12 +43,10 @@ interface Props {
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-//TODO:
-//change the useEffect() so when a successfull put is sent to backend, the new information is rendered
-//on the screen
+
 const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const history = useHistory();
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
     const [currentUser, setCurrentUser] = useState<User>({
         firstName: '',
         surname: '',
@@ -192,7 +190,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
             sendUser.firstName = firstName;
             axios
                 .put(putUrl, sendUser, config)
-                .then((response) => {
+                .then(() => {
                     setCurrentUser({ ...currentUser, firstName: firstName });
                 })
                 .catch((error) =>

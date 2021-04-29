@@ -1,9 +1,7 @@
 import React, { ChangeEvent, useState } from 'react';
-import { useContext } from 'react';
 import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import NewUserCard from '../components/CardComponents/NewUserCard';
-import { UserContext } from '../UserContext';
 import axios from '../Axios';
 
 const NewUsernContainer = styled.div`
@@ -34,17 +32,8 @@ const NewUser = () => {
     const [password1, setPassword1] = useState<string>('');
     const [password2, setPassword2] = useState<string>('');
     const equalPasswords: boolean = password1 === password2 ? true : false;
-    const [emailList, setEmailList] = useState<string[]>([]);
     const correctEmailFormat = email.indexOf('@') > -1 ? true : false;
-    const { user, setUser } = useContext(UserContext);
     const [visualActivityLevel, setVisualActivityLevel] = useState<string>('');
-
-    const emailCheck = (email: string) => {
-        if (emailList.indexOf(email) > -1) {
-            return false;
-        }
-        return true;
-    };
 
     const createUser = (
         firstName: string,
@@ -54,10 +43,7 @@ const NewUser = () => {
         password: string,
         image: string
     ): boolean => {
-        if (!emailCheck(email)) {
-            alert('E-mail er allerede registrert');
-            return false;
-        } else if (!equalPasswords && password1 !== '') {
+        if (!equalPasswords && password1 !== '') {
             alert('Passordene er ulike');
             return false;
         } else {

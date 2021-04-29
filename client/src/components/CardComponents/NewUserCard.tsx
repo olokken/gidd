@@ -39,7 +39,7 @@ interface Props {
 
 
 
-const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel, activityLevel, visualActivityLevel, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email, goBack, image, onChangeImage }: Props) => {
+const NewUserCard = ({ onChangeFirstName, onChangeSurname, onChangeActivityLevel, visualActivityLevel, onChangeEmail, onChangeNumber, onChangePassword1, onChangePassword2, onClick, equalPasswords, correctEmailFormat, email, goBack, onChangeImage }: Props) => {
   const activityLevels: string[] = ['Lav', 'Middels', 'Høyt']
 
   return (
