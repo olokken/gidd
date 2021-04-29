@@ -22,6 +22,7 @@ import { useHistory } from 'react-router-dom';
 import Popup from './Popup';
 import User from '../interfaces/User';
 import EditIcon from '@material-ui/icons/Edit';
+import config from '../Config'
 
 const StyledButton = withStyles({
     root: {
@@ -87,12 +88,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
     const [isFirstTimeLogin, setIsFirstTimeLogin] = useState<boolean>(false);
     const [showIsFirstTime, setShowIsFirstTime] = useState<boolean>(false);
-    const token = localStorage.getItem('token');
-    const config = {
-        headers: {
-            token: token,
-        },
-    };
+   
 
     const checkInput = (input: string): boolean => {
         if (input.length > 0 && input.charAt(0) !== ' ') {
@@ -375,6 +371,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
                         surname: currentUser.surname,
                         activityLevel: activityLevel.toUpperCase(),
                         newPassword: confirmPass,
+                        image: ''
                     },
                     config
                 )

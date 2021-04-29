@@ -7,6 +7,7 @@ import AddBox from '@material-ui/icons/AddBox';
 import User from '../../interfaces/User';
 import axios from '../../Axios';
 import { UserContext } from '../../UserContext';
+import config from '../../Config';
 
 const StyledContainer = styled.div`
     margin-left: 1rem;
@@ -50,7 +51,7 @@ const FriendList = ({ users, friends, updateFriends }: Props) => {
             .post(`/user/${user}/user`, {
                 userId: user,
                 friendId: friendId,
-            })
+            }, config)
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);

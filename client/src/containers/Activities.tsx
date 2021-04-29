@@ -18,6 +18,7 @@ import ActivityLevels from '../interfaces/ActivityLevels';
 import { UserContext } from '../UserContext';
 import DefaultCenter from '../interfaces/DefaultCenter';
 import { SortFunctions } from '../components/SortingComponents/SortingFunctions';
+import config from '../Config';
 
 //Endringer kan forekomme her
 
@@ -79,7 +80,7 @@ const Activities = () => {
                 .post('/user/activity', {
                     userId: user,
                     activityId: activityId,
-                })
+                }, config)
                 .then(() => loadActivities());
             resolve();
         });
@@ -88,7 +89,7 @@ const Activities = () => {
     const unRegister = (activityId: number): Promise<void> => {
         return new Promise((resolve, reject) => {
             axios
-                .delete(`/user/${user}/activity/${activityId}`)
+                .delete(`/user/${user}/activity/${activityId}`, config)
                 .then(() => loadActivities());
             resolve();
         });
@@ -171,7 +172,7 @@ const Activities = () => {
     };
 
     const deleteActivity = (id: number) => {
-        axios.delete(`/activity/${id}`).then(loadActivities);
+        axios.delete(`/activity/${id}`, config).then(loadActivities);
     };
 
     const setCoordinates = () => {

@@ -6,6 +6,7 @@ import { UserContext } from '../UserContext';
 import { makeStyles, Paper, Tab, Tabs } from '@material-ui/core';
 import User from '../interfaces/User';
 import { Groups } from '../components/GroupsAndFriendsComponents/Groups';
+import config from '../Config';
 
 const useStyles = makeStyles({
     root: {
@@ -37,18 +38,18 @@ function Leaderboard() {
     });
 
     const getYourGroups = async () => {
-        const request = await axios.get(`/user/${user}/group`);
+        const request = await axios.get(`/user/${user}/group`, config);
         setYourGroups(request.data.groups);
         return request;
     };
 
     const getFriends = async () => {
-        const request = await axios.get(`/user/${user}/user`);
+        const request = await axios.get(`/user/${user}/user`, config);
         return request;
     };
 
     const getUser = async () => {
-        const request = await axios.get(`/user/${user}`);
+        const request = await axios.get(`/user/${user}`, config);
         return request;
     };
 

@@ -74,11 +74,11 @@ const NewUser = () => {
                 })
                 .then((response) => {
                     const id = response.data.id
+                    console
                     console.log(JSON.stringify(id));
+                    localStorage.setItem('userID', id);
                     axios.get(`/security/token/generate?subject=${id}`).then(response => {
                         const token = response.data.result;
-                        localStorage.setItem('token', token);
-                        localStorage.setItem('userID', id);
                         setUser(id);
                     }).then(() => history.push('/Activities')
                     ).catch(error => {
@@ -86,8 +86,9 @@ const NewUser = () => {
                     })
                 })
                 .catch((error) => {
-                    // handle this error
-                    console.log('error: ' + error.message);
+                    if(error.response.data.error ===  "a user with that email already exists!"){
+                        alert('En bruker med denne E-mailen finnes allerede')
+                    }
                 });
             return true;
         }
@@ -139,13 +140,13 @@ const NewUser = () => {
     ) => {
         console.log(event);
         if (event.target.files != null) {
-        const file: File = event.target.files[0];
-        console.log(file);
-        const base64 = await convertBase64(file);
-        console.log(base64);
-        setImage(base64);
-        console.log(image)
-       }
+            const file: File = event.target.files[0];
+            console.log(file);
+            const base64 = await convertBase64(file);
+            console.log(base64);
+            setImage(base64);
+            console.log(image)
+        }
     };
 
     const convertBase64 = (file: File) => {
@@ -153,7 +154,7 @@ const NewUser = () => {
 
             const fileReader = new FileReader();
             fileReader.readAsDataURL(file);
-            
+
             fileReader.onload = (() => {
                 resolve(fileReader.result);
             });

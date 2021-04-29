@@ -17,6 +17,7 @@ import { UserContext } from '../UserContext';
 import Popup from '../components/Popup';
 import ActivityInformation from '../components/ActivityComponents/ActivityInformation';
 import ActivityResponse from '../interfaces/ActivityResponse';
+import config from '../Config';
 
 const CalendarContainer = styled.div`
     --fc-button-bg-color: #f44336;
@@ -62,7 +63,7 @@ const Calender = () => {
         const id = localStorage.getItem('userID');
         const url = `/user/${id}/activity`;
         axios
-            .get(url)
+            .get(url, config)
             .then((response) => {
                 console.log(response.data['activities']);
                 response.data['activities'].forEach((activity: any) => {
@@ -126,7 +127,7 @@ const Calender = () => {
                 });
             })
             .catch((error: any) => {
-                console.log('error' + error.message);
+                console.log(error.response.data)
             });
     }, []);
 
