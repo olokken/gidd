@@ -100,7 +100,11 @@ const Navbar = () => {
 
     useEffect(() => {
         axios.get(`user/${localStorage.getItem('userID')}`).then((response) => {
+            console.log('notifications:')
+            console.log(response)
             setChatNotifications(response.data['notifications']);
+        }).catch(error => {
+            console.log(error.response.data)
         });
     }, []);
 

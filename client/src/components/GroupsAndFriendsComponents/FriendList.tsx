@@ -58,8 +58,8 @@ const FriendList = ({ users, friends, updateFriends }: Props) => {
             })
             .then(updateFriends)
             .catch((error) => {
-                console.log('Could not post friend: ' + error.message);
-                alert('Du er allerede venn med denne brukeren');
+                console.log(error.response.data);
+                //alert('Du er allerede venn med denne brukeren');
             });
     };
 ''

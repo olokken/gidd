@@ -36,32 +36,100 @@ const todayStr =
     new Date().toLocaleTimeString();
 
 const Calender = () => {
-  const { user } = useContext(UserContext);
-  const [activities, setActivities] = useState<EventInput[]>([]);
-  const [openPopup, setOpenPopup] = useState<boolean>(false);
-  const [activity, setActivity] = useState<ActivityResponse>({
-    activityId: 0,
-    activityLevel: 'MEDIUM',
-    capacity: 0,
-    daysToRepeat: 0,
-    description: 'test',
-    equipments: [],
-    groupId: 0,
-    image: '',
-    latitude: 0,
-    longitude: 0,
-    registeredParticipants: [],
-    tags: ['SII'],
-    time: 1618924200000,
-    timeCreated: 1618830691000,
-    title: 'Test',
-    user: 1231323
-  }
-  );
+    const { user } = useContext(UserContext);
+    const [activities, setActivities] = useState<EventInput[]>([]);
+    const [openPopup, setOpenPopup] = useState<boolean>(false);
+    const [activity, setActivity] = useState<ActivityResponse>({
+        activityId: 0,
+        activityLevel: 'MEDIUM',
+        capacity: 0,
+        daysToRepeat: 0,
+        description: 'test',
+        equipments: [],
+        groupId: 0,
+        image: '',
+        latitude: 0,
+        longitude: 0,
+        registeredParticipants: [],
+        tags: ['SII'],
+        time: 1618924200000,
+        timeCreated: 1618830691000,
+        title: 'Test',
+        user: 1231323
+    }
+    );
+
 
     useEffect(() => {
+        loadActivities();
+    }, []);
+
+    const deleteActivity = (id: number) => {
+        axios
+            .delete(`/activity/${id}`)
+            .then(loadActivities)
+            .then(() => window.location.reload());
+    };
+
+    const handleOnClick = (eventInfo: EventInput) => {
+        console.log('token:' + localStorage.getItem('token'));
+        console.log('refreshToken:' + localStorage.getItem('refreshToken'));
+        console.log('bruker: ' + user);
+        console.log(activities);
+        const activityID = eventInfo.event.extendedProps.ID;
+        const url = `/activity/${activityID}`;
+        axios
+            .get(url)
+            .then((response) => {
+                setActivity(response.data);
+                setOpenPopup(!openPopup);
+            })
+            .catch((error) => {
+                console.log('Kunne ikke hente aktivitet: ' + error.message);
+            });
+    };
+
+    const handleEventEnter = (eventInfo: any) => {
+        eventInfo.event.setProp('backgroundColor', '#f66055');
+    };
+
+    const handleEventLeave = (eventInfo: any) => {
+        const normalColor =
+            eventInfo.event.extendedProps.formattedDate > todayStr
+                ? '#f44336'
+                : '#f66055';
+        eventInfo.event.setProp('backgroundColor', normalColor);
+    };
+
+
+    const register = (activityId: number): Promise<void> => {
+        console.log(activityId + ' ' + user);
+        return new Promise((resolve, reject) => {
+            axios
+                .post('/user/activity', {
+                    userId: user,
+                    activityId: activityId,
+                }, config)
+                .then(() => loadActivities());
+            resolve();
+        });
+    };
+
+    const unRegister = (activityId: number): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            axios
+                .delete(`/user/${user}/activity/${activityId}`, config)
+                .then(() => loadActivities()).catch(error => {
+                    console.log(error.response.data)
+                });
+            resolve();
+        });
+    };
+
+    const loadActivities = () => {
         const id = localStorage.getItem('userID');
         const url = `/user/${id}/activity`;
+        setActivities([])
         axios
             .get(url, config)
             .then((response) => {
@@ -129,54 +197,7 @@ const Calender = () => {
             .catch((error: any) => {
                 console.log(error.response.data)
             });
-    }, []);
-
-    const handleOnClick = (eventInfo: EventInput) => {
-        console.log('token:' + localStorage.getItem('token'));
-        console.log('refreshToken:' + localStorage.getItem('refreshToken'));
-        console.log('bruker: ' + user);
-        console.log(activities);
-        const activityID = eventInfo.event.extendedProps.ID;
-        const url = `/activity/${activityID}`;
-        axios
-            .get(url)
-            .then((response) => {
-                setActivity(response.data);
-                setOpenPopup(!openPopup);
-            })
-            .catch((error) => {
-                console.log('Kunne ikke hente aktivitet: ' + error.message);
-            });
     };
-
-    const handleEventEnter = (eventInfo: any) => {
-        eventInfo.event.setProp('backgroundColor', '#f66055');
-    };
-
-    const handleEventLeave = (eventInfo: any) => {
-        const normalColor =
-            eventInfo.event.extendedProps.formattedDate > todayStr
-                ? '#f44336'
-                : '#f66055';
-        eventInfo.event.setProp('backgroundColor', normalColor);
-    };
-
-    const register = (activityId: number): Promise<void> => {
-      return new Promise((resolve, reject) => {
-          axios.delete(`/user/${user}/activity/${activityId}`);
-          resolve;
-      });
-  };
-
-  const unRegister = (activityId: number): Promise<void> => {
-      return new Promise((resolve, reject) => {
-          axios.post('/user/activity', {
-              userId: user,
-              activityId: activityId,
-          });
-          resolve;
-      });
-  };
 
     return (
         <CalendarContainer>
@@ -235,6 +256,9 @@ const Calender = () => {
                     register={register}
                     unRegister={unRegister}
                     activity={activity}
+                    deleteActivity={deleteActivity}
+                    setOpenPopup={setOpenPopup}
+                    openPopup={openPopup}
                 />
             </Popup>
         </CalendarContainer>

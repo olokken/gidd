@@ -74,21 +74,16 @@ const NewUser = () => {
                 })
                 .then((response) => {
                     const id = response.data.id
-                    console
-                    console.log(JSON.stringify(id));
+                    const token = response.data.token;
                     localStorage.setItem('userID', id);
-                    axios.get(`/security/token/generate?subject=${id}`).then(response => {
-                        const token = response.data.result;
-                        setUser(id);
-                    }).then(() => history.push('/Activities')
-                    ).catch(error => {
-                        console.log('Feil med token: ' + error.message)
-                    })
-                })
-                .catch((error) => {
-                    if(error.response.data.error ===  "a user with that email already exists!"){
+                    localStorage.set('token', token)
+                }).
+                then(() => history.push('/Activities')
+                ).catch((error) => {
+                    if (error.response.data.error === "a user with that email already exists!") {
                         alert('En bruker med denne E-mailen finnes allerede')
                     }
+                    console.log(error.response.data.error)
                 });
             return true;
         }

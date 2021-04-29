@@ -60,19 +60,15 @@ const Login = () => {
                     password: password,
                 })
                 .then((response) => {
-                    console.log(JSON.stringify(response.data));
+                    console.log(response.data);
                     const id = response.data.id
+                    const token = response.data.token
                     setUser(id);
-                    axios.get(`/security/token/generate?subject=${id}`).then(response => {
-                        const token = response.data.result;
-                        localStorage.setItem('token', token);
-                        localStorage.setItem('userID', id);
-                        console.log('Fikk logget inn')
-                    }).then(() => {
-                        history.push('/Activities');
-                    }).catch(error => {
-                        console.log('Feil med token: ' + error.message)
-                    })
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('userID', id);
+                    console.log('Fikk logget inn')
+                }).then(() => {
+                    history.push('/Activities');
                 })
                 .catch((error) => {
                     console.log(error.response.data);
