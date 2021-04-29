@@ -195,7 +195,7 @@ const Activities = () => {
 
     const loadActivities = () => {
         axios
-            .get('/activity')
+            .get(`/activity?userId=${localStorage.getItem('userID')}`)
             .then((response) => {
                 response.data;
                 setActivities(response.data['activities']);

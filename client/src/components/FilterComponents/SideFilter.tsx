@@ -58,10 +58,12 @@ const SideFilter = ({
                 variant="outlined"
             />
             <ViewBox
+                startValue={true}
                 label={'Vis kun framtidige aktiviteter'}
                 onStateChange={onShowFuture}
             ></ViewBox>
             <ViewBox
+                startValue={false}
                 label={'Vis kun påmeldte aktiviteter'}
                 onStateChange={onShowMine}
             ></ViewBox>

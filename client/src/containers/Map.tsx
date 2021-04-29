@@ -46,7 +46,7 @@ const Map = () => {
 
     const loadActivities = () => {
         axios
-            .get('/activity')
+            .get(`/activity?userId=${localStorage.getItem('userID')}`)
             .then((response) => {
                 setActivities(response.data['activities']);
             })

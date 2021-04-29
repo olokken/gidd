@@ -10,17 +10,18 @@ const Container = styled.div`
 interface Props {
     label: string;
     onStateChange: (state: boolean) => void;
+    startValue: boolean;
 }
 
-const ViewBox = ({ label, onStateChange }: Props) => {
-    const [state, setState] = useState<boolean>(false);
+const ViewBox = ({ label, onStateChange, startValue }: Props) => {
+    const [state, setState] = useState<boolean>(startValue);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setState(event.target.checked)
+        setState(event.target.checked);
     };
 
     useEffect(() => {
-        onStateChange(state)
+        onStateChange(state);
     }, [state]);
 
     return (
@@ -29,6 +30,7 @@ const ViewBox = ({ label, onStateChange }: Props) => {
                 <FormControlLabel
                     control={<Checkbox name={label} onChange={handleChange} />}
                     label={label}
+                    checked={state}
                 />
             </FormControl>
         </Container>
