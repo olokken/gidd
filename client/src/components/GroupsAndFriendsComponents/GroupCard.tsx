@@ -1,17 +1,19 @@
 import {
     Card,
+    CardMedia,
     Typography,
     Grid,
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Popup from '../Popup';
-import GroupProfile from './GroupProfile';
 import Group from '../../interfaces/Group';
 
 const CardInformation = styled.div`
     height: 100%;
     cursor: pointer;
+
+
     :hover {
         background-color: #ebebeb;
     }
@@ -64,11 +66,6 @@ const GroupCard = ({ group, handleGroupClicked, onClick }: Props) => {
                 openPopup={openPopup}
                 setOpenPopup={setOpenPopup}
             >
-                <GroupProfile
-                    openPopup={openPopup}
-                    setOpenPopup={setOpenPopup}
-                    group={group}
-                />
             </Popup>
         </div>
     );
