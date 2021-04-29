@@ -19,12 +19,26 @@
 
 .acitivityform__containerItem2 {
     padding: 10px !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.acitivityform__containerItem22 {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.acitivityform__numberbox {
+    min-width: 18vw !important;
+    @media screen and (max-width: 768px) {
+        min-width: 30vw !important;
+    }
 }
 
 .activityform__description {
-    width: 30vh;
     height: 120px;
-    width: 50vh;
+    min-width: 50vh;
     padding: 5px;
 }
 
@@ -39,7 +53,7 @@
 }
 
 .activityform__activityLevel {
-    width: 15vw !important;
+    min-width: 15vw !important;
     margin-top: 4px !important;
 }
 
@@ -62,7 +76,7 @@
 .activityform__list {
     border-radius: 5px;
     border: solid lightgrey 1px;
-    width: 45vh;
+    max-width: 28vh;
     height: 110px;
     overflow: auto;
 }
