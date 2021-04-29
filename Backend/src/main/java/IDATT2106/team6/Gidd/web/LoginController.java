@@ -173,7 +173,7 @@ public class LoginController {
                 map.get("surname").toString(),
                 -1,
                 null,
-                new Image(),
+                new Image("",new byte[]{}),
                 provider);
 
         // TODO this segment can be removed once registerUser()
