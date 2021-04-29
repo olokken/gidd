@@ -228,7 +228,7 @@ public class GroupController {
                 .body(formatJson(body));
     }
 
-    @MapTokenRequired
+    @GroupTokenRequired
     @PutMapping("/{groupId}")
     public ResponseEntity changeOwner(@RequestBody HashMap<String, Object> map){
         FriendGroup friendGroup = friendGroupService.getFriendGroup(Integer.parseInt(map.get("groupId").toString()));

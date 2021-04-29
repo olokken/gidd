@@ -655,11 +655,13 @@ public class ActivityController {
                                                   HashMap<String,String> body, HttpHeaders headers,
                                                     int repeat) {
         List<Integer> res = new ArrayList();
+        int i = 0;
         if(repeat>3) repeat = 3;
         do {
             Activity temp = new Activity(activity);
             int newId = newActivityValidId(temp);
             temp.setActivityId(newId);
+            temp.setTime(new Timestamp(activity.getTime().getTime() + 604800000L * i++));
             log.debug("new activity id: " + newId);
 
             if (!insertUserActivityCoupling(user, temp)) {
