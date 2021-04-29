@@ -41,6 +41,9 @@ public class FriendGroupRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @return null if an error happens or no friendGroup is found
+     */
     public FriendGroup findFriendGroup(int friendGroupId){
         log.info("finding friend group " + friendGroupId );
         EntityManager em = getEm();
@@ -55,6 +58,9 @@ public class FriendGroupRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @return null if an error happens, empty list if no results are found
+     */
     public List<FriendGroup> getAllFriendGroups(){
         log.debug("Getting all friend groups");
         EntityManager em = getEm();
@@ -114,6 +120,10 @@ public class FriendGroupRepo extends GiddRepo {
         }
     }
 
+    /**
+     * get groups that a user with given id belongs to
+     * @return empty list if no groups are found
+     */
     public List<FriendGroup> getGroupsForUser(int userId) {
         log.debug("Finding groups for user " + userId);
         EntityManager em = getEm();
@@ -128,6 +138,11 @@ public class FriendGroupRepo extends GiddRepo {
         }
     }
 
+    /**
+     * Get activities that only members of a certain group can join
+     * @param groupId the id of this certain group
+     * @return null if an error happens, empty list if no results are found
+     */
     public List<Activity> getActivitiesForGroup(int groupId){
         log.debug("Finding activities for group " + groupId);
         EntityManager em = getEm();

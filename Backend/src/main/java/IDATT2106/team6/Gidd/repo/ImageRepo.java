@@ -82,6 +82,9 @@ public class ImageRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @return returns null if an error happens or no image is found
+     */
     public Image findImage(int imageId) {
         log.info("finding image with id " + imageId);
         EntityManager em = getEm();
@@ -99,6 +102,9 @@ public class ImageRepo extends GiddRepo {
         return image;
     }
 
+    /**
+     * @return empty list if error happens or no images are found
+     */
     public List<Image> getAllImages() {
         log.info("getting all images");
         EntityManager em = getEm();
@@ -113,8 +119,9 @@ public class ImageRepo extends GiddRepo {
         }finally {
             em.close();
         }
-
-        assert allActivities != null;
+        if(allActivities == null){
+            return new ArrayList<>();
+        }
         return new ArrayList<>(allActivities);
     }
 }

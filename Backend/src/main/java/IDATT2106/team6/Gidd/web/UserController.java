@@ -1113,9 +1113,7 @@ public class UserController {
         //Kalle insert-metode helt til den blir true
 
         ArrayList<ActivityUser> activityUsers = new ArrayList<>();
-        System.out.println("is null " + activityService == null);
         ArrayList<Activity> activities = activityService.getAllActivities();
-        System.out.println("activity null " + activities == null);
         for (Activity a : activities) {
             activityUsers.addAll(a.getRegisteredParticipants());
         }

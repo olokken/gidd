@@ -61,6 +61,11 @@ public class RatingRepo extends GiddRepo {
         }
     }
 
+    //todo why does this return a list
+
+    /**
+     * @return null if error happens
+     */
     public List findAverage(int userId) {
         log.debug("Finding average rating for user " + userId);
         EntityManager em = getEm();

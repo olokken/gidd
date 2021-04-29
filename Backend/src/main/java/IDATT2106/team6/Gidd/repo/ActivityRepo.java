@@ -17,6 +17,9 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+/**
+ *
+ */
 @Repository
 public class ActivityRepo extends GiddRepo {
     private Logger log = new Logger(ActivityRepo.class.toString());
@@ -78,6 +81,7 @@ public class ActivityRepo extends GiddRepo {
             em.close();
         }
     }
+
 
     public boolean deleteActivity(int activityId){
         EntityManager em = getEm();
@@ -162,6 +166,11 @@ public class ActivityRepo extends GiddRepo {
         }
     }
 
+
+    /**
+     * @param title the title of the activity you want to find
+     * @return null in case an error happens, an empty list if no result is found
+     */
     public List<Activity> findActivitiesBasedOnTitle(String title){
         EntityManager em = getEm();
         log.info("finding activities with title " + title);
@@ -177,6 +186,10 @@ public class ActivityRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @param activityLevel 0, 1 or 2, where 2 is HIGH and 0 is LOW
+     * @return null if an error happened, an empty list if no results were found
+     */
     public List<Activity> findActivityByActivityLevel(int activityLevel){
         EntityManager em = getEm();
         log.info("finding activities by activity level " + activityLevel);
@@ -193,20 +206,23 @@ public class ActivityRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @param activityId a positive integer
+     * @return an empty list if no activity is found
+     */
     public List<User> getUsersFromActivity(int activityId){
         Activity foundActivity = findActivity(activityId);
         if(foundActivity != null) {
             List<ActivityUser> activityUsers = foundActivity.getRegisteredParticipants();
-            Collections.sort(activityUsers, new Comparator<ActivityUser>(){
-                public int compare(ActivityUser a1, ActivityUser a2){
-                    return a1.getTimestamp().compareTo(a2.getTimestamp());
-                }
-            });
-            return activityUsers.stream().map(a -> a.getUser()).collect(Collectors.toList());
+            activityUsers.sort(Comparator.comparing(ActivityUser::getTimestamp));
+            return activityUsers.stream().map(ActivityUser::getUser).collect(Collectors.toList());
         }
         return new ArrayList<User>();
     }
 
+    /**
+     * @return an empty list if no activities are found
+     */
     public ArrayList<Activity> getAllActivities(){
         log.info("getting all activites");
         EntityManager em = getEm();
@@ -221,7 +237,9 @@ public class ActivityRepo extends GiddRepo {
             em.close();
         }
 
-        assert allActivities != null;
+        if(allActivities == null){
+            return new ArrayList<Activity>();
+        }
         return new ArrayList<>(allActivities);
     }
 
@@ -242,6 +260,10 @@ public class ActivityRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @param id the id in the coupling table
+     * @return null if an error happens or no result is found
+     */
     public ActivityEquipment findActivityEquipmentConnection(int id) {
         EntityManager em = getEm();
         ActivityEquipment ae;
@@ -301,6 +323,9 @@ public class ActivityRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @return an empty list if no activities with the given tag is found, null if an error happens
+     */
     public List<Object> filterActivitiesByTag(int tagId){
         log.debug("Filtering activities by tag");
         EntityManager em = getEm();

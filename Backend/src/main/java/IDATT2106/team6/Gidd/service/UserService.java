@@ -79,9 +79,9 @@ public class UserService {
 		return repo.findUserByEmail(email);
 	}
 
-    public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
-        log.info("adding user with id " + id + " to activity " + activity.getActivityId());
-        return this.repo.addUserToActivity(id, activity, user, time);
+    public boolean addUserToActivity(int couplingId, Activity activity, User user, Timestamp time){
+        log.info("adding user with coupling id " + couplingId + " to activity " + activity.getActivityId());
+        return this.repo.addUserToActivity(couplingId, activity, user, time);
     }
 
     public Integer getActivityUser(Activity activity, User user){
