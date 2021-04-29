@@ -3,7 +3,6 @@ import { BrowserRouter } from 'react-router-dom';
 import Routes from './Routes';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { UserContext } from './UserContext';
-import { SocketContext } from './SocketContext';
 import { useState, useMemo } from 'react';
 import User from './interfaces/User';
 import SockJS from 'sockjs-client';
@@ -29,7 +28,6 @@ const theme = createMuiTheme({
 function App() {
     const [user, setUser] = useState<string>();
     const value = useMemo(() => ({ user, setUser }), [user, setUser]);
-    const socket = useRef<any>();
 
     useEffect(() => {
         const id = localStorage.getItem('userID');
@@ -41,11 +39,9 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <BrowserRouter>
-                <SocketContext.Provider value={socket}>
-                    <UserContext.Provider value={value}>
-                        <div className="App">{Routes}</div>
-                    </UserContext.Provider>
-                </SocketContext.Provider>
+                <UserContext.Provider value={value}>
+                    <div className="App">{Routes}</div>
+                </UserContext.Provider>
             </BrowserRouter>
         </ThemeProvider>
     );
