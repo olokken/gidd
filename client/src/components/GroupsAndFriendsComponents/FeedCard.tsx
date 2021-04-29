@@ -172,7 +172,7 @@ export default function FeedCard({
         console.log(now);
         let currActivity = activities[0];
         activities.forEach((activity) => {
-            if (activity.time < currActivity.time && activity.time >= now) {
+            if (currActivity.time < now || activity.time < currActivity.time && activity.time >= now) {
                 console.log(activity);
                 console.log(currActivity);
                 currActivity = activity;
@@ -293,7 +293,7 @@ export default function FeedCard({
                     >
                         <UserAvatar user={user} type="small"></UserAvatar>
                         {Object.values(user)[0] ==
-                        Object.values(selectedGroup.owner)[0] ? (
+                            Object.values(selectedGroup.owner)[0] ? (
                             <ListItemText
                                 primary={
                                     user.firstName +
