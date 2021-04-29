@@ -594,7 +594,6 @@ public class UserController {
                 .body(formatJson(body));
     }
 
-    @GetMapping("/{userId}/notification")
     @PathTwoTokenRequired
     @PutMapping(value = "/some/{id}")
     public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
