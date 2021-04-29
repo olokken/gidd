@@ -5,7 +5,6 @@ import { useHistory } from 'react-router-dom';
 import image from '../assets/GIDD.png';
 import { UserContext } from '../UserContext';
 import { useContext } from 'react';
-import User from '../interfaces/User';
 import axios from '../Axios';
 
 const LoginContainer = styled.div`

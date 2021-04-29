@@ -1,14 +1,10 @@
 import {
     AppBar,
     Button,
-    Icon,
     Toolbar,
     MenuItem,
-    makeStyles,
-    ListItem,
     Drawer,
 } from '@material-ui/core';
-import styled from 'styled-components';
 import IconButton from '@material-ui/core/IconButton';
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';

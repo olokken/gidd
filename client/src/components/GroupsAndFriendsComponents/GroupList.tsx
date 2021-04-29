@@ -1,9 +1,6 @@
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { TextField, Button } from '@material-ui/core';
-import Select from 'react-select';
-import FriendCard from './FriendCard';
-import GroupCard from './GroupCard';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddBox from '@material-ui/icons/AddBox';
 import User from '../../interfaces/User';
