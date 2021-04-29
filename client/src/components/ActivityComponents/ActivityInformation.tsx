@@ -117,7 +117,6 @@ const ActivityInformation = ({
         points: '',
     });
     const [openRatingPopup, setRatingPopup] = useState<boolean>(false);
-    const [waitingList, setWaitingList] = useState<boolean>(false);
 
     const onRegisterClick = () => {
         register(activity.activityId).then(() => {
