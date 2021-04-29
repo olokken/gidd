@@ -88,7 +88,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
     const [isFirstTimeLogin, setIsFirstTimeLogin] = useState<boolean>(false);
     const [showIsFirstTime, setShowIsFirstTime] = useState<boolean>(false);
-   
+
 
     const checkInput = (input: string): boolean => {
         if (input.length > 0 && input.charAt(0) !== ' ') {
@@ -460,19 +460,16 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
     const onClickDeleteUser = () => {
         console.log(user);
         axios
-            .delete(`user/${user}`)
+            .delete(`user/${user}`, config)
             .then((response) => {
-                if (response.data.error) {
-                    console.log(response.data.error);
-                } else {
-                    console.log(response);
-                    setCurrentUser(response.data);
-                    localStorage.clear();
-                    history.push('/');
-                }
+                console.log(response);
+                setCurrentUser(response.data);
+                localStorage.clear();
+                history.push('/');
+
             })
             .catch((error) => {
-                console.log('Could not delete user: ' + error.message);
+                console.log(error.response.data);
             });
     };
 

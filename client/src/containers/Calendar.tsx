@@ -67,7 +67,6 @@ const Calender = () => {
     const deleteActivity = (id: number) => {
         axios
             .delete(`/activity/${id}`, config)
-            .then(loadActivities)
             .then(() => loadActivities());
     };
 
@@ -109,8 +108,7 @@ const Calender = () => {
                 .post('/user/activity', {
                     userId: user,
                     activityId: activityId,
-                }, config)
-                .then(() => loadActivities());
+                }, config);
             resolve();
         });
     };
