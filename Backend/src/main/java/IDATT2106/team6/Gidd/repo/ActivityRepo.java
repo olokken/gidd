@@ -214,7 +214,7 @@ public class ActivityRepo extends GiddRepo {
         Activity foundActivity = findActivity(activityId);
         if(foundActivity != null) {
             List<ActivityUser> activityUsers = foundActivity.getRegisteredParticipants();
-            activityUsers.sort(Comparator.comparing(ActivityUser::getTimestamp));
+            activityUsers.sort(Comparator.comparing(ActivityUser::getReserved));
             return activityUsers.stream().map(ActivityUser::getUser).collect(Collectors.toList());
         }
         return new ArrayList<User>();
