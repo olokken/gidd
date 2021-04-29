@@ -1,19 +1,13 @@
 import {
-    Avatar,
     Button,
     Card,
-    CardHeader,
     Dialog,
     DialogActions,
-    DialogContent,
-    DialogContentText,
     DialogTitle,
     Divider,
-    IconButton,
     List,
     ListItem,
     ListItemText,
-    ListSubheader,
     makeStyles,
     Typography,
     withStyles,
@@ -133,7 +127,9 @@ export default function FeedCard({
     const classes = useStyles();
     const [openPopup, setOpenPopup] = useState<boolean>(false);
     const [openChoiceBox, setOpenChoiceBox] = useState<boolean>(false);
-    const [nextActivity, setNextActivity] = useState<ActivityResponse | undefined>();
+    const [nextActivity, setNextActivity] = useState<
+        ActivityResponse | undefined
+    >();
     const [openActivityPopup, setOpenActivityPopup] = useState<boolean>(false);
     const [selectedUser, setSelectedUser] = useState<User>({
         firstName: '',
@@ -147,17 +143,14 @@ export default function FeedCard({
         points: '',
     });
     const { user } = useContext(UserContext);
-    const [activities, setActivities] = useState<ActivityResponse[]>([]);
 
     const getNextActivity = () => {
         const url = `group/${selectedGroup.groupId}/activity`;
         axios
             .get(url, config)
             .then((response) => {
-                console.log(response.data['activities'])
-                const nextAct = sortNextActivity(
-                    response.data['activities']
-                );
+                console.log(response.data['activities']);
+                const nextAct = sortNextActivity(response.data['activities']);
                 if (nextAct !== null) {
                     setNextActivity(nextAct);
                 } else {
@@ -167,9 +160,7 @@ export default function FeedCard({
             .then(() => updateGroups())
             .catch((error) => {
                 setNextActivity(undefined);
-                console.log(
-                    error.response
-                );
+                console.log(error.response);
             });
     };
 
@@ -177,8 +168,15 @@ export default function FeedCard({
         const now = new Date().getTime();
         let currActivity = activities[0];
         activities.forEach((activity) => {
-            if (activity.time - 7200000 < currActivity.time && (activity.time - 7200000) >= now) {
-                console.log(activity.title + ' ' + new Date(activity.time).toLocaleString())
+            if (
+                activity.time - 7200000 < currActivity.time &&
+                activity.time - 7200000 >= now
+            ) {
+                console.log(
+                    activity.title +
+                        ' ' +
+                        new Date(activity.time).toLocaleString()
+                );
                 currActivity = activity;
             }
         });
@@ -212,10 +210,14 @@ export default function FeedCard({
 
     const unRegister = (activityId: number): Promise<void> => {
         return new Promise((resolve, reject) => {
-            axios.post('/user/activity', {
-                userId: user,
-                activityId: activityId,
-            }, config);
+            axios.post(
+                '/user/activity',
+                {
+                    userId: user,
+                    activityId: activityId,
+                },
+                config
+            );
             resolve();
         });
     };
@@ -236,10 +238,14 @@ export default function FeedCard({
         const url = `/group/${selectedGroup.groupId}`;
         console.log(Object.values(selectedUser)[0]);
         axios
-            .put(url, {
-                groupId: selectedGroup.groupId,
-                newOwner: Object.values(selectedUser)[0],
-            }, config)
+            .put(
+                url,
+                {
+                    groupId: selectedGroup.groupId,
+                    newOwner: Object.values(selectedUser)[0],
+                },
+                config
+            )
             .then((response) => {
                 console.log(response);
             })
@@ -252,6 +258,10 @@ export default function FeedCard({
             });
     };
 
+    const isDisabled = (): boolean => {
+        if (selectedGroup.owner.userId == user) return false;
+        else return true;
+    };
 
     return selectedGroup.groupName !== '' ? (
         <StyledCard raised={true}>
@@ -271,9 +281,13 @@ export default function FeedCard({
                         key={index}
                         onClick={() => handleUserClicked(user)}
                     >
-                        <UserAvatar user={user} type="small"></UserAvatar>
+                        <UserAvatar
+                            user={user}
+                            type="small"
+                            marginRight="0.5rem"
+                        ></UserAvatar>
                         {Object.values(user)[0] ==
-                            Object.values(selectedGroup.owner)[0] ? (
+                        Object.values(selectedGroup.owner)[0] ? (
                             <ListItemText
                                 primary={
                                     user.firstName +
@@ -373,18 +387,6 @@ export default function FeedCard({
                     />
                 </Popup>
             )}
-            {/* <StyledActivities>
-                <button
-                    onClick={() => {
-                        console.log(activities);
-                        console.log(nextActivity);
-                        console.log(selectedGroup);
-                    }}
-                >
-                    hvis aktiviteter
-                </button>
-                {renderActivities}
-            </StyledActivities> */}
             <GroupLeaderboard users={selectedGroup.users} />
             <StyledButtons>
                 <Button
@@ -401,6 +403,7 @@ export default function FeedCard({
                     onClick={deleteGroup}
                     variant="contained"
                     color="primary"
+                    disabled={isDisabled()}
                 >
                     {' '}
                     Slett Gruppe <DeleteIcon style={{ marginLeft: '8px' }} />
