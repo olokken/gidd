@@ -23,7 +23,7 @@ const Container = styled.div`
 `;
 
 function useIsMountedRef() {
-    const isMountedRef = React.useRef(true);
+    const isMountedRef = React.useRef(false);
     useEffect(() => {
         isMountedRef.current = true;
         return () => {
@@ -208,6 +208,7 @@ const GroupsAndFriends = () => {
         updateFriends();
     }, [user]);
 
+    /*
     const getActivities = async () => {
         console.log('hva skjer');
         const request = await axios.get(
@@ -221,6 +222,7 @@ const GroupsAndFriends = () => {
     useEffect(() => {
         getActivities();
     }, [selectedGroup, isMountedRef]);
+    */
 
     const displayDesktop = () => {
         return (

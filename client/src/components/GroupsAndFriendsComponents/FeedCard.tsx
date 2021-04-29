@@ -147,7 +147,7 @@ export default function FeedCard({
     const getNextActivity = async () => {
         const url = `group/${selectedGroup.groupId}/activity`;
         await axios
-            .get(url,config)
+            .get(url, config)
             .then(async (response) => {
                 console.log(response.data['activities']);
                 const nextAct = await sortNextActivity(
@@ -157,9 +157,7 @@ export default function FeedCard({
             })
             .then(() => updateGroups())
             .catch((error) => {
-                console.log(
-                     error.response
-                );
+                console.log(error.response);
             });
     };
 
@@ -168,7 +166,10 @@ export default function FeedCard({
         console.log(now);
         let currActivity = activities[0];
         activities.forEach((activity) => {
-            if (currActivity.time < now || activity.time < currActivity.time && activity.time >= now) {
+            if (
+                currActivity.time < now ||
+                (activity.time < currActivity.time && activity.time >= now)
+            ) {
                 console.log(activity);
                 console.log(currActivity);
                 currActivity = activity;
@@ -200,10 +201,14 @@ export default function FeedCard({
 
     const unRegister = (activityId: number): Promise<void> => {
         return new Promise((resolve, reject) => {
-            axios.post('/user/activity', {
-                userId: user,
-                activityId: activityId,
-            },config);
+            axios.post(
+                '/user/activity',
+                {
+                    userId: user,
+                    activityId: activityId,
+                },
+                config
+            );
             resolve();
         });
     };
@@ -224,10 +229,14 @@ export default function FeedCard({
         const url = `/group/${selectedGroup.groupId}`;
         console.log(Object.values(selectedUser)[0]);
         axios
-            .put(url, {
-                groupId: selectedGroup.groupId,
-                newOwner: Object.values(selectedUser)[0],
-            }, config)
+            .put(
+                url,
+                {
+                    groupId: selectedGroup.groupId,
+                    newOwner: Object.values(selectedUser)[0],
+                },
+                config
+            )
             .then((response) => {
                 console.log(response);
             })
@@ -300,7 +309,7 @@ export default function FeedCard({
                             marginRight="0.5rem"
                         ></UserAvatar>
                         {Object.values(user)[0] ==
-                            Object.values(selectedGroup.owner)[0] ? (
+                        Object.values(selectedGroup.owner)[0] ? (
                             <ListItemText
                                 primary={
                                     user.firstName +
@@ -347,7 +356,12 @@ export default function FeedCard({
             <ActivityDiv>
                 <Typography variant="h6">Neste aktvitet</Typography>
                 <TransformDiv>
-                    <button onClick={() => console.log(activities)}>
+                    <button
+                        onClick={() => {
+                            console.log(activities);
+                            console.log(nextActivity);
+                        }}
+                    >
                         Skriv ut aktitiveter
                     </button>
                     {nextActivity ? (
