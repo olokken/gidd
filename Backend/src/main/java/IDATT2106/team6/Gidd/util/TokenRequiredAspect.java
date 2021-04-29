@@ -2,13 +2,16 @@ package IDATT2106.team6.Gidd.util;
 
 import IDATT2106.team6.Gidd.models.Activity;
 import IDATT2106.team6.Gidd.models.FriendGroup;
+import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.ActivityService;
 import IDATT2106.team6.Gidd.service.FriendGroupService;
 import IDATT2106.team6.Gidd.service.SecurityServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
@@ -102,6 +105,30 @@ public class TokenRequiredAspect {
         return handleToken(pjp, subject);
     }
 
+    @Around("@annotation(groupMemberTokenRequired)")
+    public Object groupMemberTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
+                                           GroupMemberTokenRequired groupMemberTokenRequired)
+        throws Throwable {
+        log.info("Around groupMemberTokenRequiredWithAnnotation");
+        Object[] args = pjp.getArgs();
+        List<String> subjects = new ArrayList<>();
+        FriendGroup group = null;
+        if (args[0] instanceof Integer) {
+            group = friendGroupService.getFriendGroup((int) args[0]);
+        }
+        if (group == null) {
+            HashMap<String, String> body = new HashMap<>();
+            body.put("error", "that group does not exist");
+            return ResponseEntity
+                .badRequest()
+                .body(body);
+        }
+        for (User u : group.getUsers()) {
+            subjects.add(String.valueOf(u.getUserId()));
+        }
+        return handleTokenArr(pjp, subjects);
+    }
+
     @Around("@annotation(activityTokenRequired)")
     public Object activityTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
                                                       ActivityTokenRequired activityTokenRequired)
@@ -176,5 +203,68 @@ public class TokenRequiredAspect {
                 .badRequest()
                 .body(body);
         }
+    }
+
+    private Object handleTokenArr(ProceedingJoinPoint pjp, List<String> subjects) throws Throwable {
+        Map<String, String> body = new HashMap<>();
+        try {
+            log.info(
+                "Handling token for pjp: [" + pjp.toString() + "] with subjects [" + subjects + "]");
+            for (String subject : subjects) {
+                if (subject == null || subject.equals("")) {
+                    log.error("No subject");
+                    body.put("error", "no subject passed");
+
+                    return ResponseEntity
+                        .badRequest()
+                        .body(body);
+                }
+            }
+            ServletRequestAttributes reqAttributes =
+                (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            HttpServletRequest request = reqAttributes.getRequest();
+            // checks for token in request header
+            String tokenInHeader = request.getHeader("token");
+            log.info("Token received: " + tokenInHeader);
+            if (StringUtils.isEmpty(tokenInHeader)) {
+                log.error("No token was passed in header");
+                body.put("error", "empty token");
+                return ResponseEntity
+                    .badRequest()
+                    .body(body);
+            }
+            Claims claims = Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(securityService.getSecretKey()))
+                .parseClaimsJws(tokenInHeader).getBody();
+            if (claims == null || claims.getSubject() == null) {
+                log.error("Claims was found to be null");
+                body.put("error", "claim is null");
+
+                return ResponseEntity
+                    .badRequest()
+                    .body(body);
+            }
+            for (String subject :
+                subjects) {
+                if (!claims.getSubject().equalsIgnoreCase(subject)) {
+                    log.error("Subject does not match token");
+                    body.put("error", "subject mismatch");
+                    return ResponseEntity
+                        .badRequest()
+                        .body(body);
+                } else {
+                    return pjp.proceed();
+                }
+            }
+        } catch (ExpiredJwtException e) {
+            body.put("error", "expired token");
+            return ResponseEntity
+                .badRequest()
+                .body(body);
+        }
+        body.put("error", "an unexpected error occurred");
+        return ResponseEntity
+            .badRequest()
+            .body(body);
     }
 }

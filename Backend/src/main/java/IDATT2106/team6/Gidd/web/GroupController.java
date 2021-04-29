@@ -319,7 +319,7 @@ public class GroupController {
                 .body(friendGroup.toString());
     }
 
-    @GroupTokenRequired
+    @MapTokenRequired
     @GetMapping("/{groupId}/activity")
     public ResponseEntity getActivitiesForGroup(@PathVariable Integer groupId){
         log.debug("Received GetMapping to '/group/{groupId}/activity'");
