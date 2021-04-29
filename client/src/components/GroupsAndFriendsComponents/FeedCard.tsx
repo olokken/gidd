@@ -116,7 +116,6 @@ interface Props {
     updateGroups: () => void;
     leaveGroup: () => void;
     deleteGroup: () => void;
-    activities: ActivityResponse[];
 }
 
 export default function FeedCard({
@@ -124,7 +123,6 @@ export default function FeedCard({
     updateGroups,
     leaveGroup,
     deleteGroup,
-    activities,
 }: Props) {
     const classes = useStyles();
     const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -254,37 +252,6 @@ export default function FeedCard({
         else return true;
     };
 
-    /*
-    const getActivities = async () => {
-        console.log('hva skjer');
-        const request = await axios.get(
-            `/group/${selectedGroup.groupId}/activity`
-        );
-        console.log(request);
-        setActivities(request.data.activties);
-        return request;
-    };
-    */
-
-    /*
-    useEffect(() => {
-        getActivities();
-    }, [selectedGroup]);
-    */
-
-    const renderActivities = activities.map((activity, index: number) => {
-        return (
-            <StyledActivity key={index}>
-                <ActivityCard
-                    activity={activity}
-                    openPopup={openActivityPopup}
-                    setOpenPopup={setOpenActivityPopup}
-                    setActivity={setNextActivity}
-                ></ActivityCard>
-            </StyledActivity>
-        );
-    });
-
     return selectedGroup.groupName !== '' ? (
         <StyledCard raised={true}>
             <StyledHeader>{selectedGroup.groupName}</StyledHeader>
@@ -356,14 +323,6 @@ export default function FeedCard({
             <ActivityDiv>
                 <Typography variant="h6">Neste aktvitet</Typography>
                 <TransformDiv>
-                    <button
-                        onClick={() => {
-                            console.log(activities);
-                            console.log(nextActivity);
-                        }}
-                    >
-                        Skriv ut aktitiveter
-                    </button>
                     {nextActivity ? (
                         <ActivityCard
                             activity={nextActivity}
@@ -417,18 +376,6 @@ export default function FeedCard({
                     />
                 </Popup>
             )}
-            {/* <StyledActivities>
-                <button
-                    onClick={() => {
-                        console.log(activities);
-                        console.log(nextActivity);
-                        console.log(selectedGroup);
-                    }}
-                >
-                    hvis aktiviteter
-                </button>
-                {renderActivities}
-            </StyledActivities> */}
             <GroupLeaderboard users={selectedGroup.users} />
             <StyledButtons>
                 <Button
