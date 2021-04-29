@@ -34,6 +34,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import Badge from '@material-ui/core/Badge';
 import ChatAlerts from './ChatAlerts';
 import ActivityResponse from '../../interfaces/ActivityResponse';
+import config from '../../Config';
 
 const StyledMenu = withStyles({
     paper: {
@@ -86,9 +87,9 @@ const Navbar = () => {
             return window.innerWidth < 951
                 ? setState((prevState) => ({ ...prevState, mobileView: true }))
                 : setState((prevState) => ({
-                      ...prevState,
-                      mobileView: false,
-                  }));
+                    ...prevState,
+                    mobileView: false,
+                }));
         };
         setResponsiveness();
         window.addEventListener('resize', () => setResponsiveness());
@@ -190,7 +191,7 @@ const Navbar = () => {
     //henter alle pending *angre
     const loadPending = () => {
         axios
-            .get(`/user/${localStorage.getItem('userID')}/pending`)
+            .get(`/user/${localStorage.getItem('userID')}/pending`, config)
             .then((response) => {
                 console.log('PendingVenneforespørsler:');
                 console.log(response.data['users']);
@@ -202,7 +203,7 @@ const Navbar = () => {
         //henter alle reqest ja/nei
         console.log(localStorage.getItem('userID'));
         axios
-            .get(`/user/${localStorage.getItem('userID')}/request`)
+            .get(`/user/${localStorage.getItem('userID')}/request`, config)
             .then((response) => {
                 console.log('Venneforespørsler:');
                 console.log(response.data['users']);
@@ -240,7 +241,7 @@ const Navbar = () => {
             .post(`/user/${localStorage.getItem('userID')}/user`, {
                 userId: localStorage.getItem('userID'),
                 friendId: friendId,
-            })
+            }, config)
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
@@ -257,7 +258,7 @@ const Navbar = () => {
     //sletter forespørsel
     const deleteFriend = (friendId: string) => {
         axios
-            .delete(`user/${user}/user/${friendId}`)
+            .delete(`user/${user}/user/${friendId}`, config)
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
