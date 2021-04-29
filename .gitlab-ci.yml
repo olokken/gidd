@@ -1,49 +1,51 @@
-image: ubuntu:latest
-#no free docker hmm
-#image: devayansarkar/maven-node-openjdk
+
+image: devayansarkar/maven-node-openjdk
 
 #todo npm install always fails
-#client-build:
-#  stage: build
-#  only:
-#      - master
-#  script:
-#    - cd client
-#    - npm install
+client-build:
+  stage: build
+  only:
+      - master
+  script:
+    - cd client
+    - npm install
   # Keep node_modules-folder for the following stages:
-#  artifacts:
-#    paths:
-#      - client/node_modules
+  artifacts:
+    paths:
+      - client/node_modules
 
-#backend-build:
- # stage: build
-  #only:
-  #    - master
-  #script:
-   # - cd Backend
-    #- "mvn install -B"
+backend-build:
+  stage: build
+  only:
+      - backend-dev
+      - master
+  script:
+    - cd Backend
+    - "mvn compile"
 
-#backend-test:
- # stage: test
- # only:
- #     - master
- # script:
-  #  - cd Backend
-   # - mvn test
-  #needs: ["backend-build"]
 
+backend-test:
+  stage: test
+  only:
+      - backend-dev
+  script:
+    - cd Backend
+    - touch $(pwd)/src/main/resources/application.properties
+    - cp "$PROPERTIES" $(pwd)/src/main/resources/application.properties
+    - mvn test
+  needs: ["backend-build"]
 
 deploy:
+  stage: deploy
   script:
     - apt-get update -y && apt-get install openssh-client -y
     - mkdir ~/.ssh
-    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - ssh-keyscan 13.51.58.86 > ~/.ssh/known_hosts
     - touch ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa # Required permission by ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - apt-get update
-    - apt-get install --assume-yes rsync
-    - rsync --archive --delete --exclude='.git' --exclude='Backend/target' --exclude='client' . app@13.51.169.174:app
-    - ssh app@13.51.169.174 systemctl --user restart app
+    - ssh app@13.51.58.86 ./runjava.sh
   only:
     - backend-dev
+    - master
+  needs: ["backend-build"]
