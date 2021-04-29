@@ -8,7 +8,6 @@ import static IDATT2106.team6.Gidd.web.ControllerUtil.validateStringMap;
 
 import IDATT2106.team6.Gidd.models.*;
 import IDATT2106.team6.Gidd.service.ActivityService;
-import IDATT2106.team6.Gidd.service.ChatService;
 import IDATT2106.team6.Gidd.service.FriendGroupService;
 import IDATT2106.team6.Gidd.service.ImageService;
 import IDATT2106.team6.Gidd.service.RatingService;
@@ -418,7 +417,7 @@ public class UserController {
         }
 
         log.debug("Returning all users that has sent a request");
-        ArrayList<User> requests = userService.getRequest(user);
+        ArrayList<User> requests = userService.getReceivedRequests(user);
 
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
@@ -451,7 +450,7 @@ public class UserController {
                 .body(formatJson(body));
         }
 
-        ArrayList<User> sentRequests = userService.getSentRequest(user);
+        ArrayList<User> sentRequests = userService.getSentRequests(user);
 
         log.debug("Returning all user the user has sent a request to");
         header.add("Status", "200 OK");
