@@ -230,7 +230,7 @@ public class GroupController {
 
     @GroupTokenRequired
     @PutMapping("/{groupId}")
-    public ResponseEntity changeOwner(@RequestBody HashMap<String, Object> map){
+    public ResponseEntity changeOwner(@PathVariable Integer groupId, @RequestBody HashMap<String, Object> map){
         FriendGroup friendGroup = friendGroupService.getFriendGroup(Integer.parseInt(map.get("groupId").toString()));
         User owner = userService.getUser(Integer.parseInt(map.get("newOwner").toString()));
 
