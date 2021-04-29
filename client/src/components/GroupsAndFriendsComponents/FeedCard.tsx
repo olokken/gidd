@@ -1,19 +1,13 @@
 import {
-    Avatar,
     Button,
     Card,
-    CardHeader,
     Dialog,
     DialogActions,
-    DialogContent,
-    DialogContentText,
     DialogTitle,
     Divider,
-    IconButton,
     List,
     ListItem,
     ListItemText,
-    ListSubheader,
     makeStyles,
     Typography,
     withStyles,
@@ -121,6 +115,7 @@ interface Props {
     updateGroups: () => void;
     leaveGroup: () => void;
     deleteGroup: () => void;
+    activities: ActivityResponse[];
 }
 
 export default function FeedCard({
@@ -128,6 +123,7 @@ export default function FeedCard({
     updateGroups,
     leaveGroup,
     deleteGroup,
+    activities,
 }: Props) {
     const classes = useStyles();
     const [openPopup, setOpenPopup] = useState<boolean>(false);
@@ -146,7 +142,6 @@ export default function FeedCard({
         points: '',
     });
     const { user } = useContext(UserContext);
-    const [activities, setActivities] = useState<ActivityResponse[]>([]);
 
     const getNextActivity = async () => {
         const url = `group/${selectedGroup.groupId}/activity`;
@@ -244,6 +239,11 @@ export default function FeedCard({
             });
     };
 
+    const isDisabled = (): boolean => {
+        if (selectedGroup.owner.userId == user) return false;
+        else return true;
+    };
+
     /*
     const getActivities = async () => {
         console.log('hva skjer');
@@ -254,10 +254,12 @@ export default function FeedCard({
         setActivities(request.data.activties);
         return request;
     };
+    */
 
+    /*
     useEffect(() => {
         getActivities();
-    }, []); //TODO when should the side effect trigger
+    }, [selectedGroup]);
     */
 
     const renderActivities = activities.map((activity, index: number) => {
@@ -291,7 +293,11 @@ export default function FeedCard({
                         key={index}
                         onClick={() => handleUserClicked(user)}
                     >
-                        <UserAvatar user={user} type="small"></UserAvatar>
+                        <UserAvatar
+                            user={user}
+                            type="small"
+                            marginRight="0.5rem"
+                        ></UserAvatar>
                         {Object.values(user)[0] ==
                         Object.values(selectedGroup.owner)[0] ? (
                             <ListItemText
@@ -340,6 +346,9 @@ export default function FeedCard({
             <ActivityDiv>
                 <Typography variant="h6">Neste aktvitet</Typography>
                 <TransformDiv>
+                    <button onClick={() => console.log(activities)}>
+                        Skriv ut aktitiveter
+                    </button>
                     {nextActivity ? (
                         <ActivityCard
                             activity={nextActivity}
@@ -421,6 +430,7 @@ export default function FeedCard({
                     onClick={deleteGroup}
                     variant="contained"
                     color="primary"
+                    disabled={isDisabled()}
                 >
                     {' '}
                     Slett Gruppe <DeleteIcon style={{ marginLeft: '8px' }} />

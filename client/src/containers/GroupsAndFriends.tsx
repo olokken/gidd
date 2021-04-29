@@ -11,6 +11,7 @@ import { Button, Drawer } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
+import ActivityResponse from '../interfaces/ActivityResponse';
 
 //Endringer kan forekomme her
 
@@ -19,6 +20,17 @@ const Container = styled.div`
     margin-left: 10px;
     width: 100%;
 `;
+
+function useIsMountedRef() {
+    const isMountedRef = React.useRef(true);
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+        };
+    });
+    return isMountedRef;
+}
 
 const GroupsAndFriends = () => {
     const [friends, setFriends] = useState<User[]>([]);
@@ -41,6 +53,8 @@ const GroupsAndFriends = () => {
         groupId: '-1',
         users: [],
     });
+    const [activities, setActivities] = useState<ActivityResponse[]>([]);
+    const isMountedRef = useIsMountedRef();
 
     const [state, setState] = useState({
         mobileView: false,
@@ -193,6 +207,20 @@ const GroupsAndFriends = () => {
         updateFriends();
     }, [user]);
 
+    const getActivities = async () => {
+        console.log('hva skjer');
+        const request = await axios.get(
+            `/group/${selectedGroup.groupId}/activity`
+        );
+        console.log(request);
+        if (isMountedRef.current) setActivities(request.data.activties);
+        return request;
+    };
+
+    useEffect(() => {
+        getActivities();
+    }, [selectedGroup, isMountedRef]);
+
     const displayDesktop = () => {
         return (
             <Container>
@@ -209,6 +237,7 @@ const GroupsAndFriends = () => {
                         updateGroups={updateGroups}
                         leaveGroup={leaveGroup}
                         deleteGroup={deleteGroup}
+                        activities={activities}
                     ></FeedCard>
                 </div>
                 <div
@@ -331,6 +360,7 @@ const GroupsAndFriends = () => {
                         updateGroups={updateGroups}
                         leaveGroup={leaveGroup}
                         deleteGroup={deleteGroup}
+                        activities={activities}
                     ></FeedCard>
                 </div>
             </div>
