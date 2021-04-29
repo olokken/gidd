@@ -226,19 +226,20 @@ const ActivityInformation = ({
             );
         } else if (registration == 3) {
             let myIndex = 0;
-            currentAct.registeredParticipants
-                .map((par, index) => {
-                    if (par['userId'].toString() === user) {
-                        myIndex = index + 1;
-                    }
-                })
+            currentAct.registeredParticipants.map((par, index) => {
+                if (par['userId'].toString() === user) {
+                    myIndex = index + 1;
+                }
+            });
 
             return (
                 <Button
                     onClick={removeWaitingList}
                     className={classes.joinButton}
                 >
-                    {'Du er på ' + (myIndex - activity.capacity) +'. plass på vente liste'}
+                    {'Du er på ' +
+                        (myIndex - activity.capacity) +
+                        '. plass på vente liste'}
                     <br></br>
                     Meld deg av
                 </Button>
@@ -288,7 +289,11 @@ const ActivityInformation = ({
                         onParticipantClicked(par);
                 }}
             >
-                <UserAvatar user={par} type="small"></UserAvatar>
+                <UserAvatar
+                    user={par}
+                    type="small"
+                    marginRight="0.5rem"
+                ></UserAvatar>
                 <ListItemText
                     primary={par['firstName'] + ' ' + par['surname']}
                 />
