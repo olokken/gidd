@@ -13,7 +13,6 @@ import Divider from '@material-ui/core/Divider';
 import CloseIcon from '@material-ui/icons/Close';
 import config from '../Config'
 
-//Endringer kan forekomme her
 
 const Container = styled.div`
     display: flex;

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Menu, { MenuProps } from '@material-ui/core/Menu';
 import { MenuItem, withStyles } from '@material-ui/core';
 import ActivityResponse from '../../interfaces/ActivityResponse';
-import axios from '../../Axios';
 import Chat from '../ChatComponents/Chat';
 
 const StyledMenu = withStyles({

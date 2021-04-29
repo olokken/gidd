@@ -3,7 +3,6 @@ import ActivityForm from '../components/ActivityComponents/ActivityForm';
 import styled from 'styled-components';
 import SideFilter from '../components/FilterComponents/SideFilter';
 import SortMenu from '../components/SortingComponents/SortMenu';
-import Activity from '../interfaces/Activity';
 import ActivityResponse from '../interfaces/ActivityResponse';
 import ActivityGrid from '../components/ActivityComponents/ActivityGrid';
 import Popup from '../components/Popup';
@@ -20,7 +19,6 @@ import DefaultCenter from '../interfaces/DefaultCenter';
 import { SortFunctions } from '../components/SortingComponents/SortingFunctions';
 import config from '../Config';
 
-//Endringer kan forekomme her
 
 const Container = styled.div`
     display: flex;

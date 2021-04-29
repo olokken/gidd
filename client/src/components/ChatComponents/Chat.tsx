@@ -2,16 +2,13 @@ import {
     Button,
     Drawer,
     Grid,
-    Paper,
     TextField,
-    Typography,
 } from '@material-ui/core';
 import React, {
     ChangeEvent,
     useEffect,
     useState,
     useRef,
-    useContext,
 } from 'react';
 import styled from 'styled-components';
 import SendRoundedIcon from '@material-ui/icons/SendRounded';
@@ -19,15 +16,8 @@ import StyledMessage from './StyledMessage';
 import axios from '../../Axios';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
-import { UserContext } from '../../UserContext';
 import MessageResponse from '../../interfaces/MessageResponse';
-import { LeakAddTwoTone } from '@material-ui/icons';
 
-const Container = styled.div`
-    display: flex;
-    flex-direction: column;
-    overflow: 'hidden';
-`;
 
 const MessageBox = styled.div`
     height: 70vh;

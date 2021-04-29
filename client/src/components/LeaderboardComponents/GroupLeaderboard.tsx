@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import User from '../../interfaces/User';
-import { Avatar, Card, makeStyles } from '@material-ui/core';
+import { Card, makeStyles } from '@material-ui/core';
 import './GroupLeaderboard.css';
 import UserAvatar from '../UserAvatar';
 

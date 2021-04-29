@@ -6,7 +6,6 @@ import {
     Table,
     TableCell,
     TableRow,
-    FormControl,
     FormLabel,
     RadioGroup,
     FormControlLabel,

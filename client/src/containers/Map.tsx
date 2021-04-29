@@ -6,8 +6,6 @@ import GeoSuggest from '../components/MapComponents/GeoSuggest';
 import DefaultCenter from '../interfaces/DefaultCenter';
 import axios from '../Axios';
 import ActivityResponse from '../interfaces/ActivityResponse';
-import { Button } from '@material-ui/core';
-import { WorkRounded } from '@material-ui/icons';
 import { UserContext } from '../UserContext';
 
 const Container = styled.div`

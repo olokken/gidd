@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from 'styled-components';
 import logo from '../../assets/logo.png';
-import { AppBar, Button, Icon, Toolbar, MenuItem, makeStyles, ListItem, Drawer, TextField, TextareaAutosize } from '@material-ui/core';
+import { AppBar, Button} from '@material-ui/core';
 import FeedbackForm from './FeedbackForm';
 import Popup from '../Popup';
 import Omoss from "./Omoss";

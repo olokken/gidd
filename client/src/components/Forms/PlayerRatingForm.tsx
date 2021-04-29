@@ -2,10 +2,9 @@ import React, { ChangeEvent, useContext, useState } from 'react';
 import User from '../../interfaces/User';
 import Popup from '../Popup';
 import Rating from '@material-ui/lab/Rating';
-import { Button, TextField } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import styled from 'styled-components';
 import axios from '../../Axios'
-import { UserContext } from '../../UserContext';
 import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
 import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';

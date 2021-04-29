@@ -2,8 +2,7 @@ import ActivityResponse from '../../interfaces/ActivityResponse';
 import ActivityLevels from '../../interfaces/ActivityLevels';
 import DefaultCenter from '../../interfaces/DefaultCenter';
 import { getDistance } from 'geolib';
-import { getOptionLabel } from 'react-select/src/builtins';
-import { LeakRemoveTwoTone } from '@material-ui/icons';
+
 
 const titleFilter = (
     activities: ActivityResponse[],

@@ -1,7 +1,4 @@
 import React, { useContext } from 'react';
-import emailjs from 'emailjs-com';
-import TextField from '@material-ui/core/TextField';
-import Input from '@material-ui/core/Input';
 import {
     Button,
     Card,
@@ -12,7 +9,6 @@ import {
 import logo from '../../assets/logo.png';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { UserContext } from '../../UserContext';
-import User from '../../interfaces/User';
 import axios from '../../Axios';
 import Group from '../../interfaces/Group';
 import config from '../../Config';

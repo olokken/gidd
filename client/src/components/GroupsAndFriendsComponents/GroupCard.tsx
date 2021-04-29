@@ -11,10 +11,8 @@ import {
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import logo from '../../assets/logo.png';
-import User from '../../interfaces/User';
 import Popup from '../Popup';
 import GroupProfile from './GroupProfile';
-import UserProfile from './UserProfile';
 import Group from '../../interfaces/Group';
 
 const CardInformation = styled.div`

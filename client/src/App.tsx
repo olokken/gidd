@@ -1,12 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import Routes from './Routes';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { UserContext } from './UserContext';
 import { useState, useMemo } from 'react';
-import User from './interfaces/User';
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
+
 
 const theme = createMuiTheme({
     palette: {

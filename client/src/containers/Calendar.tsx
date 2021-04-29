@@ -1,12 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import FullCalendar, {
-    EventApi,
-    DateSelectArg,
-    EventClickArg,
-    EventContentArg,
-    formatDate,
-    triggerDateSelect,
-} from '@fullcalendar/react';
+import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';

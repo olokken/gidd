@@ -1,7 +1,6 @@
 import Button from '@material-ui/core/Button';
-import React, { useState, useEffect } from 'react';
-import { GoogleMap, withGoogleMap, Marker } from 'react-google-maps';
-import Activities from '../../containers/Activities';
+import React from 'react';
+import { GoogleMap, withGoogleMap } from 'react-google-maps';
 import DefaultCenter from '../../interfaces/DefaultCenter';
 
 interface Props {

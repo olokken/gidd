@@ -1,4 +1,3 @@
-import { act } from '@testing-library/react';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import DefaultCenter from '../../interfaces/DefaultCenter';
 import { getDistance } from 'geolib';

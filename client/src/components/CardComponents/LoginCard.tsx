@@ -1,11 +1,11 @@
-import React, { ChangeEvent, KeyboardEventHandler } from 'react';
+import React, { ChangeEvent } from 'react';
 import { TextField, Button, InputAdornment } from '@material-ui/core';
 import styled from 'styled-components';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
 import GoogleLogin from 'react-google-login';
-import FacebookLogin, { ReactFacebookLoginInfo } from 'react-facebook-login';
+import FacebookLogin from 'react-facebook-login';
 import GoogleButton from 'react-google-button';
 
 const LoginCardContainer = styled.div`

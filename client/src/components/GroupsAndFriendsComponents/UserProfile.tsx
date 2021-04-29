@@ -1,9 +1,6 @@
-import React, { useContext, useEffect } from 'react';
-import emailjs from 'emailjs-com';
-import TextField from '@material-ui/core/TextField';
-import Input from '@material-ui/core/Input';
-import { Button, Card, CardContent, CardMedia, makeStyles, Typography, withStyles } from '@material-ui/core';
-import logo from '../../assets/logo.png';
+import React, { useContext } from 'react';
+
+import { Button, Card, CardContent, Typography } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { UserContext } from '../../UserContext';
 import User from '../../interfaces/User';

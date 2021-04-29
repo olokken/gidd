@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Activity from '../../interfaces/Activity';
 import { Marker } from 'react-google-maps';
 import Popup from '../Popup';
 import ActivityInformation from '../ActivityComponents/ActivityInformation';

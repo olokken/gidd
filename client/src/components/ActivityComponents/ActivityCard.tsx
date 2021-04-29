@@ -4,12 +4,11 @@ import {
     CardContent,
     Typography,
     Grid,
-    Avatar,
     Tooltip,
     Chip,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import hiking from '../../assets/hiking.jpg';
 import ActivityResponse from '../../interfaces/ActivityResponse';
@@ -21,6 +20,7 @@ const useStyles = makeStyles({
         overflow: 'hidden',
         height: '1.2em',
         whiteSpace: 'nowrap',
+        cursor:'pointer'
     },
 });
 

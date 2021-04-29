@@ -1,7 +1,6 @@
-import { Avatar, makeStyles, Tooltip } from '@material-ui/core';
-import React, { useContext, useEffect, useState } from 'react';
+import { Avatar, Tooltip } from '@material-ui/core';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
-import User from '../../interfaces/User';
 import { UserContext } from '../../UserContext';
 
 interface Props {

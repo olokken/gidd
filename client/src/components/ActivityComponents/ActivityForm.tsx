@@ -4,7 +4,6 @@ import {
     withStyles,
     MenuItem,
     Typography,
-    Link,
     Tooltip,
 } from '@material-ui/core';
 import React, { useState, ChangeEvent, useContext, useEffect } from 'react';
@@ -15,7 +14,7 @@ import GeoSuggest from '../MapComponents/GeoSuggest';
 import Popup from '../Popup';
 import MapComponent from '../MapComponents/MapComponent';
 import { Marker } from 'react-google-maps';
-import { Activity2 } from '../../interfaces/Activity';
+import { Activity } from '../../interfaces/Activity';
 import Equipment from '../../interfaces/Equipment';
 import Tag from '../../interfaces/Tag';
 import Pagination from '@material-ui/lab/Pagination';
@@ -23,7 +22,6 @@ import DefaultCenter from '../../interfaces/DefaultCenter';
 import styled from 'styled-components';
 import InfoIcon from '@material-ui/icons/Info';
 import ActivityResponse from '../../interfaces/ActivityResponse';
-import { resolve } from 'node:dns';
 import config from '../../Config'
 
 const StyledButton = withStyles({
@@ -67,8 +65,6 @@ interface Props {
     groupId?: string | undefined;
 }
 
-//TODO:
-//Fix adding image
 const ActivityForm = ({
     openPopup,
     setOpenPopup,
@@ -97,21 +93,6 @@ const ActivityForm = ({
     const [capacity, setCapacity] = useState<string>('');
     const [repetition, setRepetition] = useState<string>('');
     const [image, setImage] = useState<string>('');
-    const [activity, setActivity] = useState<Activity2>({
-        title: '',
-        time: '',
-        repeat: 0,
-        userId: user,
-        capacity: 0,
-        groupId: 0,
-        description: '',
-        image: '',
-        activityLevel: '',
-        equipmentList: '',
-        tags: '',
-        latitude: 0,
-        longitude: 0,
-    });
     const [isActivityResponse, setIsActivityResponse] = useState<boolean>(
         false
     );
@@ -308,7 +289,7 @@ const ActivityForm = ({
         } catch (error) {
             console.log('Could not convert string to number');
         }
-        const activity: Activity2 = {
+        const activity: Activity = {
             title: title,
             time: getTimeFormat(),
             repeat: repe,
@@ -392,21 +373,6 @@ const ActivityForm = ({
         setActivityLevel('');
         setCapacity('');
         setRepetition('');
-        setActivity({
-            title: '',
-            time: '',
-            repeat: 0,
-            userId: user,
-            capacity: 0,
-            groupId: 0,
-            description: '',
-            image: '',
-            activityLevel: '',
-            equipmentList: '',
-            tags: '',
-            latitude: 0,
-            longitude: 0,
-        });
     };
 
     function getPosition(string: string, subString: string, index: number) {

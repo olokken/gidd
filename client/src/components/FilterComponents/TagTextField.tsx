@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Tag from '../../interfaces/Tag';
 import axios from '../../Axios';

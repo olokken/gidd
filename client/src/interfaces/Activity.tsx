@@ -1,26 +1,4 @@
-import Equipment from './Equipment';
-import Tag from './Tag';
-export default interface Activity {
-    ID: number;
-    title: string;
-    time: string;
-    //repeat: number;
-    //userID: number;
-    owner: string;
-    capacity: number;
-    maxCapacity: number;
-    //groupId: number;
-    description: string;
-    level: string;
-    //latitude: number;
-    //longitude: number;
-    //picture: any;
-    //address: string;
-    //equipmentList: Equipment[];
-    //tagList: Tag[];
-}
-
-export interface Activity2 {
+export interface Activity {
     title: string;
     time: string;
     repeat: number;

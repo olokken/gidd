@@ -1,22 +1,15 @@
 import {
     Card,
-    CardMedia,
-    CardContent,
+
     Typography,
     Grid,
-    Avatar,
-    Tooltip,
-    Chip,
-    withStyles,
+
 } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import logo from '../../assets/logo.png';
 import User from '../../interfaces/User';
 import Popup from '../Popup';
 import UserProfile from './UserProfile';
-import Badge from '@material-ui/core/Badge';
-import verified from '../../assets/verified.png';
 import axios from '../../Axios';
 import UserAvatar from '../../components/UserAvatar';
 

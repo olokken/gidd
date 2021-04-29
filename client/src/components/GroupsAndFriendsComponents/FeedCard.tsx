@@ -1,19 +1,13 @@
 import {
-    Avatar,
     Button,
     Card,
-    CardHeader,
     Dialog,
     DialogActions,
-    DialogContent,
-    DialogContentText,
     DialogTitle,
     Divider,
-    IconButton,
     List,
     ListItem,
     ListItemText,
-    ListSubheader,
     makeStyles,
     Typography,
     withStyles,
@@ -81,21 +75,7 @@ const TransformDiv = styled.div`
     }
 `;
 
-const StyledActivities = styled.div`
-    display: flex;
-    border: 2px solid green;
-    margin: 1%;
-    overflow-y: hidden;
-    overflow-x: scroll;
-    padding: 20px;
-`;
 
-const StyledActivity = styled.div`
-    object-fit: contain;
-    width: 100%;
-    max-height: 100px;
-    margin-right: 10px;
-`;
 
 const StyledButtons = styled.div`
     display: flex;
@@ -147,7 +127,6 @@ export default function FeedCard({
         points: '',
     });
     const { user } = useContext(UserContext);
-    const [activities, setActivities] = useState<ActivityResponse[]>([]);
 
     const getNextActivity = () => {
         const url = `group/${selectedGroup.groupId}/activity`;
@@ -373,18 +352,6 @@ export default function FeedCard({
                     />
                 </Popup>
             )}
-            {/* <StyledActivities>
-                <button
-                    onClick={() => {
-                        console.log(activities);
-                        console.log(nextActivity);
-                        console.log(selectedGroup);
-                    }}
-                >
-                    hvis aktiviteter
-                </button>
-                {renderActivities}
-            </StyledActivities> */}
             <GroupLeaderboard users={selectedGroup.users} />
             <StyledButtons>
                 <Button

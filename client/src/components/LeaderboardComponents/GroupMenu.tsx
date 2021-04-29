@@ -1,8 +1,5 @@
-import React, { forwardRef } from 'react';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
+import React from 'react';
 import MenuItem from '@material-ui/core/MenuItem';
-import Fade from '@material-ui/core/Fade';
 import Group from '../../interfaces/Group';
 import {
     ClickAwayListener,

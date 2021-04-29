@@ -1,8 +1,7 @@
 import React from 'react';
 import emailjs from 'emailjs-com';
 import TextField from '@material-ui/core/TextField';
-import Input from '@material-ui/core/Input';
-import { InputLabel, Button } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 
 interface Props {
     openPopup: boolean;

@@ -1,12 +1,10 @@
-import React, { useContext, useState, useEffect } from "react";
-import { UserContext } from './UserContext';
-import { Redirect, Route, RouteProps, Switch } from 'react-router';
+import React, { useState, useEffect } from "react";
+import { Redirect, Route, RouteProps } from 'react-router';
 import axios from './Axios'
 
 
 
 interface PublicRouteProps extends RouteProps {
-    // tslint:disable-next-line:no-any
     component: any;
 }
 
@@ -39,7 +37,6 @@ const PrivateRoute: React.FC<PublicRouteProps> = ({ component: Component, ...res
                 })
                 setLoadingComplete(true);
             }
-            // run login function
             isLogin();
         },
         []
