@@ -25,12 +25,12 @@ public class Tag {
         return tagId;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     public void setTagId(int tagId) {
         this.tagId = tagId;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {

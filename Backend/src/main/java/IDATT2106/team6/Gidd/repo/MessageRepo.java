@@ -35,14 +35,14 @@ public class MessageRepo extends GiddRepo {
             em.getTransaction().commit();
             try {
                 List<User> users =
-                        chat.getGroup()
+                        chat.getActivity()
                         .getRegisteredParticipants()
                         .stream().map(ActivityUser::getUser).collect(Collectors.toList());
 
                 em.getTransaction().begin();
                 for (User user : users) {
                     if(user.getUserId() != chat.getUser().getUserId()) {
-                        user.addNotification(chat.getGroup());
+                        user.addNotification(chat.getActivity());
                         em.merge(user);
                     }
                 }

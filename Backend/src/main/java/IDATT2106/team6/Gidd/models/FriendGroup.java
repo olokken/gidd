@@ -33,28 +33,28 @@ public class FriendGroup {
         return groupId;
     }
 
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
     public void setGroupId(Integer groupId) {
         this.groupId = groupId;
+    }
+
+    public String getGroupName() {
+        return groupName;
     }
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
 
+    public List<User> getUsers() {
+        return users;
+    }
+
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public User getOwner() {
+        return owner;
     }
 
     public void setOwner(User owner) {

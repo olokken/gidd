@@ -1086,7 +1086,7 @@ public class UserController {
             .body(formatJson(body));
     }
 
-    boolean insertUserActivityCoupling(User user, Activity activity) {
+    private boolean insertUserActivityCoupling(User user, Activity activity) {
         //Legge inn sjekk om den allerede er registrert
         List<ActivityUser> activityUser = user.getActivities();
         ArrayList<Integer> activityIds = new ArrayList<>();

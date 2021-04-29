@@ -199,7 +199,7 @@ public class ActivityRepo extends GiddRepo {
             List<ActivityUser> activityUsers = foundActivity.getRegisteredParticipants();
             Collections.sort(activityUsers, new Comparator<ActivityUser>(){
                 public int compare(ActivityUser a1, ActivityUser a2){
-                    return a1.getTimestamp().compareTo(a2.getTimestamp());
+                    return a1.getReserved().compareTo(a2.getReserved());
                 }
             });
             return activityUsers.stream().map(a -> a.getUser()).collect(Collectors.toList());
