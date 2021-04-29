@@ -34,6 +34,18 @@ public class SecurityController {
         return map;
     }
 
+    @ResponseBody
+    @RequestMapping("/get/subject")
+    public Map<String, Object> getSubject(@RequestParam(value = "token") String token) {
+        String subject = securityService.getSubject(token);
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("result", subject);
+        return map;
+    }
+
+    //  The above endpoints are only to be used for testing purposes, and should not
+    //  be left in the code if the code is to be run as a real life service
+
     @MapTokenRequired
     @ResponseBody
     @RequestMapping("/token/validate")
@@ -44,17 +56,7 @@ public class SecurityController {
         body.put("result", "true");
 
         return ResponseEntity
-                .ok()
-                .body(formatJson(body));
+            .ok()
+            .body(formatJson(body));
     }
-
-    @ResponseBody
-    @RequestMapping("/get/subject")
-    public Map<String, Object> getSubject(@RequestParam(value = "token") String token) {
-        String subject = securityService.getSubject(token);
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("result", subject);
-        return map;
-    }
-
 }

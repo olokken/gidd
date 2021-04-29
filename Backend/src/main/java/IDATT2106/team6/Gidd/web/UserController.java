@@ -12,8 +12,11 @@ import IDATT2106.team6.Gidd.service.ChatService;
 import IDATT2106.team6.Gidd.service.FriendGroupService;
 import IDATT2106.team6.Gidd.service.ImageService;
 import IDATT2106.team6.Gidd.service.RatingService;
+import IDATT2106.team6.Gidd.service.SecurityService;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
+import IDATT2106.team6.Gidd.util.MapTokenRequired;
+import IDATT2106.team6.Gidd.util.PathTokenRequired;
 import IDATT2106.team6.Gidd.util.PathTwoTokenRequired;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -48,7 +51,7 @@ public class UserController {
     @Autowired
     private FriendGroupService friendGroupService;
     @Autowired
-    private ChatService chatService;
+    private SecurityService securityService;
     @Autowired
     private RatingService ratingService;
     @Autowired
@@ -60,21 +63,22 @@ public class UserController {
         try {
             List<User> users = userService.getUsers();
             return ResponseEntity
-                    .ok()
-                    .body(users.toString());
+                .ok()
+                .body(users.toString());
         } catch (Exception e) {
             e.printStackTrace();
             log.error("An unexpected error was caught while getting all tags: " +
-                    e.getCause() + " with message " + e.getMessage());
+                e.getCause() + " with message " + e.getMessage());
             HashMap<String, String> body = new HashMap<>();
             body.put("error", "something went wrong");
 
             return ResponseEntity
-                    .badRequest()
-                    .body(formatJson(body));
+                .badRequest()
+                .body(formatJson(body));
         }
     }
 
+    @PathTokenRequired
     @DeleteMapping(value = "/{userId}/user/{friendId}")
     public ResponseEntity deleteFriend(@PathVariable Integer userId,
                                        @PathVariable Integer friendId) {
@@ -93,9 +97,9 @@ public class UserController {
             body.put("error", "One of the users do not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         if (!userService.deleteFriendship(user, friend)) {
@@ -109,9 +113,9 @@ public class UserController {
             body.put("error", "The deleting went wrong");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         log.debug("The friendship was deleted");
@@ -127,11 +131,12 @@ public class UserController {
         userService.setPoints(friend, friend.getPoints() - ADD_FRIEND_BONUS);
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
+    @PathTokenRequired
     @DeleteMapping("/{id}")
     public ResponseEntity deleteUser(@PathVariable Integer id) {
         //todo return activity-objects and user id's affected by this user being deleted
@@ -145,22 +150,23 @@ public class UserController {
             log.info("deletion successful");
             header.add("Status", "200 OK");
             return ResponseEntity.ok()
-                    .headers(header).body(formatJson(body));
+                .headers(header).body(formatJson(body));
         }
 
         log.error("unable to delete user with id: " + id);
         body.put("error", "deletion failed, are you sure the user with id " + id + " exists?");
         header.add("Status", "400 BAD REQUEST");
         return ResponseEntity.ok()
-                .headers(header).body(formatJson(body));
+            .headers(header).body(formatJson(body));
     }
 
+    @PathTokenRequired
     @DeleteMapping(value = "/{userId}/activity/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivityToUser(@PathVariable Integer userId,
                                                @PathVariable Integer activityId) {
         log.debug(
-                "Received DeleteMapping to /user/{userId}/activity/{activityId} with userId being " +
-                        userId + " and activityId being " + activityId);
+            "Received DeleteMapping to /user/{userId}/activity/{activityId} with userId being " +
+                userId + " and activityId being " + activityId);
         User user = userService.getUser(userId);
         Activity activity = activityService.findActivity(activityId);
 
@@ -175,9 +181,9 @@ public class UserController {
             body.put("error", "The user does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         if (activity == null) {
@@ -189,9 +195,9 @@ public class UserController {
 
             body.put("error", "The activity does not exist");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         List<ActivityUser> activityUsers = user.getActivities();
@@ -210,9 +216,9 @@ public class UserController {
 
             body.put("error", "The user is not registered to the activity");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
         Map<String, String> body = new HashMap<>();
 
@@ -227,23 +233,23 @@ public class UserController {
 
             body.put("error", "The user is not registered to the activity");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
         //if the user being deleted is the owner
-        if(activity.getUser().getUserId() == user.getUserId()){
+        if (activity.getUser().getUserId() == user.getUserId()) {
             body.put("error", "cannot delete owner from own activity");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         if (!userService.deleteConnection(activityUser) ||
-                !userService.removeActivity(activityUserId, user) ||
-                !activityService.removeUserFromActivity(activityUserId, activity)) {
+            !userService.removeActivity(activityUserId, user) ||
+            !activityService.removeUserFromActivity(activityUserId, activity)) {
             log.error("An error happened during the deletion");
             header.add("Status", "400 REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -251,9 +257,9 @@ public class UserController {
 
             body.put("error", "Something went wrong when trying to delete");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         log.debug("The deletion was successful");
@@ -263,42 +269,46 @@ public class UserController {
         body.put("activityId", String.valueOf(activity.getActivityId()));
 
         user.setPoints(
-                user.getPoints() - HOST_JOIN_BONUS
+            user.getPoints() - HOST_JOIN_BONUS
         );
         userService.setPoints(user, (int) (user.getPoints() -
-                JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
+            JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
+
     @DeleteMapping("/{userId}/notification/{activityId}")
-    public ResponseEntity deleteNotification(@PathVariable Integer userId, @PathVariable Integer activityId){
+    public ResponseEntity deleteNotification(@PathVariable Integer userId,
+                                             @PathVariable Integer activityId) {
         HttpHeaders headers = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
         User user = userService.getUser(userId);
         Activity activity = activityService.getActivity(activityId);
         if (user != null && activity != null) {
-            if (userService.removeNotification(user, activity)){
+            if (userService.removeNotification(user, activity)) {
                 return ResponseEntity
-                        .ok()
-                        .headers(headers)
-                        .build();
+                    .ok()
+                    .headers(headers)
+                    .build();
             }
             body.put("error", "could not delete");
             return ResponseEntity
-                    .badRequest()
-                    .headers(headers)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(headers)
+                .body(formatJson(body));
         }
 
         body.put("error", "user or activity do not exist");
         return ResponseEntity.badRequest()
-                .headers(headers)
-                .body(formatJson(body));
+            .headers(headers)
+            .body(formatJson(body));
     }
+
     @GetMapping("/{userId}/user/{friendId}")
-    public ResponseEntity checkFriendship(@PathVariable Integer userId, @PathVariable Integer friendId) {
+    public ResponseEntity checkFriendship(@PathVariable Integer userId,
+                                          @PathVariable Integer friendId) {
         log.debug("Received GetMapping to '/user/{userId}/user/{friendId}'");
         User user = userService.getUser(userId);
         User friend = userService.getUser(friendId);
@@ -313,9 +323,9 @@ public class UserController {
 
             body.put("error", "The user or the friend does not exist");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         Friendship friendship = userService.checkFriendship(user, friend);
@@ -329,11 +339,12 @@ public class UserController {
         body.put("friendship", friendship.toString());
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
+    @PathTokenRequired
     @GetMapping(value = "/{userId}/user")
     public ResponseEntity getFriends(@PathVariable Integer userId) {
         log.debug("Received GetMapping to '/user/{userId}/user'");
@@ -349,9 +360,9 @@ public class UserController {
 
             body.put("error", "The user does not exist");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         ArrayList<User> friends = new ArrayList<>();
@@ -368,7 +379,7 @@ public class UserController {
             }
         }
 
-        if(remove) {
+        if (remove) {
             stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");
         }
         stringBuilder.append("]}");
@@ -379,19 +390,20 @@ public class UserController {
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(stringBuilder.toString());
+            .ok()
+            .headers(header)
+            .body(stringBuilder.toString());
     }
 
+    @PathTokenRequired
     @GetMapping("/{userId}/request")
-    public ResponseEntity getAllFriendRequests(@PathVariable Integer userId){
+    public ResponseEntity getAllFriendRequests(@PathVariable Integer userId) {
         log.debug("Received GetMapping to 'user/{userId}/request' with userId " + userId);
         User user = userService.getUser(userId);
 
         HttpHeaders header = new HttpHeaders();
 
-        if(user == null){
+        if (user == null) {
             log.error("The user is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -400,9 +412,9 @@ public class UserController {
 
             body.put("error", "The user does not exist");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         log.debug("Returning all users that has sent a request");
@@ -412,19 +424,20 @@ public class UserController {
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body("{\"users\" :" + requests.toString() + "}");
+            .ok()
+            .headers(header)
+            .body("{\"users\" :" + requests.toString() + "}");
     }
 
+    @PathTokenRequired
     @GetMapping("/{userId}/pending")
-    public ResponseEntity getAllPendingRequests(@PathVariable Integer userId){
+    public ResponseEntity getAllPendingRequests(@PathVariable Integer userId) {
         log.debug("Received GetMapping to 'user/{userId}/pending'");
         User user = userService.getUser(userId);
 
         HttpHeaders header = new HttpHeaders();
 
-        if(user == null){
+        if (user == null) {
             log.error("The user is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -433,9 +446,9 @@ public class UserController {
 
             body.put("error", "The user does not exist");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         ArrayList<User> sentRequests = userService.getSentRequest(user);
@@ -445,11 +458,12 @@ public class UserController {
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body("{\"users\" :" + sentRequests.toString() + "}");
+            .ok()
+            .headers(header)
+            .body("{\"users\" :" + sentRequests.toString() + "}");
     }
 
+    @PathTokenRequired
     @GetMapping(value = "/{userId}/activity", produces = "application/json")
     public ResponseEntity getAllActivitiesForUser(@PathVariable Integer userId) {
         log.debug("Received GetMapping to '/user/{userId}/activity' with userId " + userId);
@@ -466,9 +480,9 @@ public class UserController {
 
             body.put("error", "The user does not exist");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         log.debug("Getting all activities " + user.getUserId() + " is registered to");
@@ -480,12 +494,12 @@ public class UserController {
         StringBuilder sb = new StringBuilder();
 
         List<Activity> activities =
-                activityUser.stream().map(ActivityUser::getActivity).collect(Collectors.toList());
+            activityUser.stream().map(ActivityUser::getActivity).collect(Collectors.toList());
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body("{\"activities\":" + activities.toString() + "}");
+            .ok()
+            .headers(header)
+            .body("{\"activities\":" + activities.toString() + "}");
     }
 
     @GetMapping(value = "/email/{email}", produces = "application/json")
@@ -496,17 +510,17 @@ public class UserController {
         User user = userService.getUser(email);
         if (user != null) {
             return ResponseEntity
-                    .ok()
-                    .headers(header)
-                    .body(user.toJSON());
+                .ok()
+                .headers(header)
+                .body(user.toJSON());
         }
 
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("error", "are you sure the user exists?");
         return ResponseEntity
-                .badRequest()
-                .headers(header)
-                .body(formatJson(hashMap));
+            .badRequest()
+            .headers(header)
+            .body(formatJson(hashMap));
     }
 
     @GetMapping(value = "/{userId}", produces = "application/json")
@@ -516,26 +530,27 @@ public class UserController {
         HttpHeaders header = new HttpHeaders();
         if (user != null) {
             return ResponseEntity
-                    .ok()
-                    .headers(header)
-                    .body(user.toJSON());
+                .ok()
+                .headers(header)
+                .body(user.toJSON());
         }
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("error", "are you sure the user exists?");
         return ResponseEntity
-                .badRequest()
-                .headers(header)
-                .body(formatJson(hashMap));
+            .badRequest()
+            .headers(header)
+            .body(formatJson(hashMap));
     }
 
+    @PathTokenRequired
     @GetMapping("/{userId}/group")
-    public ResponseEntity getGroupsForUser(@PathVariable Integer userId){
+    public ResponseEntity getGroupsForUser(@PathVariable Integer userId) {
         log.debug("Received GetMapping to '/user/{userId}/group'");
         User user = userService.getUser(userId);
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
-        if(user == null){
+        if (user == null) {
             log.error("The user is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -543,9 +558,9 @@ public class UserController {
             body.put("error", "The user does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         List<FriendGroup> allFriendGroups = friendGroupService.getAllFriendGroups();
@@ -555,20 +570,20 @@ public class UserController {
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body("{ \"groups\" : " + friendGroups.toString() + "}");
+            .ok()
+            .headers(header)
+            .body("{ \"groups\" : " + friendGroups.toString() + "}");
     }
 
     @GetMapping("/{userId}/rating")
-    public ResponseEntity getRating(@PathVariable Integer userId){
+    public ResponseEntity getRating(@PathVariable Integer userId) {
         log.debug("Received GetMapping to '/user/{userId}/rating'");
         User user = userService.getUser(userId);
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
 
-        if(user == null){
+        if (user == null) {
             log.error("The user is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -576,9 +591,9 @@ public class UserController {
             body.put("error", "The user does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         double averageRating = ratingService.getRating(user);
@@ -589,28 +604,29 @@ public class UserController {
         body.put("averageRating", String.valueOf(averageRating));
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
     @PathTwoTokenRequired
     @PutMapping(value = "/some/{id}")
-    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map, @PathVariable Integer id) {
+    public ResponseEntity editSomeUser(@RequestBody Map<String, Object> map,
+                                       @PathVariable Integer id) {
         log.debug("Received request at /user/some/" + id);
         Map<String, String> body = new HashMap<>();
         HttpHeaders headers = new HttpHeaders();
 
-        if(!parsePhone(map, body)) {
+        if (!parsePhone(map, body)) {
             log.error("Could not parse phoneNumber");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(headers)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(headers)
+                .body(formatJson(body));
         }
 
-        try{
+        try {
             log.debug("Attempting to edit user");
             User user = userService.getUser(id);
             log.debug("Found user " + user.getUserId());
@@ -622,15 +638,15 @@ public class UserController {
             imageService.editImage(newImage);
 
             boolean result = userService.editUser(
-                    id,
-                    map.get("email").toString(),
-                    map.get("newPassword").toString(),
-                    map.get("firstName").toString(),
-                    map.get("surname").toString(),
-                    Integer.parseInt(map.get("phoneNumber").toString()),
-                    ActivityLevel.valueOf(map.get("activityLevel").toString()),
-                    newImage,
-                    user.getAuthProvider()
+                id,
+                map.get("email").toString(),
+                map.get("newPassword").toString(),
+                map.get("firstName").toString(),
+                map.get("surname").toString(),
+                Integer.parseInt(map.get("phoneNumber").toString()),
+                ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                newImage,
+                user.getAuthProvider()
             );
 
             if (result) {
@@ -638,32 +654,32 @@ public class UserController {
                 body.put("userId", String.valueOf(id));
 
                 return ResponseEntity
-                        .ok()
-                        .headers(headers)
-                        .body(formatJson(body));
+                    .ok()
+                    .headers(headers)
+                    .body(formatJson(body));
             }
         } catch (NullPointerException npe) {
             log.error("a nullpointerexception was caught");
             body.put("error", "invalid parameter");
 
             return ResponseEntity
-                    .badRequest()
-                    .body(formatJson(body));
+                .badRequest()
+                .body(formatJson(body));
         } catch (Exception e) {
             log.error("An unexpected error was caught while editing user: " + e.getMessage());
             body.put("error", "an unexpected error occurred");
 
             return ResponseEntity
-                    .badRequest()
-                    .body(formatJson(body));
+                .badRequest()
+                .body(formatJson(body));
         }
         log.error("Could not edit user for some unexpected reason");
         body.put("error", "user could not be edited");
 
         return ResponseEntity
-                .badRequest()
-                .headers(headers)
-                .body(formatJson(body));
+            .badRequest()
+            .headers(headers)
+            .body(formatJson(body));
     }
 
     @PathTwoTokenRequired
@@ -679,17 +695,17 @@ public class UserController {
                 log.debug("Someone tried to edit a user with an invalid email or password ");
                 body.put("error", "Invalid Email or Password");
                 return ResponseEntity
-                        .badRequest()
-                        .headers(header)
-                        .body(formatJson(body));
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
             }
         } catch (NullPointerException e) {
             log.error("A NullPointerException was caught while editing user");
             body.put("error", "Invalid Email or Password");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         if (map.get("newPassword") == null || map.get("newPassword").equals("")) {
@@ -702,7 +718,7 @@ public class UserController {
 
         if (!validateStringMap(map)) {
             log.error(
-                    "returning error about null/blank fields in user put mapping " + map.toString());
+                "returning error about null/blank fields in user put mapping " + map.toString());
             body.put("error", "one or more json-fields is null/blank");
             return ResponseEntity.badRequest().body(formatJson(body));
         }
@@ -715,11 +731,11 @@ public class UserController {
             return ResponseEntity.badRequest().body(formatJson(body));
         } catch (Exception e) {
             log.error("An unexpected message was caught when parsing phoneNumber: " +
-                    e.getMessage() + " local: " + e.getLocalizedMessage());
+                e.getMessage() + " local: " + e.getLocalizedMessage());
             body.put("Error", "Something went wrong");
             return ResponseEntity
-                    .badRequest()
-                    .body(formatJson(body));
+                .badRequest()
+                .body(formatJson(body));
         }
 
         try {
@@ -732,15 +748,15 @@ public class UserController {
             imageService.editImage(newImage);
 
             boolean result = userService.editUser(
-                    id,
-                    map.get("newEmail").toString(),
-                    map.get("newPassword").toString(),
-                    map.get("firstName").toString(),
-                    map.get("surname").toString(),
-                    Integer.parseInt(map.get("phoneNumber").toString()),
-                    ActivityLevel.valueOf(map.get("activityLevel").toString()),
-                    newImage,
-                    oldUser.getAuthProvider());
+                id,
+                map.get("newEmail").toString(),
+                map.get("newPassword").toString(),
+                map.get("firstName").toString(),
+                map.get("surname").toString(),
+                Integer.parseInt(map.get("phoneNumber").toString()),
+                ActivityLevel.valueOf(map.get("activityLevel").toString()),
+                newImage,
+                oldUser.getAuthProvider());
 
             log.info("edited user " + id);
             if (result) {
@@ -750,18 +766,18 @@ public class UserController {
                 body.put("id", String.valueOf(id));
 
                 return ResponseEntity.ok()
-                        .headers(header)
-                        .body(formatJson(body));
+                    .headers(header)
+                    .body(formatJson(body));
             }
         } catch (NullPointerException e) {
             log.debug("A NullPointerException was caught while attempting to edit user");
             body.put("error", "invalid input");
             return ResponseEntity
-                    .badRequest()
-                    .body(formatJson(body));
+                .badRequest()
+                .body(formatJson(body));
         } catch (Exception e) {
             log.debug("An error was caught while attempting to edit user: " +
-                    e.getMessage() + " | Local: " + e.getLocalizedMessage());
+                e.getMessage() + " | Local: " + e.getLocalizedMessage());
             body.put("error", "Something went wrong");
             return ResponseEntity.badRequest().body(formatJson(body));
         }
@@ -770,14 +786,15 @@ public class UserController {
         header.add("Status", "400 BAD REQUEST");
         body.put("error", "could not edit user are you sure the user exists?");
         return ResponseEntity
-                .badRequest()
-                .body(formatJson(body));
+            .badRequest()
+            .body(formatJson(body));
     }
 
+    @MapTokenRequired
     @PostMapping(value = "/{userId}/user")
     public ResponseEntity addFriend(@RequestBody HashMap<String, Object> map) {
         log.debug("Adding friend with userId " + map.get("friendId").toString() + " to " +
-                map.get("userId").toString());
+            map.get("userId").toString());
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         User friend = userService.getUser(Integer.parseInt(map.get("friendId").toString()));
 
@@ -792,9 +809,9 @@ public class UserController {
             body.put("error", "One of the users do not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         ArrayList<Integer> friendIds = new ArrayList<>();
@@ -813,9 +830,9 @@ public class UserController {
             body.put("error", "The users are already friends");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         if (!userService.updateUser(user, friend)) {
@@ -829,9 +846,9 @@ public class UserController {
             body.put("error", "Something wrong happened when trying to update");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         HttpHeaders header = new HttpHeaders();
@@ -845,21 +862,22 @@ public class UserController {
 
         userService.setPoints(user, (int) (user.getPoints() + ADD_FRIEND_BONUS));
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
+    @MapTokenRequired
     @PostMapping(value = "/activity", consumes = "application/json", produces = "application/json")
     public ResponseEntity registerUserToActivity(@RequestBody HashMap<String, Object> map) {
         log.debug("Received PostMapping to '/user/{userId}/activity with userId" +
-                Integer.parseInt(map.get("userId").toString()) + " and activityId " +
-                Integer.parseInt(map.get("activityId").toString()));
+            Integer.parseInt(map.get("userId").toString()) + " and activityId " +
+            Integer.parseInt(map.get("activityId").toString()));
 
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
 
         Activity activity =
-                activityService.findActivity(Integer.parseInt(map.get("activityId").toString()));
+            activityService.findActivity(Integer.parseInt(map.get("activityId").toString()));
 
         HttpHeaders header = new HttpHeaders();
         Map<String, String> body = new HashMap<>();
@@ -872,9 +890,9 @@ public class UserController {
             body.put("error", "The user does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         if (activity == null) {
@@ -886,16 +904,16 @@ public class UserController {
             body.put("error", "The activity does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         try {
             if (insertUserActivityCoupling(user, activity)) {
                 User owner = activity.getUser();
                 owner.setPoints(
-                        owner.getPoints() + HOST_JOIN_BONUS
+                    owner.getPoints() + HOST_JOIN_BONUS
                 );
                 log.debug("The registration was successful");
                 header.add("Status", "200 OK");
@@ -905,32 +923,34 @@ public class UserController {
                 body.put("activityId", String.valueOf(activity.getActivityId()));
 
                 userService.setPoints(user,
-                        (int) (user.getPoints() +
-                                JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
+                    (int) (user.getPoints() +
+                        JOIN_ACTIVITY_BONUS * MULTIPLIERS[activity.getActivityLevel().ordinal()]));
                 return ResponseEntity
-                        .ok()
-                        .headers(header)
-                        .body(formatJson(body));
+                    .ok()
+                    .headers(header)
+                    .body(formatJson(body));
             } else {
-                log.error("Something wrong happened when trying to register the activity to the user");
+                log.error(
+                    "Something wrong happened when trying to register the activity to the user");
                 header.add("Status", "400 BAD REQUEST");
                 header.add("Content-Type", "application/json; charset=UTF-8");
 
 
-                body.put("error", "Something wrong happened registering the coupling between user and activity");
+                body.put("error",
+                    "Something wrong happened registering the coupling between user and activity");
                 return ResponseEntity
-                        .badRequest()
-                        .headers(header)
-                        .body(formatJson(body));
-
-            }
-        } catch(IllegalArgumentException e){
-            log.error("user is already registered to the activity: " + e.getMessage());
-            body.put("error", "the user is already registered to the activity");
-            return ResponseEntity
                     .badRequest()
                     .headers(header)
                     .body(formatJson(body));
+
+            }
+        } catch (IllegalArgumentException e) {
+            log.error("user is already registered to the activity: " + e.getMessage());
+            body.put("error", "the user is already registered to the activity");
+            return ResponseEntity
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
     }
 
@@ -943,8 +963,8 @@ public class UserController {
             body.put("error", "a user with that email already exists!");
 
             return ResponseEntity
-                    .badRequest()
-                    .body(formatJson(body));
+                .badRequest()
+                .body(formatJson(body));
         }
 
         Image image = imageService.createImage(map.get("image").toString());
@@ -956,15 +976,15 @@ public class UserController {
         }
 
         User result = userService.registerUser(
-                getRandomID(),
-                map.get("email").toString(),
-                map.get("password").toString(),
-                map.get("firstName").toString(),
-                map.get("surname").toString(),
-                Integer.parseInt(map.get("phoneNumber").toString()),
-                ActivityLevel.valueOf(map.get("activityLevel").toString()),
-                image,
-                Provider.LOCAL);
+            getRandomID(),
+            map.get("email").toString(),
+            map.get("password").toString(),
+            map.get("firstName").toString(),
+            map.get("surname").toString(),
+            Integer.parseInt(map.get("phoneNumber").toString()),
+            ActivityLevel.valueOf(map.get("activityLevel").toString()),
+            image,
+            Provider.LOCAL);
         log.info("created user with id: " + result.getUserId());
         HttpHeaders header = new HttpHeaders();
 
@@ -975,23 +995,26 @@ public class UserController {
             header.add("Status", "201 CREATED");
 
             body.put("id", String.valueOf(result.getUserId()));
+            body.put("token", securityService.createToken(String.valueOf(result.getUserId()), (1000 * 60 * 60 * 24)));
 
             return ResponseEntity
-                    .ok()
-                    .headers(header)
-                    .body(formatJson(body));
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
         }
         log.error("Created user is null");
         header.add("Status", "400 BAD REQUEST");
         body.put("error", "Created user is null");
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
+    @MapTokenRequired
     @PostMapping("/{userId}/rating")
-    public ResponseEntity giveRating(@RequestBody HashMap<String, Object> map, @PathVariable Integer userId){
+    public ResponseEntity giveRating(@RequestBody HashMap<String, Object> map,
+                                     @PathVariable Integer userId) {
         log.debug("Received mapping to 'user/{userId}/rating'");
         int fromUserId = Integer.parseInt(map.get("fromUserId").toString());
         int toUserId = Integer.parseInt(map.get("toUserId").toString());
@@ -999,7 +1022,7 @@ public class UserController {
         HttpHeaders header = new HttpHeaders();
         Map<String, String> body = new HashMap<>();
 
-        if(fromUserId == toUserId) {
+        if (fromUserId == toUserId) {
             body.put("error", "you cannot rate yourself");
 
             return ResponseEntity
@@ -1020,12 +1043,12 @@ public class UserController {
             body.put("error", "The user does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(rating <= 0 || rating > 5){
+        if (rating <= 0 || rating > 5) {
             log.error("The rating is " + rating);
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -1033,12 +1056,12 @@ public class UserController {
             body.put("error", "The rating is not between 1 and 5");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(!ratingService.addRating(rating, toUser, fromUser)){
+        if (!ratingService.addRating(rating, toUser, fromUser)) {
             log.error("Something wrong happened when trying to add rating");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -1046,9 +1069,9 @@ public class UserController {
             body.put("error", "Something wrong happened when trying to add rating");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         log.info("Rating added");
@@ -1058,12 +1081,12 @@ public class UserController {
         body.put("userId", String.valueOf(toUser.getUserId()));
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
-    boolean insertUserActivityCoupling(User user, Activity activity){
+    boolean insertUserActivityCoupling(User user, Activity activity) {
         //Legge inn sjekk om den allerede er registrert
         List<ActivityUser> activityUser = user.getActivities();
         ArrayList<Integer> activityIds = new ArrayList<>();

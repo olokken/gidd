@@ -1,5 +1,9 @@
 package IDATT2106.team6.Gidd.util;
 
+import IDATT2106.team6.Gidd.models.Activity;
+import IDATT2106.team6.Gidd.models.FriendGroup;
+import IDATT2106.team6.Gidd.service.ActivityService;
+import IDATT2106.team6.Gidd.service.FriendGroupService;
 import IDATT2106.team6.Gidd.service.SecurityServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -12,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -24,6 +29,10 @@ public class TokenRequiredAspect {
     private Logger log = new Logger(TokenRequiredAspect.class.toString());
 
     private final SecurityServiceImpl securityService = new SecurityServiceImpl();
+    @Autowired
+    private FriendGroupService friendGroupService;
+    @Autowired
+    private ActivityService activityService;
 
     @Around("@annotation(mapTokenRequired)")
     public Object mapTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
@@ -37,6 +46,8 @@ public class TokenRequiredAspect {
                 Map map = (Map) arg;
                 if (map.containsKey("userId")) {
                     subject = map.get("userId").toString();
+                } else if (map.containsKey("fromUserId")) {
+                    subject = map.get("fromUserId").toString();
                 }
             }
         }
@@ -66,6 +77,50 @@ public class TokenRequiredAspect {
         if (args[1] instanceof Integer) {
             subject = String.valueOf(args[1]);
         }
+        return handleToken(pjp, subject);
+    }
+
+    @Around("@annotation(groupTokenRequired)")
+    public Object groupTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
+                                                   GroupTokenRequired groupTokenRequired)
+        throws Throwable {
+        log.info("Around groupTokenRequiredWithAnnotation");
+        Object[] args = pjp.getArgs();
+        String subject = "";
+        FriendGroup group = null;
+        if (args[0] instanceof Integer) {
+            group = friendGroupService.getFriendGroup((int) args[0]);
+        }
+        if (group == null) {
+            HashMap<String, String> body = new HashMap<>();
+            body.put("error", "that group does not exist");
+            return ResponseEntity
+                .badRequest()
+                .body(body);
+        }
+        subject = String.valueOf(group.getOwner().getUserId());
+        return handleToken(pjp, subject);
+    }
+
+    @Around("@annotation(activityTokenRequired)")
+    public Object activityTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
+                                                      ActivityTokenRequired activityTokenRequired)
+        throws Throwable {
+        log.info("Around activityTokenRequiredWithAnnotation");
+        Object[] args = pjp.getArgs();
+        String subject = "";
+        Activity activity = null;
+        if (args[0] instanceof Integer) {
+            activity = activityService.getActivity((int) args[0]);
+        }
+        if (activity == null) {
+            HashMap<String, String> body = new HashMap<>();
+            body.put("error", "that activity does not exist");
+            return ResponseEntity
+                .badRequest()
+                .body(body);
+        }
+        subject = String.valueOf(activity.getUser().getUserId());
         return handleToken(pjp, subject);
     }
 

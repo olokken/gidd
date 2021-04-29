@@ -8,7 +8,10 @@ import IDATT2106.team6.Gidd.models.FriendGroup;
 import IDATT2106.team6.Gidd.models.User;
 import IDATT2106.team6.Gidd.service.FriendGroupService;
 import IDATT2106.team6.Gidd.service.UserService;
+import IDATT2106.team6.Gidd.util.GroupTokenRequired;
 import IDATT2106.team6.Gidd.util.Logger;
+import IDATT2106.team6.Gidd.util.MapTokenRequired;
+import IDATT2106.team6.Gidd.util.PathTwoTokenRequired;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +32,7 @@ public class GroupController {
     @Autowired
     private FriendGroupService friendGroupService;
 
+    @PathTwoTokenRequired
     @DeleteMapping("/{groupId}/user/{userId}")
     public ResponseEntity removeUserFromGroup(@PathVariable Integer groupId, @PathVariable Integer userId){
         FriendGroup friendGroup = friendGroupService.getFriendGroup(groupId);
@@ -100,6 +104,7 @@ public class GroupController {
                 .body(formatJson(body));
     }
 
+    @MapTokenRequired
     @PostMapping("")
     public ResponseEntity addNewGroup(@RequestBody Map<String, Object> map){
         String groupName = map.get("groupName").toString();
@@ -172,6 +177,7 @@ public class GroupController {
                 .body(formatJson(body));
     }
 
+    @MapTokenRequired
     @PostMapping("/{groupId}/user")
     public ResponseEntity addUserToGroup(@RequestBody HashMap<String, Object> map) {
         log.info("Received PostMapping to '/group/{groupId}/user'");
@@ -221,6 +227,7 @@ public class GroupController {
                 .body(formatJson(body));
     }
 
+    @MapTokenRequired
     @PutMapping("/{groupId}")
     public ResponseEntity changeOwner(@RequestBody HashMap<String, Object> map){
         FriendGroup friendGroup = friendGroupService.getFriendGroup(Integer.parseInt(map.get("groupId").toString()));
@@ -283,6 +290,7 @@ public class GroupController {
                 .body("{\"groups\":" + friendGroups.toString() + "}");
     }
 
+    @GroupTokenRequired
     @GetMapping(value = "/{groupId}")
     public ResponseEntity getFriendGroup(@PathVariable Integer groupId){
         log.debug("Received GetMapping to '/group/{groupId}'");
@@ -311,6 +319,7 @@ public class GroupController {
                 .body(friendGroup.toString());
     }
 
+    @GroupTokenRequired
     @GetMapping("/{groupId}/activity")
     public ResponseEntity getActivitiesForGroup(@PathVariable Integer groupId){
         log.debug("Received GetMapping to '/group/{groupId}/activity'");
@@ -343,6 +352,7 @@ public class GroupController {
                 .body("{\"activities\" : " + activities.toString() + "}");
     }
 
+    @GroupTokenRequired
     @DeleteMapping(value = "/{groupId}")
     public ResponseEntity deleteGroup(@PathVariable Integer groupId){
         log.debug("Received DeleteMapping to '/group/{groupId}");

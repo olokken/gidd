@@ -64,6 +64,7 @@ public class ActivityController {
     @Autowired
     private FriendGroupService groupService;
 
+    @MapTokenRequired
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
 
@@ -117,6 +118,7 @@ public class ActivityController {
         }
     }
 
+    @MapTokenRequired
     @PostMapping(value = "activityId}/equipment/{equipmentId}/user")
     public ResponseEntity registerUserToEquipment(@RequestBody HashMap<String, Object> map) {
         log.debug("Received PostMapping to '/activity/{activityId}/equipment/{equipmentId}/user'");
