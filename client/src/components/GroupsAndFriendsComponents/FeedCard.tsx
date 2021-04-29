@@ -36,6 +36,7 @@ import { useContext } from 'react';
 import ActivityInformation from '../ActivityComponents/ActivityInformation';
 import UserAvatar from '../UserAvatar';
 import GroupLeaderboard from '../LeaderboardComponents/GroupLeaderboard';
+import config from '../../Config';
 
 const StyledHeader = styled.h2`
     text-align: center;
@@ -151,7 +152,7 @@ export default function FeedCard({
     const getNextActivity = async () => {
         const url = `group/${selectedGroup.groupId}/activity`;
         await axios
-            .get(url)
+            .get(url,config)
             .then(async (response) => {
                 console.log(response.data['activities']);
                 const nextAct = await sortNextActivity(
@@ -162,7 +163,7 @@ export default function FeedCard({
             .then(() => updateGroups())
             .catch((error) => {
                 console.log(
-                    'Kunne ikke hente gruppens neste aktivitet ' + error.message
+                     error.response
                 );
             });
     };
@@ -197,7 +198,7 @@ export default function FeedCard({
 
     const register = (activityId: number): Promise<void> => {
         return new Promise((resolve, reject) => {
-            axios.delete(`/user/${user}/activity/${activityId}`);
+            axios.delete(`/user/${user}/activity/${activityId}`, config);
             resolve();
         });
     };
@@ -219,7 +220,7 @@ export default function FeedCard({
 
     const deleteActivity = (id: number) => {
         axios
-            .delete(`/activity/${id}`)
+            .delete(`/activity/${id}`, config)
             .then(getNextActivity)
             .then(() => window.location.reload());
     };
@@ -231,7 +232,7 @@ export default function FeedCard({
             .put(url, {
                 groupId: selectedGroup.groupId,
                 newOwner: Object.values(selectedUser)[0],
-            })
+            }, config)
             .then((response) => {
                 console.log(response);
             })

@@ -8,13 +8,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { UserContext } from '../../UserContext';
 import User from '../../interfaces/User';
 import axios from '../../Axios';
-import styled from 'styled-components';
-import Badge from '@material-ui/core/Badge';
-import Avatar from '@material-ui/core/Avatar';
-import verified from '../../assets/verified.png'
 import { Rating } from '@material-ui/lab';
-import { useState } from 'react';
 import UserAvatar from '../../components/UserAvatar'
+import config from '../../Config';
 
 
 
@@ -48,7 +44,7 @@ const UserProfile = ({ friend, openPopup, setOpenPopup, updateFriends, friendRat
 
     const deleteAxFriend = (friendId: string) => {
         axios
-            .delete(`user/${user}/user/${friendId}`)
+            .delete(`user/${user}/user/${friendId}`, config)
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
