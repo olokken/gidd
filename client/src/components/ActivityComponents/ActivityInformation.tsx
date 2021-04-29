@@ -89,6 +89,9 @@ const ActivityInformation = ({
 }: Props) => {
     const [openChat, setOpenChat] = useState<boolean>(false);
     const [currentAct, setCurrentAct] = useState<ActivityResponse>(activity);
+    const [currentRegistered, setCurrentRegisteret] = useState<User[]>(
+        activity.registeredParticipants.slice(0, activity.capacity)
+    );
     const classes = useStyles();
     const date =
         new Date(activity.time).toLocaleDateString() +
@@ -101,6 +104,7 @@ const ActivityInformation = ({
     const [numRegistered, setNumRegistered] = useState<number>(
         activity.registeredParticipants.length
     );
+    //const [registeredPart, setRegisteredPart] = useState<
     const [currentParticipant, setCurrentParticipant] = useState<User>({
         firstName: '',
         surname: '',
@@ -121,9 +125,23 @@ const ActivityInformation = ({
         });
     };
 
+    const onWaitingListClick = () => {
+        register(activity.activityId).then(() => {
+            setRegistration(3);
+            setNumRegistered(numRegistered + 1);
+        });
+    };
+
     const onUnRegisterClick = () => {
         unRegister(activity.activityId).then(() => {
             setRegistration(0);
+            setNumRegistered(numRegistered - 1);
+        });
+    };
+
+    const removeWaitingList = () => {
+        unRegister(activity.activityId).then(() => {
+            setRegistration(2);
             setNumRegistered(numRegistered - 1);
         });
     };
@@ -160,6 +178,13 @@ const ActivityInformation = ({
         if (registered >= 1) {
             value = 1;
             setRegistration(1);
+            if (
+                currentRegistered
+                    .map((par) => par['userId'])
+                    .filter((num) => num == user).length <= 0
+            ) {
+                setRegistration(3);
+            }
         } else if (
             currentAct.registeredParticipants.length >= currentAct.capacity &&
             value != 1
@@ -182,8 +207,12 @@ const ActivityInformation = ({
             );
         } else if (registration == 2) {
             return (
-                <Button className={classes.joinButton} disabled>
-                    Aktiviteten er allerede fullbooket
+                <Button
+                    onClick={onWaitingListClick}
+                    className={classes.joinButton}
+                >
+                    Fullbooket! <br></br>
+                    Meld deg på venteliste
                 </Button>
             );
         } else if (registration == 0) {
@@ -193,6 +222,15 @@ const ActivityInformation = ({
                     className={classes.joinButton}
                 >
                     Meld deg på
+                </Button>
+            );
+        } else if (registration == 3) {
+            return (
+                <Button
+                    onClick={removeWaitingList}
+                    className={classes.joinButton}
+                >
+                    Meld deg av venteliste
                 </Button>
             );
         }
@@ -230,25 +268,23 @@ const ActivityInformation = ({
         setRatingPopup(!openRatingPopup);
     };
 
-    const mapParticipants = currentAct.registeredParticipants.map(
-        (par: any, index: number) => {
-            return (
-                <ListItem
-                    button
-                    key={index}
-                    onClick={() => {
-                        if (user !== par['userId'].toString())
-                            onParticipantClicked(par);
-                    }}
-                >
-                    <UserAvatar user={par} type="small"></UserAvatar>
-                    <ListItemText
-                        primary={par['firstName'] + ' ' + par['surname']}
-                    />
-                </ListItem>
-            );
-        }
-    );
+    const mapParticipants = currentRegistered.map((par: any, index: number) => {
+        return (
+            <ListItem
+                button
+                key={index}
+                onClick={() => {
+                    if (user !== par['userId'].toString())
+                        onParticipantClicked(par);
+                }}
+            >
+                <UserAvatar user={par} type="small"></UserAvatar>
+                <ListItemText
+                    primary={par['firstName'] + ' ' + par['surname']}
+                />
+            </ListItem>
+        );
+    });
 
     return (
         <div>
