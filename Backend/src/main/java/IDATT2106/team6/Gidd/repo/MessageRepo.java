@@ -61,6 +61,11 @@ public class MessageRepo extends GiddRepo {
         }
     }
 
+    /**
+     * Gets all messages sent in certain activity
+     * @param activity
+     * @return empty list if no chats are found or if error happens
+     */
     public List<Chat> getAllChats(Activity activity){
         log.info("getting all tags");
         EntityManager em = getEm();
@@ -78,7 +83,9 @@ public class MessageRepo extends GiddRepo {
             em.close();
         }
 
-        assert groupMessages != null;
+        if(groupMessages == null){
+            return new ArrayList<>();
+        }
         return new ArrayList<>(groupMessages);
     }
 }

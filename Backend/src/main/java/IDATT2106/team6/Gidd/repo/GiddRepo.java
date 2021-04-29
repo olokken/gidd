@@ -14,6 +14,10 @@ public abstract class GiddRepo {
     protected static EntityManagerFactory emf;
     private Logger log = new Logger(GiddRepo.class.toString());
 
+    /**
+     * connects to database given in application.properties
+     * @throws IOException reads the application.properties file
+     */
     public void connect() throws IOException {
         log.debug("Connecting");
         Properties prop = new Properties();

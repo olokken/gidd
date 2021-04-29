@@ -70,6 +70,9 @@ public class UserRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @return null if no user is found
+     */
     public User findUser(int userId){
         log.info("finding user " + userId );
         EntityManager em = getEm();
@@ -122,20 +125,20 @@ public class UserRepo extends GiddRepo {
         }
     }
 
-    public boolean addUserToActivity(int id, Activity activity, User user, Timestamp time){
-        ActivityUser activityUser = new ActivityUser(id, activity, user, time);
+    public boolean addUserToActivity(int couplingId, Activity activity, User user, Timestamp time){
+        ActivityUser activityUser = new ActivityUser(couplingId, activity, user, time);
         user.addActivity(activityUser);
-        log.info("adding user " + id + " to activity " + activity.getActivityId());
+        log.info("adding user with coupling id" + couplingId + " to activity " + activity.getActivityId());
         EntityManager em = getEm();
 
         try{
             em.getTransaction().begin();
             em.merge(user);
             em.getTransaction().commit();
-            log.info("added user " + id + " successfully to activity " + activity.getActivityId());
+            log.info("added user " + couplingId + " successfully to activity " + activity.getActivityId());
             return true;
         }catch (Exception e){
-            log.error("adding user " + id + " to activity " + activity.getActivityId() + " failed due to " + e.getMessage());
+            log.error("adding user " + couplingId + " to activity " + activity.getActivityId() + " failed due to " + e.getMessage());
             
             em.getTransaction().rollback();
             return false;
@@ -144,6 +147,12 @@ public class UserRepo extends GiddRepo {
         }
     }
 
+    /**
+     * gets the id of the coupling between user and activity in coupling table
+     * @param activityId
+     * @param userId
+     * @return null if error happens or no result is found
+     */
     public Integer getActivityUserId(int activityId, int userId){
         EntityManager em = getEm();
         log.info(" getting connection id between activity and user "+ activityId + " , " + userId);
@@ -161,6 +170,12 @@ public class UserRepo extends GiddRepo {
         }
     }
 
+    /**
+     * deletes coupling of user to activity
+     * @param activityUserId the id of the coupling
+     * @param user the id of the user
+     * @return false if an exception is thrown, true if not
+     */
     public boolean removeActivity(int activityUserId, User user){
         EntityManager em = getEm();
         log.info("deleting registration of user " + user.getUserId() + " to activity " + activityUserId);
@@ -184,6 +199,10 @@ public class UserRepo extends GiddRepo {
         }
     }
 
+    /**
+     * get object for coupling user and activity
+     * @return null if error happens or no result is found
+     */
     public ActivityUser getActivityUserById(int activityUserId){
         log.info("getting connection between user and activity " + activityUserId);
         EntityManager em = getEm();
@@ -200,6 +219,9 @@ public class UserRepo extends GiddRepo {
         }
     }
 
+    /**
+     * deletes object for coupling activity and user in database
+     */
     public boolean deleteConnection(ActivityUser activityUser){
         log.info("deleting connection " + activityUser);
         EntityManager em = getEm();
@@ -218,6 +240,9 @@ public class UserRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @return empty list if no result is found
+     */
     public ArrayList<User> getAllUsers(){
         log.info("getting all users");
         EntityManager em = getEm();
@@ -232,7 +257,9 @@ public class UserRepo extends GiddRepo {
             em.close();
         }
 
-        assert allUsers != null;
+        if(allUsers == null){
+            return new ArrayList<>();
+        }
         return new ArrayList<>(allUsers);
     }
 
