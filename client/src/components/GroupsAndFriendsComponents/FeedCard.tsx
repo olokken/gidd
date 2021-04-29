@@ -166,6 +166,7 @@ export default function FeedCard({
             })
             .then(() => updateGroups())
             .catch((error) => {
+                setNextActivity(undefined);
                 console.log(
                     error.response
                 );
@@ -251,34 +252,6 @@ export default function FeedCard({
             });
     };
 
-    /*
-    const getActivities = async () => {
-        console.log('hva skjer');
-        const request = await axios.get(
-            `/group/${selectedGroup.groupId}/activity`
-        );
-        console.log(request);
-        setActivities(request.data.activties);
-        return request;
-    };
-
-    useEffect(() => {
-        getActivities();
-    }, []); //TODO when should the side effect trigger
-    */
-
-    const renderActivities = activities.map((activity, index: number) => {
-        return (
-            <StyledActivity key={index}>
-                <ActivityCard
-                    activity={activity}
-                    openPopup={openActivityPopup}
-                    setOpenPopup={setOpenActivityPopup}
-                    setActivity={setNextActivity}
-                ></ActivityCard>
-            </StyledActivity>
-        );
-    });
 
     return selectedGroup.groupName !== '' ? (
         <StyledCard raised={true}>

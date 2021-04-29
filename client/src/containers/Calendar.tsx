@@ -66,9 +66,9 @@ const Calender = () => {
 
     const deleteActivity = (id: number) => {
         axios
-            .delete(`/activity/${id}`)
+            .delete(`/activity/${id}`, config)
             .then(loadActivities)
-            .then(() => window.location.reload());
+            .then(() => loadActivities());
     };
 
     const handleOnClick = (eventInfo: EventInput) => {
