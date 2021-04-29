@@ -53,14 +53,14 @@ const Map = () => {
     };
 
     const register = (activityId: number): Promise<void> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             axios.delete(`/user/${user}/activity/${activityId}`);
             resolve();
         });
     };
 
     const unRegister = (activityId: number): Promise<void> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             axios.post('/user/activity', {
                 userId: user,
                 activityId: activityId,

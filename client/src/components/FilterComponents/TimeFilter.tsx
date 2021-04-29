@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Slider, TextField, Button } from '@material-ui/core';
+import { TextField, Button } from '@material-ui/core';
 
 const Container = styled.div`
     width: 100%;

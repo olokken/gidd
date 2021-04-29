@@ -21,7 +21,6 @@ import MapComponent from '../MapComponents/MapComponent';
 import ActivityResponse from '../../interfaces/ActivityResponse';
 import { UserContext } from '../../UserContext';
 import Equipment from '../../interfaces/Equipment';
-import axios from '../../Axios';
 import Popup from '../Popup';
 import WeatherComponent from '../WeatherComponents/WeatherComponent';
 import ActivityForm from './ActivityForm';
@@ -42,8 +41,6 @@ interface Props {
 const useStyles = makeStyles(() =>
     createStyles({
         titlearea: {
-            /*margin: `${theme.spacing(1)}px auto`,
-        padding: theme.spacing(2),*/
             flex: 1,
             backgroundColor: '#f44336',
             color: 'white',
@@ -85,8 +82,8 @@ const ActivityInformation = ({
     unRegister,
 }: Props) => {
     const [openChat, setOpenChat] = useState<boolean>(false);
-    const [currentAct, setCurrentAct] = useState<ActivityResponse>(activity);
-    const [currentRegistered, setCurrentRegisteret] = useState<User[]>(
+    const [currentAct] = useState<ActivityResponse>(activity);
+    const [currentRegistered] = useState<User[]>(
         activity.registeredParticipants.slice(0, activity.capacity)
     );
     const classes = useStyles();

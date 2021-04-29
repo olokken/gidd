@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import User from '../../interfaces/User';
 import Popup from '../Popup';
 import Rating from '@material-ui/lab/Rating';
@@ -27,9 +27,6 @@ const Container = styled.div`
     max-height:80px;
 `;
 
-const Flex = styled.div`
-    display: flex;
-`;
 
 const customIcons: any = {
     1: {
@@ -63,7 +60,6 @@ IconContainer.propTypes = {
     value: PropTypes.number.isRequired,
 };
 const PlayerRatingForm = ({ user, openPopup, setOpenPopup }: Props) => {
-    const [comment, setComment] = useState<string>();
     const [rating, setRating] = useState<number | null>();
     const currUser = localStorage.getItem('userID')
 

@@ -21,12 +21,7 @@ const CardInformation = styled.div`
         background-color: #ebebeb;
     }
 `;
-const TitleArea = styled.div`
-    flex: 1;
-    padding: 15px;
-    color: white;
-    background-color: #f44336;
-`;
+
 
 interface Props {
     friend: User;

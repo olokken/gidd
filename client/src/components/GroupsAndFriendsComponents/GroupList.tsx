@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
+import React, { ChangeEvent, useContext, useState } from 'react';
 import styled from 'styled-components';
 import { TextField, Button } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -16,11 +16,6 @@ const StyledContainer = styled.div`
     width: 95%;
 `;
 
-const StyledUl = styled.ul`
-    height: 300px;
-    overflow-y: scroll;
-    padding: 0;
-`;
 
 interface Props {
     friends: User[];
@@ -35,7 +30,6 @@ const GroupList = ({
     groups,
     handleGroupClicked,
     updateGroups,
-    onClick,
 }: Props) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectInput, setSelectInput] = useState<User[]>([]);

@@ -188,14 +188,14 @@ export default function FeedCard({
     };
 
     const register = (activityId: number): Promise<void> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             axios.delete(`/user/${user}/activity/${activityId}`, config);
             resolve();
         });
     };
 
     const unRegister = (activityId: number): Promise<void> => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             axios.post(
                 '/user/activity',
                 {

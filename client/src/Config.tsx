@@ -1,5 +1,3 @@
-import React from 'react'
-
 const token = localStorage.getItem('token');
 const config = {
     headers: {

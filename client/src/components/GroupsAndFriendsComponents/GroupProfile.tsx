@@ -3,10 +3,8 @@ import {
     Button,
     Card,
     CardContent,
-    CardMedia,
     Typography,
 } from '@material-ui/core';
-import logo from '../../assets/logo.png';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { UserContext } from '../../UserContext';
 import axios from '../../Axios';
@@ -19,8 +17,8 @@ interface Props {
     setOpenPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const GroupProfile = ({ group, openPopup, setOpenPopup }: Props) => {
-    const { user, setUser } = useContext(UserContext);
+const GroupProfile = ({ group }: Props) => {
+    const { user } = useContext(UserContext);
 
     const leaveGroup = () => {
         const groupId = group.groupId;
@@ -37,7 +35,6 @@ const GroupProfile = ({ group, openPopup, setOpenPopup }: Props) => {
 
     return (
         <Card>
-            <CardMedia component="img" height="140" image={logo} />
             <CardContent>
                 <Typography gutterBottom variant="h5" component="h2">
                     {group.groupName}
