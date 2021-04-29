@@ -6,6 +6,7 @@ import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
 import IDATT2106.team6.Gidd.models.Image;
 import IDATT2106.team6.Gidd.models.Provider;
 import IDATT2106.team6.Gidd.models.User;
+import IDATT2106.team6.Gidd.service.ImageService;
 import IDATT2106.team6.Gidd.service.SecurityService;
 import IDATT2106.team6.Gidd.service.UserService;
 import IDATT2106.team6.Gidd.util.Logger;
@@ -37,6 +38,8 @@ public class LoginController {
     private UserService userService;
     @Autowired
     private SecurityService securityService;
+    @Autowired
+    private ImageService imageService;
 
     @PostMapping("")
     public ResponseEntity loginSome(@RequestBody Map<String, Object> map) {
@@ -173,7 +176,7 @@ public class LoginController {
                 map.get("surname").toString(),
                 -1,
                 null,
-                new Image("",new byte[]{}),
+                imageService.createImage(""),
                 provider);
 
         // TODO this segment can be removed once registerUser()
