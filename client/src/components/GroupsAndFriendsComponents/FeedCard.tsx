@@ -208,7 +208,7 @@ export default function FeedCard({
             axios.post('/user/activity', {
                 userId: user,
                 activityId: activityId,
-            });
+            },config);
             resolve();
         });
     };
@@ -241,7 +241,7 @@ export default function FeedCard({
                 setOpenChoiceBox(!openChoiceBox);
             })
             .catch((error) => {
-                console.log('Fikk ikke endret eier' + error.message);
+                console.log(error.response.data);
             });
     };
 

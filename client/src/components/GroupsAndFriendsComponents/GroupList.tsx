@@ -11,6 +11,7 @@ import axios from '../../Axios';
 import { UserContext } from '../../UserContext';
 import Group from '../../interfaces/Group';
 import { Groups } from './Groups';
+import config from '../../Config';
 
 const StyledContainer = styled.div`
     margin-left: 1rem;
@@ -83,15 +84,15 @@ const GroupList = ({
                 groupName: chosenGroupName,
                 userIds: getUserIds(selectInput).toString(),
                 userId: user,
-            })
+            }, config)
             .then((response) => {
                 JSON.stringify(response);
                 console.log(response.data);
             })
             .then(updateGroups)
             .catch((error) => {
-                console.log('Could not post friend: ' + error.message);
-                alert('Du er allerede venn med denne brukeren');
+                console.log(error.response.data);
+                alert('Fikk ikke opprettet gruppen');
             });
     };
 
