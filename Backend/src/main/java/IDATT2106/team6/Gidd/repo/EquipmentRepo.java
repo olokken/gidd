@@ -64,6 +64,9 @@ public class EquipmentRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @return null if no equipment is found
+     */
     public Equipment findEquipment(int equipmentId){
         log.info("finding equipment " + equipmentId);
         EntityManager em = getEm();
@@ -106,6 +109,9 @@ public class EquipmentRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @return empty arraylist if no equipment is found
+     */
     public ArrayList<Equipment> getAllEquipment(){
         log.info("getting all equipment");
         EntityManager em = getEm();
@@ -119,11 +125,16 @@ public class EquipmentRepo extends GiddRepo {
         }finally {
             em.close();
         }
-
-        assert allEquipment != null;
+        if (allEquipment == null){
+            return new ArrayList<>();
+        }
         return new ArrayList<>(allEquipment);
     }
 
+    /**
+     * @param description field from equipment-object
+     * @return null if error happens or if no equipment is found
+     */
     public Equipment findEquipmentByDescription(String description){
         log.debug("Finding equipment based on the description: " + description);
         EntityManager em = getEm();

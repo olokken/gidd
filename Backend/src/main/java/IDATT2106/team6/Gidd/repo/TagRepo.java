@@ -66,6 +66,9 @@ public class TagRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @return null if no tag is found
+     */
     public Tag findTag(int tagId){
         log.info("finding tag " + tagId);
         EntityManager em = getEm();
@@ -81,6 +84,9 @@ public class TagRepo extends GiddRepo {
         return tag;
     }
 
+    /**
+     * @return null if no tag is found
+     */
     public Tag findTag(String tagName){
         log.info("finding tag by name " + tagName);
         EntityManager em = getEm();
@@ -123,6 +129,9 @@ public class TagRepo extends GiddRepo {
         }
     }
 
+    /**
+     * @return returns empty list if no tags are found
+     */
     public ArrayList<Tag> getAllTags(){
         log.info("getting all tags");
         EntityManager em = getEm();
@@ -137,7 +146,9 @@ public class TagRepo extends GiddRepo {
             em.close();
         }
 
-        assert allTags != null;
+        if(allTags == null){
+            return new ArrayList<>();
+        }
         return new ArrayList<>(allTags);
     }
 }

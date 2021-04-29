@@ -96,7 +96,6 @@ public class User {
 
     public boolean verifyPassword(String testPassword) {
         //the password that is to be tested
-        System.out.println("passordet er " + testPassword);
         if (testPassword == null) {
             return false;
         }
