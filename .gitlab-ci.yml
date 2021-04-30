@@ -41,6 +41,7 @@ deploy-test-reports:
       - public
   only:
     - master
+    - backend-dev
   needs: ["backend-test"]
 
 deploy:
