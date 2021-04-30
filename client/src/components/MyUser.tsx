@@ -456,6 +456,7 @@ const MyUser: React.FC<Props> = ({ openPopup, setOpenPopup }: Props) => {
 
     const onClickDeleteUser = () => {
         console.log(user);
+        console.log(config)
         axios
             .delete(`user/${user}`, config)
             .then((response) => {

@@ -63,6 +63,7 @@ const Login = () => {
                     localStorage.setItem('userID', id);
                     console.log('Fikk logget inn')
                 }).then(() => {
+                    window.location.reload()
                     history.push('/Activities');
                 })
                 .catch((error) => {
