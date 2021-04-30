@@ -259,7 +259,7 @@ const ActivityForm = ({
             '-' +
             date.getDate() +
             ' ' +
-            date.getHours() +
+            (+date.getHours() + 2) +
             ':' +
             date.getMinutes() +
             ':' +
