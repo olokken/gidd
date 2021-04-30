@@ -1,6 +1,5 @@
 import {
     Card,
-    CardMedia,
     Typography,
     Grid,
 } from '@material-ui/core';
