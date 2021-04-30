@@ -30,25 +30,6 @@ const FeedbackForm = ({ openPopup, setOpenPopup }: Props) => {
                   <div id="main" style={{display:"block"}} >
                     <div id="left">
                         <div style={{padding:"5px"}}>
-                            <TextField  
-                                label="Navn"
-                                variant="outlined"
-                                rows={1}
-                                multiline  
-                                type="text"
-                                name="name" />
-                        </div>
-                        <div style={{padding:"5px", minWidth:"100px"}}>
-                            <TextField  
-                                label="Email"
-                                variant="outlined"
-                                rows={1}
-                                multiline  
-                                type="email" 
-                                placeholder="Email" 
-                                name="email"/>
-                        </div>
-                        <div style={{padding:"5px"}}>
                             <TextField 
                                 label="Emne"
                                 variant="outlined"
