@@ -11,7 +11,8 @@ public class ControllerUtil {
 
 
     /**
-     * generates a random integer between 0 and max-int
+     * Generates a random integer between 0 and max-int and returns it as a double negative
+     * if the int first generated is found to be negative.
      */
     static int getRandomID() {
         log.info("creating new random id");
@@ -19,16 +20,10 @@ public class ControllerUtil {
         return (id > 0 ? id : -id);
     }
 
-    /*private boolean delRemoved (List<ActivityEquipment> newEquips,
-                                List<ActivityEquipment> oldEquips) {
-        List<ActivityEquipment> removed = new ArrayList<>(oldEquips);
-        removed.removeAll(newEquips);
-    }*/
-
-
     /**
-     * formatting a map into a valid json-object
-     * @return a string in json-format
+     * Formats a map into a valid json-object
+     *
+     * @return a JSON object string
      */
     static String formatJson(Map values) {
         log.debug("formatting json");
@@ -53,15 +48,16 @@ public class ControllerUtil {
     }
 
     /**
-     * ensure that none of the values have a null value or are blank
-     * @param map the map you want to check
+     * Iterates over a Map and checks if all values are valid.
+     *
+     * @param map the map being checked
      */
     static boolean validateStringMap(Map<String, Object> map) {
         log.info("validating a map");
         for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
             try {
                 Map.Entry<String, Object> pair = (Map.Entry) stringObjectEntry;
-                if(pair.getKey() == "image"){
+                if (pair.getKey() == "image") {
                     break;
                 }
                 log.debug("Validating pair: " + pair.getKey() + ":" + pair.getValue());
@@ -79,7 +75,7 @@ public class ControllerUtil {
     }
 
     /**
-     * checks whether or not the phone string can be parsed to a number
+     * Checks whether or not a phoneNumber string can be parsed to a number
      */
     static boolean parsePhone(Map<String, Object> map, Map<String, String> body) {
         try {

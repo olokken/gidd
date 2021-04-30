@@ -8,6 +8,7 @@ import IDATT2106.team6.Gidd.util.MapTokenRequired;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,9 @@ public class SecurityController {
     //  be left in the code if the code is to be run as a real life service
 
     /**
-     * mapTokenRequired validates the token, return error if not valid
+     * If this method gets to run, it will always return true since
+     * {@link IDATT2106.team6.Gidd.util.TokenRequiredAspect#mapTokenRequiredWithAnnotation(ProceedingJoinPoint, MapTokenRequired)}
+     * always will be called before this one is.
      */
     @MapTokenRequired
     @ResponseBody

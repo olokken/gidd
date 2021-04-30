@@ -18,7 +18,7 @@ public class ImageController {
     private ImageService imageService;
 
     @GetMapping(value = "")
-    public ResponseEntity getImages(){
+    public ResponseEntity getImages() {
         List<Image> images = imageService.getAllImages();
 
         return ResponseEntity

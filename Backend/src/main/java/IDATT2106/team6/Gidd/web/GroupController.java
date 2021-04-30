@@ -35,14 +35,15 @@ public class GroupController {
 
     @PathTwoTokenRequired
     @DeleteMapping("/{groupId}/user/{userId}")
-    public ResponseEntity removeUserFromGroup(@PathVariable Integer groupId, @PathVariable Integer userId){
+    public ResponseEntity removeUserFromGroup(@PathVariable Integer groupId,
+                                              @PathVariable Integer userId) {
         FriendGroup friendGroup = friendGroupService.getFriendGroup(groupId);
         User user = userService.getUser(userId);
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
 
-        if(user == null || friendGroup == null){
+        if (user == null || friendGroup == null) {
             log.error("The user or the friend group is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -50,24 +51,24 @@ public class GroupController {
             body.put("error", "The friend group or the user does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(friendGroup.getUsers().size() <= 2){
+        if (friendGroup.getUsers().size() <= 2) {
             deleteGroup(groupId);
             log.info("The group was deleted");
             header.add("Status", "200 OK");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
             return ResponseEntity
-                    .ok()
-                    .headers(header)
-                    .body(formatJson(body));
+                .ok()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(user.getUserId() == friendGroup.getOwner().getUserId()){
+        if (user.getUserId() == friendGroup.getOwner().getUserId()) {
             log.error("The owner can not be removed");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -75,22 +76,23 @@ public class GroupController {
             body.put("error", "The owner can not be removed");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(!friendGroupService.removeUserFromFriendGroup(friendGroup, user)){
+        if (!friendGroupService.removeUserFromFriendGroup(friendGroup, user)) {
             log.error("Something wrong happened when trying to remove the user from friend group");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
 
-            body.put("error", "Something wrong happened when trying to remove the user from friend group");
+            body.put("error",
+                "Something wrong happened when trying to remove the user from friend group");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         log.info("User was removed");
@@ -100,30 +102,30 @@ public class GroupController {
         body.put("groupId", String.valueOf(groupId));
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
     /**
+     * Used to handle input when a user wants to create a new group
      *
-     * @param map:
-     *           {
-     *              "groupName": String, with name of the group,
-     *              "userIds": string with comma separated user ids, will become members of the group
-     *              "userId": the id of the owner
-     *          }
-     * @return
+     * @param map: {
+     *             "groupName": String, with name of the group,
+     *             "userIds": string with comma separated user ids, will become members of the group
+     *             "userId": the id of the owner
+     *             }
+     * @return the id of a created group or an error if something went wrong
      */
     @MapTokenRequired
     @PostMapping("")
-    public ResponseEntity addNewGroup(@RequestBody Map<String, Object> map){
+    public ResponseEntity addNewGroup(@RequestBody Map<String, Object> map) {
         String groupName = map.get("groupName").toString();
         String[] userIdsString = (map.get("userIds").toString()).split(",");
         int userId = Integer.parseInt(map.get("userId").toString());
 
         User owner = userService.getUser(userId);
-        if(owner == null){
+        if (owner == null) {
             log.error("The owner is null");
             HttpHeaders header = new HttpHeaders();
             header.add("Status", "400 BAD REQUEST");
@@ -133,36 +135,36 @@ public class GroupController {
             body.put("error", "The owner does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         ArrayList<Integer> addedIds = new ArrayList<>();
         ArrayList<User> existingUsers = new ArrayList<>();
-        for(String s : userIdsString){
+        for (String s : userIdsString) {
             User user = userService.getUser(Integer.parseInt(s));
-            if(!(user == null || addedIds.contains(user.getUserId()))){
+            if (!(user == null || addedIds.contains(user.getUserId()))) {
                 existingUsers.add(user);
                 addedIds.add(user.getUserId());
             }
         }
 
-        if(!addedIds.contains(owner.getUserId())) {
+        if (!addedIds.contains(owner.getUserId())) {
             existingUsers.add(owner);
         }
 
         ArrayList<Integer> groupIds = new ArrayList<>();
-        for(FriendGroup friendGroup : friendGroupService.getAllFriendGroups()){
+        for (FriendGroup friendGroup : friendGroupService.getAllFriendGroups()) {
             groupIds.add(friendGroup.getGroupId());
         }
 
         int groupId = getRandomID();
-        while(groupIds.contains(groupId)){
+        while (groupIds.contains(groupId)) {
             groupId = getRandomID();
         }
 
-        if(!(friendGroupService.addFriendGroup(groupId, groupName, existingUsers, owner))){
+        if (!(friendGroupService.addFriendGroup(groupId, groupName, existingUsers, owner))) {
             HttpHeaders header = new HttpHeaders();
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -171,9 +173,9 @@ public class GroupController {
             body.put("error", "Something wrong happened when trying to add");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
         HttpHeaders header = new HttpHeaders();
         header.add("Status", "200 OK");
@@ -183,17 +185,19 @@ public class GroupController {
         body.put("groupId", String.valueOf(groupId));
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
     /**
+     * Used to register a user to an existing group
+     *
      * @param map example:
      *            {
-     *              "groupId": 513617223,
-     *              "userId": 1
-     *          }
+     *            "groupId": 513617223,
+     *            "userId": 1
+     *            }
      */
     @MapTokenRequired
     @PostMapping("/{groupId}/user")
@@ -207,7 +211,7 @@ public class GroupController {
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
-        if(user == null || friendGroup == null){
+        if (user == null || friendGroup == null) {
             log.error("The user or the friend group is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -215,12 +219,12 @@ public class GroupController {
             body.put("error", "The friend group or the user does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(!friendGroupService.addUserToFriendGroup(friendGroup, user)){
+        if (!friendGroupService.addUserToFriendGroup(friendGroup, user)) {
             log.error("Something wrong happened when trying to add user to friend group");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -228,9 +232,9 @@ public class GroupController {
             body.put("error", "Something wrong happened when trying to add user to friend group");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         log.info("User added to friend group");
@@ -240,28 +244,31 @@ public class GroupController {
         body.put("groupId", String.valueOf(groupId));
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
     /**
+     * Used to transfer ownership of an existing group.
      *
      * @param map a json object with format:
      *            {
-     *              "groupId" : 1,
-     *              "newOwner" : 2
-     *          }
+     *            "groupId" : 1,
+     *            "newOwner" : 2
+     *            }
      */
     @GroupTokenRequired
     @PutMapping("/{groupId}")
-    public ResponseEntity changeOwner(@PathVariable Integer groupId, @RequestBody HashMap<String, Object> map){
-        FriendGroup friendGroup = friendGroupService.getFriendGroup(Integer.parseInt(map.get("groupId").toString()));
+    public ResponseEntity changeOwner(@PathVariable Integer groupId,
+                                      @RequestBody HashMap<String, Object> map) {
+        FriendGroup friendGroup =
+            friendGroupService.getFriendGroup(Integer.parseInt(map.get("groupId").toString()));
         User owner = userService.getUser(Integer.parseInt(map.get("newOwner").toString()));
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
-        if(owner == null || friendGroup == null){
+        if (owner == null || friendGroup == null) {
             log.error("The user or the friend group is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -269,12 +276,12 @@ public class GroupController {
             body.put("error", "The friend group or the user does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(!friendGroupService.updateOwner(friendGroup, owner)){
+        if (!friendGroupService.updateOwner(friendGroup, owner)) {
             log.error("Something wrong happened when trying to change the owner");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -282,32 +289,34 @@ public class GroupController {
             body.put("error", "Something wrong happened when trying to change the owner");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        log.debug("The owner to group " + friendGroup.getGroupId() + " is now user " + owner.getUserId());
+        log.debug(
+            "The owner to group " + friendGroup.getGroupId() + " is now user " + owner.getUserId());
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         body.put("groupId", friendGroup.getGroupId().toString());
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 
     /**
+     * Used to get information about all groups
      *
      * @return a json-formatted string like this:
-     * {
-     *     "groups": []
-     * }
+     *          {
+     *          "groups": []
+     *          }
      */
     @GetMapping("")
-    public ResponseEntity getAllGroups(){
+    public ResponseEntity getAllGroups() {
         log.debug("Received GetMapping to '/group'");
         List<FriendGroup> friendGroups = friendGroupService.getAllFriendGroups();
 
@@ -318,24 +327,25 @@ public class GroupController {
         log.debug("Returning all groups");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body("{\"groups\":" + friendGroups.toString() + "}");
+            .ok()
+            .headers(header)
+            .body("{\"groups\":" + friendGroups.toString() + "}");
     }
 
     /**
-     * //todo
-     * @param groupId
-     * @return
+     * Used to get information about one specific group
+     *
+     * @param groupId id belonging to the group whose information is to be returned
+     * @return a JSON object formatted like according to {@link FriendGroup#toString()}
      */
     @GroupMemberTokenRequired
     @GetMapping(value = "/{groupId}")
-    public ResponseEntity getFriendGroup(@PathVariable Integer groupId){
+    public ResponseEntity getFriendGroup(@PathVariable Integer groupId) {
         log.debug("Received GetMapping to '/group/{groupId}'");
         FriendGroup friendGroup = friendGroupService.getFriendGroup(groupId);
 
         HttpHeaders header = new HttpHeaders();
-        if(friendGroup == null){
+        if (friendGroup == null) {
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
             HashMap<String, String> body = new HashMap<>();
@@ -343,29 +353,29 @@ public class GroupController {
             body.put("error", "The friend group does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(friendGroup.toString());
+            .ok()
+            .headers(header)
+            .body(friendGroup.toString());
     }
 
     @GroupMemberTokenRequired
     @GetMapping("/{groupId}/activity")
-    public ResponseEntity getActivitiesForGroup(@PathVariable Integer groupId){
+    public ResponseEntity getActivitiesForGroup(@PathVariable Integer groupId) {
         log.debug("Received GetMapping to '/group/{groupId}/activity'");
         FriendGroup friendGroup = friendGroupService.getFriendGroup(groupId);
 
         HttpHeaders header = new HttpHeaders();
 
-        if(friendGroup == null){
+        if (friendGroup == null) {
             log.error("The friend group is null");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -374,9 +384,9 @@ public class GroupController {
             body.put("error", "The friend group does not exist");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         List<Activity> activities = friendGroupService.getActivitiesForGroup(friendGroup);
@@ -385,19 +395,19 @@ public class GroupController {
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body("{\"activities\" : " + activities.toString() + "}");
+            .ok()
+            .headers(header)
+            .body("{\"activities\" : " + activities.toString() + "}");
     }
 
     @GroupTokenRequired
     @DeleteMapping(value = "/{groupId}")
-    public ResponseEntity deleteGroup(@PathVariable Integer groupId){
+    public ResponseEntity deleteGroup(@PathVariable Integer groupId) {
         log.debug("Received DeleteMapping to '/group/{groupId}");
 
         HttpHeaders header = new HttpHeaders();
         HashMap<String, String> body = new HashMap<>();
-        if(!friendGroupService.deleteFriendGroup(groupId)){
+        if (!friendGroupService.deleteFriendGroup(groupId)) {
             log.error("Something went wrong when trying to delete");
             header.add("Status", "400 BAD REQUEST");
             header.add("Content-Type", "application/json; charset=UTF-8");
@@ -405,16 +415,16 @@ public class GroupController {
             body.put("error", "The deleting went wrong");
 
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
 
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(formatJson(body));
+            .ok()
+            .headers(header)
+            .body(formatJson(body));
     }
 }

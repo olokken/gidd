@@ -78,7 +78,7 @@ public class UserController {
     }
 
     /**
-     * deletes the friendmapping from userId to friendId
+     * Used to delete a {@link Friendship} connection between two users
      */
     @PathTokenRequired
     @DeleteMapping(value = "/{userId}/user/{friendId}")
@@ -163,11 +163,8 @@ public class UserController {
     }
 
     /**
-     * removes a user form being signed up for an activity
-     *
-     * @param userId
-     * @param activityId
-     * @return
+     * Removes a user's connection to an activity, in other words,
+     * signs them off an activity they don't want to go to anymore.
      */
     @PathTokenRequired
     @DeleteMapping(value = "/{userId}/activity/{activityId}", produces = "application/json")
@@ -289,10 +286,11 @@ public class UserController {
     }
 
     /**
-     * deletes message notification that the user has received
-     * @param userId
-     * @param activityId
-     * @return
+     * Deletes message notification that the user has received
+     *
+     * @param userId     id belonging to the user
+     * @param activityId the activity whose notification has been read
+     * @return an error if invalid Id's are passed or the notification could not be deleted
      */
     @DeleteMapping("/{userId}/notification/{activityId}")
     public ResponseEntity deleteNotification(@PathVariable Integer userId,
@@ -322,14 +320,11 @@ public class UserController {
     }
 
     /**
-     * checks whether two users are friends and returns an enum
-     * @param userId
-     * @param friendId
-     * @return
-     *     SENT,
-     *     FRIENDS,
-     *     RECEIVED,
-     *     NOTHING
+     * Checks the {@link Friendship} connection between two users depending on who has who added
+     *
+     * @param userId   the user initiating the check
+     * @param friendId the user being checked
+     * @return an enum of type {@link Friendship}
      */
     @GetMapping("/{userId}/user/{friendId}")
     public ResponseEntity checkFriendship(@PathVariable Integer userId,
@@ -370,9 +365,10 @@ public class UserController {
     }
 
     /**
-     * gets all the friends of a given user
-     * @param userId
-     * @return
+     * Gets all the two-way friends of a given user
+     *
+     * @param userId id belonging to the user being checked
+     * @return a JSON array with {@link User} objects
      */
     @PathTokenRequired
     @GetMapping(value = "/{userId}/user")
@@ -426,9 +422,10 @@ public class UserController {
     }
 
     /**
-     * get all friend requests that a given user has recieved
-     * @param userId
-     * @return
+     * Get all friend requests that a given user has received
+     *
+     * @param userId id belonging to the user being checked
+     * @return a JSON array with {@link User} objects
      */
     @PathTokenRequired
     @GetMapping("/{userId}/request")
@@ -465,9 +462,10 @@ public class UserController {
     }
 
     /**
-     * get all friend requests that a given user has sent
-     * @param userId
-     * @return
+     * Get all friend requests that a given user has sent
+     *
+     * @param userId id belonging to the user being checked
+     * @return a JSON array with {@link User} objects
      */
     @PathTokenRequired
     @GetMapping("/{userId}/pending")
@@ -616,9 +614,10 @@ public class UserController {
     }
 
     /**
-     * get the average rating of a given user
-     * @param userId
-     * @return
+     * Gets the average rating of a given user
+     *
+     * @param userId id belonging to the user being checked
+     * @return a JSON object like {"averageRating": ##}
      */
     @GetMapping("/{userId}/rating")
     public ResponseEntity getRating(@PathVariable Integer userId) {
@@ -1042,7 +1041,8 @@ public class UserController {
             header.add("Status", "201 CREATED");
 
             body.put("id", String.valueOf(result.getUserId()));
-            body.put("token", securityService.createToken(String.valueOf(result.getUserId()), (1000 * 60 * 60 * 24)));
+            body.put("token", securityService
+                .createToken(String.valueOf(result.getUserId()), (1000 * 60 * 60 * 24)));
 
             return ResponseEntity
                 .ok()
@@ -1093,7 +1093,7 @@ public class UserController {
                 .body(formatJson(body));
         }
 
-        if(ratingService.ratingExists(fromUser, toUser)){
+        if (ratingService.ratingExists(fromUser, toUser)) {
             body.put("error", "you've already rated that user");
 
             return ResponseEntity

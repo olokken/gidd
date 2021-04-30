@@ -54,7 +54,7 @@ public class ActivityController {
      *            "tags" : String, same as equipmentList, but tags
      *            "latitude" : double
      *            "longitude" : double
-     * }
+     *            }
      * @return an error or the IDs of successfully created activities
      */
     @MapTokenRequired
@@ -86,28 +86,28 @@ public class ActivityController {
             newActivity = mapToActivity(map, -1, user, image);
             // creates one or multiple activities based on repeat
             return createMultiple(user, newActivity, map, body, headers,
-                                    Integer.parseInt(map.get("repeat").toString()));
+                Integer.parseInt(map.get("repeat").toString()));
 
         } catch (InvalidAttributesException e) {
             log.error("InvalidattributesException, " + e.getMessage());
             body.put("error", "invalid userID received");
             return ResponseEntity
-                    .badRequest()
-                    .headers(headers)
-                    .body(formatJson(body));
-        } catch (IllegalArgumentException e){
+                .badRequest()
+                .headers(headers)
+                .body(formatJson(body));
+        } catch (IllegalArgumentException e) {
             log.error("user is already registered to the activity");
             body.put("error", "user is already registered: " + e.getMessage());
             return ResponseEntity
-                    .badRequest()
-                    .body(formatJson(body));
+                .badRequest()
+                .body(formatJson(body));
         } catch (Exception e) {
             body.put("error", "unknown error: " + e.getMessage());
             e.printStackTrace();
             log.error("unexplained error caught " + e + "; local:" + e.getLocalizedMessage());
             return ResponseEntity
-                    .badRequest()
-                    .body(formatJson(body));
+                .badRequest()
+                .body(formatJson(body));
         }
     }
 
@@ -139,9 +139,9 @@ public class ActivityController {
             header.add("Content-Type", "application/json; charset=UTF-8");
             log.debug("Returning error message");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
 
@@ -159,9 +159,9 @@ public class ActivityController {
             header.add("Content-Type", "application/json; charset=UTF-8");
             log.debug("Returning error message");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         int userId = Integer.parseInt(map.get("userId").toString());
@@ -178,9 +178,9 @@ public class ActivityController {
             header.add("Content-Type", "application/json; charset=UTF-8");
             log.debug("Returning error message");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         List<ActivityEquipment> equipments = activity.getEquipments();
@@ -203,12 +203,12 @@ public class ActivityController {
                 header.add("Status", "200 OK");
                 header.add("Content-Type", "application/json; charset=UTF-8");
                 log.debug(
-                        "Returning the id of activity: " + activityId + ", equipment: " + equipment +
-                                ", user: " + userId);
+                    "Returning the id of activity: " + activityId + ", equipment: " + equipment +
+                        ", user: " + userId);
                 return ResponseEntity
-                        .ok()
-                        .headers(header)
-                        .body(formatJson(body));
+                    .ok()
+                    .headers(header)
+                    .body(formatJson(body));
             }
         }
 
@@ -220,23 +220,23 @@ public class ActivityController {
         header.add("Content-Type", "application/json; charset=UTF-8");
         log.error("The equipment is not registered to the activity");
         return ResponseEntity
-                .badRequest()
-                .headers(header)
-                .body(formatJson(body));
+            .badRequest()
+            .headers(header)
+            .body(formatJson(body));
     }
 
     /**
      * Used to edit an already existing activity
      *
      * @param actId the id of the activity you want to edit
-     * @param map an activity object in the same map format as the {@link #newActivity(Map)} method
+     * @param map   an activity object in the same map format as the {@link #newActivity(Map)} method
      * @return a json string containing either an error or the new activity
      */
     @MapTokenRequired
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity editActivity(@PathVariable("id") int actId,
                                        @RequestBody Map<String, Object> map
-                                       ) {
+    ) {
         log.info("received putMapping to /activity/{id}");
         User user = userService.getUser(Integer.parseInt(map.get("userId").toString()));
         log.debug("User with id received");
@@ -253,29 +253,30 @@ public class ActivityController {
             log.debug("Activity: " + (activity == null));
             log.debug("User: " + (user == null));
             return ResponseEntity
-                    .badRequest()
-                    .headers(headers)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(headers)
+                .body(formatJson(body));
         }
         log.info("old activity " + activity.getActivityId());
 
         //edit points of participants
         ActivityLevel oldLevel = activity.getActivityLevel();
-        ActivityLevel newLevel = ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
+        ActivityLevel newLevel =
+            ActivityLevel.valueOf(map.get("activityLevel").toString().toUpperCase());
         if (oldLevel != newLevel) {
             for (int i = 0; i < activity.getRegisteredParticipants().size(); i++) {
                 User p = activity.getRegisteredParticipants().get(i).getUser();
                 if (i != 0) {
                     p.setPoints(
-                            (int) (p.getPoints() - JOIN_ACTIVITY_BONUS * MULTIPLIERS[oldLevel.ordinal()])
-                                    +
-                                    (int) (JOIN_ACTIVITY_BONUS * MULTIPLIERS[newLevel.ordinal()]));
-                }
-                else {
+                        (int) (p.getPoints() -
+                            JOIN_ACTIVITY_BONUS * MULTIPLIERS[oldLevel.ordinal()])
+                            +
+                            (int) (JOIN_ACTIVITY_BONUS * MULTIPLIERS[newLevel.ordinal()]));
+                } else {
                     p.setPoints(
-                            (int) (p.getPoints() - NEW_ACTIVITY_BONUS * MULTIPLIERS[oldLevel.ordinal()])
-                                    +
-                                    (int) (NEW_ACTIVITY_BONUS * MULTIPLIERS[newLevel.ordinal()]));
+                        (int) (p.getPoints() - NEW_ACTIVITY_BONUS * MULTIPLIERS[oldLevel.ordinal()])
+                            +
+                            (int) (NEW_ACTIVITY_BONUS * MULTIPLIERS[newLevel.ordinal()]));
                 }
                 userService.editUser(p);
             }
@@ -301,7 +302,8 @@ public class ActivityController {
 
         // equipment
         List<ActivityEquipment> oldEquips = activity.getEquipments();
-        List<ActivityEquipment> newEquips = newEquipment(activity,map.get("equipmentList").toString());
+        List<ActivityEquipment> newEquips =
+            newEquipment(activity, map.get("equipmentList").toString());
         activity.setEquipments(newEquips);
 
         log.info("new activity: " + activity.getActivityId());
@@ -310,12 +312,12 @@ public class ActivityController {
             body.put("error", "activity was not edited");
             log.info("activity is not edited returning error");
             return ResponseEntity
-                    .badRequest()
-                    .headers(headers)
-                    .body("didnt work here either sad");
+                .badRequest()
+                .headers(headers)
+                .body("didnt work here either sad");
         }
 
-        if(!removeEquipment(oldEquips, newEquips)){
+        if (!removeEquipment(oldEquips, newEquips)) {
             body.put("error", "could not remove old equipment");
             return ResponseEntity
                 .status(500)
@@ -323,9 +325,9 @@ public class ActivityController {
         }
 
         return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(activity.toString());
+            .ok()
+            .headers(headers)
+            .body(activity.toString());
     }
 
     /**
@@ -333,22 +335,22 @@ public class ActivityController {
      *
      * @param activityId id belonging to the activity one wants to check
      * @return json object like:
-     *         {
-     *     "activityId": 1584135299,
-     *     "title": "Apier",
-     *     "time": 1317574085123,
-     *     "user": { {@link User object} },
-     *     "capacity": 55,
-     *     "groupId": null,
-     *     "description": "DESCRIPTION",
-     *     "image": "",
-     *     "activityLevel": "MEDIUM",
-     *     "tags": [{@link Tag Tag objects}],
-     *     "equipments": [{@link Equipment Equipment objects}],
-     *     "latitude": 1.0E-4,
-     *     "longitude": 1.4843,
-     *     "registeredParticipants": [{@link User User objects}],
-     *     "timeCreated": 1619775925488
+     * {
+     * "activityId": 1584135299,
+     * "title": "Apier",
+     * "time": 1317574085123,
+     * "user": { {@link User object} },
+     * "capacity": 55,
+     * "groupId": null,
+     * "description": "DESCRIPTION",
+     * "image": "",
+     * "activityLevel": "MEDIUM",
+     * "tags": [{@link Tag Tag objects}],
+     * "equipments": [{@link Equipment Equipment objects}],
+     * "latitude": 1.0E-4,
+     * "longitude": 1.4843,
+     * "registeredParticipants": [{@link User User objects}],
+     * "timeCreated": 1619775925488
      * }
      */
     @GetMapping(value = "/{activityId}", produces = "application/json")
@@ -366,9 +368,9 @@ public class ActivityController {
             header.add("Content-Type", "application/json; charset=UTF-8");
             log.debug("Returning error message");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
         HttpHeaders header = new HttpHeaders();
@@ -377,9 +379,9 @@ public class ActivityController {
         header.add("Content-Type", "application/json; charset=UTF-8");
         log.debug("Returning activity object " + activity.getActivityId());
         return ResponseEntity
-                .ok()
-                .headers(header)
-                .body(activity.toString());
+            .ok()
+            .headers(header)
+            .body(activity.toString());
     }
 
     /**
@@ -389,21 +391,21 @@ public class ActivityController {
      * find the activities belonging to said groups. These will be returned in addition to
      * all the public activities.
      *
-     * @param userId id belonging to a user whose group activities are to be found
-     * @param searchValue will filter by title
-     * @param activityLevel 0, 1 or 2, 0 for low, 2 for high
+     * @param userId         id belonging to a user whose group activities are to be found
+     * @param searchValue    will filter by title
+     * @param activityLevel  0, 1 or 2, 0 for low, 2 for high
      * @param tagDescription will filter by tags given to activity
      * @return json array in format:
-     *  {
-     *      "activities":[{ {@link Activity Activity} }, { {@link Activity Activity} }]
-     *  }
+     * {
+     * "activities":[{ {@link Activity Activity} }, { {@link Activity Activity} }]
+     * }
      */
     @GetMapping(value = "")
     public ResponseEntity getActivities(
-            @RequestParam(value = "userId", required = false) Integer userId,
-            @RequestParam(value = "searchWord", required = false) String searchValue,
-            @RequestParam(value = "activityLevel", required = false) Integer activityLevel,
-            @RequestParam(value = "tagDescription", required = false) String tagDescription) {
+        @RequestParam(value = "userId", required = false) Integer userId,
+        @RequestParam(value = "searchWord", required = false) String searchValue,
+        @RequestParam(value = "activityLevel", required = false) Integer activityLevel,
+        @RequestParam(value = "tagDescription", required = false) String tagDescription) {
         log.debug("Received GetMapping to '/activity' with Query Params");
         List<Activity> activities;
         if (searchValue == null && activityLevel == null && tagDescription == null) {
@@ -429,9 +431,9 @@ public class ActivityController {
                 header.add("Content-Type", "application/json; charset=UTF-8");
                 log.debug("Returning error message");
                 return ResponseEntity
-                        .badRequest()
-                        .headers(header)
-                        .body(formatJson(body));
+                    .badRequest()
+                    .headers(header)
+                    .body(formatJson(body));
             }
             int tagId = tag.getTagId();
             List<Object> activityIds = activityService.filterByTag(tagId);
@@ -453,14 +455,14 @@ public class ActivityController {
             header.add("Content-Type", "application/json; charset=UTF-8");
             log.debug("Returning error message");
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
+                .badRequest()
+                .headers(header)
+                .body(formatJson(body));
         }
 
-        if(userId!=null) {
+        if (userId != null) {
             User user = userService.getUser(userId);
-            if (user != null){
+            if (user != null) {
                 activities.addAll(groupService.getGroupActivitiesForUser(user));
             }
         }
@@ -472,18 +474,20 @@ public class ActivityController {
         header.add("Status", "200 OK");
         header.add("Content-Type", "application/json; charset=UTF-8");
         log.debug(String.format("Returning %d activities", activities.size()));
-        try{
+        try {
             return ResponseEntity
                 .ok()
                 .headers(header)
                 .body("{\"activities\": \n" + activities.toString() + "\n}");
         } catch (Exception e) {
-            log.error("could not return cause of: " + e.getMessage() + " of cause: " + e.getCause() + " with message " + e.getCause().getMessage());
+            log.error(
+                "could not return cause of: " + e.getMessage() + " of cause: " + e.getCause() +
+                    " with message " + e.getCause().getMessage());
         }
         return ResponseEntity
-                .badRequest()
-                .headers(header)
-                .body("{\"activities\": \n" + activities.toString() + "\n}");
+            .badRequest()
+            .headers(header)
+            .body("{\"activities\": \n" + activities.toString() + "\n}");
     }
 
     /**
@@ -491,9 +495,9 @@ public class ActivityController {
      *
      * @param id the id belonging to the activity
      * @return a json object with an array of users in the format:
-     *      {
-     *          "users":[ {{@link User}}, {{@link User}} ]
-     *      }
+     * {
+     * "users":[ {{@link User}}, {{@link User}} ]
+     * }
      */
     @GetMapping(value = "/{id}/user", produces = "application/json")
     public ResponseEntity getAllUsersFromActivity(@PathVariable Integer id) {
@@ -507,7 +511,7 @@ public class ActivityController {
             userMap.put("user", "");
 
             users.stream()
-                    .forEach(u -> userMap.put("user", userMap.get("user") + u.getUserId() + ","));
+                .forEach(u -> userMap.put("user", userMap.get("user") + u.getUserId() + ","));
             //remove trailing comma
             userMap.put("user", userMap.get("user").substring(0, userMap.get("user").length() - 1));
             return ResponseEntity.ok().headers(headers).body("{\"user\":" + users.toString() + "}");
@@ -524,12 +528,12 @@ public class ActivityController {
         Map<String, String> body = new HashMap<>();
         HttpHeaders header = new HttpHeaders();
         Activity activity = activityService.getActivity(activityId);
-        if(activity == null){
+        if (activity == null) {
             body.put("error", "the activity does not exist");
             return ResponseEntity.badRequest().headers(header).body(formatJson(body));
         }
         int bonusPoints = (int) (NEW_ACTIVITY_BONUS *
-                MULTIPLIERS[activity.getActivityLevel().ordinal()]);
+            MULTIPLIERS[activity.getActivityLevel().ordinal()]);
         if (activityService.deleteActivity(activityId)) {
             log.debug("The deletion was successful");
             header.add("Status", "200 OK");
@@ -544,9 +548,10 @@ public class ActivityController {
             users.forEach(u -> u.setPoints(u.getPoints() - bonusPoints));
 
             return ResponseEntity
-                    .ok()
-                    .headers(header)
-                    .body(bodyJson.substring(0, bodyJson.length() - 1) + ",\"users\":" + users.toString() + "}");
+                .ok()
+                .headers(header)
+                .body(bodyJson.substring(0, bodyJson.length() - 1) + ",\"users\":" +
+                    users.toString() + "}");
         }
 
         body.put("error", "no activity was deleted, are you sure the activity exists");
@@ -597,7 +602,7 @@ public class ActivityController {
 
         for (Equipment e : equipments) {
             log.debug("Adding [" + e.getEquipmentId() + ":" + e.getDescription() + "] to " +
-                    activity.getActivityId());
+                activity.getActivityId());
             ActivityEquipment activityEquipment = new ActivityEquipment(activity, e);
             activity.addEquipment(activityEquipment);
         }
@@ -626,15 +631,15 @@ public class ActivityController {
         // group
         FriendGroup group = null;
         int groupId = Integer.parseInt(map.get("groupId").toString());
-         if(groupId>=0){
-             group = groupService.getFriendGroup(groupId);
-             if(group==null){
-                 throw new InvalidAttributesException("invalid groupId");
-             }
-             if(!group.getUsers().contains(user)){
-                 throw new InvalidAttributesException("that user is not a part of the given group");
-             }
-         }
+        if (groupId >= 0) {
+            group = groupService.getFriendGroup(groupId);
+            if (group == null) {
+                throw new InvalidAttributesException("invalid groupId");
+            }
+            if (!group.getUsers().contains(user)) {
+                throw new InvalidAttributesException("that user is not a part of the given group");
+            }
+        }
         String description = map.get("description").toString();
         // image
         ActivityLevel activityLevel =
@@ -658,7 +663,7 @@ public class ActivityController {
      * @return a list of {@link Tag Tag} objects
      */
     private List<Tag> splitTags(String tagString) {
-        if(tagString.trim().equals("")){
+        if (tagString.trim().equals("")) {
             return Collections.emptyList();
         }
         log.info("splitting tags");
@@ -689,7 +694,7 @@ public class ActivityController {
      *
      * @return a newly created list of {@link ActivityEquipment Activity-Equiment connections}
      */
-    private List<ActivityEquipment> newEquipment (Activity activity, String equipList) {
+    private List<ActivityEquipment> newEquipment(Activity activity, String equipList) {
         List<ActivityEquipment> oldEquips = activity.getEquipments();
         List<Equipment> equips = toEquipList(equipList);
 
@@ -698,14 +703,14 @@ public class ActivityController {
         boolean match;
         for (Equipment e : equips) {
             match = false;
-            for (ActivityEquipment con: oldEquips) {
-                if (con.getEquipment().getEquipmentId() == e.getEquipmentId()){
+            for (ActivityEquipment con : oldEquips) {
+                if (con.getEquipment().getEquipmentId() == e.getEquipmentId()) {
                     res.add(con);
                     match = true;
                     break;
                 }
             }
-            if(!match) {
+            if (!match) {
                 temp = new ActivityEquipment(activity, e);
                 res.add(temp);
             }
@@ -719,17 +724,18 @@ public class ActivityController {
      * If a coupling is found in the old list, but not in the new, it will be removed
      * from the database.
      */
-    private boolean removeEquipment (List<ActivityEquipment> oldEquips, List<ActivityEquipment> newEquips) {
+    private boolean removeEquipment(List<ActivityEquipment> oldEquips,
+                                    List<ActivityEquipment> newEquips) {
 
         List<ActivityEquipment> differences = new ArrayList<>(oldEquips);
         differences.removeAll(newEquips);
 
         try {
             boolean worked = true;
-            for (ActivityEquipment activityEquipment: differences) {
+            for (ActivityEquipment activityEquipment : differences) {
                 worked = activityService.removeEquipmentFromActivity(activityEquipment);
             }
-            if(worked) {
+            if (worked) {
                 log.debug("All differences were removed successfully");
                 return true;
             }
@@ -744,11 +750,13 @@ public class ActivityController {
      * Creates one or multiple activities depending on the given repeat value
      */
     private ResponseEntity createMultiple(User user, Activity activity, Map<String, Object> map,
-                                                  HashMap<String,String> body, HttpHeaders headers,
-                                                    int repeat) {
+                                          HashMap<String, String> body, HttpHeaders headers,
+                                          int repeat) {
         List<Integer> res = new ArrayList();
         int i = 0;
-        if(repeat>3) repeat = 3;
+        if (repeat > 3) {
+            repeat = 3;
+        }
         do {
             Activity temp = new Activity(activity);
             int newId = newActivityValidId(temp);
@@ -788,7 +796,7 @@ public class ActivityController {
         for (String name : equipString.split(",")) {
             name = name.toLowerCase();
             Equipment equipment = equipmentService.getEquipmentByDescription(name);
-            if(equipment == null) {
+            if (equipment == null) {
                 log.debug("equipment " + name + " did not exist, creating");
                 equipment = new Equipment(name);
                 equipmentService.addEquipment(equipment);
@@ -804,7 +812,7 @@ public class ActivityController {
     /**
      * This coupling is inserted to indicate that the user is going to attend the activity
      */
-    private boolean insertUserActivityCoupling(User user, Activity activity){
+    private boolean insertUserActivityCoupling(User user, Activity activity) {
         //Legge inn sjekk om den allerede er registrert
         List<ActivityUser> activityUser = user.getActivities();
         ArrayList<Integer> activityIds = new ArrayList<>();

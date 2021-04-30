@@ -46,14 +46,13 @@ public class LoginController {
      * on the provider given. SoMe logins are handled in this method, while LOCAL
      * requests are redirected to {@link #loginUser(Map)}
      *
-     * @param map
-     * {
-     *     "provider" : string, google or facebook,
-     *     "accessToken" : provided by google or facbook
-     *     "email": string user email,
-     *     "firstName":
-     *     "surname":
-     * }
+     * @param map {
+     *            "provider" : string, google or facebook,
+     *            "accessToken" : provided by google or facbook
+     *            "email": string user email,
+     *            "firstName":
+     *            "surname":
+     *            }
      * @return a json object with the users Id and a JWT they need to access certain mappings
      */
     @PostMapping("")
@@ -73,18 +72,18 @@ public class LoginController {
             if (provider == Provider.FACEBOOK) {
                 log.info("logging in with FACEBOOK");
                 url = new URL("https://graph.facebook.com/debug_token?input_token=" +
-                        map.get("accessToken").toString() +
-                        "&access_token=124734739639594|mI_etwHdsRvB6s3fVf62yZQldYQ");
+                    map.get("accessToken").toString() +
+                    "&access_token=124734739639594|mI_etwHdsRvB6s3fVf62yZQldYQ");
             } else if (provider == Provider.GOOGLE) {
                 log.info("logging in with GOOGLE");
                 url = new URL(
-                        "https://oauth2.googleapis.com/tokeninfo?id_token=" + map.get("accessToken"));
+                    "https://oauth2.googleapis.com/tokeninfo?id_token=" + map.get("accessToken"));
             } else {
                 body.put("error", "invalid provider provided");
 
                 return ResponseEntity
-                        .badRequest()
-                        .body(formatJson(body));
+                    .badRequest()
+                    .body(formatJson(body));
             }
 
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -98,8 +97,8 @@ public class LoginController {
             Map resMap;
             if (provider == Provider.FACEBOOK) {
                 resMap =
-                        new ObjectMapper()
-                                .readValue(content.substring(8, content.length() - 1), Map.class);
+                    new ObjectMapper()
+                        .readValue(content.substring(8, content.length() - 1), Map.class);
                 if (Boolean.parseBoolean(resMap.get("is_valid").toString())) {
                     log.info("access token valid");
                     return someCheckUser(map, body, provider);
@@ -107,8 +106,8 @@ public class LoginController {
                 } else {
                     body.put("error", "invalid access token");
                     return ResponseEntity
-                            .badRequest()
-                            .body(formatJson(body));
+                        .badRequest()
+                        .body(formatJson(body));
                 }
             }
             // Provider must be GOOGLE if not FACEBOOK or LOCAL.
@@ -120,8 +119,8 @@ public class LoginController {
                     body.put("error", "invalid access token");
 
                     return ResponseEntity
-                            .badRequest()
-                            .body(formatJson(body));
+                        .badRequest()
+                        .body(formatJson(body));
                 }
 
                 return someCheckUser(map, body, provider);
@@ -130,15 +129,15 @@ public class LoginController {
             body.put("error", "missing parameter");
 
             return ResponseEntity
-                    .badRequest()
-                    .body(formatJson(body));
+                .badRequest()
+                .body(formatJson(body));
         } catch (Exception e) {
             log.error("An unexpected error was caught while logging in");
 
             body.put("error", "something went wrong");
             return ResponseEntity
-                    .unprocessableEntity()
-                    .body(formatJson(body));
+                .unprocessableEntity()
+                .body(formatJson(body));
         }
     }
 
@@ -146,24 +145,26 @@ public class LoginController {
         log.info("recieved postmapping to /login " + map.toString());
         HttpHeaders header = new HttpHeaders();
         boolean result =
-                userService.login(map.get("email").toString(), map.get("password").toString());
+            userService.login(map.get("email").toString(), map.get("password").toString());
         Map<String, String> body = new HashMap<>();
         if (result) {
             log.info("logged in user with email " + map.get("email").toString());
-            String id = String.valueOf(userService.getUser(map.get("email").toString()).getUserId());
+            String id =
+                String.valueOf(userService.getUser(map.get("email").toString()).getUserId());
             body.put("id",
-                    id);
-            body.put("token", String.valueOf(securityService.createToken(id, (1000 * 60 * 60 * 24))));
+                id);
+            body.put("token",
+                String.valueOf(securityService.createToken(id, (1000 * 60 * 60 * 24))));
             header.add("Status", "200 OK");
             return ResponseEntity.ok()
-                    .headers(header)
-                    .body(formatJson(body));
+                .headers(header)
+                .body(formatJson(body));
         }
         log.error("unable to login user with email: " + map.get("email").toString());
         header.add("Status", "403 Forbidden");
         body.put("error", "unable to login user with email: " + map.get("email").toString());
         return ResponseEntity.status(403)
-                .headers(header).body(formatJson(body));
+            .headers(header).body(formatJson(body));
     }
 
     /**
@@ -178,25 +179,25 @@ public class LoginController {
         if (user != null) {
             log.info("email already found in database, generating JWT");
             body.put("token", securityService
-                    .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 60 * 24)));
+                .createToken(String.valueOf(user.getUserId()), (1000 * 60 * 60 * 24)));
             body.put("userId", String.valueOf(user.getUserId()));
 
             return ResponseEntity
-                    .ok()
-                    .body(formatJson(body));
+                .ok()
+                .body(formatJson(body));
         }
 
         log.info("email doesn't exist in database, attempting to create user");
         User newUser = userService.registerUser(
-                getRandomID(),
-                map.get("email").toString(),
-                "9djw#ekc<_>a8ZS" + getRandomID(),
-                map.get("firstName").toString(),
-                map.get("surname").toString(),
-                -1,
-                null,
-                imageService.createImage(""),
-                provider);
+            getRandomID(),
+            map.get("email").toString(),
+            "9djw#ekc<_>a8ZS" + getRandomID(),
+            map.get("firstName").toString(),
+            map.get("surname").toString(),
+            -1,
+            null,
+            imageService.createImage(""),
+            provider);
 
         // TODO this segment can be removed once registerUser()
         //  makes sure the user gets a valid id
@@ -205,12 +206,12 @@ public class LoginController {
         }
 
         body.put("token", securityService
-                .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 60 * 24)));
+            .createToken(String.valueOf(newUser.getUserId()), (1000 * 60 * 60 * 24)));
         body.put("userId", String.valueOf(newUser.getUserId()));
 
         return ResponseEntity
-                .created((new URI("/user/" + newUser.getUserId())))
-                .body(formatJson(body));
+            .created((new URI("/user/" + newUser.getUserId())))
+            .body(formatJson(body));
     }
 
     /**

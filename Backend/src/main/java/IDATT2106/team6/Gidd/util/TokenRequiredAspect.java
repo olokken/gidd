@@ -37,6 +37,14 @@ public class TokenRequiredAspect {
     @Autowired
     private ActivityService activityService;
 
+    /**
+     * Called when a method with the {@link MapTokenRequired} annotation is called.
+     * This specific annotation is used the subject, or the relevant userId, is found in the
+     * map argument of the given JoinPoint.
+     *
+     * @param pjp the method that would otherwise be called if not for the annotation
+     * @return the result of {@link #handleToken(ProceedingJoinPoint, String)}
+     */
     @Around("@annotation(mapTokenRequired)")
     public Object mapTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
                                                  MapTokenRequired mapTokenRequired)
@@ -57,6 +65,14 @@ public class TokenRequiredAspect {
         return handleToken(pjp, subject);
     }
 
+    /**
+     * Called when a method with the {@link PathTokenRequired} annotation is called.
+     * This specific annotation is used the subject, or the relevant userId, is
+     * the first integer argument of the given JoinPoint.
+     *
+     * @param pjp the method that would otherwise be called if not for the annotation
+     * @return the result of {@link #handleToken(ProceedingJoinPoint, String)}
+     */
     @Around("@annotation(pathTokenRequired)")
     public Object pathTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
                                                   PathTokenRequired pathTokenRequired)
@@ -70,6 +86,14 @@ public class TokenRequiredAspect {
         return handleToken(pjp, subject);
     }
 
+    /**
+     * Called when a method with the {@link PathTwoTokenRequired} annotation is called.
+     * This specific annotation is used the subject, or the relevant userId, is
+     * the second integer argument of the given JoinPoint.
+     *
+     * @param pjp the method that would otherwise be called if not for the annotation
+     * @return the result of {@link #handleToken(ProceedingJoinPoint, String)}
+     */
     @Around("@annotation(pathTwoTokenRequired)")
     public Object pathTwoTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
                                                      PathTwoTokenRequired pathTwoTokenRequired)
@@ -83,6 +107,16 @@ public class TokenRequiredAspect {
         return handleToken(pjp, subject);
     }
 
+    /**
+     * Called when a method with the {@link GroupTokenRequired} annotation is called.
+     * This specific annotation is used the subject, or the relevant groupId, is
+     * the first integer argument of the given JoinPoint. Since no userId is passed for
+     * these methods, this method instead finds the group in question and checks if the
+     * token passed belongs to the owner of the group.
+     *
+     * @param pjp the method that would otherwise be called if not for the annotation
+     * @return the result of {@link #handleToken(ProceedingJoinPoint, String)}
+     */
     @Around("@annotation(groupTokenRequired)")
     public Object groupTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
                                                    GroupTokenRequired groupTokenRequired)
@@ -105,6 +139,16 @@ public class TokenRequiredAspect {
         return handleToken(pjp, subject);
     }
 
+    /**
+     * Called when a method with the {@link GroupMemberTokenRequired} annotation is called.
+     * This specific annotation is used the subject, or the relevant groupId, is
+     * the first integer argument of the given JoinPoint. This method is similar to
+     * {@link #groupTokenRequiredWithAnnotation(ProceedingJoinPoint, GroupTokenRequired)}, but
+     * will also check the groups normal members in addition to the owner.
+     *
+     * @param pjp the method that would otherwise be called if not for the annotation
+     * @return the result of {@link #handleToken(ProceedingJoinPoint, String)}
+     */
     @Around("@annotation(groupMemberTokenRequired)")
     public Object groupMemberTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
                                                          GroupMemberTokenRequired groupMemberTokenRequired)
@@ -130,6 +174,16 @@ public class TokenRequiredAspect {
         return handleTokenArr(pjp, subjects);
     }
 
+    /**
+     * Called when a method with the {@link ActivityTokenRequired} annotation is called.
+     * This specific annotation is used the subject, or the relevant activityId, is
+     * the first integer argument of the given JoinPoint. This method is similar to
+     * {@link #groupTokenRequiredWithAnnotation(ProceedingJoinPoint, GroupTokenRequired)},
+     * but checks for the user that created the given activity, instead of a group owner.
+     *
+     * @param pjp the method that would otherwise be called if not for the annotation
+     * @return the result of {@link #handleToken(ProceedingJoinPoint, String)}
+     */
     @Around("@annotation(activityTokenRequired)")
     public Object activityTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
                                                       ActivityTokenRequired activityTokenRequired)

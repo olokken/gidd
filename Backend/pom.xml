@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>IDATT2106.team6</groupId>
 	<artifactId>gidd</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>gidd</name>
-	<description>Demo project for Spring Boot</description>
+	<description>RESTful backend for a project in IDATT2106</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>

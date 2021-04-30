@@ -43,24 +43,25 @@ public class ChatController {
     /**
      * Gets the log of a chat in the format
      * {
-     *     "activity": "1214121678",
-     *     "messages": []
+     *  "activity": "1214121678",
+     *  "messages": []
      * }
+     *
      * @param groupId the activity you want to find the chat log of
      */
     @GetMapping(value = "/chat/{groupId}", produces = "application/json")
-    public ResponseEntity getMessageLog(@PathVariable Integer groupId){
+    public ResponseEntity getMessageLog(@PathVariable Integer groupId) {
         HttpHeaders header = new HttpHeaders();
 
         Activity activity = activityService.getActivity(groupId);
         HashMap<String, String> body = new HashMap<>();
-        if(activity != null) {
+        if (activity != null) {
             List<Chat> messageList = chatService.getMessages(activity);
             if (messageList != null) {
                 StringBuilder messageJson = new StringBuilder();
                 messageJson.append("{\"activity\":" + "\"").append(groupId)
-                        .append("\",").append("\"messages\" : [");
-                for (Chat c : messageList){
+                    .append("\",").append("\"messages\" : [");
+                for (Chat c : messageList) {
                     messageJson.append(c.toJson()).append(",");
                 }
 
@@ -71,28 +72,29 @@ public class ChatController {
                 }
                 messageJson.append("}");
                 return ResponseEntity
-                        .ok()
-                        .headers(header)
-                        .body(messageJson.toString());
+                    .ok()
+                    .headers(header)
+                    .body(messageJson.toString());
             }
             return ResponseEntity
-                    .badRequest()
-                    .headers(header)
-                    .body(formatJson(body));
-        }
-        body.put("error", "the activity does not exist");
-        return ResponseEntity
                 .badRequest()
                 .headers(header)
                 .body(formatJson(body));
+        }
+        body.put("error", "the activity does not exist");
+        return ResponseEntity
+            .badRequest()
+            .headers(header)
+            .body(formatJson(body));
     }
 
 
     /**
-     * websocket-messages are automatically sent here
+     * Websocket-messages are automatically sent here
      */
     @MessageMapping("/chat/{activityId}")
-    public void sendMessage(@DestinationVariable Integer activityId, @Payload String message) throws ParseException {
+    public void sendMessage(@DestinationVariable Integer activityId, @Payload String message)
+        throws ParseException {
         log.info("recieved chat message to id: " + activityId + " with message: " + message);
         JSONParser parser = new JSONParser();
         JSONObject chatJson = (JSONObject) parser.parse(message);
@@ -100,7 +102,7 @@ public class ChatController {
         Activity activity = activityService.getActivity(activityId);
         User user = userService.getUser(chatJson.getAsNumber("userId").intValue());
 
-        if(activity != null) {
+        if (activity != null) {
             Chat newChat;
             chatJson.put("user", user);
             chatJson.remove("userId");
@@ -111,10 +113,10 @@ public class ChatController {
                 return;
             }
             String json = "{" +
-                    "\"user\":" + user.toJSON() +
-                    ",\"message\":" + "\"" + chatJson.get("message") + "\"" +
-                    ",\"timestamp\":" + newChat.getTimeStamp().getTime() +
-                    "}";
+                "\"user\":" + user.toJSON() +
+                ",\"message\":" + "\"" + chatJson.get("message") + "\"" +
+                ",\"timestamp\":" + newChat.getTimeStamp().getTime() +
+                "}";
 
             int counter = 0;
             boolean succeeded;
