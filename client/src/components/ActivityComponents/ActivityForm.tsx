@@ -321,6 +321,15 @@ const ActivityForm = ({
             );
     };
 
+    const onKeyDown = (e: any) => {
+        if (e.code === 'ArrowRight' && page < 8) {
+            setPage(page + 1);
+        }
+        if (e.code === 'ArrowLeft' && page > 1) {
+            setPage(page - 1);
+        }
+    };
+
     const changeActivity = async () => {
         console.log(activityLevel)
         const sendActivity = {
@@ -411,7 +420,7 @@ const ActivityForm = ({
     }, []);
 
     return (
-        <div className="activityform">
+        <div className="activityform" onKeyDown={onKeyDown}>
             {page === 1 && (
                 <div>
                     <Typography
@@ -604,7 +613,7 @@ const ActivityForm = ({
                         </Typography>
                         <Tooltip
                             placement="left-end"
-                            title="Plasser må være minst 1. Gjentakninger må være mellom 0 og 3."
+                            title="Plasser må være minst 1. Gjentakninger vil opprette en tilsvarende aktivitet 1 uke frem tid. Gjentakninger må være mellom 0 og 3."
                         >
                             <InfoIcon />
                         </Tooltip>
@@ -671,7 +680,7 @@ const ActivityForm = ({
                 </div>
             )}
             <div className="activityform__pageContainer">
-                <Pagination onChange={onPageChange} count={8} size="large" />
+                <Pagination page={page} onChange={onPageChange} count={8} size="large" />
             </div>
         </div>
     );
