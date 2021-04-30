@@ -45,14 +45,15 @@ public class RatingRepo extends GiddRepo {
     }
 
     public boolean ratingExists(int from, int to) {
-        log.info(String.format("checking if ranting exists from %d to %d", from, to));
+        log.info(String.format("checking if rating exists from %d to %d", from, to));
         EntityManager em = getEm();
 
         try {
             Query q = em.createNativeQuery("SELECT * FROM RATING WHERE from_user_id = ?1 AND to_user_id = ?2", Rating.class)
                 .setParameter(1, from)
                 .setParameter(2, to);
-            return !q.getResultList().isEmpty();
+            boolean exists = !q.getResultList().isEmpty();
+            return exists;
         } catch (Exception e) {
             log.error("ratingExists failed due to " + e.getMessage());
             return true;

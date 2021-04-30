@@ -282,6 +282,8 @@ public class ActivityController {
         newImage.setBytes(Base64.getDecoder().decode(imgInfo[1]));
         imageService.editImage(newImage);
 
+        List<Tag> newTags = splitTags(map.get("tags").toString());
+
         activity.setTitle(map.get("title").toString());
         activity.setTime(Timestamp.valueOf(map.get("time").toString()));
         activity.setDescription(map.get("description").toString());
@@ -289,6 +291,7 @@ public class ActivityController {
         activity.setActivityLevel(ActivityLevel.valueOf(map.get("activityLevel").toString()));
         activity.setLatitude(Double.parseDouble(map.get("latitude").toString()));
         activity.setLongitude(Double.parseDouble(map.get("longitude").toString()));
+        activity.setTags(newTags);
         activity.setImage(newImage);
 
         // equipment
