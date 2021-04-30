@@ -42,7 +42,10 @@ public class LoginController {
     private ImageService imageService;
 
     /**
-     * for logging in with social media, currently facebook and google are available
+     * Takes login requests and routes it to the correct business logic depending
+     * on the provider given. SoMe logins are handled in this method, while LOCAL
+     * requests are redirected to {@link #loginUser(Map)}
+     *
      * @param map
      * {
      *     "provider" : string, google or facebook,
@@ -51,7 +54,7 @@ public class LoginController {
      *     "firstName":
      *     "surname":
      * }
-     * @return
+     * @return a json object with the users Id and a JWT they need to access certain mappings
      */
     @PostMapping("")
     public ResponseEntity loginSome(@RequestBody Map<String, Object> map) {
@@ -164,7 +167,9 @@ public class LoginController {
     }
 
     /**
-     * checks whther user is already registered
+     * Checks whether a user that is logging in with SoMe is already registered and
+     * trying to log in, or are logging in for the first time, and must then be added
+     * to the database.
      */
     private ResponseEntity someCheckUser(Map<String, Object> map,
                                          Map<String, String> body,
@@ -209,9 +214,10 @@ public class LoginController {
     }
 
     /**
-     * parses the connection status code from the response from facebook/google
-     * parses either error or valid response
-     * used to check if token recieved is valid
+     * Parses the connection status code from the response from a provider
+     * after an access token has been passed. If the access token was valid, an
+     * input stream will be read. If the access token isn't valid, an error stream
+     * will be read instead.
      */
     private StringBuilder getContent(HttpURLConnection con) throws IOException {
         int status = con.getResponseCode();

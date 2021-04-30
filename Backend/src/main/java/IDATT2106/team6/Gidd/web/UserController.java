@@ -164,6 +164,7 @@ public class UserController {
 
     /**
      * removes a user form being signed up for an activity
+     *
      * @param userId
      * @param activityId
      * @return

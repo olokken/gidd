@@ -36,24 +36,26 @@ public class ActivityController {
     private FriendGroupService groupService;
 
     /**
-     * Add a new activity to the database
+     * Used to control input and perform preliminary actions before an activity can be created
+     * and added to the database.
+     *
      * @param map {
      *            "title" String
-     *            "time" : string, is parsed to sql timestamp, format: yyyy-mm-dd hh:mm:ss[.f...]
+     *            "time" : String, parsed to sql timestamp, format: yyyy-mm-dd hh:mm:ss[.f...]
      *            "repeat" : int, the number of weeks you want to repeat the activity for
      *            "userId" : int, the owner of the activity
-     *            "capacity" : int the number of possible participats in the activity
-     *            "gropuId" : int -1 if no group, otherwise this will limit the people that are able to see this activity
+     *            "capacity" : int, the number of possible participants in the activity
+     *            "gropuId" : int, -1 if no group, otherwise this will limit the people that are able to see this activity
      *            to members of the given group
      *            "description" String
-     *            "image": base64 string, Strings under 32 characters are treated as no image
-     *            "equipmentList": string of comma separated words to be used for equipment
-     *            "ActivityLevel" : string, LOW; MEDIUM or HIGH
-     *            "tags" : same as equipmentlist, but tags
-     *            "latitude" : doube
+     *            "image": String, Base64 strings under 32 characters are treated as no image
+     *            "equipmentList": String, comma separated words to be used for equipment
+     *            "ActivityLevel" : String, LOW, MEDIUM or HIGH
+     *            "tags" : String, same as equipmentList, but tags
+     *            "latitude" : double
      *            "longitude" : double
      * }
-     * @return "error" mapping in json
+     * @return an error or the IDs of successfully created activities
      */
     @MapTokenRequired
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
@@ -110,10 +112,12 @@ public class ActivityController {
     }
 
     /**
-     * id of activity and id of equipment connected to that activity
+     * Used to assign a user to a given equipment that belongs to a given activity.
+     *
      * @param map {
-     *            "userId" : int user id
-     *            "equipmentId" int equipment id
+     *            "activityId" : int,
+     *            "userId" : int,
+     *            "equipmentId" int
      *            }
      * @return error code and json with "error" mapping
      */
@@ -222,10 +226,11 @@ public class ActivityController {
     }
 
     /**
+     * Used to edit an already existing activity
      *
      * @param actId the id of the activity you want to edit
-     * @param map activity object in the same format as @newActivity-method
-     * @return json-object with "error" mapping if an error is caught with error code
+     * @param map an activity object in the same map format as the {@link #newActivity(Map)} method
+     * @return a json string containing either an error or the new activity
      */
     @MapTokenRequired
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
@@ -324,28 +329,30 @@ public class ActivityController {
     }
 
     /**
-     * ret
-     * @param activityId
+     * Used to get information about a specific activity
+     *
+     * @param activityId id belonging to the activity one wants to check
      * @return json object like:
      *         {
-     *             "activityId": 106316016,
-     *             "title": "test1",
-     *             "time": 1619720996000,
-     *             "user": {
-     *                 "userId": 1306460677,
-     *                 "email": "haavard.tysland@lyse.net",
-     *                 "firstName": "Håvard",
-     *                 "surname": "Tysland",
-     *                 "phoneNumber": 95427495,
-     *                 "activityLevel": "HIGH",
-     *                 "image" base64 string with image type specified
-     *                 "points": 68,
-     *                 "notifications": []
-     *             },
-     * @throws JSONException
+     *     "activityId": 1584135299,
+     *     "title": "Apier",
+     *     "time": 1317574085123,
+     *     "user": { {@link User object} },
+     *     "capacity": 55,
+     *     "groupId": null,
+     *     "description": "DESCRIPTION",
+     *     "image": "",
+     *     "activityLevel": "MEDIUM",
+     *     "tags": [{@link Tag Tag objects}],
+     *     "equipments": [{@link Equipment Equipment objects}],
+     *     "latitude": 1.0E-4,
+     *     "longitude": 1.4843,
+     *     "registeredParticipants": [{@link User User objects}],
+     *     "timeCreated": 1619775925488
+     * }
      */
     @GetMapping(value = "/{activityId}", produces = "application/json")
-    public ResponseEntity getActivity(@PathVariable Integer activityId) throws JSONException {
+    public ResponseEntity getActivity(@PathVariable Integer activityId) {
         log.debug("Received GetMapping to '/activity/{activityId}' with activityId " + activityId);
         Activity activity = activityService.getActivity(activityId);
 
@@ -376,24 +383,27 @@ public class ActivityController {
     }
 
     /**
+     * Used to get information about all activities.
+     * Will only return activities that are not bound to any group if no params are passed.
+     * If a userId is passed, then this method will check what group that user is in, and then
+     * find the activities belonging to said groups. These will be returned in addition to
+     * all the public activities.
      *
-     * @param userId using this will get you all activities the user is registered to
+     * @param userId id belonging to a user whose group activities are to be found
      * @param searchValue will filter by title
      * @param activityLevel 0, 1 or 2, 0 for low, 2 for high
      * @param tagDescription will filter by tags given to activity
      * @return json array in format:
      *  {
-     *      "activities":[]
+     *      "activities":[{ {@link Activity Activity} }, { {@link Activity Activity} }]
      *  }
-     * @throws JSONException
      */
     @GetMapping(value = "")
     public ResponseEntity getActivities(
             @RequestParam(value = "userId", required = false) Integer userId,
             @RequestParam(value = "searchWord", required = false) String searchValue,
             @RequestParam(value = "activityLevel", required = false) Integer activityLevel,
-            @RequestParam(value = "tagDescription", required = false) String tagDescription)
-            throws JSONException {
+            @RequestParam(value = "tagDescription", required = false) String tagDescription) {
         log.debug("Received GetMapping to '/activity' with Query Params");
         List<Activity> activities;
         if (searchValue == null && activityLevel == null && tagDescription == null) {
@@ -477,14 +487,13 @@ public class ActivityController {
     }
 
     /**
-     * gets all users registered to activity, includes owner
-     * @param id the id of the activity
-     * @return a json object with an array of users in the format:
-     * {
-     *     "users":[
+     * Gets all users registered to a given activity, including the owner
      *
-     *     ]
-     * }
+     * @param id the id belonging to the activity
+     * @return a json object with an array of users in the format:
+     *      {
+     *          "users":[ {{@link User}}, {{@link User}} ]
+     *      }
      */
     @GetMapping(value = "/{id}/user", produces = "application/json")
     public ResponseEntity getAllUsersFromActivity(@PathVariable Integer id) {
@@ -545,7 +554,8 @@ public class ActivityController {
     }
 
     /**
-     * (nearly) thread safe way of generating random id for activity
+     * A (nearly) thread safe way of creating an activity with a randomly generated id
+     *
      * @param activity the activity you want to assign the id to
      * @return the id that was assigned
      */
@@ -600,7 +610,7 @@ public class ActivityController {
     }
 
     /**
-     * adds equipment to databases so that it can be used later
+     * Adds equipment to databases so that it can be used later
      */
     private void registerEquipment(String description) {
         log.debug("Registering " + description + " to equipment");
@@ -641,7 +651,11 @@ public class ActivityController {
 
 
     /**
-     * splits a string of comma separated tags
+     * Splits a string of comma separated tags then queries the database to check if
+     * a tag with that description already exists. If it does, that one is fetched, if not
+     * a new Tag is added to the database.
+     *
+     * @return a list of {@link Tag Tag} objects
      */
     private List<Tag> splitTags(String tagString) {
         if(tagString.trim().equals("")){
@@ -667,8 +681,13 @@ public class ActivityController {
     }
 
     /**
-     * takes an activity and a comma separated equipmentlist
-     * adds any new equipments from this to the activity, and returns the coupling objects
+     * Takes an activity and a comma separated equipmentlist string.
+     * First gets the activities old equipment, then compares the {@link ActivityEquipment}
+     * connections to the new equipmentList that has been given.
+     * For every match found, the old connection is added to the result list,
+     * and for each non-match, a new connection is created and added to the list.
+     *
+     * @return a newly created list of {@link ActivityEquipment Activity-Equiment connections}
      */
     private List<ActivityEquipment> newEquipment (Activity activity, String equipList) {
         List<ActivityEquipment> oldEquips = activity.getEquipments();
@@ -696,8 +715,9 @@ public class ActivityController {
     }
 
     /**
-     * takes two lists of couplings, removes all the couplings from the activity
-     * that are in the oldEquips-list, but not in the newEquips-list
+     * Takes two lists of couplings and checks the differences between the two.
+     * If a coupling is found in the old list, but not in the new, it will be removed
+     * from the database.
      */
     private boolean removeEquipment (List<ActivityEquipment> oldEquips, List<ActivityEquipment> newEquips) {
 
@@ -721,7 +741,7 @@ public class ActivityController {
     }
 
     /**
-     * creates multiple activities depending on the repeat value
+     * Creates one or multiple activities depending on the given repeat value
      */
     private ResponseEntity createMultiple(User user, Activity activity, Map<String, Object> map,
                                                   HashMap<String,String> body, HttpHeaders headers,
@@ -760,7 +780,7 @@ public class ActivityController {
     }
 
     /**
-     * splits csv string with equipments
+     * Splits csv string with equipments
      */
     private List<Equipment> toEquipList(String equipString) {
         log.info("splitting equipment");
@@ -782,7 +802,7 @@ public class ActivityController {
     }
 
     /**
-     * this coupling is inserted to indicate that the user is goind to attend the activity
+     * This coupling is inserted to indicate that the user is going to attend the activity
      */
     private boolean insertUserActivityCoupling(User user, Activity activity){
         //Legge inn sjekk om den allerede er registrert
