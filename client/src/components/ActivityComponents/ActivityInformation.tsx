@@ -268,6 +268,26 @@ const ActivityInformation = ({
         }
     );
 
+    const mapTags = activity.tags.map(
+        (tag: string, index: number) => {
+            return (
+                <Chip
+                    key={index}
+                    variant="outlined"
+                    size="small"
+                    label={tag}
+                    style={{
+                        backgroundColor: '#f44336',
+                        borderBlockEndWidth: '0px',
+                        color: 'white',
+                        padding: '10px',
+                        margin: '10px',
+                    }}
+                />
+            );
+        }
+    );
+
     const onParticipantClicked = (par: User) => {
         setCurrentParticipant(par);
         setRatingPopup(!openRatingPopup);
@@ -450,6 +470,18 @@ const ActivityInformation = ({
                     <Grid item xs={8}>
                         <div className={classes.supplyList}>
                             {mapEquipments}
+                        </div>
+                    </Grid>
+                </Grid>
+            </div>
+            <div className={classes.publisher}>
+                <Grid container wrap="nowrap" spacing={2}>
+                    <Grid item xs={4} style={{ padding: '15px' }}>
+                        <Typography>Tags :</Typography>
+                    </Grid>
+                    <Grid item xs={8}>
+                        <div className={classes.supplyList}>
+                            {mapTags}
                         </div>
                     </Grid>
                 </Grid>

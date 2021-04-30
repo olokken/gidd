@@ -322,6 +322,7 @@ const ActivityForm = ({
     };
 
     const changeActivity = async () => {
+        console.log(activityLevel)
         const sendActivity = {
             title: title,
             time: getTimeFormat(),
@@ -331,7 +332,7 @@ const ActivityForm = ({
             groupId: 0,
             description: escapedJSONDescription(),
             image: image,
-            activityLevel: activityLevel,
+            activityLevel: activityLevel.toUpperCase(),
             equipmentList: getEquipmentString(),
             tags: getTagString(),
             latitude: location.lat,
@@ -633,17 +634,19 @@ const ActivityForm = ({
                                 onChange={onChangeCapacity}
                                 variant="outlined"
                             />
-                            <NumberTextField
-                                className="acitivityform__numberbox"
-                                label="Gjentakinger"
-                                type="number"
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                variant="outlined"
-                                value={repetition}
-                                onChange={onChangeRepetitions}
-                            />
+                            {!activityResponse &&
+                                <NumberTextField
+                                    className="acitivityform__numberbox"
+                                    label="Gjentakinger"
+                                    type="number"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    variant="outlined"
+                                    value={repetition}
+                                    onChange={onChangeRepetitions}
+                                />
+                            }
                         </div>
                     </div>
                     <ButtonsContainer>
