@@ -18,8 +18,8 @@ backend-test:
     - master
   script:
     - cd Backend
-    - touch $(pwd)/src/main/resources/application.properties
-    - cp "$PROPERTIES" $(pwd)/src/main/resources/application.properties
+    - touch src/main/resources/application.properties
+    - cp "$PROPERTIES" src/main/resources/application.properties
     - mvn clean test
     - mvn jacoco:report
   artifacts:
