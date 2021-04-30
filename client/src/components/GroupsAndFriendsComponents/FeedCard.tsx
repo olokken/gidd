@@ -152,10 +152,10 @@ export default function FeedCard({
 
     const sortNextActivity = (activities: ActivityResponse[]) => {
         const now = new Date().getTime();
-        let currActivity = activities[0];
+        let currActivity:ActivityResponse = activities[0];
         activities.forEach((activity) => {
             if (
-                activity.time - 7200000 < currActivity.time &&
+                activity.time < currActivity.time &&
                 activity.time - 7200000 >= now
             ) {
                 console.log(

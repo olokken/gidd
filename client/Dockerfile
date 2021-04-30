@@ -1,6 +1,6 @@
 FROM node:lts 
 
-WORKDIR /klient
+WORKDIR /client
 
 COPY ["package.json", "package-lock.json*", "./"]
 
