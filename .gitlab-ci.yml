@@ -20,6 +20,7 @@ backend-test:
     - touch $(pwd)/src/main/resources/application.properties
     - cp "$PROPERTIES" $(pwd)/src/main/resources/application.properties
     - mvn clean test
+    - mvn jacoco:report
   artifacts:
     when: always
     paths:
