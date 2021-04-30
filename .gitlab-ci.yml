@@ -61,7 +61,7 @@ generatepdf:
     - export my_url="${CI_PROJECT_URL:8}" # Fjerner https:// fra URLen
     - export final_url="https://gitlab-ci-token:$CI_JOB_TOKEN@$my_url" 
     - git clone "$final_url.wiki.git"  
-    - gwtc $CI_PROJECT_TITLE.wiki 
+    - gwtc IDATT2106_2021_6.wiki 
     - wkhtmltopdf documentation.html wiki.pdf 
   artifacts:
     paths:
