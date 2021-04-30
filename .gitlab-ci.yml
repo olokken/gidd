@@ -4,6 +4,7 @@ backend-build:
   stage: build
   only:
       - backend-dev
+      - master
   script:
     - cd Backend
     - "mvn compile"
