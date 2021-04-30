@@ -59,12 +59,8 @@ const NewUser = () => {
                 })
                 .then((response) => {
                     console.log(response)
-                    const id = response.data.id
-                    const token = response.data.token;
-                    localStorage.setItem('userID', id);
-                    localStorage.set('token', token)
                 }).
-                then(() => history.push('/')
+                then(() => history.push('/Activities')
                 ).catch((error) => {
                     if (error.response) {
                         alert('En bruker med denne E-mailen finnes allerede')
