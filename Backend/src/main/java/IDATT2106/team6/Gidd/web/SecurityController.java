@@ -46,6 +46,9 @@ public class SecurityController {
     //  The above endpoints are only to be used for testing purposes, and should not
     //  be left in the code if the code is to be run as a real life service
 
+    /**
+     * mapTokenRequired validates the token, return error if not valid
+     */
     @MapTokenRequired
     @ResponseBody
     @RequestMapping("/token/validate")

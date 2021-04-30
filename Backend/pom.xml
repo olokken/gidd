@@ -123,6 +123,15 @@
 			<artifactId>spring-messaging</artifactId>
 			<version>5.3.5</version>
 		</dependency>
+		<!-- generate test rapport in gitlab-->
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>0.8.6</version>
+			<type>maven-plugin</type>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>

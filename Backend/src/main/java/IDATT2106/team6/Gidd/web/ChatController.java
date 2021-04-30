@@ -39,9 +39,15 @@ public class ChatController {
     private UserService userService;
     @Autowired
     private ActivityService activityService;
-    @Autowired
-    private FriendGroupService friendGroupService;
 
+    /**
+     * Gets the log of a chat in the format
+     * {
+     *     "activity": "1214121678",
+     *     "messages": []
+     * }
+     * @param groupId the activity you want to find the chat log of
+     */
     @GetMapping(value = "/chat/{groupId}", produces = "application/json")
     public ResponseEntity getMessageLog(@PathVariable Integer groupId){
         HttpHeaders header = new HttpHeaders();
@@ -82,6 +88,9 @@ public class ChatController {
     }
 
 
+    /**
+     * websocket-messages are automatically sent here
+     */
     @MessageMapping("/chat/{activityId}")
     public void sendMessage(@DestinationVariable Integer activityId, @Payload String message) throws ParseException {
         log.info("recieved chat message to id: " + activityId + " with message: " + message);

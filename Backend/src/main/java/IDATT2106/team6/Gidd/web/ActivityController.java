@@ -4,48 +4,18 @@ import static IDATT2106.team6.Gidd.Constants.*;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.formatJson;
 import static IDATT2106.team6.Gidd.web.ControllerUtil.getRandomID;
 
-import IDATT2106.team6.Gidd.models.Activity;
-import IDATT2106.team6.Gidd.models.ActivityEquipment;
-import IDATT2106.team6.Gidd.models.ActivityLevel;
-import IDATT2106.team6.Gidd.models.ActivityUser;
-import IDATT2106.team6.Gidd.models.Equipment;
-import IDATT2106.team6.Gidd.models.FriendGroup;
-import IDATT2106.team6.Gidd.models.Image;
-import IDATT2106.team6.Gidd.models.Tag;
-import IDATT2106.team6.Gidd.models.User;
-import IDATT2106.team6.Gidd.service.ActivityService;
-import IDATT2106.team6.Gidd.service.EquipmentService;
-import IDATT2106.team6.Gidd.service.FriendGroupService;
-import IDATT2106.team6.Gidd.service.ImageService;
-import IDATT2106.team6.Gidd.service.TagService;
-import IDATT2106.team6.Gidd.service.UserService;
-import IDATT2106.team6.Gidd.util.ActivityTokenRequired;
-import IDATT2106.team6.Gidd.util.Logger;
-import IDATT2106.team6.Gidd.util.MapTokenRequired;
+import IDATT2106.team6.Gidd.models.*;
+import IDATT2106.team6.Gidd.service.*;
+import IDATT2106.team6.Gidd.util.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.naming.directory.InvalidAttributesException;
 import org.eclipse.persistence.exceptions.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -65,6 +35,26 @@ public class ActivityController {
     @Autowired
     private FriendGroupService groupService;
 
+    /**
+     * Add a new activity to the database
+     * @param map {
+     *            "title" String
+     *            "time" : string, is parsed to sql timestamp, format: yyyy-mm-dd hh:mm:ss[.f...]
+     *            "repeat" : int, the number of weeks you want to repeat the activity for
+     *            "userId" : int, the owner of the activity
+     *            "capacity" : int the number of possible participats in the activity
+     *            "gropuId" : int -1 if no group, otherwise this will limit the people that are able to see this activity
+     *            to members of the given group
+     *            "description" String
+     *            "image": base64 string, Strings under 32 characters are treated as no image
+     *            "equipmentList": string of comma separated words to be used for equipment
+     *            "ActivityLevel" : string, LOW; MEDIUM or HIGH
+     *            "tags" : same as equipmentlist, but tags
+     *            "latitude" : doube
+     *            "longitude" : double
+     * }
+     * @return "error" mapping in json
+     */
     @MapTokenRequired
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity newActivity(@RequestBody Map<String, Object> map) {
@@ -92,7 +82,7 @@ public class ActivityController {
             }
 
             newActivity = mapToActivity(map, -1, user, image);
-
+            // creates one or multiple activities based on repeat
             return createMultiple(user, newActivity, map, body, headers,
                                     Integer.parseInt(map.get("repeat").toString()));
 
@@ -119,6 +109,14 @@ public class ActivityController {
         }
     }
 
+    /**
+     * id of activity and id of equipment connected to that activity
+     * @param map {
+     *            "userId" : int user id
+     *            "equipmentId" int equipment id
+     *            }
+     * @return error code and json with "error" mapping
+     */
     @MapTokenRequired
     @PostMapping(value = "{activityId}/equipment/{equipmentId}/user")
     public ResponseEntity registerUserToEquipment(@RequestBody HashMap<String, Object> map) {
@@ -223,6 +221,12 @@ public class ActivityController {
                 .body(formatJson(body));
     }
 
+    /**
+     *
+     * @param actId the id of the activity you want to edit
+     * @param map activity object in the same format as @newActivity-method
+     * @return json-object with "error" mapping if an error is caught with error code
+     */
     @MapTokenRequired
     @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity editActivity(@PathVariable("id") int actId,
@@ -316,6 +320,27 @@ public class ActivityController {
                 .body(activity.toString());
     }
 
+    /**
+     * ret
+     * @param activityId
+     * @return json object like:
+     *         {
+     *             "activityId": 106316016,
+     *             "title": "test1",
+     *             "time": 1619720996000,
+     *             "user": {
+     *                 "userId": 1306460677,
+     *                 "email": "haavard.tysland@lyse.net",
+     *                 "firstName": "Håvard",
+     *                 "surname": "Tysland",
+     *                 "phoneNumber": 95427495,
+     *                 "activityLevel": "HIGH",
+     *                 "image" base64 string with image type specified
+     *                 "points": 68,
+     *                 "notifications": []
+     *             },
+     * @throws JSONException
+     */
     @GetMapping(value = "/{activityId}", produces = "application/json")
     public ResponseEntity getActivity(@PathVariable Integer activityId) throws JSONException {
         log.debug("Received GetMapping to '/activity/{activityId}' with activityId " + activityId);
@@ -347,6 +372,18 @@ public class ActivityController {
                 .body(activity.toString());
     }
 
+    /**
+     *
+     * @param userId using this will get you all activities the user is registered to
+     * @param searchValue will filter by title
+     * @param activityLevel 0, 1 or 2, 0 for low, 2 for high
+     * @param tagDescription will filter by tags given to activity
+     * @return json array in format:
+     *  {
+     *      "activities":[]
+     *  }
+     * @throws JSONException
+     */
     @GetMapping(value = "")
     public ResponseEntity getActivities(
             @RequestParam(value = "userId", required = false) Integer userId,
@@ -436,6 +473,16 @@ public class ActivityController {
                 .body("{\"activities\": \n" + activities.toString() + "\n}");
     }
 
+    /**
+     * gets all users registered to activity, includes owner
+     * @param id the id of the activity
+     * @return a json object with an array of users in the format:
+     * {
+     *     "users":[
+     *
+     *     ]
+     * }
+     */
     @GetMapping(value = "/{id}/user", produces = "application/json")
     public ResponseEntity getAllUsersFromActivity(@PathVariable Integer id) {
         log.info("recieved get mapping /activity/" + id + "/user");
@@ -494,6 +541,11 @@ public class ActivityController {
         return ResponseEntity.badRequest().headers(header).body(formatJson(body));
     }
 
+    /**
+     * (nearly) thread safe way of generating random id for activity
+     * @param activity the activity you want to assign the id to
+     * @return the id that was assigned
+     */
     private int newActivityValidId(Activity activity) {
         log.info("finding new valid id for an activity");
         boolean created;
@@ -544,6 +596,9 @@ public class ActivityController {
         return true;
     }
 
+    /**
+     * adds equipment to databases so that it can be used later
+     */
     private void registerEquipment(String description) {
         log.debug("Registering " + description + " to equipment");
         equipmentService.registerEquipment(description.toLowerCase());
@@ -582,6 +637,9 @@ public class ActivityController {
     }
 
 
+    /**
+     * splits a string of comma separated tags
+     */
     private List<Tag> splitTags(String tagString) {
         if(tagString.trim().equals("")){
             return Collections.emptyList();
@@ -605,6 +663,10 @@ public class ActivityController {
         return tags;
     }
 
+    /**
+     * takes an activity and a comma separated equipmentlist
+     * adds any new equipments from this to the activity, and returns the coupling objects
+     */
     private List<ActivityEquipment> newEquipment (Activity activity, String equipList) {
         List<ActivityEquipment> oldEquips = activity.getEquipments();
         List<Equipment> equips = toEquipList(equipList);
@@ -630,8 +692,12 @@ public class ActivityController {
         return res;
     }
 
-    private boolean removeEquipment (List<ActivityEquipment> oldEquips,
-                                                     List<ActivityEquipment> newEquips) {
+    /**
+     * takes two lists of couplings, removes all the couplings from the activity
+     * that are in the oldEquips-list, but not in the newEquips-list
+     */
+    private boolean removeEquipment (List<ActivityEquipment> oldEquips, List<ActivityEquipment> newEquips) {
+
         List<ActivityEquipment> differences = new ArrayList<>(oldEquips);
         differences.removeAll(newEquips);
 
@@ -651,6 +717,9 @@ public class ActivityController {
         }
     }
 
+    /**
+     * creates multiple activities depending on the repeat value
+     */
     private ResponseEntity createMultiple(User user, Activity activity, Map<String, Object> map,
                                                   HashMap<String,String> body, HttpHeaders headers,
                                                     int repeat) {
@@ -687,6 +756,9 @@ public class ActivityController {
             .body(res);
     }
 
+    /**
+     * splits csv string with equipments
+     */
     private List<Equipment> toEquipList(String equipString) {
         log.info("splitting equipment");
         ArrayList<Equipment> equips = new ArrayList<>();
@@ -706,6 +778,9 @@ public class ActivityController {
         return equips;
     }
 
+    /**
+     * this coupling is inserted to indicate that the user is goind to attend the activity
+     */
     private boolean insertUserActivityCoupling(User user, Activity activity){
         //Legge inn sjekk om den allerede er registrert
         List<ActivityUser> activityUser = user.getActivities();

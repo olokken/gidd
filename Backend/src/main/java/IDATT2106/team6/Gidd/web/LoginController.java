@@ -41,6 +41,18 @@ public class LoginController {
     @Autowired
     private ImageService imageService;
 
+    /**
+     * for logging in with social media, currently facebook and google are available
+     * @param map
+     * {
+     *     "provider" : string, google or facebook,
+     *     "accessToken" : provided by google or facbook
+     *     "email": string user email,
+     *     "firstName":
+     *     "surname":
+     * }
+     * @return
+     */
     @PostMapping("")
     public ResponseEntity loginSome(@RequestBody Map<String, Object> map) {
         Map<String, String> body = new HashMap<>();
@@ -127,8 +139,7 @@ public class LoginController {
         }
     }
 
-    @PostMapping("/old")
-    public ResponseEntity loginUser(@RequestBody Map<String, Object> map) {
+    private ResponseEntity loginUser(@RequestBody Map<String, Object> map) {
         log.info("recieved postmapping to /login " + map.toString());
         HttpHeaders header = new HttpHeaders();
         boolean result =
@@ -152,6 +163,9 @@ public class LoginController {
                 .headers(header).body(formatJson(body));
     }
 
+    /**
+     * checks whther user is already registered
+     */
     private ResponseEntity someCheckUser(Map<String, Object> map,
                                          Map<String, String> body,
                                          Provider provider) throws URISyntaxException {
@@ -194,6 +208,11 @@ public class LoginController {
                 .body(formatJson(body));
     }
 
+    /**
+     * parses the connection status code from the response from facebook/google
+     * parses either error or valid response
+     * used to check if token recieved is valid
+     */
     private StringBuilder getContent(HttpURLConnection con) throws IOException {
         int status = con.getResponseCode();
         BufferedReader in;

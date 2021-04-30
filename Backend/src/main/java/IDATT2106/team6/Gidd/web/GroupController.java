@@ -105,6 +105,16 @@ public class GroupController {
                 .body(formatJson(body));
     }
 
+    /**
+     *
+     * @param map:
+     *           {
+     *              "groupName": String, with name of the group,
+     *              "userIds": string with comma separated user ids, will become members of the group
+     *              "userId": the id of the owner
+     *          }
+     * @return
+     */
     @MapTokenRequired
     @PostMapping("")
     public ResponseEntity addNewGroup(@RequestBody Map<String, Object> map){
@@ -178,6 +188,13 @@ public class GroupController {
                 .body(formatJson(body));
     }
 
+    /**
+     * @param map example:
+     *            {
+     *              "groupId": 513617223,
+     *              "userId": 1
+     *          }
+     */
     @MapTokenRequired
     @PostMapping("/{groupId}/user")
     public ResponseEntity addUserToGroup(@RequestBody HashMap<String, Object> map) {
@@ -228,6 +245,14 @@ public class GroupController {
                 .body(formatJson(body));
     }
 
+    /**
+     *
+     * @param map a json object with format:
+     *            {
+     *              "groupId" : 1,
+     *              "newOwner" : 2
+     *          }
+     */
     @GroupTokenRequired
     @PutMapping("/{groupId}")
     public ResponseEntity changeOwner(@PathVariable Integer groupId, @RequestBody HashMap<String, Object> map){
@@ -274,6 +299,13 @@ public class GroupController {
                 .body(formatJson(body));
     }
 
+    /**
+     *
+     * @return a json-formatted string like this:
+     * {
+     *     "groups": []
+     * }
+     */
     @GetMapping("")
     public ResponseEntity getAllGroups(){
         log.debug("Received GetMapping to '/group'");
@@ -291,6 +323,11 @@ public class GroupController {
                 .body("{\"groups\":" + friendGroups.toString() + "}");
     }
 
+    /**
+     * //todo
+     * @param groupId
+     * @return
+     */
     @GroupMemberTokenRequired
     @GetMapping(value = "/{groupId}")
     public ResponseEntity getFriendGroup(@PathVariable Integer groupId){

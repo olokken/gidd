@@ -77,6 +77,9 @@ public class UserController {
         }
     }
 
+    /**
+     * deletes the friendmapping from userId to friendId
+     */
     @PathTokenRequired
     @DeleteMapping(value = "/{userId}/user/{friendId}")
     public ResponseEntity deleteFriend(@PathVariable Integer userId,
@@ -159,6 +162,12 @@ public class UserController {
             .headers(header).body(formatJson(body));
     }
 
+    /**
+     * removes a user form being signed up for an activity
+     * @param userId
+     * @param activityId
+     * @return
+     */
     @PathTokenRequired
     @DeleteMapping(value = "/{userId}/activity/{activityId}", produces = "application/json")
     public ResponseEntity deleteActivityToUser(@PathVariable Integer userId,
@@ -278,6 +287,12 @@ public class UserController {
             .body(formatJson(body));
     }
 
+    /**
+     * deletes message notification that the user has received
+     * @param userId
+     * @param activityId
+     * @return
+     */
     @DeleteMapping("/{userId}/notification/{activityId}")
     public ResponseEntity deleteNotification(@PathVariable Integer userId,
                                              @PathVariable Integer activityId) {
@@ -305,6 +320,16 @@ public class UserController {
             .body(formatJson(body));
     }
 
+    /**
+     * checks whether two users are friends and returns an enum
+     * @param userId
+     * @param friendId
+     * @return
+     *     SENT,
+     *     FRIENDS,
+     *     RECEIVED,
+     *     NOTHING
+     */
     @GetMapping("/{userId}/user/{friendId}")
     public ResponseEntity checkFriendship(@PathVariable Integer userId,
                                           @PathVariable Integer friendId) {
@@ -343,6 +368,11 @@ public class UserController {
             .body(formatJson(body));
     }
 
+    /**
+     * gets all the friends of a given user
+     * @param userId
+     * @return
+     */
     @PathTokenRequired
     @GetMapping(value = "/{userId}/user")
     public ResponseEntity getFriends(@PathVariable Integer userId) {
@@ -394,6 +424,11 @@ public class UserController {
             .body(stringBuilder.toString());
     }
 
+    /**
+     * get all friend requests that a given user has recieved
+     * @param userId
+     * @return
+     */
     @PathTokenRequired
     @GetMapping("/{userId}/request")
     public ResponseEntity getAllFriendRequests(@PathVariable Integer userId) {
@@ -428,6 +463,11 @@ public class UserController {
             .body("{\"users\" :" + requests.toString() + "}");
     }
 
+    /**
+     * get all friend requests that a given user has sent
+     * @param userId
+     * @return
+     */
     @PathTokenRequired
     @GetMapping("/{userId}/pending")
     public ResponseEntity getAllPendingRequests(@PathVariable Integer userId) {
@@ -574,6 +614,11 @@ public class UserController {
             .body("{ \"groups\" : " + friendGroups.toString() + "}");
     }
 
+    /**
+     * get the average rating of a given user
+     * @param userId
+     * @return
+     */
     @GetMapping("/{userId}/rating")
     public ResponseEntity getRating(@PathVariable Integer userId) {
         log.debug("Received GetMapping to '/user/{userId}/rating'");
@@ -607,6 +652,7 @@ public class UserController {
             .headers(header)
             .body(formatJson(body));
     }
+
 
     @PathTwoTokenRequired
     @PutMapping(value = "/some/{id}")
@@ -788,6 +834,7 @@ public class UserController {
             .badRequest()
             .body(formatJson(body));
     }
+
 
     @MapTokenRequired
     @PostMapping(value = "/{userId}/user")
