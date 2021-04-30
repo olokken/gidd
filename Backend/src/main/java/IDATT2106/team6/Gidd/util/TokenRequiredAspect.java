@@ -107,7 +107,7 @@ public class TokenRequiredAspect {
 
     @Around("@annotation(groupMemberTokenRequired)")
     public Object groupMemberTokenRequiredWithAnnotation(ProceedingJoinPoint pjp,
-                                           GroupMemberTokenRequired groupMemberTokenRequired)
+                                                         GroupMemberTokenRequired groupMemberTokenRequired)
         throws Throwable {
         log.info("Around groupMemberTokenRequiredWithAnnotation");
         Object[] args = pjp.getArgs();
@@ -210,7 +210,8 @@ public class TokenRequiredAspect {
         Map<String, String> body = new HashMap<>();
         try {
             log.info(
-                "Handling token for pjp: [" + pjp.toString() + "] with subjects [" + subjects + "]");
+                "Handling token for pjp: [" + pjp.toString() + "] with subjects [" + subjects +
+                    "]");
             for (String subject : subjects) {
                 if (subject == null || subject.equals("")) {
                     log.error("No subject");
@@ -245,27 +246,22 @@ public class TokenRequiredAspect {
                     .badRequest()
                     .body(body);
             }
-            for (String subject :
-                subjects) {
-                if (!claims.getSubject().equalsIgnoreCase(subject)) {
-                    log.error("Subject does not match token");
-                    body.put("error", "subject mismatch");
-                    return ResponseEntity
-                        .badRequest()
-                        .body(body);
-                } else {
+            for (String subject : subjects) {
+                if (claims.getSubject().equalsIgnoreCase(subject)) {
                     return pjp.proceed();
                 }
             }
+            log.error("Subject does not match token");
+
+            body.put("error", "subject mismatch");
+            return ResponseEntity
+                .badRequest()
+                .body(body);
         } catch (ExpiredJwtException e) {
             body.put("error", "expired token");
             return ResponseEntity
                 .badRequest()
                 .body(body);
         }
-        body.put("error", "an unexpected error occurred");
-        return ResponseEntity
-            .badRequest()
-            .body(body);
     }
 }

@@ -1277,7 +1277,7 @@ public class GiddControllerTest {
                 .andExpect(status().isOk());
 
         String group = mockMvc.perform(get("/group/" + group1.getGroupId())
-                .header("token", token5).accept(MediaType.APPLICATION_JSON)
+                .header("token", token).accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
@@ -1453,7 +1453,7 @@ public class GiddControllerTest {
         System.out.println("test 43");
         String error = mockMvc.perform(MockMvcRequestBuilders
                 .put("/group/" + group1.getGroupId()).contentType(MediaType.APPLICATION_JSON)
-                .header("token", token)
+                .header("token", token2)
                 .content(
                         "{" +
                                 "\"groupId\" : \"" + (-1) + "\"," +
@@ -1468,7 +1468,7 @@ public class GiddControllerTest {
 
         String error2 = mockMvc.perform(MockMvcRequestBuilders
                 .put("/group/" + group1.getGroupId()).contentType(MediaType.APPLICATION_JSON)
-                .header("token", token)
+                .header("token", token2)
                 .content(
                         "{" +
                                 "\"groupId\" : \"" + group1.getGroupId() + "\"," +
@@ -1497,7 +1497,7 @@ public class GiddControllerTest {
         assertEquals(String.valueOf(group1.getGroupId()), JSONgroup.get("groupId").toString());
 
         String deleteReturn = mockMvc.perform(MockMvcRequestBuilders
-                .delete("/group/" + group1.getGroupId()))
+                .delete("/group/" + group1.getGroupId()).header("token",token2))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         JSONObject JSONDeleteReturn = (JSONObject) parser.parse(deleteReturn);
@@ -1657,8 +1657,8 @@ public class GiddControllerTest {
                 .header("token", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                        "\n\"toUserId\": \"" + user1.getUserId() + "\"," +
-                        "\n\"fromUserId\": \"" + user2.getUserId() + "\",\n" +
+                        "\n\"toUserId\": \"" + user2.getUserId() + "\"," +
+                        "\n\"fromUserId\": \"" + user1.getUserId() + "\",\n" +
                         "\"rating\": \"0\"" +
                         "}"
                 )).andExpect(status().isBadRequest())
@@ -1669,11 +1669,11 @@ public class GiddControllerTest {
         assertEquals("The rating is not between 1 and 5", jsonObject.get("error"));
 
         String error2 = mockMvc.perform(post("/user/" + user1.getUserId() + "/rating")
-                .header("token", token2)
+                .header("token", token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                        "\n\"toUserId\": \"" + user1.getUserId() + "\",\n" +
-                        "\n\"fromUserId\": \"" + user2.getUserId() + "\",\n" +
+                        "\n\"toUserId\": \"" + user3.getUserId() + "\",\n" +
+                        "\n\"fromUserId\": \"" + user1.getUserId() + "\",\n" +
                         "\"rating\": \"6\"" +
                         "}"
                 )).andExpect(status().isBadRequest())
