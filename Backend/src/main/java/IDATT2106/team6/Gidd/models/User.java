@@ -12,7 +12,6 @@ import org.apache.commons.codec.binary.Hex;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.persistence.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -22,6 +21,7 @@ public class User {
     @Id
     @Column(name = "user_id")
     private int userId;
+    @Column(unique = true)
     private String email;
     private String password;
     @Column(name = "first_name")
@@ -35,15 +35,25 @@ public class User {
     @Column(name = "auth_provider")
     private Provider authProvider;
     @CascadeOnDelete
-    @OneToMany(mappedBy = "User")
+    @OneToMany(mappedBy = "User", fetch = FetchType.EAGER)
     private List<ActivityUser> activities;
     private String salt;
+    @CascadeOnDelete
+    @ManyToMany(targetEntity = User.class, fetch = FetchType.EAGER)
+    private List<User> friendList;
+    @CascadeOnDelete
+    @OneToOne(targetEntity = Image.class, fetch = FetchType.EAGER)
+    private Image image;
+    @OneToMany
+    private List<Activity> notifications;
 
+    public User() {
+    }
 
-    //Konstrutøren må tilpasses
     public User(int id, String email, String password,
                 String firstName, String surname,
-                int phoneNumber, ActivityLevel activityLevel, Provider provider){
+                int phoneNumber, ActivityLevel activityLevel,
+                Image image, Provider provider) {
         this.userId = id;
         this.email = email;
         this.firstName = firstName;
@@ -52,23 +62,23 @@ public class User {
         this.activityLevel = activityLevel;
         this.authProvider = provider;
         this.activities = new ArrayList<ActivityUser>();
-        this.points = 0;
-
+        this.points = 100;
+        this.image = image;
         //generates random salt
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
 
-        //convert password to char arra
         char[] passwordChars = password.toCharArray();
-        //password hashed with salt
         byte[] hashedBytes = hashPassword(passwordChars, salt);
 
-        //convert hashed password to string to store in datbase
+        //convert hashed password to string to store in database
         String hashedString = Hex.encodeHexString(hashedBytes);
         //convert byte to string
         this.salt = org.apache.commons.codec.binary.Base64.encodeBase64String(salt);
         this.password = hashedString;
+
+        this.friendList = new ArrayList<>();
     }
 
     private byte[] hashPassword(final char[] password, final byte[] salt) {
@@ -89,17 +99,15 @@ public class User {
 
     public boolean verifyPassword(String testPassword) {
         //the password that is to be tested
-        if (testPassword == null) return false;
+        if (testPassword == null) {
+            return false;
+        }
         char[] passwordChars = testPassword.toCharArray();
         byte[] saltBytes = Base64.decodeBase64(salt);
         byte[] hashedBytes = hashPassword(passwordChars, saltBytes);
         String hashedString = Hex.encodeHexString(hashedBytes);
         return (hashedString.equals(password));
     }
-
-
-
-    public User(){}
 
     public int getUserId() {
         return userId;
@@ -141,6 +149,14 @@ public class User {
         return activities;
     }
 
+    public String getSalt() {
+        return salt;
+    }
+
+    public List<User> getFriendList() {
+        return friendList;
+    }
+
     public void setId(int id) {
         this.userId = id;
     }
@@ -177,4 +193,109 @@ public class User {
         this.authProvider = authProvider;
     }
 
+    public void addActivity(ActivityUser activityUser) {
+        this.activities.add(activityUser);
+    }
+
+    public void setActivities(List<ActivityUser> activities) {
+        this.activities = activities;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    public void setFriendList(List<User> friendList) {
+        this.friendList = friendList;
+    }
+
+    public void addFriend(User user) {
+        this.friendList.add(user);
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public void addNotification(Activity activity) {
+        if (!notifications.contains(activity)) {
+            notifications.add(activity);
+        }
+    }
+
+    public boolean removeNotification(Activity activity) {
+        if (notifications.contains(activity)) {
+            ;
+            return notifications.remove(activity);
+        }
+        return false;
+    }
+
+    public String getNotificationIds() {
+        StringBuilder id = new StringBuilder();
+        id.append("[");
+
+        if(notifications != null) {
+            for (Activity a : notifications) {
+                id.append(a.toNotification()).append(",");
+            }
+        }
+        id.append("]");
+        if (id.length() > 2) {
+            id.deleteCharAt(id.length() - 2);
+        }
+
+        return id.toString();
+    }
+
+    public String toJSON() {
+        return "\n  {" +
+            "\n     \"userId\":" + userId + "," +
+            "\n     \"email\":" + '\"' + email + '\"' + "," +
+            "\n     \"firstName\":" + '\"' + firstName + '\"' + "," +
+            "\n     \"surname\":" + '\"' + surname + '\"' + "," +
+            "\n     \"phoneNumber\":" + phoneNumber + "," +
+            "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' + "," +
+            "\n     \"image\":" + '\"' + image.getDatatype() +
+            org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' +
+            "," +
+            "\n     \"points\":" + points + "," +
+            "\n     \"notifications\":" + getNotificationIds() +
+            "\n }";
+    }
+
+    public String toString() {
+        return "\n  {" +
+            "\n     \"userId\":" + userId + "," +
+            "\n     \"email\":" + '\"' + email + '\"' + "," +
+            "\n     \"firstName\":" + '\"' + firstName + '\"' + "," +
+            "\n     \"surname\":" + '\"' + surname + '\"' + "," +
+            "\n     \"phoneNumber\":" + phoneNumber + "," +
+            "\n     \"activityLevel\":" + '\"' + activityLevel + '\"' + "," +
+            "\n     \"points\":" + points + "," +
+            "\n     \"notifications\":" + getNotificationIds() + "," +
+            "\n     \"image\":" + '\"' + image.getDatatype() +
+            org.apache.commons.codec.binary.Base64.encodeBase64String(image.getBytes()) + '\"' +
+            "," +
+            "\n     \"provider\":" + '\"' + authProvider + '\"' +
+            "\n }";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return userId == user.userId && phoneNumber == user.phoneNumber &&
+            email.equals(user.email) && password.equals(user.password) &&
+            firstName.equals(user.firstName) && surname.equals(user.surname);
+    }
 }

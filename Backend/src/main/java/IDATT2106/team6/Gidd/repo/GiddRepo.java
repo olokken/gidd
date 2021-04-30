@@ -5,13 +5,21 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Properties;
 import javax.persistence.EntityManagerFactory;
+
+import IDATT2106.team6.Gidd.util.Logger;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public abstract class GiddRepo {
     protected static EntityManagerFactory emf;
+    private Logger log = new Logger(GiddRepo.class.toString());
 
+    /**
+     * connects to database given in application.properties
+     * @throws IOException reads the application.properties file
+     */
     public void connect() throws IOException {
+        log.debug("Connecting");
         Properties prop = new Properties();
         HashMap<String, String> newProperties = new HashMap<>();
         //loads the local .properties file
@@ -21,10 +29,10 @@ public abstract class GiddRepo {
         assert input != null;
         input.close();
 
-        newProperties.put("javax.persistence.jdbc.url", "jdbc:mysql://mysql.stud.iie.ntnu.no:3306/" + prop.getProperty("URL"));
-        newProperties.put("javax.persistence.jdbc.user", prop.getProperty("spring.datasource.username"));
-        newProperties.put("javax.persistence.jdbc.password", prop.getProperty("spring.datasource.password"));
-
+        String jdbcUrl = "jdbc:mysql://" + prop.getProperty("RDSHOSTNAME") + ":" + prop.getProperty("RDSPORT") + "/" + prop.getProperty("RDSDBNAME");
+        newProperties.put("javax.persistence.jdbc.url", jdbcUrl);
+        newProperties.put("javax.persistence.jdbc.user", prop.getProperty("RDSUSERNAME"));
+        newProperties.put("javax.persistence.jdbc.password", prop.getProperty("RDSPASSWORD"));
         emf = javax.persistence.Persistence.createEntityManagerFactory("DatabasePU", newProperties);
     }
 
