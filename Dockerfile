@@ -1,5 +1,13 @@
-FROM adoptopenjdk/maven-openjdk11
+FROM node:lts 
 
-ADD Backend /Backend
-WORKDIR "/Backend"
-CMD ["mvn", "spring-boot:run"]
+WORKDIR /client
+
+COPY ["package.json", "package-lock.json*", "./"]
+
+COPY . .
+
+RUN npm install
+
+RUN npm run build
+
+CMD ["npm", "start" ]

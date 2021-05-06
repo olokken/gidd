@@ -19,7 +19,7 @@ interface Props {
     width?: string;
     height?: string;
 }
-const MapComponent = ({ defaultCenter, children,  width, height }: Props) => {
+const MapComponent = ({ defaultCenter, children, width, height }: Props) => {
     return (
         <div style={{ width: width, height: height }}>
             <Map
