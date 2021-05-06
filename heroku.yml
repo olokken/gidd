@@ -1,4 +1,3 @@
 build:
   docker:
-    context: ./client
-    web: ./Dockerfile
+    web: ./client/Dockerfile
