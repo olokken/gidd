@@ -5,7 +5,7 @@ WORKDIR /chatroulette
 
 COPY . /
 
-WORKDIR /klient
+WORKDIR /client
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -17,7 +17,7 @@ RUN npm install
 RUN npm run-script build
 
 
-WORKDIR /web_server
+WORKDIR /server
 
 #COPY ["./klient/package.json", "./klient/package-lock.json*", "./klient/"]
 
